@@ -1,0 +1,34 @@
+<query>
+	<id>12345</id>
+	<author>R.Majeed</author>
+	<instituion>JLU Gieﬂen</institution>
+	
+	<rdf:description>
+	Beschreibung der Anfrage in Textform. Dies wird dem Standortkoordinator
+	angezeigt, der Entscheiden muss ob einer Kooperation zustimmt oder sie ablehnt.
+	</rdf:description>
+	
+	<schedule>
+		<daily at="07:00" />
+		<cron>1 * * * *</cron>
+		<!-- wiederholt -->
+	</schedule>
+	
+	<definition type="text/sql">
+	 SELECT DISTINCT encounter_num FROM observation_fact
+	 WHERE start_date BETWEEN (yesterday, today)
+	 AND concept_cd='aaa' AND value='1'
+	</definition>
+	
+	<dwh-status>
+		<received>Timestamp</received>
+		<last-execution>Timestamp</last-execution>
+	</dwh-status>
+	<dwh-decision>
+		<timestamp>Timestamp</timestamp>
+		<by>Wer das bewertet hat</by>
+		<result>rejected/approved</result>
+		<reason></reason>
+	</dwh-decision>
+
+</query>

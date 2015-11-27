@@ -1,0 +1,9 @@
+<cda-report>
+	<head>
+		<period start="2015-01-01" end="2015-10-01"/>
+	</head>
+	<body>
+		<table id="t1" href="report123-table1.xml"/>
+		<plot id="p1" href="report123-plot1.xml"/>
+	</body>
+</cda-report>

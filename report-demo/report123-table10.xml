@@ -1,0 +1,42 @@
+<table xmlns="http://www.w3.org/1999/xhtml">
+ <thead>
+      <tr>
+        <th>Prozess</th>
+        <th>N (erfasst)</th>
+        <th>Mw</th>
+        <th>Med</th>
+        <th>Sd</th>
+        <th>Min</th>
+        <th>Max</th>
+      </tr>
+    </thead> 
+	<tbody>
+		<tr>
+			<td>Ankunft/Aufnahme bis Ersteinschaetzung</td>
+			<td>285</td>
+			<td>00:25</td>
+			<td>00:21</td>
+			<td>3.5</td>
+			<td>00:03</td>
+			<td>01:25</td>
+		</tr>
+		<tr>
+			<td>Ankunft/Aufnahme bis 1. Arztkontakt</td>
+			<td>275</td>
+			<td>00:30</td>
+			<td>00:32</td>
+			<td>3.7</td>
+			<td>00:03</td>
+			<td>01:30</td>
+		</tr>
+		<tr>
+			<td>Ankunft/Aufnahme bis Therapiebeginn</td>
+			<td>264</td>
+			<td>00:35</td>
+			<td>00:32</td>
+			<td>2.9</td>
+			<td>00:05</td>
+			<td>1:40</td>
+		</tr>
+	</tbody>
+</table>

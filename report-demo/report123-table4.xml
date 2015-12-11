@@ -1,0 +1,18 @@
+<table xmlns="http://www.w3.org/1999/xhtml">
+ <thead>
+      <tr>
+        <th>Einweisungsart</th>
+        <th>Anzahl</th>
+      </tr>
+    </thead> 
+	<tbody>
+		<tr>
+			<td>Einweisungsschein</td>
+			<td>63</td>
+		</tr>
+		<tr>
+			<td>Notfall</td>
+			<td>72</td>
+		</tr>
+	</tbody>
+</table>

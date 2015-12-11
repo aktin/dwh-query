@@ -1,0 +1,35 @@
+<report-data>
+	<text id="monat">Monatsbericht: Oktober 2015</text>
+	<text id="stand">Datenstand: 05.11.2015</text>
+	<text id="anzahl">342</text>
+	<text id="leitung">Leitung: Schwester Donata</text>
+	<text id="kh">Hospital zum heiligen St. Actinus</text>
+	<text id="bereich"> Zentrale Notaufnahme</text>
+	<table id="t1" href="report123-table1.xml"/>
+	<table id="t2" href="report123-table2.xml"/>
+	<table id="t3" href="report123-table3.xml"/>
+	<table id="t4" href="report123-table4.xml"/>
+	<table id="t5" href="report123-table5.xml"/>
+	<table id="t6" href="report123-table6.xml"/>
+	<table id="t7" href="report123-table7.xml"/>
+	<table id="t8" href="report123-table8.xml"/>
+	<table id="t9" href="report123-table9.xml"/>
+	<table id="t10" href="report123-table10.xml"/>
+	<table id="t11" href="report123-table11.xml"/>
+	<table id="t13" href="report123-table13.xml"/>
+	<table id="t14" href="report123-table14.xml"/>
+	<table id="ta" href="report123-tablea.xml"/>
+	<plot id="p1" href="report123-plot1.svg"/>
+	<plot id="p2" href="report123-plot2.svg"/>
+	<plot id="p3" href="report123-plot3.svg"/>
+	<plot id="p4" href="report123-plot4.svg"/>
+	<plot id="p5" href="report123-plot5.svg"/>
+	<plot id="p6" href="report123-plot6.svg"/>
+	<plot id="p7" href="report123-plot7.svg"/>
+	<plot id="p8" href="report123-plot8.svg"/>
+	<plot id="p9" href="report123-plot9.svg"/>
+	<plot id="p11" href="report123-plot11.svg"/>
+	<plot id="p13" href="report123-plot13.svg"/>
+	<plot id="p14" href="report123-plot14.svg"/>
+	<plot id="pa" href="report123-plota.svg"/>
+</report-data>

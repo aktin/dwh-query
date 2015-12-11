@@ -1,0 +1,66 @@
+<table xmlns="http://www.w3.org/1999/xhtml">
+ <thead>
+      <tr>
+        <th>Alter/Geschlecht</th>
+        <th>m</th>
+        <th>w</th>
+        <th>Summe</th>
+      </tr>
+    </thead> 
+	<tbody>
+		<tr>
+			<td>0 bis unter 1</td>
+			<td>10</td>
+			<td>6</td>
+			<td>16</td>
+		</tr>
+		<tr>
+			<td>1 bis unter 5</td>
+			<td>7</td>
+			<td>8</td>
+			<td>15</td>
+		</tr>
+		<tr>
+			<td>5 bis unter 15</td>
+			<td>20</td>
+			<td>17</td>
+			<td>37</td>
+		</tr>
+		<tr>
+			<td>15 bis unter 45</td>
+			<td>47</td>
+			<td>51</td>
+			<td>98</td>
+		</tr>
+		<tr>
+			<td>45 bis unter 65</td>
+			<td>13</td>
+			<td>25</td>
+			<td>38</td>
+		</tr>
+		<tr>
+			<td>65 bis unter 75</td>
+			<td>35</td>
+			<td>26</td>
+			<td>61</td>
+		</tr>
+		<tr>
+			<td>75 bis unter 85</td>
+			<td>24</td>
+			<td>25</td>
+			<td>49</td>
+		</tr>
+		<tr>
+			<td>ab 85</td>
+			<td>15</td>
+			<td>14</td>
+			<td>29</td>
+		</tr>
+		<tr>
+			<td>Summe</td>
+			<td>161</td>
+			<td>172</td>
+			<td>333</td>
+		</tr>
+	</tbody>
+</table>

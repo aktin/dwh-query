@@ -6,7 +6,7 @@
 				<TITLE></TITLE>
 			</HEAD>
 			<BODY>
-				<H1><xsl:value-of select="document('report-data.xml')/report-data/text[@id='kh']/text()"/></H1>
+				<H1 align="center" style="font-family:courier;"><xsl:value-of select="document('report-data.xml')/report-data/text[@id='kh']/text()"/></H1>
 				<xsl:value-of select="document('report-data.xml')/report-data/text[@id='bereich']/text()"/><br/> 
 				<xsl:value-of select="document('report-data.xml')/report-data/text[@id='leitung']/text()"/><br/>
 				<xsl:value-of select="document('report-data.xml')/report-data/text[@id='monat']/text()"/><br/> 
@@ -17,9 +17,11 @@
 		</HTML>
 	</xsl:template>
 	
-	<xsl:attribute-set name="table">
-			<xsl:attribute name="border">1</xsl:attribute>
+	<xsl:attribute-set name="table"> <!--  rules="rows" macht Linien nach jeder Reihe -->
+			<!--<xsl:attribute name="border">1</xsl:attribute>-->
+			<xsl:attribute name="cellspacing">0</xsl:attribute>
 			<xsl:attribute name="style">margin-top:10</xsl:attribute>
+			<xsl:attribute name="frame">hsides</xsl:attribute>
   </xsl:attribute-set>
   <xsl:attribute-set name="textheaderformat">
 			<xsl:attribute name="style">margin-top:30;font-size:15pt;font-weight:bold</xsl:attribute>
@@ -79,12 +81,13 @@
 	<xsl:variable name="id" select="@ref"/>
     <xsl:variable name="href" select="document('report-data.xml')/report-data/table[@id=$id]/@href"/>
     <xsl:apply-templates select="document($href)"/>
-    <xsl:value-of select="./text()"/>
+    <div style="margin-top:10"><xsl:value-of select="./text()"/></div>
  </xsl:template>
 
 
 	<xsl:template match="xhtml:table">
-		<table xsl:use-attribute-sets="table">
+		<table xsl:use-attribute-sets="table"> 
+		<xsl:apply-templates select="xhtml:col"/>
 			<thead>
 				<xsl:apply-templates select="xhtml:thead/xhtml:tr"/>
 			</thead>
@@ -93,7 +96,11 @@
 			</tbody>
 		</table>
 	</xsl:template>
-   
+	
+	<xsl:template match="xhtml:col">
+		<xsl:copy-of select="."/>
+</xsl:template>
+	
 	<xsl:template match="xhtml:thead/xhtml:tr">
 		<tr>
 			<xsl:apply-templates select="xhtml:th"/>
@@ -101,13 +108,15 @@
 	</xsl:template>
    
 	<xsl:template match="xhtml:th">
-		<th>
+		<th style="border-bottom:double;">
 			<xsl:value-of select="./text()"/>
 		</th>
 	</xsl:template>
   
 	<xsl:template match="xhtml:td">
+		<xsl:variable name="p" select="position()"/>
 		<td>
+			<xsl:attribute name="align"><xsl:value-of select="../../../xhtml:col[$p]/@align"/></xsl:attribute>
 			<xsl:value-of select="./text()" />
 		</td>
 	</xsl:template>

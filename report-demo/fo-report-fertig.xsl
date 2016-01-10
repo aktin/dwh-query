@@ -1,12 +1,29 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xml="http://www.w3.org/XML/1998/namespace" version="1.0">
 	<xsl:template match="/template">
+	<xsl:variable name="colpos" select="count(preceding-sibling::xhtml:col)"/>
+	<xsl:variable name="datapos" select="count(preceding-sibling::xhtml:td)"/>
 		<fo:root>
 		  <fo:layout-master-set>
 			<fo:simple-page-master master-name="page-layout" page-height="11in" page-width="8in">
 			  <fo:region-body margin="1in" region-name="body"/>
 			</fo:simple-page-master>
 		  </fo:layout-master-set>
+		  <fo:declarations>
+			<x:xmpmeta xmlns:x="adobe:ns:meta/">
+			<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/" xmlns:xmp="http://ns.adobe.com/xap/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+              <dc:title>fo-report</dc:title>
+        <dc:creator><xsl:value-of select="document('report-data.xml')/report-data/text[@id='leitung']/text()"/></dc:creator>
+        <dc:description>Notaufnahmebericht</dc:description>
+        <pdf:Keywords>Stichworte</pdf:Keywords>
+       <xmp:CreatorTool>erstellt mit Apache FOP</xmp:CreatorTool>
+         <xmp:CreationDate>2015-12-05T08:15:30-05:00</xmp:CreationDate> <!-- macht wohl nichts, Datum wird automatisch auf die aktuelle Zeit gesetzt -->
+          <xmp:ModifyDate>2015-12-08T08:15:30-05:00</xmp:ModifyDate>
+       </rdf:Description>
+    </rdf:RDF>
+  </x:xmpmeta>
+</fo:declarations>
 		  <fo:page-sequence master-reference="page-layout">
 			<fo:flow flow-name="body">
 				<fo:block xsl:use-attribute-sets="headerformat"><xsl:value-of select="document('report-data.xml')/report-data/text[@id='kh']/text()"/></fo:block>
@@ -22,15 +39,19 @@
   </xsl:template>
   
   <xsl:attribute-set name="table">
-			<xsl:attribute name="border-style">solid</xsl:attribute>
+			<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
+			<xsl:attribute name="border-collapse">collapse</xsl:attribute>
 			<xsl:attribute name="space-before">10pt</xsl:attribute>
   </xsl:attribute-set>
   <xsl:attribute-set name="tablehead">
 			<xsl:attribute name="font-weight">bold</xsl:attribute>
-			<xsl:attribute name="border-style">solid</xsl:attribute>
+			<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
+			<xsl:attribute name="border-top-style">solid</xsl:attribute>
+			<xsl:attribute name="border-collapse">collapse</xsl:attribute>
+			<xsl:attribute name="text-align">center</xsl:attribute>
   </xsl:attribute-set>
   <xsl:attribute-set name="cellborder">
-			<xsl:attribute name="border-style">solid</xsl:attribute>
+			<!--<xsl:attribute name="border-style">solid</xsl:attribute>-->
   </xsl:attribute-set>
    <xsl:attribute-set name="celltext">
 			<xsl:attribute name="hyphenate">true</xsl:attribute>
@@ -40,7 +61,10 @@
   <xsl:attribute-set name="headerformat">
 			<xsl:attribute name="font-size">20pt</xsl:attribute>
 			<xsl:attribute name="font-weight">bold</xsl:attribute>
+			<xsl:attribute name="font-family">Courier</xsl:attribute>
+			<xsl:attribute name="text-align">center</xsl:attribute>
 			<xsl:attribute name="space-before">30pt</xsl:attribute>
+			<xsl:attribute name="space-after">30pt</xsl:attribute>
   </xsl:attribute-set>
   <xsl:attribute-set name="textheaderformat">
 			<xsl:attribute name="font-size">15pt</xsl:attribute>
@@ -132,11 +156,12 @@
 	<xsl:variable name="id" select="@ref"/>
     <xsl:variable name="href" select="document('report-data.xml')/report-data/table[@id=$id]/@href"/>
     <xsl:apply-templates select="document($href)"/>
-    <fo:block keep-with-previous="always"><xsl:value-of select="./text()"/></fo:block>
+    <fo:block keep-with-previous="always" space-before="10pt"><xsl:value-of select="./text()"/></fo:block>
  </xsl:template>
  
  <xsl:template match="xhtml:table">
 	<fo:table xsl:use-attribute-sets="table">
+		<xsl:apply-templates select="xhtml:col"/>
 		<fo:table-header>
 			<xsl:apply-templates select="xhtml:thead/xhtml:tr"/>
 		</fo:table-header>
@@ -145,22 +170,32 @@
 		</fo:table-body>
 	</fo:table>
  </xsl:template>
-
+ 
+ <xsl:template match="xhtml:col">
+	<fo:table-column>
+			<xsl:attribute name="column-width"><xsl:value-of select="@width"/></xsl:attribute>
+			<xsl:attribute name="text-align"><xsl:value-of select="@align"/></xsl:attribute>
+		</fo:table-column>
+</xsl:template>
+	
  <xsl:template match="xhtml:thead/xhtml:tr">
-	<fo:table-row>
+	<fo:table-row xsl:use-attribute-sets="cellborder">
 		<xsl:apply-templates select="xhtml:th"/>
 	</fo:table-row>
  </xsl:template>
  
  <xsl:template match="xhtml:th">
-	<fo:table-cell xsl:use-attribute-sets="tablehead">
+ <fo:table-cell xsl:use-attribute-sets="tablehead">
 		<fo:block><xsl:value-of select="./text()"/></fo:block>
 	</fo:table-cell>
  </xsl:template>
  
  <xsl:template match="xhtml:td">
-	<fo:table-cell xsl:use-attribute-sets="cellborder">
-		<fo:block xsl:use-attribute-sets="celltext"><xsl:value-of select="./text()"/></fo:block>
+ <xsl:variable name="p" select="position()"/>
+ <fo:table-cell xsl:use-attribute-sets="cellborder">
+ <xsl:attribute name="text-align"><xsl:value-of select="../../../xhtml:col[$p]/@align"/></xsl:attribute>
+		<fo:block xsl:use-attribute-sets="celltext">
+		<xsl:value-of select="./text()"/></fo:block>
 	</fo:table-cell>
  </xsl:template>
  

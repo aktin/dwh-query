@@ -59,7 +59,7 @@
      <section>
       <header>1.9 Infektionssurveillance</header>
       <plot ref="p9">Grafik 9: Infektionssurveillance</plot>
-      <table ref="t9">Tabelle 9: Infektionssurveillance</table>
+      <table ref="t9" width="40%">Tabelle 9: Infektionssurveillance</table>
     </section>
   </section>
   <section>

@@ -1,18 +1,60 @@
 <table xmlns="http://www.w3.org/1999/xhtml">
- <thead>
-      <tr>
-        <th>Vorname</th>
-        <th>Wohnort</th>
-      </tr>
-    </thead> 
+	<col align="left" width="20%"/>
+	<col align="right" width="20%"/>
+	<thead>
+		<tr>
+			<th>Var1</th>
+			<th>Freq</th>
+		</tr>
+	</thead>
 	<tbody>
 		<tr>
-			<td>cdef gggg</td>
-			<td>cdef gg</td>
+			<td>ACH</td>
+			<td>948</td>
 		</tr>
 		<tr>
-			<td>cdef gggg</td>
-			<td>gfed cc</td>
+			<td>AUG</td>
+			<td>881</td>
+		</tr>
+		<tr>
+			<td>GYN</td>
+			<td>366</td>
+		</tr>
+		<tr>
+			<td>HAK</td>
+			<td>454</td>
+		</tr>
+		<tr>
+			<td>HNO</td>
+			<td>313</td>
+		</tr>
+		<tr>
+			<td>KVC</td>
+			<td>394</td>
+		</tr>
+		<tr>
+			<td>MKG</td>
+			<td>262</td>
+		</tr>
+		<tr>
+			<td>NCH</td>
+			<td>229</td>
+		</tr>
+		<tr>
+			<td>OCH</td>
+			<td>1</td>
+		</tr>
+		<tr>
+			<td>ORT</td>
+			<td>211</td>
+		</tr>
+		<tr>
+			<td>UCH</td>
+			<td>600</td>
+		</tr>
+		<tr>
+			<td>URO</td>
+			<td>598</td>
 		</tr>
 	</tbody>
 </table>

@@ -1,4 +1,12 @@
 <table xmlns="http://www.w3.org/1999/xhtml">
+<col width="15%" align="left"/>
+<col width="5%" align="right"/>
+<col width="5%" align="right"/>
+<col width="5%" align="right"/>
+<col width="5%" align="right"/>
+<col width="5%" align="right"/>
+<col width="5%" align="right"/>
+<col width="5%" align="right"/>
  <thead>
       <tr>
         <th>Zeit/Tag</th>

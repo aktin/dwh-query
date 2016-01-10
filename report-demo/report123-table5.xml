@@ -1,4 +1,8 @@
 <table xmlns="http://www.w3.org/1999/xhtml">
+<col width="25%" align="left"/>
+<col width="5%" align="right"/>
+<col width="5%" align="right"/>
+<col width="15%" align="right"/>
  <thead>
       <tr>
         <th>Alter/Geschlecht</th>

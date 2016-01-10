@@ -1,4 +1,6 @@
 <table xmlns="http://www.w3.org/1999/xhtml">
+<col width="30%" align="left"/>
+<col width="10%" align="right"/>
  <thead>
       <tr>
         <th>Verbleib</th>

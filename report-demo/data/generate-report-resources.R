@@ -1,4 +1,4 @@
-#!/usr/bin/r
+#!/usr/bin/Rscript
 
 # load data into data frame and keep all data as strings
 # this will prevent R from creating factors out of dates and prefixed values

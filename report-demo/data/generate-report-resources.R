@@ -44,7 +44,7 @@ df$phys.d <- df$phys.ts - df$admit.ts
 # Graphics & Plots
 library(lattice)
 
-gfx.prefix <- '../target/'
+gfx.dir <- '../target/'
 gfx.ext <- '.svg'
 gfx.dev <- 'svg'
 
@@ -52,25 +52,31 @@ gfx.dev <- 'svg'
 graph <- barchart(table(df$admit.h), horizontal=FALSE, xlab="Uhrzeit (Stunde)", ylab="Anzahl (n)")
 # for viewing: print(graph)
 # save as EPS file
-trellis.device(gfx.dev,file=paste0(gfx.prefix,'admit.h',gfx.ext), width=8,height=4)
+trellis.device(gfx.dev,file=paste0(gfx.dir,'admit.h',gfx.ext), width=8,height=4)
 print(graph)
 dev.off()
 
 # Counts per Weekday
 graph <- barchart(table(df$admit.wd), horizontal=FALSE, xlab="Wochentag", ylab="Anzahl (n)")
-trellis.device('svg',file=paste0(gfx.prefix,'admit.wd',gfx.ext),width=8,height=4)
+trellis.device('svg',file=paste0(gfx.dir,'admit.wd',gfx.ext),width=8,height=4)
 print(graph)
 dev.off()
 
 # Time to physician
 graph <- histogram(as.numeric(df$phys.d,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt in Minuten")
-trellis.device('svg',file=paste0(gfx.prefix,'phys.d.hist',gfx.ext),width=8,height=4)
+trellis.device('svg',file=paste0(gfx.dir,'phys.d.hist',gfx.ext),width=8,height=4)
 print(graph)
 dev.off()
 
 # Time to triage
 graph <- histogram(as.numeric(df$triage.d,unit='mins'),xlab="Zeit von Aufnahme bis Triage in Minuten")
-trellis.device('svg',file=paste0(gfx.prefix,'triage.d.hist',gfx.ext),width=8,height=4)
+trellis.device('svg',file=paste0(gfx.dir,'triage.d.hist',gfx.ext),width=8,height=4)
 print(graph)
 dev.off()
 
+
+# Create XHTML tables
+source('xhtml-table.R')
+xml.dir <- '../target/'
+
+xhtml.table(table(df$admit.h), file=paste0(xml.dir,'admit.h.xml'))

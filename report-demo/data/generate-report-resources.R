@@ -10,10 +10,13 @@ df = data.frame(patient=tmp$patient_num, encounter=tmp$encounter_num)
 # parse timestamps and date fields
 # The timestamp values are assumed to belong to the local timezone
 # TODO check timezones 
-df$dob = strptime(tmp$birth_date,format="")
+df$dob = strptime(tmp$birth_date,format="%F %H:%M:%S")
+# TODO This is probably not the ideal way to calculate the age
+df$age = floor(difftime(df$admit.ts,df$dob)/365.25)
 df$triage.ts = strptime(tmp$zeitpunkttriage,format="%F %H:%M:%S")
 df$admit.ts = strptime(tmp$zeitpunktaufnahme,format="%F %H:%M:%S")
 df$phys.ts = strptime(tmp$zeitpunktarztkontakt, format="%F %H:%M:%S")
+df$therapy.ts = strptime(tmp$zeitpunkttherapie, format="%F %H:%M:%S")
 
 # remove prefixes from string values
 df$triage.result = as.factor(substring(tmp$triage, first=5))
@@ -38,7 +41,8 @@ df$triage.d <- df$triage.ts - df$admit.ts
 # Time to physician
 df$phys.d <- df$phys.ts - df$admit.ts
 
-
+# Time to therapy
+df$therapy.d <- df$therapy.ts - df$admit.ts
 
 
 # Graphics & Plots
@@ -71,6 +75,12 @@ dev.off()
 # Time to triage
 graph <- histogram(as.numeric(df$triage.d,unit='mins'),xlab="Zeit von Aufnahme bis Triage in Minuten")
 trellis.device('svg',file=paste0(gfx.dir,'triage.d.hist',gfx.ext),width=8,height=4)
+print(graph)
+dev.off()
+
+# Time to therapy
+graph <- histogram(as.numeric(df$therapy.d,unit='mins'),xlab="Zeit von Aufnahme bis zum Therapiebeginn in Minuten")
+trellis.device('svg',file=paste0(gfx.dir,'therapy.d.hist',gfx.ext),width=8,height=4)
 print(graph)
 dev.off()
 

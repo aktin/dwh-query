@@ -11,12 +11,14 @@ df = data.frame(patient=tmp$patient_num, encounter=tmp$encounter_num)
 # The timestamp values are assumed to belong to the local timezone
 # TODO check timezones 
 df$dob = strptime(tmp$birth_date,format="%F %H:%M:%S")
-# TODO This is probably not the ideal way to calculate the age
-df$age = floor(difftime(df$admit.ts,df$dob)/365.25)
 df$triage.ts = strptime(tmp$zeitpunkttriage,format="%F %H:%M:%S")
 df$admit.ts = strptime(tmp$zeitpunktaufnahme,format="%F %H:%M:%S")
 df$phys.ts = strptime(tmp$zeitpunktarztkontakt, format="%F %H:%M:%S")
 df$therapy.ts = strptime(tmp$zeitpunkttherapie, format="%F %H:%M:%S")
+
+# TODO This is probably not the ideal way to calculate the age
+df$age = floor(difftime(df$admit.ts,df$dob)/365.25)
+
 
 # remove prefixes from string values
 df$triage.result = as.factor(substring(tmp$triage, first=5))
@@ -44,6 +46,9 @@ df$phys.d <- df$phys.ts - df$admit.ts
 # Time to therapy
 df$therapy.d <- df$therapy.ts - df$admit.ts
 
+# XHTML tables
+source('xhtml-table.R')
+xml.dir <- '../target/'
 
 # Graphics & Plots
 library(lattice)
@@ -55,10 +60,13 @@ gfx.dev <- 'svg'
 # Counts per Hour
 graph <- barchart(table(df$admit.h), horizontal=FALSE, xlab="Uhrzeit (Stunde)", ylab="Anzahl (n)")
 # for viewing: print(graph)
-# save as EPS file
+# Save as SVG file
 trellis.device(gfx.dev,file=paste0(gfx.dir,'admit.h',gfx.ext), width=8,height=4)
 print(graph)
 dev.off()
+# Write table
+xhtml.table(table(df$admit.h), file=paste0(xml.dir,'admit.h.xml'))
+
 
 # Counts per Weekday
 graph <- barchart(table(df$admit.wd), horizontal=FALSE, xlab="Wochentag", ylab="Anzahl (n)")
@@ -85,8 +93,21 @@ print(graph)
 dev.off()
 
 
-# Create XHTML tables
-source('xhtml-table.R')
-xml.dir <- '../target/'
+# Time to physician mean grouped by triage result
+x <- aggregate(x=list(avg=df$phys.d), by=list(triage=df$triage.result), FUN=mean)
+graph <- barchart(avg ~ triage, data=x, horizontal=FALSE, ylab="Durchschn. Zeit bis Arztkontakt", xlab="Triage")
+trellis.device('svg',file=paste0(gfx.dir,'triage.phys.d.avg',gfx.ext),width=8,height=4)
+print(graph)
+dev.off()
 
-xhtml.table(table(df$admit.h), file=paste0(xml.dir,'admit.h.xml'))
+
+# A little more sophisticated: Table with many aggregate functions
+# list of aggregate functions we want to apply
+agg.funs <- list(n=length, avg=mean, md=median, mi=min, ma=max)
+agg.list <- lapply(agg.funs, function(fun){aggregate(x=df$phys.d, by=list(triage=df$triage.result),FUN=fun)$x})
+x <- data.frame(triage=levels(df$triage.result), agg.list)
+rm(agg.funs, agg.list)
+xhtml.table(x, file=paste0(xml.dir,'triage.phys.d.xml'))
+
+
+

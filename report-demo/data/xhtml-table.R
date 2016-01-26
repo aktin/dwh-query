@@ -28,12 +28,21 @@ xhtml.table <- function(x, file=NULL, widths=NULL){
 		newXMLNode(name="th", text=i, parent=tr)
 	}
 	b <- newXMLNode("tbody", parent=e)
-	# TODO allow more dimensions ==> multiple rows
-	tr <- newXMLNode("tr", parent=b)
-	for( i in x ){
-		newXMLNode(name="td", text=i, parent=tr)
+	if( length(dim(x)) == 1 ){
+		# only one dimension / row
+		tr <- newXMLNode("tr", parent=b)
+		for( i in x ){
+			newXMLNode(name="td", text=i, parent=tr)
+		}
+	}else{
+		# multiple rows
+		for( r in 1:nrow(x) ){
+			tr <- newXMLNode("tr", parent=b)
+			for( i in x[r,] ){
+				newXMLNode(name="td", text=i, parent=tr)
+			}
+		}
 	}
-	
 	doc = newXMLDoc(node=e)
 	if( !is.null(file) ){
 		saveXML(doc, file=file, indent=TRUE)

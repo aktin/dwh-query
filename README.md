@@ -1,3 +1,9 @@
+Berichte
+========
+
+mit ProcessBuilder systemprozess "Rscript" ausführen.
+Ergebnisdokumente mit XSLT zu HTML und/oder PDF transformieren.
+
 Verteilte Abfragen im DWH
 ===============================
 Kommunikationsschnittstelle auf Datawarehouse-Seite. Nimmt verteilte Anfragen und geplante Anfragen entgegen und führt diese aus.

@@ -1,0 +1,5 @@
+triage.d, phys.d, therapy.d
+---------------------------
+todo: Zählen und ausgeben: wie viel wird auf NA gesetzt (Unterschied zu fehlendem Wert)
+Sollen feste Zeiten verwendet werden, z.B. Triage in 5 Minuten-Balkendiagramm, Maximal 1h oder sollen die Grafiken möglichst dynamisch sein?
+

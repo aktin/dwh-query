@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<name>AKTIN : DWH Query : Wolfsburg Monthly Report</name>
+
+	<groupId>org.aktin</groupId>
+	<artifactId>report-aktin</artifactId>
+	<version>0.1-SNAPSHOT</version>
+
+	<parent>
+		<groupId>org.aktin</groupId>
+		<artifactId>dwh-query</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<build>
+		<!--
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		-->
+		<plugins>
+		</plugins>
+	</build>
+	<dependencies>
+		<!-- -->
+		<dependency>
+			<groupId>org.aktin</groupId>
+			<artifactId>reporting</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<!-- dependency injection is optional 
+			and provided by the CDI container.
+			-->
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- unit tests -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+	</dependencies>
+</project>

@@ -26,7 +26,7 @@
 		<!-- -->
 		<dependency>
 			<groupId>org.aktin</groupId>
-			<artifactId>reporting</artifactId>
+			<artifactId>dwh-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<!-- dependency injection is optional 

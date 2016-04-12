@@ -8,20 +8,15 @@
   
 	<name>AKTIN : DWH Query</name>
 	<description>AKTIN Software</description>
-	<url>https://www.aktin.org/software/${project.version}/</url>
-	<inceptionYear>2013</inceptionYear>
-	
-	<properties>
-		<!-- specifies the package and source version to which the site refers to -->
-		<latestReleaseVersion>0.5</latestReleaseVersion>
-		<releaseRepoUrl>https://www.aktin.org/software/repo</releaseRepoUrl>
-		<!-- encoding stuff -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	</properties>
 
+	<parent>
+		<groupId>org.aktin</groupId>
+		<artifactId>aktin</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	
 	<scm>
-		<developerConnection>scm:git:git@gitlab.uni-oldenburg.de:AKTIN/dwh-admin.git</developerConnection>
+		<developerConnection>scm:git:git@gitlab.uni-oldenburg.de:AKTIN/dwh-query.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
@@ -34,179 +29,13 @@
 		<!-- publish site to aktin.org -->
 		<site>
 			<id>www.aktin.org</id>
-			<url>scp://aktin.org/httpdocs/software/dwh-admin/${project.version}/</url>
+			<url>scp://aktin.org/httpdocs/software/dwh-query/${project.version}/</url>
 		</site>
 	</distributionManagement>
-
-	<licenses>
-		<license>
-			<name>Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>manual</distribution>
-		</license>
-	</licenses>
 	
 	<modules>
-		<module>reporting</module>
 		<module>report-manager</module>
 		<module>wolfsburg-monthly-report</module>
 	</modules>
-	<build>
-		<extensions>
-			<extension>
-				<!-- upload via scp for site/release-->
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>2.10</version>
-			</extension>
-		</extensions>
-
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.3</version>
-					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.6</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.6</version>
-					<configuration>
-						<encoding>UTF-8</encoding>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>license-maven-plugin</artifactId>
-					<version>1.8</version>
-					<executions>
-						<execution>
-							<id>first</id>
-							<goals>
-								<goal>update-file-header</goal>
-							</goals>
-							<phase>process-sources</phase>
-							<configuration>
-								<licenseName>apache_v2</licenseName>
-								<roots>
-									<root>src/main/java</root>
-									<root>src/test</root>
-								</roots>
-							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.5.4</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.10</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-eclipse-plugin</artifactId>
-					<version>2.10</version>
-					<configuration>
-						<downloadSources>true</downloadSources>
-						<downloadJavadocs>true</downloadJavadocs>
-					</configuration>
-				</plugin>
-				<plugin>    
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>3.4</version>
-					<configuration>
-						<generateReports>false</generateReports>
-						<chmod>false</chmod>
-					</configuration>
-					<dependencies>
-						<dependency>
-							<!-- use markdown syntax -->
-							<groupId>org.apache.maven.doxia</groupId>
-							<artifactId>doxia-module-markdown</artifactId>
-							<version>1.6</version>
-						</dependency>
-					</dependencies>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.10.3</version>
-					<configuration>
-						<excludePackageNames>ihe.iti.*:oasis.names.tc.*</excludePackageNames>
-					</configuration>
-				</plugin>
-				<plugin>
-					<!-- forces newer version, old 2.3.2 contains bugs -->
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5.2</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-		<!-- link to latest site online 
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>wagon-maven-plugin</artifactId>
-				<version>1.0</version>
-				<configuration>
-					<serverId>www.aktin.org</serverId>
-					<url>scp://www.aktin.org/httpdocs/software</url>
-				</configuration>
-				<executions>
-
-					<execution>
-						<id>ssh-exec</id>
-						<phase>site-deploy</phase>
-						<goals>
-							<goal>sshexec</goal>
-						</goals>
-						<configuration>
-							<displayCommandOutputs>true</displayCommandOutputs>
-							<commands>
-								<command>rm latest</command>
-								<command>ln -s %{project.version} latest</command>
-							</commands>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>-->
-	</build>
-	
-	<dependencyManagement>
-		<!-- dependency version+scope inherited by child projects -->
-		<dependencies>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.11</version>
-				<scope>test</scope>
-			</dependency>
-			
-			<!-- XSLT and XPath processor -->
-			<dependency>
-				<groupId>net.sf.saxon</groupId>
-				<artifactId>Saxon-HE</artifactId>
-				<version>9.6.0-7</version>
-			</dependency>
-
-		</dependencies>
-	</dependencyManagement>
 
 </project>

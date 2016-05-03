@@ -3,7 +3,7 @@
 	<name>AKTIN : DWH Query : Wolfsburg Monthly Report</name>
 
 	<groupId>org.aktin</groupId>
-	<artifactId>report-aktin</artifactId>
+	<artifactId>wolfsburg-monthly-report</artifactId>
 	<version>0.1-SNAPSHOT</version>
 
 	<parent>

@@ -1,0 +1,26 @@
+<report-data>
+	<text id="monat">Monatsbericht: Oktober 2015</text>
+	<text id="stand">Datenstand: 05.11.2015</text>
+	<text id="anzahl">342</text>
+	<text id="leitung">Leitung: Schwester Donata</text>
+	<text id="kh">Hospital zum heiligen St. Actinus</text>
+	<text id="bereich">Zentrale Notaufnahme</text>
+	<table id="t1.1" href="admit.h.xml"/>
+    <table id="t1.2" href="transport.xml"/>
+    <table id="t1.3" href="referral.xml"/>
+    <table id="t2.4" href="triage.phys.d.xml"/>
+    <table id="t2.5" href="discharge.d.xml"/>
+    <table id="t3.1" href="discharge.xml"/>
+	<plot id="p1.1" href="admit.h.svg"/>
+	<plot id="p1.2" href="admit.wd.svg"/>
+    <!-- <plot id="p1.3" href="admit.hwd.svg"/> -->
+    <plot id="p2.1" href="triage.d.hist.svg"/>
+    <plot id="p2.2" href="phys.d.hist.svg"/>
+    <plot id="p2.3" href="therapy.d.hist.svg"/>
+    <plot id="p2.4" href="triage.phys.d.avg.svg"/>
+    <plot id="p2.5" href="discharge.d.hist.svg"/>
+    <plot id="p3.1" href="discharge.svg"/>
+    <plot id="p4.1" href="icd_top20.svg"/>
+    <plot id="p4.2" href="cedis_top10.svg"/>
+    <plot id="p4.3" href="cedis_groups.svg"/>
+</report-data>

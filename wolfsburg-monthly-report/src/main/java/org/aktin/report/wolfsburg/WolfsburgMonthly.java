@@ -4,16 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
-import javax.inject.Singleton;
-
 import org.aktin.report.Report;
 
-@Singleton
-public class WolfsburgMonthly implements Report{
+public class WolfsburgMonthly implements Report {
 
 	@Override
 	public String getName() {
-		return this.getClass().getSimpleName();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -30,19 +28,23 @@ public class WolfsburgMonthly implements Report{
 
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		//ToDo put RScript in workingDirectory
+		//getClass().getResource(name);
+		String [] Rfiles = {"C:\\temp\\RScript-Test\\generate-report-resources-mod.R"};
+		return Rfiles;
 	}
 
 	@Override
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		//ToDo put FOP-files in workingDirectory
+		//getClass().getResource(name);
+		String [] FOPfiles = {"C:\\temp\\target\\report-content.xml","C:\\temp\\target\\fo-report-fertig.xsl","C:\\temp\\target\\report-data.xml"}; //it is not necessary to put the data file in the array but it has to be loaded and should be cleaned up afterwards
+		return FOPfiles;
 	}
 
 	@Override
 	public InputStream readStaticWebResource(String path) {
-		// no static content available
+		// TODO Auto-generated method stub
 		return null;
 	}
 

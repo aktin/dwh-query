@@ -66,6 +66,11 @@
 			<artifactId>dwh-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+        <dependency>
+			<groupId>org.aktin</groupId>
+			<artifactId>wolfsburg-monthly-report</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>fop</artifactId>

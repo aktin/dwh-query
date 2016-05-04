@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.FOPException;
@@ -39,7 +40,7 @@ import org.xml.sax.SAXException;
  *
  */
 class PDFGenerator {
-	//private static final Logger log = Logger.getLogger(PDFGenerator.class.getName());	
+	private static final Logger log = Logger.getLogger(PDFGenerator.class.getName());	
 	
 	/**
 	 * Generate a PDF report. After return of the function, no additional files
@@ -67,11 +68,13 @@ class PDFGenerator {
 		FopFactory fopFactory;
 		
 		//svgs tend to cause path problems if the baseDir is not set correctly
+		/*
 		try {
-			fopFactory = FopFactory.newInstance(workingPath.resolve("dummy.xconf").toFile());
+			fopFactory = FopFactory.newInstance(workingPath.resolve("dummy.xconf").toFile());	
 		} catch (SAXException e) {
 			throw new IOException("FOP initialisation failed", e);
-		} 
+		} */
+		fopFactory = FopFactory.newInstance((workingPath.toFile().toURI()));
 		//ToDo this should maybe be included in the Report Interface to allow for configuration
 		
 		// Step 2: Set up output stream.
@@ -107,22 +110,4 @@ class PDFGenerator {
 
 		//throw new UnsupportedOperationException("TODO implement");
 	}
-	
-	 private static class LocalResolver implements URIResolver {
-         private String BaseFolder; 
-            @Override
-            public Source resolve(String href, String base) throws TransformerException {
-             File f = new File(BaseFolder + "\\" + href);
-             System.out.println(f);
-             if (f.exists())
-             return new StreamSource(f);
-                     else
-                      throw new TransformerException("File " + f.getAbsolutePath() +" not found!");         
-            }
-
-         public LocalResolver(String BaseFolder) {
-           this.BaseFolder = BaseFolder;   
-         }
-
-     }
 }

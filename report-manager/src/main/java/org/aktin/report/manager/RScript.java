@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.FileSystem; 
+import java.util.logging.Logger;
 
 
 
@@ -22,6 +23,7 @@ import java.nio.file.FileSystem;
  *
  */
 class RScript {
+	private static final Logger log = Logger.getLogger(RScript.class.getName());	
 
 	/** executable path of the Rscript command */
 	private Path rScriptExecutable;
@@ -34,31 +36,33 @@ class RScript {
 		// TODO this works only for testing on windows not for deployment
 		if (System.getProperty("os.name").substring(0,7).equals("Windows")) { //hoping this will work on every Windows Version
 			FileSystem fs = FileSystems.getDefault();
-			this.rScriptExecutable = fs.getPath("C:\\Program Files\\R\\R-3.2.4revised\\bin\\Rscript.exe");
+			this.rScriptExecutable = fs.getPath("C:/Program Files/R/R-3.2.4revised/bin/Rscript.exe");
 			//System.out.println(rScriptExecutable.toString());
 		}
 	}
 	
 	public void runRscript(Path workingDir, Path mainScript){
-		ProcessBuilder pb = new ProcessBuilder(rScriptExecutable.toString(), workingDir.relativize(mainScript).toString());
-		System.out.println(workingDir.relativize(mainScript).toString());
+		log.info("RScript Start");
+		log.info(workingDir.relativize(mainScript).toString());
+		log.info(rScriptExecutable.toString());
+		ProcessBuilder pb = new ProcessBuilder(rScriptExecutable.toString(), workingDir.relativize(mainScript).toString());		
 		pb.directory(workingDir.toFile());
-		System.out.println(pb.command());
+		//System.out.println(pb.command());
 		try{
             Process process = pb.start();
 
             // get the error stream of the process and print it
             InputStream error = process.getErrorStream();
             for (int i = 0; i < error.available(); i++) {
-            	System.out.println("" + error.read());
+            	log.info("" + error.read());
             }
             // get the output stream of the process and print it
             InputStream output = process.getInputStream();
             for (int i = 0; i < output.available(); i++) {
-            	System.out.println("" + output.read());
+            	log.info("" + output.read());
             }
             try {
-            	System.out.println(process.waitFor());  //Should return 0
+            	log.info(Integer.toString((process.waitFor())));  //Should return 0
             } catch(InterruptedException ex) {
             	ex.printStackTrace();
             }

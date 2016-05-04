@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 import org.aktin.report.Report;
 
 public class WolfsburgMonthly implements Report {
+	private static final Logger log = Logger.getLogger(WolfsburgMonthly.class.getName());	
 
 	@Override
 	public String getName() {
@@ -29,8 +31,11 @@ public class WolfsburgMonthly implements Report {
 
 
 	private void copyResources(String[] names, String resourcePrefix, Path workingDirectory) throws IOException{
+		System.out.println(names.toString());
 		for( String name : names ){
 			try( InputStream in = getClass().getResourceAsStream(resourcePrefix+name) ){
+				System.out.println(in.toString());
+				System.out.println(workingDirectory.resolve(name));
 				Files.copy(in, workingDirectory.resolve(name));				
 			}
 		}		
@@ -40,23 +45,21 @@ public class WolfsburgMonthly implements Report {
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
 		String[] resNames = {"generate-report-resources-mod.R"};
 		String resPrefix = "/";
+		log.info(workingDirectory.toString());
 		copyResources(resNames, resPrefix, workingDirectory);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.
 		return resNames;
-		
-		//ToDo put RScript in workingDirectory
-		//getClass().getResource(name);
-		//String [] Rfiles = {"C:\\temp\\RScript-Test\\generate-report-resources-mod.R"};
-		//return Rfiles;
 	}
 
 	@Override
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
-		//ToDo put FOP-files in workingDirectory
-		//getClass().getResource(name);
-		String [] FOPfiles = {"C:\\temp\\target\\report-content.xml","C:\\temp\\target\\fo-report-fertig.xsl","C:\\temp\\target\\report-data.xml"}; //it is not necessary to put the data file in the array but it has to be loaded and should be cleaned up afterwards
-		return FOPfiles;
+		String[] resNames = {"report-content.xml","fo-report-fertig.xsl","report-data.xml"};
+		String resPrefix = "/";
+		copyResources(resNames, resPrefix, workingDirectory);
+		// return resource names within workingDirectory. 
+		// do not include path separators or sub directories.
+		return resNames;
 	}
 
 	@Override

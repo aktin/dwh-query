@@ -25,10 +25,10 @@
       <header>1.2 Fallzahlen nach Wochentag</header>
       <plot ref="p1.2">Grafik 2: Fallzahlen nach Wochentag</plot>       
     </section>
- <!--   <section>
+    <section>
       <header>1.3 Fallzahlen nach Wochentag und Aufnahmezeit</header>
       <plot ref="p1.3">Grafik 3: Fallzahlen nach Wochentag und Aufnahmezeit</plot>
-    </section> -->
+    </section>
     <section>
       <header>1.4 Fallzahlen nach Zuweisung</header>
       <table ref="t1.2">Tabelle 2: Fallzahlen nach Zuweisung</table> 
@@ -122,5 +122,9 @@
   <section>
     <header>6 Vitalparameter und Scores</header>
     <paragraph>no data</paragraph>
+  </section>
+    <section>
+    <header>7 Crowding</header>
+    <plot ref="p7.1">Grafik 18: Crowding</plot>
   </section>
 </template>

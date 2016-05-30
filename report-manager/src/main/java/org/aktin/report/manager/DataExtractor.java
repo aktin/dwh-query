@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.logging.Logger;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 
 import org.aktin.report.Report;
 
@@ -24,6 +29,7 @@ import org.aktin.report.Report;
  *
  */
 class DataExtractor implements Closeable{
+	private static final Logger log = Logger.getLogger(DataExtractor.class.getName());
 
 	/**
 	 * Opens database connections to i2b2 and prepares
@@ -34,6 +40,27 @@ class DataExtractor implements Closeable{
 	 */
 	public DataExtractor() throws IOException, SQLException{
 		// use JNDI for database connection
+		
+		
+		
+		/* ++++Testing+++++
+		 */
+		String[] resNames = {"patients.txt","encounters.txt", "CEDIS.csv"};
+		String resPrefix = "/";
+		FileSystem fs = FileSystems.getDefault();
+		Path work = fs.getPath("C:/temp/RScript-Tempdir"); //WorkDir is a parameter for following steps
+		copyResources(resNames, resPrefix, work);
+	}
+	
+	private void copyResources(String[] names, String resourcePrefix, Path workingDirectory) throws IOException{
+		//System.out.println(names.toString());
+		//log.info(resourcePrefix);
+		for( String name : names ){
+			//log.info(name);
+			try( InputStream in = getClass().getResourceAsStream(resourcePrefix+name) ){
+				Files.copy(in, workingDirectory.resolve(name));				
+			}
+		}		
 	}
 
 	/**

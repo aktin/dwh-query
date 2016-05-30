@@ -1,7 +1,12 @@
 package org.aktin.report.manager;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.FileSystem; 
@@ -42,29 +47,43 @@ class RScript {
 	}
 	
 	public void runRscript(Path workingDir, Path mainScript){
-		log.info("RScript Start");
-		log.info(workingDir.relativize(mainScript).toString());
-		log.info(rScriptExecutable.toString());
-		ProcessBuilder pb = new ProcessBuilder(rScriptExecutable.toString(), workingDir.relativize(mainScript).toString());		
-		pb.directory(workingDir.toFile());
-		//System.out.println(pb.command());
+		//log.info("RScript Start");
+		//log.info(mainScript.toString());
+		//log.info(workingDir.toString());
+		//log.info(workingDir.resolve(mainScript).toString());
+		//log.info(rScriptExecutable.toString());
+		ProcessBuilder pb = new ProcessBuilder(rScriptExecutable.toString(),mainScript.toString());
+		pb.directory(workingDir.toFile());	
 		try{
             Process process = pb.start();
 
             // get the error stream of the process and print it
             InputStream error = process.getErrorStream();
+
+            // get the output stream of the process and print it
+            InputStream output = process.getInputStream();
+
+            try {
+            	log.info("R Script Return Code:"+ Integer.toString((process.waitFor())));  //Should return 0
+            } catch(InterruptedException ex) {
+            	ex.printStackTrace();
+            }
+            
+            /*
             for (int i = 0; i < error.available(); i++) {
             	log.info("" + error.read());
             }
-            // get the output stream of the process and print it
-            InputStream output = process.getInputStream();
+            
             for (int i = 0; i < output.available(); i++) {
             	log.info("" + output.read());
             }
-            try {
-            	log.info(Integer.toString((process.waitFor())));  //Should return 0
-            } catch(InterruptedException ex) {
-            	ex.printStackTrace();
+            */
+            
+            if (error.available()>0) {
+            	log.info(convertStreamToString(error));
+            }
+            if (output.available()>0) {
+            	log.info(convertStreamToString(output));
             }
             
             }
@@ -75,5 +94,30 @@ class RScript {
 		// TODO run, check output, clean up, etc.
 		//throw new UnsupportedOperationException("TODO implement");
 	}
+	
+	//debugging only
+	 public String convertStreamToString(InputStream is) throws IOException {
+	        // To convert the InputStream to String we use the
+	        // Reader.read(char[] buffer) method. We iterate until the
+	        // Reader return -1 which means there's no more data to
+	        // read. We use the StringWriter class to produce the string.
+	        if (is != null) {
+	            Writer writer = new StringWriter();
+
+	            char[] buffer = new char[1024];
+	            try {
+	                Reader reader = new BufferedReader(
+	                        new InputStreamReader(is, "UTF-8"));
+	                int n;
+	                while ((n = reader.read(buffer)) != -1) {
+	                    writer.write(buffer, 0, n);
+	                }
+	            } finally {
+	                is.close();
+	            }
+	            return writer.toString();
+	        }
+	        return "";
+	    }
 	
 }

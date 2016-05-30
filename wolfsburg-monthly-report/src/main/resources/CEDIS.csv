@@ -1,0 +1,188 @@
+CEDISCV;CEDISCV;Kardiovaskulaer
+CEDIS001;CEDISCV;Herzstillstand (nicht traumatisch)
+CEDIS002;CEDISCV;Herzstillstand (traumatisch)
+CEDIS003;CEDISCV;Brustschmerz (kardial)
+CEDIS004;CEDISCV;Brustschmerz (nicht kardial)
+CEDIS005;CEDISCV;Palpitationen/unregelmaessiger Herzschlag
+CEDIS006;CEDISCV;Hypertonie
+CEDIS007;CEDISCV;Allgemeine Schwaeche
+CEDIS008;CEDISCV;Synkope/Praesynkope
+CEDIS009;CEDISCV;Oedem, generalisiert
+CEDIS010;CEDISCV;Beinschwellung/Oedem
+CEDIS011;CEDISCV;Kuehle, pulslose Extremitaet
+CEDIS012;CEDISCV;Eine Extremitaet geroetet, ueberwaermt
+CEDISHNE;CEDISHNE;HNO (Ohren)
+CEDIS051;CEDISHNE;Ohrenschmerzen
+CEDIS052;CEDISHNE;Fremdkoerper im Ohr
+CEDIS053;CEDISHNE;Hoerverlust
+CEDIS054;CEDISHNE;Tinnitus
+CEDIS055;CEDISHNE;Ausfluss aus dem Ohr
+CEDIS056;CEDISHNE;Ohrverletzung
+CEDISHNM;CEDISHNM;HNO (Mund, Rachen, Hals)
+CEDIS101;CEDISHNM;Zahn-/Zahnfleischprobleme
+CEDIS102;CEDISHNM;Trauma Gesicht
+CEDIS103;CEDISHNM;Halsschmerzen (wunder Rachen)
+CEDIS104;CEDISHNM;Halsschwellung/-schmerzen
+CEDIS105;CEDISHNM;Trauma Hals
+CEDIS106;CEDISHNM;Schluckbeschwerden/Dysphagie
+CEDIS107;CEDISHNM;Schmerzen im Gesicht (nicht traumatisch, nicht dental)
+CEDISHNN;CEDISHNN;HNO (Nase)
+CEDIS151;CEDISHNN;Nasenbluten
+CEDIS152;CEDISHNN;Verstopfte Nase/Heuschnupfen
+CEDIS153;CEDISHNN;Fremdkoerper in der Nase
+CEDIS154;CEDISHNN;Beschwerden eines Infektes der oberen Luftwege
+CEDIS155;CEDISHNN;Trauma Nase
+CEDISEV;CEDISEV;Umweltbedingt
+CEDIS201;CEDISEV;Erfrierung/Kaelteverletzung
+CEDIS202;CEDISEV;Schaedliche Inhalation
+CEDIS203;CEDISEV;Stromunfall
+CEDIS204;CEDISEV;Exposition gegenueber Chemikalien
+CEDIS205;CEDISEV;Unterkuehlung
+CEDIS206;CEDISEV;Beinahe-Ertrinken
+CEDISGI;CEDISGI;Gastrointestinal 
+CEDIS251;CEDISGI;Bauchschmerzen
+CEDIS252;CEDISGI;Appetitlosigkeit
+CEDIS253;CEDISGI;Verstopfung
+CEDIS254;CEDISGI;Durchfall
+CEDIS255;CEDISGI;Fremdkoerper im Rektum
+CEDIS256;CEDISGI;Leistenschmerzen/-schwellung
+CEDIS257;CEDISGI;Uebelkeit und/oder Erbrechen
+CEDIS258;CEDISGI;Rektale/perineale Schmerzen
+CEDIS259;CEDISGI;Bluterbrechen
+CEDIS260;CEDISGI;Peranaler Blutabgang/Teerstuhl
+CEDIS261;CEDISGI;Ikterus
+CEDIS262;CEDISGI;Schluckauf
+CEDIS263;CEDISGI;Abdominelle Raumforderung/gespanntes Abdomen
+CEDIS264;CEDISGI;Trauma anal/rektal
+CEDIS265;CEDISGI;Fremdkoerper oral/oesophageal
+CEDIS266;CEDISGI;Trinkstoerung des Neugeborenen
+CEDIS267;CEDISGI;Neugeborenenikterus
+CEDISGU;CEDISGU;Urogenital
+CEDIS301;CEDISGU;Flankenschmerz
+CEDIS302;CEDISGU;Haematurie
+CEDIS303;CEDISGU;Genitaler Ausfluss/Laesion
+CEDIS304;CEDISGU;Penisschwellung
+CEDIS305;CEDISGU;Skrotale Schmerzen und/oder Schwellung
+CEDIS306;CEDISGU;Harnverhalt
+CEDIS307;CEDISGU;Beschwerden eines Harnwegsinfektes
+CEDIS308;CEDISGU;Oligurie
+CEDIS309;CEDISGU;Polyurie
+CEDIS310;CEDISGU;Trauma genital
+CEDISMH;CEDISMH;Psychische Verfassung
+CEDIS351;CEDISMH;Depression/Suizidalitaet/absichtliche Selbstschaedigung
+CEDIS352;CEDISMH;Angst/situationsbezogene Krise
+CEDIS353;CEDISMH;Halluzinationen/Wahnvorstellungen
+CEDIS354;CEDISMH;Schlafstoerung
+CEDIS355;CEDISMH;Gewalttaetiges Verhalten/Fremdgefaehrdung
+CEDIS356;CEDISMH;Soziales Problem
+CEDIS358;CEDISMH;Sonderbares Verhalten
+CEDIS359;CEDISMH;Sorge um das Wohlergehen des Patienten
+CEDIS360;CEDISMH;Kindliche Verhaltensauffaelligkeit
+CEDISNC;CEDISNC;Neurologisch
+CEDIS401;CEDISNC;Veraenderter Bewusstseinszustand
+CEDIS402;CEDISNC;Verwirrtheit
+CEDIS403;CEDISNC;Schwindel
+CEDIS404;CEDISNC;Kopfschmerz
+CEDIS405;CEDISNC;Krampfanfall
+CEDIS406;CEDISNC;Gangstoerung/Ataxie
+CEDIS407;CEDISNC;Kopfverletzung
+CEDIS408;CEDISNC;Zittern
+CEDIS409;CEDISNC;Schwaeche in den Extremitaeten/Symptome eines Schlaganfalls oder TIA
+CEDIS410;CEDISNC;Sensibilitaetsstoerung/Paraesthesie
+CEDIS411;CEDISNC;Schlaffes Kind
+CEDISGY;CEDISGY;Geburtshilfe/Gynaekologie
+CEDIS451;CEDISGY;Menstruationsbeschwerden
+CEDIS452;CEDISGY;Fremdkoerper in der Vagina
+CEDIS453;CEDISGY;Vaginaler Ausfluss
+CEDIS454;CEDISGY;Sexueller Uebergriff
+CEDIS455;CEDISGY;Vaginale Blutung
+CEDIS456;CEDISGY;Schamlippenschwellung
+CEDIS457;CEDISGY;Schwangerschaftsprobleme <= 20. SSW
+CEDIS458;CEDISGY;Schwangerschaftsprobleme > 20. SSW
+CEDIS460;CEDISGY;Vaginale Schmerzen/Schmerzen beim Geschlechtsverkehr
+CEDISEC;CEDISEC;Augenheilkunde
+CEDIS502;CEDISEC;Exposition des Auges gegenueber Chemikalien
+CEDIS503;CEDISEC;Fremdkoerper im Auge
+CEDIS504;CEDISEC;Sehstoerung
+CEDIS505;CEDISEC;Augenschmerzen
+CEDIS506;CEDISEC;Rote Augen, Ausfluss aus dem Auge
+CEDIS507;CEDISEC;Lichtscheu
+CEDIS508;CEDISEC;Doppelbilder
+CEDIS509;CEDISEC;Periorbitale Schwellung
+CEDIS510;CEDISEC;Trauma Auge
+CEDIS511;CEDISEC;Kontrolluntersuchung der Augen
+CEDISOC;CEDISOC;Orthopaedisch/Unfall-chirurgisch
+CEDIS551;CEDISOC;Rueckenschmerzen
+CEDIS552;CEDISOC;Traumatische Ruecken-/Wirbelsaeulenverletzung
+CEDIS553;CEDISOC;Amputation
+CEDIS554;CEDISOC;Schmerzen obere Extremitaet
+CEDIS555;CEDISOC;Schmerzen untere Extremitaet
+CEDIS556;CEDISOC;Verletzung obere Extremitaet
+CEDIS557;CEDISOC;Verletzung untere Extremitaet
+CEDIS558;CEDISOC;Gelenkschwellung
+CEDIS559;CEDISOC;Kindliche Gangstoerung/Schmerzen beim Gehen
+CEDISRC;CEDISRC;Respiratorisch
+CEDIS651;CEDISRC;Luftnot
+CEDIS652;CEDISRC;Atemstillstand
+CEDIS653;CEDISRC;Husten/Verschleimung
+CEDIS654;CEDISRC;Hyperventilation
+CEDIS655;CEDISRC;Bluthusten
+CEDIS656;CEDISRC;Fremdkoerper in den Atemwegen
+CEDIS657;CEDISRC;Allergische Reaktion
+CEDIS658;CEDISRC;Stridor
+CEDIS659;CEDISRC;Giemen ohne weitere Beschwerden
+CEDIS660;CEDISRC;Apnoeanfaelle bei Saeuglingen
+CEDIS661;CEDISRC;Grippeaehnliche Erkrankung
+CEDISSK;CEDISSK;Haut
+CEDIS701;CEDISSK;Biss
+CEDIS702;CEDISSK;Insektenstich
+CEDIS703;CEDISSK;Abschuerfung
+CEDIS704;CEDISSK;Riss-/Quetsch-/Schnitt-/Stichwunde
+CEDIS705;CEDISSK;Verbrennung
+CEDIS706;CEDISSK;Kontakt mit Blut oder Koerperfluessigkeiten
+CEDIS707;CEDISSK;Juckreiz
+CEDIS708;CEDISSK;Hautausschlag
+CEDIS709;CEDISSK;Lokalisierte Schwellung/Roetung
+CEDIS710;CEDISSK;Wundkontrolle
+CEDIS711;CEDISSK;Sonstige Hautprobleme
+CEDIS712;CEDISSK;Schwellung/Beule/Schwiele
+CEDIS713;CEDISSK;Roetung/Spannungsgefuehl in der Brust
+CEDIS714;CEDISSK;Ausschluss eines Parasitenbefalls
+CEDIS715;CEDISSK;Zyanose
+CEDIS716;CEDISSK;Spontane Hauteinblutungen
+CEDIS717;CEDISSK;Fremdkoerper in der Haut
+CEDIS718;CEDISSK;Nagelprobleme
+CEDISSA;CEDISSA;Substanzmissbrauch
+CEDIS751;CEDISSA;Substanzmissbrauch/Intoxikation
+CEDIS752;CEDISSA;Einnahme einer Ueberdosierung
+CEDIS753;CEDISSA;Substanzentzug
+CEDISTR;CEDISSA;Trauma
+CEDIS801;CEDISSA;Schweres Trauma - penetrierend
+CEDIS802;CEDISSA;Schweres Trauma - stumpf
+CEDIS803;CEDISSA;Isoliertes Thoraxtrauma - penetrierend
+CEDIS804;CEDISSA;Isoliertes Thoraxtrauma - stumpf
+CEDIS805;CEDISSA;Isoliertes Abdominaltrauma - penetrierend
+CEDIS806;CEDISSA;Isoliertes Abdominaltrauma - stumpf
+CEDISMC;CEDISMC;Allgemeine und sonstige Beschwerden
+CEDIS851;CEDISMC;Exposition gegenueber einer uebertragbaren Krankheit
+CEDIS852;CEDISMC;Fieber
+CEDIS853;CEDISMC;Hyperglykaemie
+CEDIS854;CEDISMC;Hypoglykaemie
+CEDIS855;CEDISMC;Direkte Ueberweisung/Weiterleitung
+CEDIS856;CEDISMC;Verbandswechsel
+CEDIS857;CEDISMC;Entfernung von Klammern/Naehten
+CEDIS858;CEDISMC;Gipskontrolle
+CEDIS859;CEDISMC;Bildgebung/Blutuntersuchung
+CEDIS860;CEDISMC;Problem mit Medizinprodukt
+CEDIS861;CEDISMC;Verschreibung/Bedarf an Medikamenten
+CEDIS862;CEDISMC;Entfernung Ring
+CEDIS863;CEDISMC;Auffaellige Ergebnisse Labor/Bildgebung
+CEDIS864;CEDISMC;Blaesse/Anaemie
+CEDIS865;CEDISMC;Postoperative Komplikationen
+CEDIS866;CEDISMC;Geringfuegige unspezifische Beschwerden
+CEDIS867;CEDISMC;Unstillbares Schreien
+CEDIS868;CEDISMC;Angeborene Probleme bei Kindern
+CEDIS869;CEDISMC;Neugeborenes
+CEDIS870;CEDISMC;Intravenoese Therapie
+CEDIS998;CEDIS998;Patient aufgenommen und vor Ersteinschaetzung wieder gegangen
+CEDIS999;CEDIS999;Unbekannt

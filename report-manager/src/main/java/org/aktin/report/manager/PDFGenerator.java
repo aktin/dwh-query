@@ -4,9 +4,13 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.Fop;
@@ -19,12 +23,10 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.aktin.report.Report;
-import org.xml.sax.SAXException;
 
 
 /**
@@ -58,8 +60,10 @@ class PDFGenerator {
 		String[] files = report.copyResourcesForFOP(workingPath);
 		// invoke Apache FOP
 		// clean up afterwards
-		System.out.println(new File("File: "+files[0]) +"; readable: "+ new File(files[0]).canRead()+"; Length: "+new File(files[0]).length());
-		System.out.println(new File("File: "+files[1]) +"; readable: "+ new File(files[1]).canRead()+"; Length: "+new File(files[1]).length());
+		
+		//s.u. Pfad!
+		//System.out.println(new File("File: "+files[0]) +"; readable: "+ new File(files[0]).canRead()+"; Length: "+new File(files[0]).length());
+		//System.out.println(new File("File: "+files[1]) +"; readable: "+ new File(files[1]).canRead()+"; Length: "+new File(files[1]).length());
 		
 
 		// Step 1: Construct a FopFactory
@@ -90,11 +94,11 @@ class PDFGenerator {
 		    TransformerFactory factory = TransformerFactory.newInstance();
 		    // configuration of transformer factory
 		    //Transformer transformer = factory.newTransformer(); // identity transformer
-		    Transformer transformer = factory.newTransformer(new StreamSource(new File(files[1]))); //Second file from Report interface is the XSL file
+		    Transformer transformer = factory.newTransformer(new StreamSource(new File((workingPath.resolve(files[1])).toString()))); //Second file from Report interface is the XSL file
 
 		    // Step 5: Setup input and output for XSLT transformation
 		    // Setup input stream
-		    Source src = new StreamSource(new File(files[0])); //First file from Report interface is the XML input (Source)
+		    Source src = new StreamSource(new File((workingPath.resolve(files[0])).toString())); //First file from Report interface is the XML input (Source)
 
 		    // Resulting SAX events (the generated FO) must be piped through to FOP
 		    Result res = new SAXResult(fop.getDefaultHandler());
@@ -107,7 +111,42 @@ class PDFGenerator {
 		} catch (FOPException e) {
 			throw new IOException("FOP processing failed", e);
 		}
+		
+		deleteResources(files,workingPath);
 
 		//throw new UnsupportedOperationException("TODO implement");
+	}
+	
+	private static void deleteResources(String[] names, Path workingDirectory) {
+		//System.out.println(names.toString());
+		//log.info(resourcePrefix);
+		for( String name : names ){
+			try {
+			    Files.delete(workingDirectory.resolve(name));
+			} catch (NoSuchFileException x) {
+				log.severe("no such file or directory");
+			} catch (DirectoryNotEmptyException x) {
+				log.severe("directory not empty");
+			} catch (IOException x) {
+				log.severe("IOException");
+			    // File permission problems are caught here.
+			}
+		}		
+		deleteGFX_XML(new File(workingDirectory.toString()));
+	}
+	
+	//recursive delete for .svg & .xml & .csv & .txt in path
+	private static void deleteGFX_XML(File file) {
+	    File[] contents = file.listFiles();
+	    if (contents != null) {
+	        for (File f : contents) {
+	        	deleteGFX_XML(f);
+	        }
+	    }
+	    String ext = FilenameUtils.getExtension(file.getName());
+
+	    if (ext.equalsIgnoreCase("svg") || ext.equalsIgnoreCase("xml") || ext.equalsIgnoreCase("csv") || ext.equalsIgnoreCase("txt")) {
+		    file.delete();
+	    } 
 	}
 }

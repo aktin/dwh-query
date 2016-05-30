@@ -2,7 +2,9 @@ package org.aktin.report.wolfsburg;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
@@ -31,21 +33,24 @@ public class WolfsburgMonthly implements Report {
 
 
 	private void copyResources(String[] names, String resourcePrefix, Path workingDirectory) throws IOException{
-		System.out.println(names.toString());
+		//System.out.println(names.toString());
+		//log.info(resourcePrefix);
 		for( String name : names ){
+			//log.info(name);
 			try( InputStream in = getClass().getResourceAsStream(resourcePrefix+name) ){
-				System.out.println(in.toString());
-				System.out.println(workingDirectory.resolve(name));
-				Files.copy(in, workingDirectory.resolve(name));				
+				//System.out.println(in.toString());
+				//System.out.println(workingDirectory.resolve(name));
+				Files.copy(in, workingDirectory.resolve(name)); 				
 			}
 		}		
 	}
 	
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
-		String[] resNames = {"generate-report-resources-mod.R"};
+		//String[] resNames = {"empty-test.R","generate-report-resources-mod.R","xhtml-table.R"};
+		String[] resNames = {"generate-report-resources-mod.R","xhtml-table.R"};
 		String resPrefix = "/";
-		log.info(workingDirectory.toString());
+		//log.info(workingDirectory.toString());
 		copyResources(resNames, resPrefix, workingDirectory);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.

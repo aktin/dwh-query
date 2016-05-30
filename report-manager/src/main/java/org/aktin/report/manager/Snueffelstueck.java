@@ -1,9 +1,13 @@
 package org.aktin.report.manager;
 
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import org.aktin.report.Report;
@@ -18,7 +22,7 @@ public class Snueffelstueck {
 		//Step -1: What is needed additionally?
 		FileSystem fs = FileSystems.getDefault();
 		Path work = fs.getPath("C:/temp/RScript-Tempdir"); //WorkDir is a parameter for following steps
-		Path pdf = fs.getPath("C:/temp/result.pdf"); //pdf is a parameter for the final PDF output location
+		Path pdf = fs.getPath("C:/temp/RScript-Tempdir/result.pdf"); //pdf is a parameter for the final PDF output location
 		
 		//Step 0: Instantiate WolfsburgMonthly
 		//not really a seperate step since nothing happens before Data Extraction
@@ -27,18 +31,29 @@ public class Snueffelstueck {
 		
 		//Step 1: Data Extraction
 		//toDo - not implemented yet
-		//toDo - change DataSources to TSV
-		//at this point Data Sources are just present in the WorkDir (old version csv)
-		
+		//at this point Data Sources (TSV) are just present in the WorkDir
+		try {
+			DataExtractor DatEx = new DataExtractor();
+			DatEx.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		
 		//Step 2: Execute R-Script
 		RScript RExecutor = new RScript();
 		Path script;
 		try {
-			script = fs.getPath(ReportWolfsburg.copyResourcesForR(work)[0]);
+			String [] files = ReportWolfsburg.copyResourcesForR(work);
+			script = fs.getPath(files[0]);
 			RExecutor.runRscript(work,script);
 			//ToDo - runRScript does not get the whole list of files, so we'll probably want to delete the R files here since we wont need them anymore
-			log.info("R Script executed");
+			deleteResources(files,work);
+			//log.info("R Script executed");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,5 +72,26 @@ public class Snueffelstueck {
 		
 		//Step 4: Cleanup
 		//toDo - Each Step should clean up, can be done as soon as the process is complete and all resources are available from WolfsburgMonthly.java
+		//Cleanup is included in PDFGenerator
+		
+		//Only result.pdf stays in WorkDir (can be overwritten by next run)
 	}
+	
+	private static void deleteResources(String[] names, Path workingDirectory) {
+		//System.out.println(names.toString());
+		//log.info(resourcePrefix);
+		for( String name : names ){
+			try {
+			    Files.delete(workingDirectory.resolve(name));
+			} catch (NoSuchFileException x) {
+				log.severe("no such file or directory");
+			} catch (DirectoryNotEmptyException x) {
+				log.severe("directory not empty");
+			} catch (IOException x) {
+				log.severe("IOException");
+			    // File permission problems are caught here.
+			}
+		}		
+	}
+	
 }

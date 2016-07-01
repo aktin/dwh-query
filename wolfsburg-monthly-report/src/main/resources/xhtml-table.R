@@ -13,9 +13,11 @@ library(XML)
 #' @param file File name where the table should be written. If null, stdout is used.
 #' @param widths Widths in percent. Calculated equally spaced if null.
 #' @param align Column alignment. If 'auto' (default) then automatically calculated by column class. Can be explicitly specified as vector of 'right','left','center'.
+#' @param align.default alignment to use for non-numeric columns in auto align
+#' @param na.subst substitution for NA values
 #' @examples
 #' xhtml.table(OrchardSprays)
-xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', default.align='left'){
+xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', align.default='left', na.subst=''){
 	e <- newXMLNode("table",namespaceDefinitions="http://www.w3.org/1999/xhtml")
 	# equally spaced widths
 	if( is.null(widths) ){
@@ -30,7 +32,7 @@ xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', default.align='
 	# alignment of data rows
 	if( length(align) == 1 ){
 		if( align == 'auto' ){
-			align <- rep(default.align, times=length(names(x)))
+			align <- rep(align.default, times=length(names(x)))
 			for( i in 1:length(names(x)) ){
 				if( 'numeric' == class(x[[i]]) ){
 					align[i] <- 'right'
@@ -57,6 +59,9 @@ xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', default.align='
 		# only one dimension / row
 		tr <- newXMLNode("tr", parent=b)
 		for( i in x ){
+			if( is.na(i) ){
+				i <- na.subst
+			}
 			newXMLNode(name="td", text=i, parent=tr)
 		}
 	}else{
@@ -64,6 +69,9 @@ xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', default.align='
 		for( r in 1:nrow(x) ){
 			tr <- newXMLNode("tr", parent=b)
 			for( i in x[r,] ){
+				if( is.na(i) ){
+					i <- na.subst
+				}
 				newXMLNode(name="td", text=i, parent=tr)
 			}
 		}
@@ -75,4 +83,3 @@ xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', default.align='
 		return(doc)
 	}
 }
-

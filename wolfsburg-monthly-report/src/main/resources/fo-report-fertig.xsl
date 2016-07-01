@@ -78,8 +78,9 @@
 			<xsl:attribute name="keep-with-next">always</xsl:attribute>
   </xsl:attribute-set>
   <xsl:attribute-set name="plotformat">
-			<xsl:attribute name="content-width">7in</xsl:attribute>
-			<xsl:attribute name="content-height">6in</xsl:attribute>
+	  	<xsl:attribute name="inline-progression-dimension">100%</xsl:attribute>
+	  	<xsl:attribute name="content-height">scale-to-fit</xsl:attribute>
+	  	<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
   </xsl:attribute-set>
   
   <xsl:template name="genTOC">

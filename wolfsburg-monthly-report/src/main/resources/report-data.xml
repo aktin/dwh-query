@@ -16,6 +16,8 @@
     <table id="t2.5" href="discharge.d.xml"/>
     <table id="t3.1" href="discharge.xml"/>
     <table id="t4.1" href="triage.xml"/>
+    <table id="t7.1" href="los.xml"/>
+    <table id="t12.2" href="crowding.d.xml"/>
     <plot id="p0.2" href="age.svg"/>
 	<plot id="p1.1" href="admit.h.svg"/>
 	<plot id="p1.2" href="admit.wd.svg"/>

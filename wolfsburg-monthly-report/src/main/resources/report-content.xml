@@ -125,14 +125,14 @@
   <section>
     <header>7 Aufenthaltsdauer der Patienten</header>
     <plot ref="p2.5">Grafik 15: Aufenthaltsdauer</plot>
-    <!--<table ref="t2.5">Tabelle 9: Aufenthaltsdauer</table>  -->
+    <table ref="t7.1">Tabelle 10: Aufenthaltsdauer in Minuten</table>  
   </section>  
   <section>
     <header>8 Vorstellungsgrund und Aufnahmediagnose</header>
     <paragraph>Einleitungstext Diagnosen</paragraph>
     <section>
       <header>8.1 Top 20 Diagnosen</header>
-      <plot ref="p4.1">Grafik 16: Top 20 Diagnosen</plot>
+      <plot ref="p4.1">Grafik 16: Top 20 Diagnosen (ICD 3-Steller)</plot>
      <!-- <table ref="t4.1">Tabelle 11: Top 20 Diagnosen</table> -->
     </section>
     <section>
@@ -142,7 +142,7 @@
     </section>
       <section>
       <header>8.3 CEDIS Gruppen</header>
-      <plot ref="p4.3">Grafik 18: CEDIS Gruppen</plot>
+      <plot ref="p4.3">Grafik 18: Alle dokumentierten CEDIS Codes nach Gruppen</plot>
     </section>
   </section>
    <section>
@@ -161,7 +161,15 @@
   </section>
     <section>
     <header>12 Crowding</header>
-        <paragraph>Durchschnittliche Anzahl Patienten, die sich zu einem bestimmten Zeitpunkt (x-Achse) in der Notaufnahme aufhalten</paragraph>
+    <section>
+      <header>12.1 Patienten vs. Tageszeit</header>
+        <paragraph>Anzahl Patienten, die sich zu einem bestimmten Zeitpunkt (x-Achse) in der Notaufnahme aufhalten</paragraph>
         <plot ref="p7.1">Grafik 18: Crowding</plot>
+    </section>
+        <section>
+      <header>12.2 Patientenzahlen pro Tag</header>
+        <paragraph>Maximum und Minimum der anwesenden Patienten mit Stunde des Auftretens und die durchschnittliche Anzahl anwesender Patienten pro Tag</paragraph>
+        <table ref="t12.2">Tabelle 11: Verlegung und Entlassung</table>
+    </section>
   </section>
 </template>

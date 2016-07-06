@@ -14,7 +14,7 @@ library(XML)
 #' @param widths Widths in percent. Calculated equally spaced if null.
 #' @param align Column alignment. If 'auto' (default) then automatically calculated by column class. Can be explicitly specified as vector of 'right','left','center'.
 #' @param align.default alignment to use for non-numeric columns in auto align
-#' @param na.subst substitution for NA values
+#' @param na.subst substitution for NA,NaN,Inf,-Inf values
 #' @examples
 #' xhtml.table(OrchardSprays)
 xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', align.default='left', na.subst=''){
@@ -59,7 +59,7 @@ xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', align.default='
 		# only one dimension / row
 		tr <- newXMLNode("tr", parent=b)
 		for( i in x ){
-			if( is.na(i) ){
+			if( is.na(i) | is.nan(i) | is.infinite(i)){
 				i <- na.subst
 			}
 			newXMLNode(name="td", text=i, parent=tr)
@@ -69,7 +69,7 @@ xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', align.default='
 		for( r in 1:nrow(x) ){
 			tr <- newXMLNode("tr", parent=b)
 			for( i in x[r,] ){
-				if( is.na(i) ){
+			  if( is.na(i) | is.nan(i) | is.infinite(i)){
 					i <- na.subst
 				}
 				newXMLNode(name="td", text=i, parent=tr)

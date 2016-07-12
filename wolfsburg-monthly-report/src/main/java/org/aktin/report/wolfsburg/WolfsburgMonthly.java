@@ -2,10 +2,9 @@ package org.aktin.report.wolfsburg;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.time.Period;
 import java.util.logging.Logger;
 
 import org.aktin.report.Report;
@@ -16,7 +15,7 @@ public class WolfsburgMonthly implements Report {
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return null;
+		return "AKTIN Monatsbericht";
 	}
 
 	@Override
@@ -71,6 +70,11 @@ public class WolfsburgMonthly implements Report {
 	public InputStream readStaticWebResource(String path) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Period getDefaultPeriod() {
+		return Period.ofMonths(-1);
 	}
 
 }

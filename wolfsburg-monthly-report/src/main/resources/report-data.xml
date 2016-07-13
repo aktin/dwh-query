@@ -33,4 +33,5 @@
     <plot id="p4.2" href="cedis_top10.svg"/>
     <plot id="p4.3" href="cedis_groups.svg"/>
     <plot id="p7.1" href="crowding.svg"/>
+    <plot id="p12.3" href="admit_discharge.svg"/>
 </report-data>

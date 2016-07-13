@@ -42,6 +42,7 @@
 			<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
 			<xsl:attribute name="border-collapse">collapse</xsl:attribute>
 			<xsl:attribute name="space-before">10pt</xsl:attribute>
+  			<xsl:attribute name="keep-together">always</xsl:attribute>
   </xsl:attribute-set>
   <xsl:attribute-set name="tablehead">
 			<xsl:attribute name="font-weight">bold</xsl:attribute>
@@ -61,7 +62,7 @@
   <xsl:attribute-set name="headerformat">
 			<xsl:attribute name="font-size">20pt</xsl:attribute>
 			<xsl:attribute name="font-weight">bold</xsl:attribute>
-			<xsl:attribute name="font-family">Courier</xsl:attribute>
+			<!--<xsl:attribute name="font-family">Courier</xsl:attribute>-->
 			<xsl:attribute name="text-align">center</xsl:attribute>
 			<xsl:attribute name="space-before">30pt</xsl:attribute>
 			<xsl:attribute name="space-after">30pt</xsl:attribute>

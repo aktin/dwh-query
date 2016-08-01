@@ -2,35 +2,26 @@ package org.aktin.report.wolfsburg;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Period;
 import java.util.logging.Logger;
 
-import org.aktin.report.Report;
+import javax.xml.transform.Source;
+import org.aktin.report.AnnotatedReport;
 
-public class WolfsburgMonthly implements Report {
+@AnnotatedReport.Report(
+		displayName="AKTIN Monatsbericht", 
+		description="Standardisierter Monatsbericht des AKTIN Projekts",
+		defaultPeriod="P1M"
+		)
+public class WolfsburgMonthly extends AnnotatedReport {
 	private static final Logger log = Logger.getLogger(WolfsburgMonthly.class.getName());	
 
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return "AKTIN Monatsbericht";
-	}
 
-	@Override
-	public String[] getEncounterConcepts() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String[] getRepeatingConcepts() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
+	@Option
+	private Boolean dummyOption;
+	
 	private void copyResources(String[] names, String resourcePrefix, Path workingDirectory) throws IOException{
 		//System.out.println(names.toString());
 		//log.info(resourcePrefix);
@@ -58,6 +49,7 @@ public class WolfsburgMonthly implements Report {
 
 	@Override
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
+		log.info("Using configuration option="+dummyOption);
 		String[] resNames = {"report-content.xml","fo-report-fertig.xsl","report-data.xml"};
 		String resPrefix = "/";
 		copyResources(resNames, resPrefix, workingDirectory);
@@ -73,8 +65,9 @@ public class WolfsburgMonthly implements Report {
 	}
 
 	@Override
-	public Period getDefaultPeriod() {
-		return Period.ofMonths(-1);
+	public Source getExportDescriptor() {
+		URL url = getClass().getResource("/export-descriptor.xml");
+		return this.createStreamSource(url);
 	}
 
 }

@@ -56,7 +56,6 @@ class RScript {
 		pb.directory(workingDir.toFile());	
 		try{
             Process process = pb.start();
-
             // get the error stream of the process and print it
             InputStream error = process.getErrorStream();
 

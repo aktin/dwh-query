@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export xmlns="http://sekmi.de/ns/histream/export-v1">
+	<concepts>
+		<group class="d_lab">
+			<concept notation="LOINC:26436-6" />
+			<concept notation="LOINC:26436-6:NEG" />
+		</group>
+		<group class="diag">
+			<!-- wildcard-notation only supported until ontology IRI queries are -->
+			<concept wildcard-notation="ICD10:*" />
+			<concept iri="http://data.dzl.de/ns/ont/xxx"/>
+		</group>
+		<concept notation="XYZ" />
+	</concepts>
+
+
+	<patient-table>
+		<column header="pid" xpath="@id"/>
+		<column header="birthdate" xpath="eav:birthdate"/>
+		<column header="gender" xpath="eav:gender"/>
+	</patient-table>
+	<visit-table>
+		<!-- context for XPath expressions is each visit node -->
+		<!-- XMLNS for XPath is assumed to be  http://sekmi.de/histream/ns/eav-data -->
+		<column header="pid" xpath="../@id"/>
+		<column header="visit" xpath="@id"/>
+		<!-- concepts for the visit table must occur only once
+		per visit and may not repeat -->
+		<column header="start" xpath="eav:start"/>
+		<!-- What is better? -->
+		<!-- (a) First column, then concepts with value -->
+		<column header="diagnostik_labor_ts" xpath="eav:fact[@class='d_lab']/@start"/>
+		<column header="diagnostik_labor" xpath="eav:fact[@class='d_lab']/@concept"/>
+		<!-- (b) first concepts then columns with value -->
+		<column header="diagnostik_labort_ts" xpath="eav:fact[@class='d_lab']/@start"/>
+		<column header="diagnostik_labort" xpath="eav:fact[@class='d_lab']/eav:modifier[@code='OPB' or @code='PB']/@code"/>
+			<!-- We want this: 
+					6:NEG -> not tested
+					6/mod=OPB -> tested non pathological
+					6/mod=PB -> tested pathological 
+			-->
+	</visit-table>
+	<!-- export separate table for repeating elements -->
+	<eav-table id="diag" class="diag">
+		<!-- context for XPath expressions is each fact node -->
+		<column header="pid" xpath="patient-ref"/>
+		<column header="visit" xpath="visit-ref"/>
+		<column header="start" type="@start"/>
+		<column header="code" type="@concept"/>
+		<column header="primary" xpath="eav:modifier[@code='fuehrend']/@code"/>
+	</eav-table>
+</export>

@@ -4,14 +4,25 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.logging.Logger;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.sql.DataSource;
 
 import org.aktin.report.Report;
+
+import de.sekmi.histream.ObservationFactory;
+import de.sekmi.histream.export.TableExport;
+import de.sekmi.histream.export.config.Concept;
+import de.sekmi.histream.export.config.EavTable;
+import de.sekmi.histream.export.config.ExportDescriptor;
+import de.sekmi.histream.export.config.ExportException;
+import de.sekmi.histream.export.csv.CSVWriter;
+import de.sekmi.histream.i2b2.I2b2Extractor;
+import de.sekmi.histream.i2b2.I2b2ExtractorFactory;
+import de.sekmi.histream.impl.ObservationFactoryImpl;
 
 /**
  * Takes a time interval and concept list and extracts all
@@ -29,8 +40,10 @@ import org.aktin.report.Report;
  *
  */
 class DataExtractor implements Closeable{
-	private static final Logger log = Logger.getLogger(DataExtractor.class.getName());
-
+	//private static final Logger log = Logger.getLogger(DataExtractor.class.getName());
+	private I2b2ExtractorFactory extractor;
+	private ObservationFactory of;
+	
 	/**
 	 * Opens database connections to i2b2 and prepares
 	 * SQL statements for execution.
@@ -38,13 +51,15 @@ class DataExtractor implements Closeable{
 	 * @throws IOException io error
 	 * @throws SQLException sql error
 	 */
-	public DataExtractor() throws IOException, SQLException{
+	public DataExtractor(DataSource crc_ds) throws IOException, SQLException{
 		// use JNDI for database connection
-		
-		
-		
-		/* ++++Testing+++++
-		 */
+		of = new ObservationFactoryImpl();
+		// TODO need patient and encounter extension? if yes, add to factory
+		extractor = new I2b2ExtractorFactory(crc_ds, of);
+	}
+	/*
+		// ++++Testing+++++
+
 		String[] resNames = {"patients.txt","encounters.txt", "CEDIS.csv"};
 		String resPrefix = "/";
 		FileSystem fs = FileSystems.getDefault();
@@ -61,21 +76,41 @@ class DataExtractor implements Closeable{
 				Files.copy(in, workingDirectory.resolve(name));				
 			}
 		}		
-	}
+	}*/
 
+	/**
+	 * Collect concept notations and checks whether the wildcard notations
+	 * are used. Also makes sure, no IRI is used (not supported yet).
+	 * 
+	 * @param concepts concept iterator
+	 * @throws UnsupportedOperationException if concepts are specified via IRI, which is not supported currently
+	 */
+	private boolean collectNotations(Iterable<Concept> concepts, Collection<String> notations) throws UnsupportedOperationException{
+		boolean hasWildcard = false;
+		for( Concept concept : concepts ){
+			if( concept.getIRI() != null ){
+				throw new UnsupportedOperationException("Concept specification via IRI currently supported: "+concept.getIRI());
+			}else if( concept.getWildcardNotation() != null ){
+				hasWildcard = true;
+				notations.add(concept.getWildcardNotation());
+			}else{
+				notations.add(concept.getNotation());
+			}
+		}
+		return hasWildcard;
+	}
 	/**
 	 * Extracts data to a directory. After return, the directory
 	 * will contain the following files:
 	 * <ul>
 	 * 	<li>patients.txt</li>
 	 *  <li>encounters.txt</li>
-	 *  <li>[concept].txt for each concept in {@link Report#getRepeatingConcepts()}
+	 *  <li>[table_name].txt for each additional table
 	 * </ul>
 	 * <p>
 	 * In case of a checked exception, it is guaranteed that no files and 
 	 * directories are created.
 	 * <p>
-	 * The 
 	 * @param fromTimestamp start timestamp for the data to extract
 	 * @param endTimestamp end timestamp for the data to extract
 	 * @param report report for which the data will be extracted
@@ -83,17 +118,50 @@ class DataExtractor implements Closeable{
 	 * 
 	 * @throws IOException error writing files
 	 * @throws SQLException error while extracting data
+	 * @throws ExportException error with export processing
+	 * @throws UnsupportedOperationException concepts are specified via IRI, which is currently not supported
 	 */
-	public String[] extractData(Instant fromTimestamp, Instant endTimestamp, Report report, Path destinationDir) throws IOException, SQLException{
-		
-		throw new UnsupportedOperationException("TODO implement");
+	public String[] extractData(Instant fromTimestamp, Instant endTimestamp, Report report, Path destinationDir) throws IOException, SQLException, ExportException, UnsupportedOperationException{
+		ExportDescriptor ed = ExportDescriptor.parse(report.getExportDescriptor());
+		TableExport fac = new TableExport(ed);
+
+		// load concept notations
+		Iterable<Concept> concepts = ed.allConcepts();
+		List<String> notations = new ArrayList<>();
+		boolean hasWildcards = collectNotations(concepts, notations);
+		extractor.setFeature(I2b2ExtractorFactory.ALLOW_WILDCARD_CONCEPT_CODES, hasWildcards);
+
+		// configure CSV writer
+		CSVWriter csv = new CSVWriter(destinationDir, '\t', ".txt");
+		csv.setPatientTableName("patients");
+		csv.setVisitTableName("encounters");
+
+		// perform the export operation
+		try( I2b2Extractor ext = extractor.extract(Timestamp.from(fromTimestamp), Timestamp.from(endTimestamp), notations) ){
+			fac.export(ext, csv);
+		}
+		csv.close(); // not needed
+
+		// construct generated file names
+		EavTable[] eav = ed.getEAVTables();
+		String[] files = new String[eav.length+2];
+		files[0] = csv.fileNameForTable("patients");
+		files[1] = csv.fileNameForTable("encounters");
+		for( int i=0; i<eav.length; i++ ){
+			files[2+i] = csv.fileNameForTable(eav[i].getId());
+		}
+		return files;
 	}
+
 	/**
 	 * Closes data base connection to the i2b2 database
 	 */
 	@Override
 	public void close() throws IOException {
-		// TODO Auto-generated method stub
-		
+		try {
+			extractor.close();
+		} catch (SQLException e) {
+			throw new IOException(e);
+		}		
 	}
 }

@@ -33,7 +33,7 @@ public class Snueffelstueck {
 		//toDo - not implemented yet
 		//at this point Data Sources (TSV) are just present in the WorkDir
 		try {
-			DataExtractor DatEx = new DataExtractor();
+			DataExtractor DatEx = new DataExtractor(null);
 			DatEx.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

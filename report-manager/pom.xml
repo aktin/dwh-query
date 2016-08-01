@@ -49,8 +49,28 @@
 		<dependency>
 			<groupId>de.sekmi.histream</groupId>
 			<artifactId>histream-i2b2</artifactId>
-			<version>0.8-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>de.sekmi.histream</groupId>
+			<artifactId>histream-export</artifactId>
+			<version>0.9-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>de.sekmi.histream</groupId>
+			<artifactId>histream-export</artifactId>
+			<version>0.9-SNAPSHOT</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+
+<!-- XXX only temporary for testing  -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1201-jdbc41</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 </project>

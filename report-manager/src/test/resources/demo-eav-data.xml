@@ -1,0 +1,116 @@
+<?xml version="1.0" ?><eav-data xmlns="http://sekmi.de/histream/ns/eav-data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<meta>
+		<source id="demo-data" timestamp="2015-01-16T21:05:25Z"/>
+	</meta>
+	<patient id="1.2.276.0.76.4.8:3412567890">
+		<gender>female</gender>
+		<birthdate>1933-09-12</birthdate>
+		<source timestamp="2015-01-16T21:05:25Z"></source>
+		<encounter id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa">
+			<start>2015-01-16T19:16:00</start>
+			<end>2015-01-16T21:04:00</end>
+			<location>1.2.276.0.76.4.17:6314124911</location>
+			<source timestamp="2015-01-16T21:05:25Z"></source>
+			<fact concept="AKTIN:ISOLATION:ISO:NEG"><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:PLZ"><value xsi:type="numeric" operator="Equal">52224.00000</value><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:REFERRAL:KVNDAK"><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:TRANSFER:1"><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:53576-5"><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:9267-6"><value xsi:type="numeric" unit="{score}" operator="Equal">3.00000</value><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:9268-4"><value xsi:type="numeric" unit="{score}" operator="Equal">5.00000</value><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:9270-0"><value xsi:type="numeric" unit="{score}" operator="Equal">4.00000</value><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktTherapiebeginn"><modifier code="effectiveTimeHigh"><value xsi:type="string">20150116210400</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">20150116191600</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:52455-3"><modifier code="effectiveTimeHigh"><value xsi:type="string">20150116210400</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">20150116191600</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:TRANSPORT:2"><modifier code="codeSystem"><value xsi:type="string">1.2.276.0.76.3.1.195.5.41</value></modifier><modifier code="effectiveTimeHigh"><value xsi:type="string">20150116191600</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="CEDIS30:007"><modifier code="codeSystem"><value xsi:type="string">1.2.276.0.76.5.439</value></modifier><modifier code="displayName"><value xsi:type="string">General weakness</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:9279-1"><value xsi:type="numeric" unit="/min" operator="Equal">22.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501161924</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:20564-1"><value xsi:type="numeric" unit="%" operator="Equal">91.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501161924</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:8480-6"><value xsi:type="numeric" unit="mm[Hg]" operator="Equal">93.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501161924</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:8867-4"><value xsi:type="numeric" unit="/min" operator="Equal">111.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501161924</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:9269-2"><value xsi:type="numeric" unit="{score}" operator="Equal">12.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501161924</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:SPPL:M"><modifier code="codeSystem"><value xsi:type="string">1.2.276.0.76.3.1.195.5.49</value></modifier><modifier code="displayName"><value xsi:type="string">mittel</value></modifier><modifier code="effectiveTime"><value xsi:type="string">201501161924</value></modifier><modifier code="L"></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:SPPL:M"><modifier code="codeSystem"><value xsi:type="string">1.2.276.0.76.3.1.195.5.49</value></modifier><modifier code="displayName"><value xsi:type="string">mittel</value></modifier><modifier code="effectiveTime"><value xsi:type="string">201501161924</value></modifier><modifier code="R"></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:RPPL:B"><modifier code="codeSystem"><value xsi:type="string">1.2.276.0.76.3.1.195.5.50</value></modifier><modifier code="displayName"><value xsi:type="string">prompt</value></modifier><modifier code="effectiveTime"><value xsi:type="string">201503041234</value></modifier><modifier code="L"></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:RPPL:B"><modifier code="codeSystem"><value xsi:type="string">1.2.276.0.76.3.1.195.5.50</value></modifier><modifier code="displayName"><value xsi:type="string">prompt</value></modifier><modifier code="effectiveTime"><value xsi:type="string">201503041234</value></modifier><modifier code="R"></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:8329-5"><value xsi:type="numeric" unit="Cel" operator="Equal">39.20000</value><modifier code="effectiveTime"><value xsi:type="string">20131219</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:ALLERGY:ALGN:NEG"><modifier code="effectiveTime"><value xsi:type="string">NA</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="ICD10GM:A41.58"><modifier code="effectiveTimeLow"><value xsi:type="string">201501162104</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="ICD10GM:R57"><modifier code="effectiveTimeLow"><value xsi:type="string">201501162104</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktErsterArztkontakt" start="2015-01-16T19:20:00"><modifier code="timeHigh"><value xsi:type="string">20150116210000</value></modifier><modifier code="timeLow"><value xsi:type="string">20150116192000</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="MTS:2" start="2015-01-16T19:21:00"><modifier code="effectiveTimeLow"><value xsi:type="string">201501161921</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:34534-8" start="2015-01-16T19:42:00"><modifier code="effectiveTime"><value xsi:type="string">201501161942</value></modifier><modifier code="PB"></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:18767-4" start="2015-01-16T19:45:00"><modifier code="effectiveTime"><value xsi:type="string">201501161945</value></modifier><modifier code="OPB"></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:50556-0" start="2015-01-16T19:50:00"><modifier code="effectiveTime"><value xsi:type="string">201501161950</value></modifier><modifier code="PB"></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="LOINC:26436-6" start="2015-01-16T19:50:00"><modifier code="effectiveTime"><value xsi:type="string">201501161950</value></modifier><modifier code="NAV"></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktVerlegung" start="2015-01-16T21:04:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">20150116210400</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">20150116191600</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-aa" timestamp="2015-01-16T21:05:25Z"></source></fact>
+		</encounter>
+	</patient>
+	<patient id="1.2.276.0.76.4.8:1234567890">
+		<gender>male</gender>
+		<birthdate>1996-05-31</birthdate>
+		<source timestamp="2015-01-17T15:33:00Z"></source>
+		<encounter id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5">
+			<start>2015-01-17T16:03</start>
+			<end>2015-01-17T17:35:00</end>
+			<source timestamp="2015-01-17T15:33:00Z"></source>
+			<fact concept="AKTIN:Ort" start="2015-01-17T16:03:00"><value xsi:type="string">80636</value><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktTherapiebeginn" start="2015-01-17T16:03:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">20150117173500</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">20150117160300</value></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="LOINC:52455-3" start="2015-01-17T16:03:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">201501171735</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">201501171603</value></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="AKTIN:DISCHARGE:4" start="2015-01-17T16:03:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">201501171735</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">201501171603</value></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="AKTIN:TRANSPORT:NA" start="2015-01-17T16:03:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">201501171603</value></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="CEDIS30:557" start="2015-01-17T16:03:00"><modifier code="codeSystem"><value xsi:type="string">1.2.276.0.76.5.439</value></modifier><modifier code="displayName"><value xsi:type="string">Lower extremity injury</value></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="AKTIN:ALLERGY:ALGN:NEG" start="2015-01-17T16:03:00"><modifier code="effectiveTime"><value xsi:type="string">NA</value></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="ICD10GM:S93.6" start="2015-01-17T16:03:00"><modifier code="effectiveTimeLow"><value xsi:type="string">20150117</value></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktErsterArztkontakt" start="2015-01-17T16:32:00"><modifier code="timeHigh"><value xsi:type="string">201501171714</value></modifier><modifier code="timeLow"><value xsi:type="string">201501171632</value></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="LOINC:37637-6" start="2015-01-17T16:50:00"><modifier code="effectiveTime"><value xsi:type="string">201501171650</value></modifier><modifier code="OPB"></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktVerlegung" start="2015-01-17T17:35:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">201501171735</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">201501171603</value></modifier><source id="1.2.276.0.76.4.17.9814184919:0ff0f2d6-ddc2-4300-a5" timestamp="2015-01-17T15:33:00Z"></source></fact>
+		</encounter>
+	</patient>
+	<patient id="1.2.276.0.76.4.8:8772567330">
+		<gender>female</gender>
+		<birthdate>1976-07-23</birthdate>
+		<source timestamp="2015-01-18T07:35:00Z"></source>
+		<encounter id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac">
+			<start>2015-01-18T07:01</start>
+			<end>2015-01-18T08:30:00</end>
+			<location>1.2.276.0.76.4.17:4738758478</location>
+			<source timestamp="2015-01-18T07:35:00Z"></source>
+			<fact concept="AKTIN:ISOLATION:ISO" start="2015-01-18T07:01:00"><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="AKTIN:ISOREASON:A09.9" start="2015-01-18T07:01:00"><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="AKTIN:PLZ" start="2015-01-18T07:01:00"><value xsi:type="numeric" operator="Equal">45678.00000</value><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="AKTIN:PREGNANCY:0" start="2015-01-18T07:01:00"><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:9267-6" start="2015-01-18T07:01:00"><value xsi:type="numeric" unit="{score}" operator="Equal">4.00000</value><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:9268-4" start="2015-01-18T07:01:00"><value xsi:type="numeric" unit="{score}" operator="Equal">6.00000</value><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:9270-0" start="2015-01-18T07:01:00"><value xsi:type="numeric" unit="{score}" operator="Equal">5.00000</value><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:52455-3" start="2015-01-18T07:01:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">201501180830</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">201501180701</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="AKTIN:TRANSPORT:NA" start="2015-01-18T07:01:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">201501180701</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="CEDIS30:254" start="2015-01-18T07:01:00"><modifier code="codeSystem"><value xsi:type="string">1.2.276.0.76.5.439</value></modifier><modifier code="displayName"><value xsi:type="string">Diarrhea</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:9279-1" start="2015-01-18T07:01:00"><value xsi:type="numeric" unit="/min" operator="Equal">15.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501180740</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:20564-1" start="2015-01-18T07:01:00"><value xsi:type="numeric" unit="%" operator="Equal">98.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501180740</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:8480-6" start="2015-01-18T07:01:00"><value xsi:type="numeric" unit="mm[Hg]" operator="Equal">120.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501180740</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:8867-4" start="2015-01-18T07:01:00"><value xsi:type="numeric" unit="/min" operator="Equal">100.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501180740</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:9269-2" start="2015-01-18T07:01:00"><value xsi:type="numeric" unit="{score}" operator="Equal">15.00000</value><modifier code="effectiveTime"><value xsi:type="string">201501180740</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="LOINC:8329-5" start="2015-01-18T07:01:00"><value xsi:type="numeric" unit="Cel" operator="Equal">37.50000</value><modifier code="effectiveTime"><value xsi:type="string">20131219</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="ICD10GM:A08.1" start="2015-01-18T07:01:00"><modifier code="effectiveTimeLow"><value xsi:type="string">201501180757</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktTherapiebeginn" start="2015-01-18T07:12:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">20150118083000</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">20150118071200</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktErsterArztkontakt" start="2015-01-18T07:35:00"><modifier code="timeHigh"><value xsi:type="string">201501180751</value></modifier><modifier code="timeLow"><value xsi:type="string">201501180735</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktVerlegung" start="2015-01-18T08:30:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">201501180830</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">201501180701</value></modifier><source id="1.2.276.0.76.4.17.9814184919:020ed858-4d71-4363-ac" timestamp="2015-01-18T07:35:00Z"></source></fact>
+		</encounter>
+	</patient>
+	<patient id="2.16.840.1.113883.2.6.60.3.2.3.3:230385">
+		<gender>male</gender>
+		<birthdate>1930-04-13</birthdate>
+		<source timestamp="2016-05-12T13:43:37Z"></source>
+		<encounter id="1.2.276.0.76.3.1.214.1.1:2016.1">
+			<start>2016-05-01T02:57:00</start>
+			<end>2016-05-01T02:59:00</end>
+			<source timestamp="2016-05-12T13:43:37Z"></source>
+			<fact concept="AKTIN:Ort"><value xsi:type="string">39116</value><source id="1.2.276.0.76.3.1.214.1.1:2016.1" timestamp="2016-05-12T13:43:37Z"></source></fact>
+			<fact concept="AKTIN:REFERRAL:NA"><source id="1.2.276.0.76.3.1.214.1.1:2016.1" timestamp="2016-05-12T13:43:37Z"></source></fact>
+			<fact concept="LOINC:52455-3"><modifier code="effectiveTimeHigh"><value xsi:type="string">20160501025900</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">20160501025700</value></modifier><source id="1.2.276.0.76.3.1.214.1.1:2016.1" timestamp="2016-05-12T13:43:37Z"></source></fact>
+			<fact concept="AKTIN:TRANSPORT:3"><modifier code="codeSystem"><value xsi:type="string">1.2.276.0.76.3.1.195.5.41</value></modifier><modifier code="displayName"><value xsi:type="string">NAW/NEF/ITW</value></modifier><modifier code="effectiveTimeHigh"><value xsi:type="string">NA</value></modifier><source id="1.2.276.0.76.3.1.214.1.1:2016.1" timestamp="2016-05-12T13:43:37Z"></source></fact>
+			<fact concept="LOINC:8480-6"><value xsi:type="numeric" unit="mm[Hg]" operator="Equal">162.00000</value><modifier code="effectiveTime"><value xsi:type="string">20160501030000</value></modifier><source id="1.2.276.0.76.3.1.214.1.1:2016.1" timestamp="2016-05-12T13:43:37Z"></source></fact>
+			<fact concept="AKTIN:ZeitpunktVerlegung" start="2016-05-01T02:59:00"><modifier code="effectiveTimeHigh"><value xsi:type="string">20160501025900</value></modifier><modifier code="effectiveTimeLow"><value xsi:type="string">20160501025700</value></modifier><source id="1.2.276.0.76.3.1.214.1.1:2016.1" timestamp="2016-05-12T13:43:37Z"></source></fact>
+		</encounter>
+	</patient>
+</eav-data>

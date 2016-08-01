@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE template [
   <!ELEMENT template (section)+>
   <!ELEMENT section (header,(paragraph|section|table|plot)+)>
@@ -86,12 +86,12 @@
     </section>-->
   </section> 
   <section>
-    <header>4 Ersteinschaetzung</header>
-    <paragraph>Einleitungstext Ersteinschaetzung</paragraph>
+    <header>4 Ersteinschätzung</header>
+    <paragraph>Einleitungstext Ersteinschätzung</paragraph>
     <section>
-        <header>4.1 Ersteinschaetzung</header>
-        <plot ref="p4.1b">Grafik 9: Ersteinschaetzung</plot>
-        <table ref="t4.1">Tabelle 7: Ersteinschaetzung</table>
+        <header>4.1 Ersteinschätzung</header>
+        <plot ref="p4.1b">Grafik 9: Ersteinschätzung</plot>
+        <table ref="t4.1">Tabelle 7: Ersteinschätzung</table>
     </section>
 
   </section>
@@ -99,8 +99,8 @@
     <header>5 Prozesszeiten</header>
     <paragraph>Einleitungstext Prozesszeiten <var ref="bereich"/></paragraph>
     <section>
-        <header>5.1 Ankunft/Aufnahme bis Ersteinschaetzung</header>
-        <plot ref="p2.1">Grafik 10: Ankunft/Aufnahme bis Ersteinschaetzung</plot>
+        <header>5.1 Ankunft/Aufnahme bis Ersteinschätzung</header>
+        <plot ref="p2.1">Grafik 10: Ankunft/Aufnahme bis Ersteinschätzung</plot>
     </section>
     <section>
         <header>5.2 Ankunft/Aufnahme bis zum ersten Arztkontakt</header>
@@ -111,9 +111,9 @@
         <plot ref="p2.3">Grafik 12: Erster Arztkontakt bis Therapiebeginn</plot>
     </section>
     <section>
-        <header>5.4 Prozesszeiten nach Kategorie der Ersteinschaetzung</header>
-        <plot ref="p2.4">Grafik 13: Prozesszeiten nach Ersteinschaetzung</plot>
-        <table ref="t2.4">Tabelle 8: Prozesszeiten nach Ersteinschaetzung</table>
+        <header>5.4 Prozesszeiten nach Kategorie der Ersteinschätzung</header>
+        <plot ref="p2.4">Grafik 13: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</plot>
+        <table ref="t2.4">Tabelle 8: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</table>
     </section>
   </section>
       <section>
@@ -171,5 +171,11 @@
         <paragraph>Maximum und Minimum der anwesenden Patienten mit Stunde des Auftretens und die durchschnittliche Anzahl anwesender Patienten pro Tag</paragraph>
         <table ref="t12.2">Tabelle 11: Verlegung und Entlassung</table>
     </section>
+    <!--
+    <section>
+      <header>12.3 Patientenzahlen gegen Aufnahmen und Entlassungen</header>
+        <paragraph>Entwicklung der anwesenden Patienten einem ausgewählten Tag (Maximum Patientenzahl)</paragraph>
+        <plot ref="p12.3">Grafik 19: Tagesanalyse</plot>
+    </section> -->
   </section>
 </template>

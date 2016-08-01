@@ -36,6 +36,7 @@
 	<modules>
 		<module>report-manager</module>
 		<module>wolfsburg-monthly-report</module>
+		<module>report-schedule</module>
 	</modules>
 
 </project>

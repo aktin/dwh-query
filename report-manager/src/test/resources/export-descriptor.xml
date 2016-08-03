@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export xmlns="http://sekmi.de/ns/histream/export-v1">
 	<concepts>
-		<group class="transport">
+		<group class="transportmittel">
 			<!-- define class name to group multiple concepts
 			     of which only one can occur in this case -->
-			<concept wildcard-notation="AKTIN:TRANSPORT:*" />
+			<concept wildcard-notation="AKTIN:TRANSFER:*" />
 		</group>
 		<group class="d_lab">
 			<concept notation="LOINC:37637-6" />
@@ -12,24 +12,24 @@
 		</group>
 		<group class="diag">
 			<!-- wildcard-notation only supported until ontology IRI queries are -->
-			<concept wildcard-notation="ICD10:*" />
+			<concept wildcard-notation="ICD10GM:*" />
 		</group>
 		<concept notation="XYZ" />
 	</concepts>
 
 
 	<patient-table>
-		<column header="pid" xpath="@id"/>
-		<column header="birthdate" xpath="eav:birthdate"/>
-		<column header="gender" xpath="eav:gender"/>
+		<column header="patient_id" xpath="@id"/>
+		<column header="geburtsdatum_ts" xpath="eav:birthdate"/>
+		<column header="geschlecht" xpath="eav:gender"/>
 	</patient-table>
 	<visit-table>
 		<!-- context for XPath expressions is each visit node -->
 		<!-- XMLNS for XPath is assumed to be  http://sekmi.de/histream/ns/eav-data -->
-		<column header="pid" xpath="../@id"/>
-		<column header="visit" xpath="@id"/>
-		<column header="transport" xpath="substring(eav:fact[@class='transport']/@concept, 17)"/>
-		<column header="plz" xpath="eav:fact[@concept='AKTIN:PLZ']/eav:value"/>
+		<column header="patient_id" xpath="../@id"/>
+		<column header="visit_id" xpath="@id"/>
+		<column header="transportmittel" xpath="substring(eav:fact[@class='transportmittel']/@concept, 16)"/>
+		<column header="postleitzahl" xpath="eav:fact[@concept='AKTIN:ZIPCODE']/eav:value"/>
 		<!-- concepts for the visit table must occur only once
 		per visit and may not repeat -->
 		<column header="start" xpath="eav:start"/>
@@ -47,12 +47,13 @@
 			-->
 	</visit-table>
 	<!-- export separate table for repeating elements -->
-	<eav-table id="CEDIS" class="diag">
+	<eav-table id="diagnose" class="diag">
 		<!-- context for XPath expressions is each fact node -->
-		<column header="pid" xpath="patient-ref"/>
-		<column header="visit" xpath="visit-ref"/>
+		<column header="patient_id" xpath="patient-ref"/>
+		<column header="visit_id" xpath="visit-ref"/>
 		<column header="start" type="@start"/>
 		<column header="code" type="@concept"/>
-		<column header="primary" xpath="eav:modifier[@code='fuehrend']/@code"/>
+		<column header="fuehrend" xpath="eav:modifier[@code='fuehrend']/@code"/>
+		<column header="txt" xpath="eav:modifier[@code='originalText']/@value"/>
 	</eav-table>
 </export>

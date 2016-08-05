@@ -1,59 +1,311 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export xmlns="http://sekmi.de/ns/histream/export-v1">
-	<concepts>
+	<concepts>	
+        <concept notation="AKTIN:ZIPCODE"/>
+        <concept notation="AKTIN:KKNAME"/>
+        <concept notation="AKTIN:IKNR"/>	
 		<group class="transportmittel">
-			<!-- define class name to group multiple concepts
-			     of which only one can occur in this case -->
-			<concept wildcard-notation="AKTIN:TRANSFER:*" />
+			<concept wildcard-notation="AKTIN:TRANSPORT:*" />
 		</group>
-		<group class="d_lab">
+        <group class="zuweisung">
+			<concept wildcard-notation="AKTIN:REFERRAL:*" />
+		</group>
+        <group class="cedis">
+			<concept wildcard-notation="CEDIS30:*" />			
+		</group>
+		<concept notation="AKTIN:COMPLAINT"/>	
+		<concept notation="AKTIN:SYMPTOMDURATION"/>	
+		<concept notation="AKTIN:ASSESSMENT"/>
+        <group class="triage">
+			<concept wildcard-notation="MTS:*" />
+			<concept wildcard-notation="ESI:*" />			
+		</group>
+		<concept notation="LOINC:9279-1"/>	
+		<concept notation="LOINC:20564-1"/>	
+		<concept notation="LOINC:8480-6"/>	
+		<concept notation="LOINC:8329-5"/>	
+        <concept notation="LOINC:72514-3"/>	
+        <concept notation="LOINC:9269-2"/>	
+        <concept notation="LOINC:9267-6"/>	
+        <concept notation="LOINC:9270-0"/>	
+        <concept notation="LOINC:9268-4"/>	
+        <group class="SPPL">
+			<concept notation="AKTIN:SPPL:D" />
+			<concept notation="AKTIN:SPPL:M" />
+			<concept notation="AKTIN:SPPL:C" />
+		</group>
+        <group class="RPPL">
+			<concept notation="AKTIN:RPPL:B" />
+			<concept notation="AKTIN:RPPL:D" />
+			<concept notation="AKTIN:RPPL:A" />
+		</group>
+		<concept notation="LOINC:75859-9"/>	
+        <group class="schwangerschaft">
+			<concept notation="AKTIN:PREGNANCY:1" />
+			<concept notation="AKTIN:PREGNANCY:0" />
+            <concept notation="AKTIN:PREGNANCY:UNK" />
+		</group>
+        <group class="tetanusschutz">
+			<concept notation="LOINC:11458-7:NEG" />
+			<concept notation="LOINC:11458-7" />
+            <concept notation="LOINC:11458-7:NI" />
+		</group>
+        <group class="allergie">
+			<concept notation="AKTIN:ALLERGY:ALGN" />
+			<concept notation="AKTIN:ALLERGY:ALGN:NEG" />
+		</group>
+        <group class="allergie_kontrastmittel">
+			<concept notation="AKTIN:ALLERGY:V08" />
+			<concept notation="AKTIN:ALLERGY:V08:NEG" />
+		</group>
+        <group class="allergie_antibiotika">
+			<concept notation="AKTIN:ALLERGY:A07AA" />
+			<concept notation="AKTIN:ALLERGY:A07AA:NEG" />
+		</group>
+        <group class="allergie_sonstige">
+			<concept notation="AKTIN:ALLERGY:OTH" />
+			<concept notation="AKTIN:ALLERGY:OTH:NEG" />
+		</group>
+		<concept notation="AKTIN:ALLERGY:TXT"/>	
+        <group class="isolation">
+			<concept notation="AKTIN:ISOLATION:ISO" />      <!--yes--> 
+			<concept notation="AKTIN:ISOLATION:RISO" />     <!--yes-->
+			<concept notation="AKTIN:ISOLATION:ISO:NEG" />  <!--no-->
+			<!--Pick last 3 char 'ISO'=yes<>'NEG'=no -->
+		</group>
+        <group class="isolation_grund">
+			<concept wildcard-notation="AKTIN:ISOREASON:*" />			
+		</group>
+		<concept notation="AKTIN:PATHOGENE:AMRO:NEG"/>	
+        <group class="keime_mrsa">
+			<concept notation="AKTIN:PATHOGENE:MRSA" />
+			<concept notation="AKTIN:PATHOGENE:MRSA:SUSP" />
+		</group>
+        <group class="keime_3mrgn">
+			<concept notation="AKTIN:PATHOGENE:3MRGN" />
+			<concept notation="AKTIN:PATHOGENE:3MRGN:SUSP" />
+		</group>
+        <group class="keime_4mrgn">
+			<concept notation="AKTIN:PATHOGENE:4MRGN" />
+			<concept notation="AKTIN:PATHOGENE:4MRGN:SUSP" />
+		</group>
+        <group class="keime_vre">
+			<concept notation="AKTIN:PATHOGENE:VRE" />
+			<concept notation="AKTIN:PATHOGENE:VRE:SUSP" />
+		</group>
+        <group class="keime_andere">
+			<concept notation="AKTIN:PATHOGENE:OTH" />
+			<concept notation="AKTIN:PATHOGENE:OTH:SUSP" />
+		</group>		
+		<group class="d_labor">
+			<concept notation="LOINC:26436-6" />
+			<concept notation="LOINC:26436-6:NEG" />
+		</group>
+        <group class="d_blutgase">
+			<concept notation="LOINC:18767-4" />
+			<concept notation="LOINC:18767-4:NEG" />
+		</group>
+		<group class="d_urinschnelltest">
+			<concept notation="LOINC:50556-0" />
+			<concept notation="LOINC:50556-0:NEG" />
+		</group>
+		<group class="d_ekg">
+			<concept notation="LOINC:34534-8" />
+			<concept notation="LOINC:34534-8:NEG" />
+		</group>
+		<group class="d_sonographie">
+			<concept notation="LOINC:25061-3" />
+			<concept notation="LOINC:25061-3" />
+		</group>
+		<group class="d_echokardiographie">
+			<concept notation="LOINC:42148-7" />
+			<concept notation="LOINC:42148-7:NEG" />
+		</group>
+		<group class="d_ct_kopf">
+			<concept notation="LOINC:24725-4" />
+			<concept notation="LOINC:24725-4:NEG" />
+		</group>
+		<group class="d_ct">
+			<concept notation="LOINC:25045-6" />
+			<concept notation="LOINC:25045-6:NEG" />
+		</group>
+		<group class="d_ct_trauma">
+			<concept notation="LOINC:46305-9" />
+			<concept notation="LOINC:46305-9:NEG" />
+		</group>
+		<group class="d_roentgen_wirbelsaeule">
+			<concept notation="LOINC:38008-9" />
+			<concept notation="LOINC:38008-9:NEG" />
+		</group>
+		<group class="d_roentgen_thorax">
+			<concept notation="LOINC:30745-4" />
+			<concept notation="LOINC:30745-4:NEG" />
+		</group>
+		<group class="d_roentgen_becken">
+			<concept notation="LOINC:28561-9" />
+			<concept notation="LOINC:28561-9:NEG" />
+		</group>
+		<group class="d_roentgen_extremitaeten">
 			<concept notation="LOINC:37637-6" />
 			<concept notation="LOINC:37637-6:NEG" />
 		</group>
-		<group class="diag">
-			<!-- wildcard-notation only supported until ontology IRI queries are -->
-			<concept wildcard-notation="ICD10GM:*" />
+		<group class="d_roentgen_sonstiges">
+			<concept notation="LOINC:43468-8" />
+			<concept notation="LOINC:43468-8:NEG" />
 		</group>
-		<concept notation="XYZ" />
+		<group class="d_mrt">
+			<concept notation="LOINC:25056-3" />
+			<concept notation="LOINC:25056-3:NEG" />
+		</group>
+		<!-- does not work well this way 
+        <group class="entlassung">
+			<concept wildcard-notation="AKTIN:TRANSFER:*" />
+			<concept wildcard-notation="AKTIN:DISCHARGE:*" />
+		</group> -->
+        <group class="transfer">
+			<concept wildcard-notation="AKTIN:TRANSFER:*"/>
+		</group>
+        <group class="discharge">
+			<concept wildcard-notation="AKTIN:DISCHARGE:*"/>
+		</group>
+        <concept notation="AKTIN:PHYSENCOUNTER"/>	
+        <concept notation="AKTIN:STARTTHERAPY"/>	
+        <concept notation="LOINC:53576-5"/>	
+        <concept notation="LOINC:74198-3"/>	
+        <concept notation="LOINC:34905-0"/>	
+        <concept notation="LOINC:11488-4"/>	
+        <concept notation="LOINC:34750-0"/>	
+        
+        <group class="diagnose">
+			<concept wildcard-notation="ICD10GM:*"/>
+		</group>
 	</concepts>
-
 
 	<patient-table>
 		<column header="patient_id" xpath="@id"/>
 		<column header="geburtsdatum_ts" xpath="eav:birthdate"/>
 		<column header="geschlecht" xpath="eav:gender"/>
 	</patient-table>
+	
 	<visit-table>
 		<!-- context for XPath expressions is each visit node -->
 		<!-- XMLNS for XPath is assumed to be  http://sekmi.de/histream/ns/eav-data -->
+        <!-- concepts for the visit table must occur only once per visit and may not repeat -->
 		<column header="patient_id" xpath="../@id"/>
 		<column header="visit_id" xpath="@id"/>
-		<column header="transportmittel" xpath="substring(eav:fact[@class='transportmittel']/@concept, 16)"/>
-		<column header="postleitzahl" xpath="eav:fact[@concept='AKTIN:ZIPCODE']/eav:value"/>
-		<!-- concepts for the visit table must occur only once
-		per visit and may not repeat -->
-		<column header="start" xpath="eav:start"/>
-		<!-- What is better? -->
-		<!-- (a) First column, then concepts with value -->
-		<column header="diagnostik_labor_ts" xpath="eav:fact[@class='d_lab']/@start"/>
-		<column header="diagnostik_labor" xpath="eav:fact[@class='d_lab']/@concept"/>
-		<!-- (b) first concepts then columns with value -->
-		<column header="diagnostik_labort_ts" xpath="eav:fact[@class='d_lab']/@start"/>
-		<column header="diagnostik_labort" xpath="eav:fact[@class='d_lab']/eav:modifier[@code='OPB' or @code='PB']/@code"/>
-			<!-- We want this: 
-					6:NEG -> not tested
-					6/mod=OPB -> tested non pathological
-					6/mod=PB -> tested pathological 
-			-->
+		
+        <column header="postleitzahl" xpath="eav:fact[@concept='AKTIN:ZIPCODE']/eav:value"/>
+        <column header="versicherung_txt" xpath="eav:fact[@concept='AKTIN:KKNAME']/eav:value"/>
+        <column header="versicherung_iknr" xpath="eav:fact[@concept='AKTIN:IKNR']/eav:value"/>
+		<column header="transportmittel" xpath="substring(eav:fact[@class='transportmittel']/@concept, 17)"/>
+		<column header="zuweisung" xpath="substring(eav:fact[@class='zuweisung']/@concept, 16)"/>
+		<column header="cedis" xpath="substring(eav:fact[@class='cedis']/@concept, 9)"/>
+		<column header="beschwerden_txt" xpath="eav:fact[@concept='AKTIN:COMPLAINT']/eav:value"/>
+        <column header="postleitzahl" xpath="eav:fact[@concept='AKTIN:SYMPTOMDURATION']/eav:value"/>
+		<column header="triage" xpath="substring(eav:fact[@class='triage']/@concept, 5)"/>
+		<column header="triage_system" xpath="concat(substring(eav:fact[@class='triage']/@concept, 1, 3),substring(eav:fact[@concept='AKTIN:ASSESSMENT']/@concept, 7))"/>
+        <column header="atemfrequenz" xpath="eav:fact[@concept='LOINC:9279-1']/eav:value"/>
+        <column header="saettigung" xpath="eav:fact[@concept='LOINC:20564-1']/eav:value"/>
+        <column header="blutdruck_sys" xpath="eav:fact[@concept='LOINC:8480-6']/eav:value"/>
+        <column header="kerntemperatur" xpath="eav:fact[@concept='LOINC:8329-5']/eav:value"/>
+        <column header="schmerzskala" xpath="eav:fact[@concept='LOINC:72514-3']/eav:value"/>
+        <column header="gcs_summe" xpath="eav:fact[@concept='LOINC:9269-2']/eav:value"/>
+        <column header="gcs_augen" xpath="eav:fact[@concept='LOINC:9267-6']/eav:value"/>
+        <column header="gcs_verbal" xpath="eav:fact[@concept='LOINC:9270-0']/eav:value"/>
+        <column header="gcs_motorisch" xpath="eav:fact[@concept='LOINC:9268-4']/eav:value"/>   
+        <!-- ToDo: ERROR in Pupil* - xpath should be correct, but does not work-->
+        <column header="pupillenweite_rechts" xpath="substring(eav:fact[@class='SPPL'][/eav:modifier/@code='AKTIN:TSITE:R']/@concept, 12)"/>
+        <column header="pupillenweite_links" xpath="substring(eav:fact[@class='SPPL'][/eav:modifier/@code='AKTIN:TSITE:L']/@concept, 12)"/>
+        <column header="pupillenreaktion_rechts" xpath="substring(eav:fact[@class='RPPL'][/eav:modifier/@code='AKTIN:TSITE:R']/@concept, 12)"/>
+        <column header="pupillenreaktion_links" xpath="substring(eav:fact[@class='RPPL'][/eav:modifier/@code='AKTIN:TSITE:L']/@concept, 12)"/>
+        <column header="rankin" xpath="eav:fact[@concept='LOINC:9279-1']/eav:value"/>
+		<column header="schwangerschaft" xpath="substring(eav:fact[@class='schwangerschaft']/@concept, 17)"/>
+		<column header="tetanusschutz" xpath="substring(eav:fact[@class='tetanusschutz']/@concept, 7)"/>
+		<column header="allergie" xpath="substring(eav:fact[@class='allergie']/@concept, 15)"/>
+        <column header="allergie_kontrastmittel" xpath="substring(eav:fact[@class='allergie_kontrastmittel']/@concept, 15)"/>
+        <column header="allergie_antibiotika" xpath="substring(eav:fact[@class='allergie_antibiotika']/@concept, 15)"/>
+        <column header="allergie_sonstige" xpath="substring(eav:fact[@class='allergie_sonstige']/@concept, 15)"/>
+        <column header="allergie_txt" xpath="eav:fact[@concept='AKTIN:ALLERGY:TXT']/eav:value"/>
+        <column header="isolation" xpath="substring(eav:fact[@class='isolation']/@concept, string-length(eav:fact[@class='isolation']/@concept)-2)"/>
+        <column header="isolation_grund" xpath="substring(eav:fact[@class='isolation_grund']/@concept, 17)"/>
+		<column header="keime" xpath="substring(eav:fact[@concept='AKTIN:PATHOGENE:AMRO:NEG']/@concept, 17)"/>
+		<column header="keime_mrsa" xpath="substring(eav:fact[@class='keime_mrsa']/@concept, 17)"/>
+		<column header="keime_3mrgn" xpath="substring(eav:fact[@class='keime_3mrgn']/@concept, 17)"/>
+		<column header="keime_4mrgn" xpath="substring(eav:fact[@class='keime_4mrgn']/@concept, 17)"/>
+		<column header="keime_vre" xpath="substring(eav:fact[@class='keime_vre']/@concept, 17)"/>
+		<column header="keime_andere" xpath="substring(eav:fact[@class='keime_andere']/@concept, 17)"/>
+		<column header="diagnostik_labor" xpath="substring(eav:fact[@class='d_labor']/@concept, 7)"/>
+		<column header="diagnostik_labor_ts" xpath="eav:fact[@class='d_labor']/@start"/>
+		<column header="diagnostik_labor_ergebnis" xpath="substring(eav:fact[@class='d_labor']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>	
+        <column header="diagnostik_blutgase" xpath="substring(eav:fact[@class='d_blutgase']/@concept, 7)"/>
+		<column header="diagnostik_blutgase_ts" xpath="eav:fact[@class='d_blutgase']/@start"/>
+		<column header="diagnostik_blutgase_ergebnis" xpath="substring(eav:fact[@class='d_blutgase']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+        <column header="diagnostik_urinschnelltest" xpath="substring(eav:fact[@class='d_urinschnelltest']/@concept, 7)"/>
+		<column header="diagnostik_urinschnelltest_ts" xpath="eav:fact[@class='d_urinschnelltest']/@start"/>
+		<column header="diagnostik_urinschnelltest_ergebnis" xpath="substring(eav:fact[@class='d_urinschnelltest']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+        <column header="diagnostik_ekg" xpath="substring(eav:fact[@class='d_ekg']/@concept, 7)"/>
+		<column header="diagnostik_ekg_ts" xpath="eav:fact[@class='d_ekg']/@start"/>
+		<column header="diagnostik_ekg_ergebnis" xpath="substring(eav:fact[@class='d_ekg']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
+        <column header="diagnostik_sonographie" xpath="substring(eav:fact[@class='d_sonographie']/@concept, 7)"/>
+		<column header="diagnostik_sonographie_ts" xpath="eav:fact[@class='d_sonographie']/@start"/>
+		<column header="diagnostik_sonographie_ergebnis" xpath="substring(eav:fact[@class='d_sonographie']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+        <column header="diagnostik_echokardiographie" xpath="substring(eav:fact[@class='d_echokardiographie']/@concept, 7)"/>
+		<column header="diagnostik_echokardiographie_ts" xpath="eav:fact[@class='d_echokardiographie']/@start"/>
+		<column header="diagnostik_echokardiographie_ergebnis" xpath="substring(eav:fact[@class='d_echokardiographie']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
+		<column header="diagnostik_ct_kopf" xpath="substring(eav:fact[@class='d_ct_kopf']/@concept, 7)"/>
+		<column header="diagnostik_ct_kopf_ts" xpath="eav:fact[@class='d_ct_kopf']/@start"/>
+		<column header="diagnostik_ct_kopf_ergebnis" xpath="substring(eav:fact[@class='d_ct_kopf']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
+        <column header="diagnostik_ct_" xpath="substring(eav:fact[@class='d_ct']/@concept, 7)"/>
+		<column header="diagnostik_ct_ts" xpath="eav:fact[@class='d_ct']/@start"/>
+		<column header="diagnostik_ct_ergebnis" xpath="substring(eav:fact[@class='d_ct']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
+		<column header="diagnostik_ct_trauma" xpath="substring(eav:fact[@class='d_ct_trauma']/@concept, 7)"/>
+		<column header="diagnostik_ct_trauma_ts" xpath="eav:fact[@class='d_ct_trauma']/@start"/>
+		<column header="diagnostik_ct_trauma_ergebnis" xpath="substring(eav:fact[@class='d_ct_trauma']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+		<column header="diagnostik_roentgen_wirbelsaeule" xpath="substring(eav:fact[@class='d_roentgen_wirbelsaeule']/@concept, 7)"/>
+		<column header="diagnostik_roentgen_wirbelsaeule_ts" xpath="eav:fact[@class='d_roentgen_wirbelsaeule']/@start"/>
+		<column header="diagnostik_roentgen_wirbelsaeule_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_wirbelsaeule']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
+		<column header="diagnostik_roentgen_thorax" xpath="substring(eav:fact[@class='d_roentgen_thorax']/@concept, 7)"/>
+		<column header="diagnostik_roentgen_thorax_ts" xpath="eav:fact[@class='d_roentgen_thorax']/@start"/>
+		<column header="diagnostik_roentgen_thorax_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_thorax']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+        <column header="diagnostik_roentgen_becken_" xpath="substring(eav:fact[@class='d_roentgen_becken']/@concept, 7)"/>
+		<column header="diagnostik_roentgen_becken_ts" xpath="eav:fact[@class='d_roentgen_becken']/@start"/>
+		<column header="diagnostik_roentgen_becken_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_becken']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+        <column header="diagnostik_roentgen_extremitaeten_" xpath="substring(eav:fact[@class='d_roentgen_extremitaeten']/@concept, 7)"/>
+		<column header="diagnostik_roentgen_extremitaeten_ts" xpath="eav:fact[@class='d_roentgen_extremitaeten']/@start"/>
+		<column header="diagnostik_roentgen_extremitaeten_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_extremitaeten']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+        <column header="diagnostik_roentgen_sonstiges_" xpath="substring(eav:fact[@class='d_roentgen_sonstiges']/@concept, 7)"/>
+		<column header="diagnostik_roentgen_sonstiges_ts" xpath="eav:fact[@class='d_roentgen_sonstiges']/@start"/>
+		<column header="diagnostik_roentgen_sonstiges_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_sonstiges']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+        <column header="diagnostik_mrt_" xpath="substring(eav:fact[@class='d_mrt']/@concept, 7)"/>
+		<column header="diagnostik_mrt_ts" xpath="eav:fact[@class='d_mrt']/@start"/>
+		<column header="diagnostik_mrt_ergebnis" xpath="substring(eav:fact[@class='d_mrt']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+	
+        <!-- <column header="entlassung" xpath="eav:fact[@class='entlassung']"/>  this does not work well with xpath selection of the value-->
+        <column header="entlassung" xpath="concat(substring(eav:fact[@class='transfer']/@concept, 16),substring(eav:fact[@class='discharge']/@concept, 17))"/> 
+        <column header="aufnahme_ts" xpath="eav:start"/>
+        <!-- ToDo: ERROR - for some reason the concat for triage@start does not work and neither does the simple version with just ESI/MTS - mystery :)
+        <column header="triage_ts" xpath="concat(eav:fact[@class='triage']/@start, eav:fact[@concept='AKTIN:ASSESSMENT']/@start)"/> 
+        <column header="triage_ts" xpath="eav:fact[@class='triage']/@start"/> -->
+        <column header="arztkontakt_ts" xpath="eav:fact[@concept='AKTIN:PHYSENCOUNTER']/@start"/>
+        <column header="therapiebeginn_ts" xpath="eav:fact[@concept='AKTIN:STARTTHERAPY']/@start"/>
+        <column header="entlassung_ts" xpath="eav:end"/>
+        
+        <column header="modul_ueberwachung" xpath="substring(eav:fact[@concept='LOINC:53576-5']/@concept, 7)"/>
+        <column header="modul_trauma" xpath="substring(eav:fact[@concept='LOINC:74198-3']/@concept, 7)"/>
+        <column header="modul_neurologie" xpath="substring(eav:fact[@concept='LOINC:34905-0']/@concept, 7)"/>
+        <column header="modul_konsil" xpath="substring(eav:fact[@concept='LOINC:11488-4']/@concept, 7)"/>
+        <column header="modul_anaesthesie" xpath="substring(eav:fact[@concept='LOINC:34750-0']/@concept, 7)"/>	
 	</visit-table>
+	
 	<!-- export separate table for repeating elements -->
-	<eav-table id="diagnose" class="diag">
+	<eav-table id="diagnose" class="diagnose">
 		<!-- context for XPath expressions is each fact node -->
 		<column header="patient_id" xpath="patient-ref"/>
 		<column header="visit_id" xpath="visit-ref"/>
-		<column header="start" type="@start"/>
-		<column header="code" type="@concept"/>
-		<column header="fuehrend" xpath="eav:modifier[@code='fuehrend']/@code"/>
-		<column header="txt" xpath="eav:modifier[@code='originalText']/@value"/>
+		<column header="diagnose_code" type="@concept"/>
+		<column header="diagnose_fuehrend" xpath="substring(eav:modifier[@code='AKTIN:DIAG:F']/@code, 12)"/>
+		<column header="diagnose_zusatz" xpath="substring(eav:modifier[@code='AKTIN:DIAG:V' or @code='AKTIN:DIAG:Z' or @code='AKTIN:DIAG:A' or @code='AKTIN:DIAG:G']/@code, 12)"/>
+		<column header="diagnose_txt" xpath="eav:modifier[@code='originalText']/@value"/>
 	</eav-table>
+	
 </export>

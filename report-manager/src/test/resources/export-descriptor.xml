@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export xmlns="http://sekmi.de/ns/histream/export-v1">
 	<concepts>	
+		<!-- ACHTUNG: Eigentlich sollten concepts/concept und concepts/group nicht
+		durcheinander benutzt werden. Zuerst sollten alle concepts/group kommen
+		und anschließend alle concepts/concept. Irgendwie funktioniert das aber
+		auch trotzdem wenn man es durcheinander macht ;) wäre interessant warum..  -->
         <concept notation="AKTIN:ZIPCODE"/>
         <concept notation="AKTIN:KKNAME"/>
         <concept notation="AKTIN:IKNR"/>	
@@ -298,11 +302,11 @@
 	</visit-table>
 	
 	<!-- export separate table for repeating elements -->
-	<eav-table id="diagnose" class="diagnose">
+	<eav-table id="diagnose" xpath="eav:fact[@class='diagnose']">
 		<!-- context for XPath expressions is each fact node -->
-		<column header="patient_id" xpath="patient-ref"/>
-		<column header="visit_id" xpath="visit-ref"/>
-		<column header="diagnose_code" type="@concept"/>
+		<column header="patient_id" xpath="../../@id"/>
+		<column header="visit_id" xpath="../@id"/>
+		<column header="diagnose_code" xpath="@concept"/>
 		<column header="diagnose_fuehrend" xpath="substring(eav:modifier[@code='AKTIN:DIAG:F']/@code, 12)"/>
 		<column header="diagnose_zusatz" xpath="substring(eav:modifier[@code='AKTIN:DIAG:V' or @code='AKTIN:DIAG:Z' or @code='AKTIN:DIAG:A' or @code='AKTIN:DIAG:G']/@code, 12)"/>
 		<column header="diagnose_txt" xpath="eav:modifier[@code='originalText']/@value"/>

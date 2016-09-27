@@ -78,7 +78,7 @@ xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', align.default='
 	}
 	doc = newXMLDoc(node=e)
 	if( !is.null(file) ){
-		saveXML(doc, file=file, indent=TRUE)
+		saveXML(doc, file=file, encoding = "utf-8", indent=TRUE)
 	}else{
 		return(doc)
 	}

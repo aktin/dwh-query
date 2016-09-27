@@ -23,25 +23,25 @@
     <section>
         <header>1.2 Altersverteilung</header>
         <plot ref="p0.2">Grafik 1: Altersverteilung</plot>
-        <table ref="t0.2">Tabelle 2: Altersverteilung (Alter gerundet auf ganze Jahre)</table>
+        <table ref="t0.2">Tabelle 2: Altersverteilung (vollendete Lebensjahre)</table>
     </section>
   </section>
   <section>
     <header>2 Fallzahlen</header>
     <paragraph>Einleitungstext <var ref="anzahl"/> Fallzahlen</paragraph>
     <section>
-      <header>2.1 Fallzahlen nach Wochentag</header>
-      <plot ref="p1.2">Grafik 2: Fallzahlen nach Wochentag</plot>       
-    </section>
-    <section>
-      <header>2.2 Fallzahlen nach Kalendertagen</header>
+      <header>2.1 Fallzahlen nach Kalendertagen</header>
       <table ref="t1.1c">Tabelle 3: Fallzahlen nach Aufnahmetag</table>
     </section>
     <section>
+      <header>2.2 Fallzahlen nach Wochentag</header>
+      <plot ref="p1.2">Grafik 2: Fallzahlen nach Wochentag</plot>       
+    </section>
+    <section>
       <header>2.3 Fallzahlen nach Aufnahme-Uhrzeit</header>
-      <plot ref="p1.1">Grafik 3: Fallzahlen nach Aufnahmezeit</plot>  
+      <plot ref="p1.1">Grafik 3: Durchschnittliche Fallzahlen nach Aufnahmezeit</plot>  
       <table ref="t1.1a"></table>
-      <table ref="t1.1b">Tabelle 4: Fallzahlen nach Aufnahmezeit</table>
+      <table ref="t1.1b">Tabelle 4: Durchschnittliche Fallzahlen nach Aufnahmezeit</table>
     </section>
     <section>
       <header>2.4 Fallzahlen nach Wochentag und Aufnahmezeit</header>
@@ -101,31 +101,34 @@
     <section>
         <header>5.1 Ankunft/Aufnahme bis Ersteinschätzung</header>
         <plot ref="p2.1">Grafik 10: Ankunft/Aufnahme bis Ersteinschätzung</plot>
+        <table ref="t2.1">Tabelle 8: Ankunft/Aufnahme bis Ersteinschätzung</table>
     </section>
     <section>
         <header>5.2 Ankunft/Aufnahme bis zum ersten Arztkontakt</header>
         <plot ref="p2.2">Grafik 11: Ankunft/Aufnahme bis Arztkontakt</plot>
+        <table ref="t2.2">Tabelle 9: Ankunft/Aufnahme bis Arztkontakt</table>
     </section>
     <section>
         <header>5.3 Erster Arztkontakt bis zum Therapiebeginn</header>
         <plot ref="p2.3">Grafik 12: Erster Arztkontakt bis Therapiebeginn</plot>
+        <table ref="t2.3">Tabelle 10: Erster Arztkontakt bis Therapiebeginn</table>
     </section>
     <section>
         <header>5.4 Prozesszeiten nach Kategorie der Ersteinschätzung</header>
         <plot ref="p2.4">Grafik 13: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</plot>
-        <table ref="t2.4">Tabelle 8: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</table>
+        <table ref="t2.4">Tabelle 11: Aufnahme bis Arztkontakt in Minuten, gruppiert nach Ersteinschätzung</table>
     </section>
   </section>
       <section>
         <header>6 Verlegung und Entlassung</header>
         <paragraph>Einleitungstext Verlegung und Entlassung</paragraph>
         <plot ref="p3.1">Grafik 14: Verlegung und Entlassung</plot>
-        <table ref="t3.1">Tabelle 9: Verlegung und Entlassung</table>
+        <table ref="t3.1">Tabelle 12: Verlegung und Entlassung</table>
       </section>
   <section>
     <header>7 Aufenthaltsdauer der Patienten</header>
     <plot ref="p2.5">Grafik 15: Aufenthaltsdauer</plot>
-    <table ref="t7.1">Tabelle 10: Aufenthaltsdauer in Minuten</table>  
+    <table ref="t7.1">Tabelle 13: Aufenthaltsdauer in Minuten</table>  
   </section>  
   <section>
     <header>8 Vorstellungsgrund und Aufnahmediagnose</header>
@@ -136,12 +139,12 @@
      <!-- <table ref="t4.1">Tabelle 11: Top 20 Diagnosen</table> -->
     </section>
     <section>
-      <header>8.2 Top 10 CEDIS</header>
-      <plot ref="p4.2">Grafik 17: Top 10 CEDIS</plot>
+      <header>8.2 Top 10 Vorstellungsgründe (CEDIS)</header>
+      <plot ref="p4.2">Grafik 17: Top 10 Vorstellungsgründe</plot>
       <!-- <table ref="t4.2">Tabelle 12: Top 10 CEDIS</table> -->
     </section>
       <section>
-      <header>8.3 CEDIS Gruppen</header>
+      <header>8.3 Vorstellungsgründe (Gruppen)</header>
       <plot ref="p4.3">Grafik 18: Alle dokumentierten CEDIS Codes nach Gruppen</plot>
     </section>
   </section>
@@ -169,7 +172,7 @@
         <section>
       <header>12.2 Patientenzahlen pro Tag</header>
         <paragraph>Maximum und Minimum der anwesenden Patienten mit Stunde des Auftretens und die durchschnittliche Anzahl anwesender Patienten pro Tag</paragraph>
-        <table ref="t12.2">Tabelle 11: Verlegung und Entlassung</table>
+        <table ref="t12.2">Tabelle 14: Patientenzahlen pro Tag (Extremwerte)</table>
     </section>
     <!--
     <section>

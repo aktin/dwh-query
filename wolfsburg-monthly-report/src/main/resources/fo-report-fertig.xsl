@@ -5,8 +5,12 @@
 	<xsl:variable name="datapos" select="count(preceding-sibling::xhtml:td)"/>
 		<fo:root>
 		  <fo:layout-master-set>
-			<fo:simple-page-master master-name="page-layout" page-height="11in" page-width="8in">
+		  	<fo:simple-page-master master-name="page-layout"       
+		  		page-height="297mm" page-width="210mm">
+	<!--	  		margin-top="20mm" margin-bottom="20mm"
+		  		margin-left="25mm" margin-right="25mm"> -->
 			  <fo:region-body margin="1in" region-name="body"/>
+			  <fo:region-after region-name="footer-normal" extent="20mm"/>
 			</fo:simple-page-master>
 		  </fo:layout-master-set>
 		  <fo:declarations>
@@ -25,14 +29,34 @@
   </x:xmpmeta>
 </fo:declarations>
 		  <fo:page-sequence master-reference="page-layout">
-			<fo:flow flow-name="body">
+		  	<fo:static-content flow-name="footer-normal">
+		  		<fo:block text-align="center">Seite <fo:page-number/> von <fo:page-number-citation-last ref-id="end"/></fo:block> <!-- ref="mybody" funktioniert nicht, unklar?! -->
+		  	</fo:static-content>
+			<fo:flow flow-name="body" id="mybody">
 				<fo:block xsl:use-attribute-sets="headerformat"><xsl:value-of select="document('report-data.xml')/report-data/text[@id='kh']/text()"/></fo:block>
 				<fo:block><xsl:value-of select="document('report-data.xml')/report-data/text[@id='bereich']/text()"/></fo:block> 
 				<fo:block><xsl:value-of select="document('report-data.xml')/report-data/text[@id='leitung']/text()"/></fo:block> 
 				<fo:block><xsl:value-of select="document('report-data.xml')/report-data/text[@id='monat']/text()"/></fo:block> 
 				<fo:block><xsl:value-of select="document('report-data.xml')/report-data/text[@id='stand']/text()"/></fo:block>  
+				<fo:block space-before="200pt">
+					Verbesserung der Versorgungsforschung in der Akutmedizin in Deutschland durch den Aufbau eines nationalen Notaufnahmeregisters
+				</fo:block>
+				<fo:block space-before="10pt">
+					<fo:external-graphic>
+						<xsl:attribute name="src">aktin.png</xsl:attribute>
+					</fo:external-graphic>
+				</fo:block>
+				<fo:block space-before="50pt">
+					Förderkennzeichen: 01KX1319B
+				</fo:block>
+				<fo:block space-before="10pt">
+					<fo:external-graphic>
+						<xsl:attribute name="src">BMBF.png</xsl:attribute>
+					</fo:external-graphic>
+				</fo:block>
 				<xsl:call-template name="genTOC"/>
 				<xsl:apply-templates select="./section"/>
+				<fo:block id="end"/>
 			</fo:flow>
 		  </fo:page-sequence>
     </fo:root>
@@ -86,7 +110,7 @@
   
   <xsl:template name="genTOC">
 	<fo:block break-before='page'  break-after='page' >
-		<fo:block xsl:use-attribute-sets="headerformat">TABLE OF CONTENTS</fo:block>
+		<fo:block xsl:use-attribute-sets="headerformat">Inhaltsverzeichnis</fo:block>
 		<xsl:for-each select="//section">
 			<fo:block text-align-last="justify">
 				<xsl:variable name="anzahl" select="count(ancestor::*)"/>
@@ -126,7 +150,7 @@
 	<xsl:variable name="stufe" select="count(ancestor::*)"/>
 	<xsl:choose>
 		<xsl:when test="$stufe=2">
-			<fo:block xsl:use-attribute-sets="textheaderformat"><xsl:value-of select="./text()"/></fo:block>
+			<fo:block page-break-before="always" xsl:use-attribute-sets="textheaderformat"><xsl:value-of select="./text()"/></fo:block>
 		</xsl:when>
 		<xsl:otherwise>
 			<fo:block xsl:use-attribute-sets="subheaderformat"><xsl:value-of select="./text()"/></fo:block>

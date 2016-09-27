@@ -10,6 +10,13 @@ round_df <- function(df, digits) {
   (df)
 }
 
+options(OutDec= ",")
+
+gformat <- function(num,digits=0) {
+  prettyOut <- format(round(as.numeric(num), 1), nsmall=digits, big.mark=".")
+  (prettyOut)
+}
+
 stdabw <- function(x) {n=length(x) ; sqrt(var(x) * (n-1) / n)}
 
 # load data into data frame and keep all data as strings
@@ -130,7 +137,7 @@ gfx.dev <- 'svg'
 
 # Counts per Hour
 try({
-  graph <- barchart(table(df$admit.h), horizontal=FALSE, xlab="Uhrzeit [Stunde]", ylab="Anzahl Patienten")
+  graph <- barchart(table(df$admit.h)/length(levels(df$admit.day)), horizontal=FALSE, xlab="Uhrzeit [Stunde]", ylab="Durchschnittliche Anzahl Patienten")
   # for viewing: print(graph)
   # Save as SVG file
   trellis.device(gfx.dev,file=paste0(gfx.dir,'admit.h',gfx.ext), width=8,height=4)
@@ -139,8 +146,8 @@ try({
 }, silent=FALSE)
 # Write table
 try({
-  xhtml.table(table(df$admit.h)[1:12], file=paste0(xml.dir,'admit.h.xml'),align='center')
-  xhtml.table(table(df$admit.h)[13:24], file=paste0(xml.dir,'admit2.h.xml'),align='center')
+  xhtml.table(round(table(df$admit.h)[1:12]/length(levels(df$admit.day)),digits=1), file=paste0(xml.dir,'admit.h.xml'),align='center')
+  xhtml.table(round(table(df$admit.h)[13:24]/length(levels(df$admit.day)),digits=1), file=paste0(xml.dir,'admit2.h.xml'),align='center')
 }, silent=FALSE)
 
 #calculate number of weekdays in the current period (month)
@@ -208,18 +215,18 @@ try({
   table_formatted <- table(df$transport,useNA = "always")
   names(table_formatted)[length(names(table_formatted))]<-'keine Daten'
   a <- table_formatted
-  b <- data.frame(Wert=names(a), Anzahl=as.numeric(a), Anteil=as.numeric(round((a / sum(a))*100,digits = 1)))
-  c <- rbind(b, data.frame(Wert="Summe",Anzahl=sum(a),Anteil=100))
-  c[,3] <- sprintf(fmt="%.1f",c[,3])
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat(round((a / sum(a))*100,digits = 1)))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
+  #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
   xhtml.table(c, file=paste0(xml.dir,'transport.xml'),align=c('left','right','right'),widths=c(25,17,17))
   
   table_formatted <- table(df$referral,useNA = "always")
   names(table_formatted)[length(names(table_formatted))]<-'keine Daten'
   a <- table_formatted
-  b <- data.frame(Wert=names(a), Anzahl=as.numeric(a), Anteil=as.numeric(round((a / sum(a))*100,digits = 1)))
-  c <- rbind(b, data.frame(Wert="Summe",Anzahl=sum(a),Anteil=100))
-  c[,3] <- sprintf(fmt="%.1f",c[,3])
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat(round((a / sum(a))*100,digits = 1)))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
+  #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
   xhtml.table(c, file=paste0(xml.dir,'referral.xml'),align=c('left','right','right'),widths=c(60,17,17))
 }, silent=FALSE)
@@ -239,10 +246,22 @@ try({
   outofbounds <- length(df$phys.d) - length(a)
   isNA <- length(df$phys.d[is.na(df$phys.d )])
   b <- a[!is.na(a)]
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Relative Häufigkeit [%]",sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds))
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,180,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'phys.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   dev.off()
+}, silent=FALSE)
+
+try({
+  used <- length(a)-length(a[is.na(a)])
+  Kennzahl <- c('Anzahl Zeiten beruecksichtigt','Anzahl fehlende Zeiten','Anzahl ungueltige Werte (>180min)','Mittelwert','Median','Standardabweichung','Minimum','Maximum')
+  Zeit <- c(round(mean(na.omit(a)),1),median(na.omit(a)),round(stdabw(na.omit(a)),1),min(na.omit(a)),max(na.omit(a)))
+  Zeit <- sprintf(fmt="%.0f",Zeit)
+  Zeit <- paste(Zeit, 'Min')
+  Zeit <- c(used,isNA,outofbounds,Zeit)
+  
+  b <- data.frame(Kennzahl,Zeit)
+  xhtml.table(b, file=paste0(xml.dir,'phys.d.xml'),align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
 
@@ -252,10 +271,22 @@ try({
   outofbounds <- length(df$triage.d) - length(a)
   isNA <- length(df$triage.d[is.na(df$triage.d )])
   b <- a[!is.na(a)]
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Relative Häufigkeit [%]",sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'triage.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   dev.off()
+}, silent=FALSE)
+
+try({
+  used <- length(a)-length(a[is.na(a)])
+  Kennzahl <- c('Anzahl Zeiten beruecksichtigt','Anzahl fehlende Zeiten','Anzahl ungueltige Werte (>60min)','Mittelwert','Median','Standardabweichung','Minimum','Maximum')
+  Zeit <- c(round(mean(na.omit(a)),1),median(na.omit(a)),round(stdabw(na.omit(a)),1),min(na.omit(a)),max(na.omit(a)))
+  Zeit <- sprintf(fmt="%.0f",Zeit)
+  Zeit <- paste(Zeit, 'Min')
+  Zeit <- c(used,isNA,outofbounds,Zeit)
+  
+  b <- data.frame(Kennzahl,Zeit)
+  xhtml.table(b, file=paste0(xml.dir,'triage.d.xml'),align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
 # Time to therapy
@@ -270,13 +301,25 @@ try({
   dev.off()
 }, silent=FALSE)
 
+try({
+  used <- length(a)-length(a[is.na(a)])
+  Kennzahl <- c('Anzahl Zeiten beruecksichtigt','Anzahl fehlende Zeiten','Anzahl ungueltige Werte (>60min)','Mittelwert','Median','Standardabweichung','Minimum','Maximum')
+  Zeit <- c(round(mean(na.omit(a)),1),median(na.omit(a)),round(stdabw(na.omit(a)),1),min(na.omit(a)),max(na.omit(a)))
+  Zeit <- sprintf(fmt="%.0f",Zeit)
+  Zeit <- paste(Zeit, 'Min')
+  Zeit <- c(used,isNA,outofbounds,Zeit)
+  
+  b <- data.frame(Kennzahl,Zeit)
+  xhtml.table(b, file=paste0(xml.dir,'therapy.d.xml'),align=c('left','right'),widths=c(45,15))
+}, silent=FALSE)
+
 # Time to physician mean grouped by triage result
 try({
   a <- df$phys.d[df$phys.d<180]
   outofbounds <- length(df$phys.d) - length(a)
   b <- df$triage.result[df$phys.d<180]
   x <- aggregate(x=list(avg=a), by=list(triage=b), FUN=mean, na.rm=TRUE)
-  graph <- barchart(avg ~ triage, data=x, horizontal=FALSE, ylab="Durchschn. Zeit bis Arztkontakt", xlab="Triage",sub=paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds))
+  graph <- barchart(avg ~ triage, data=x, horizontal=FALSE, ylab="Durchschn. Zeit bis Arztkontakt [Min.]", xlab="Triage",sub=paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'triage.phys.d.avg',gfx.ext),width=8,height=4)
   print(graph)
   dev.off()
@@ -288,7 +331,7 @@ try({
   outofbounds <- length(df$discharge.d) - length(a)
   isNA <- length(df$discharge.d[is.na(df$discharge.d )])
   b <- a[!is.na(a)]
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="relative Häufigkeit [%]",sub=paste("Fehlende Werte: ", isNA, "; Werte über 600 Minuten: ", outofbounds))
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,600,length=11),sub=paste("Fehlende Werte: ", isNA, "; Werte über 600 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'discharge.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   dev.off()
@@ -303,9 +346,9 @@ try({
 try({
   table_formatted <- table(df$triage.result,useNA = "ifany")
   a <- table_formatted
-  b <- data.frame(Wert=names(a), Anzahl=as.numeric(a), Anteil=as.numeric(round((a / sum(a))*100,digits = 1)))
-  c <- rbind(b, data.frame(Wert="Summe",Anzahl=sum(a),Anteil=100))
-  c[,3] <- sprintf(fmt="%.1f",c[,3])
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat(round((a / sum(a))*100,digits = 1)))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
+  #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
   xhtml.table(c, file=paste0(xml.dir,'triage.xml'),align=c('left','right','right'),widths=c(20,20,20))
   
@@ -327,30 +370,30 @@ try({
 #}, silent=FALSE)
 # list of aggregate functions we want to apply
 try({
-  agg.funs <- list(avg=mean, med=median, min=min, max=max)
+  agg.funs <- list(Mittelwert=mean, Median=median, Minimum=min, Maximum=max)
   agg.list <- lapply(agg.funs, function(fun){aggregate(x=df$phys.d, by=list(triage=df$triage.result),FUN=fun, na.rm=TRUE)$x})
-  agg.list$avg <- round(agg.list$avg,1)
-  agg.list$med <- round(agg.list$med,0)
+  agg.list$Mittelwert <- round(agg.list$Mittelwert,1)
+  agg.list$Median <- round(agg.list$Median,0)
   agg.length <- aggregate(x=list(count=df$phys.d), by=list(triage=df$triage.result), FUN=length)
-  x <- data.frame(Triage=levels(df$triage.result), Anzahl=agg.length$count, agg.list)
+  x <- data.frame(Kategorie=levels(df$triage.result), Anzahl=agg.length$count, agg.list)
   rm(agg.funs, agg.list)
   #x[,3] <- paste(x[,3],'min')
-  xhtml.table(x, file=paste0(xml.dir,'triage.phys.d.xml'),align=c('left','right','right','right','right','right'),width=11)
+  xhtml.table(x, file=paste0(xml.dir,'triage.phys.d.xml'),align=c('left','right','right','right','right','right'),width=15)
 }, silent=FALSE)
 
 #Entlassung & Co
 try({
-  graph <- barchart( table(df$discharge), xlab="Entlassung & Verlegung (Häufigkeit)")
+  discharge_table <- table(df$discharge,useNA = "always")[c(12,8,10,13,9,11,4,5,6,3,2,1,7,14)]
+  names(discharge_table)[length(names(discharge_table))]<-'keine Daten'
+  graph <- barchart(discharge_table[c(13:1)], xlab="Entlassung & Verlegung (Häufigkeit)")
   trellis.device('svg',file=paste0(gfx.dir,'discharge',gfx.ext),width=8,height=4)
   print(graph)
   dev.off()
 }, silent=FALSE)
 try({
-  a <- table(df$discharge,useNA = "always")
-  names(a)[length(names(a))]<-'keine Daten'
-  b <- data.frame(Wert=names(a), Anzahl=as.numeric(a), Anteil=as.numeric(round((a / sum(a))*100,digits = 1)))
-  c <- rbind(b, data.frame(Wert="Summe",Anzahl=sum(a),Anteil=100))
-  c[,3] <- sprintf(fmt="%.1f",c[,3])
+  b <- data.frame(Kategorie=names(discharge_table), Anzahl=gformat(discharge_table), Anteil=gformat(round((discharge_table / sum(discharge_table))*100,digits = 1)))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(discharge_table)),Anteil=gformat(100,digits=1)))
+  #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
   xhtml.table(c, file=paste0(xml.dir,'discharge.xml'),align=c('left','right','right'),widths=c(30,15,15))
 }, silent=FALSE)
@@ -395,24 +438,28 @@ try({
   table_formatted <- table(df$sex,useNA = "always")
   names(table_formatted) <- c('Weiblich', 'Maennlich','keine Angabe')
   a <- table_formatted
-  b <- data.frame(Wert=names(a), Anzahl=as.numeric(a), Anteil=as.numeric(round((a / sum(a))*100,digits = 1)))
-  c <- rbind(b, data.frame(Wert="Summe",Anzahl=sum(a),Anteil=100))
-  c[,3] <- sprintf(fmt="%.1f",c[,3])
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat(round((a / sum(a))*100,digits = 1)))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
+  ##c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
   xhtml.table(c, file=paste0(xml.dir,'sex.xml'),align=c('left','right','right'),widths=c(25,15,15))
 }, silent=FALSE)
 
 #Patient Age
 try({
-  Wert <- c('Mittelwert','Median','Standardabweichung','Minimum','Maximum')
+  Kennzahl <- c('Mittelwert','Median','Standardabweichung','Minimum','Maximum')
   Alter <- c(round(mean(na.omit(df$age)),0),median(na.omit(df$age)),round(stdabw(na.omit(df$age)),0),min(na.omit(df$age)),max(na.omit(df$age)))
   #Alter <- sprintf(fmt="%.1f",Alter)
   Alter <- paste(Alter,'Jahre')
-  b <- data.frame(Wert,Alter)
+  b <- data.frame(Kennzahl,Alter)
   xhtml.table(b, file=paste0(xml.dir,'age.xml'),align=c('left','right'),widths=c(30,15))
 }, silent=FALSE)
 try({
-  graph <- histogram(na.omit(df$age),xlab="Alter [Jahre]",ylab="Relative Häufigkeit [%]")
+  x<-df$age
+  x[x>110] <- 110
+  x[x<0] <- NA
+  x<-x[!is.na(x)]
+  graph <- histogram(x,xlab="Alter [Jahre]",ylab="Anzahl Patienten",type='count',breaks=seq(0,110,length=12),sub='Werte größer 110 werden als 110 gewertet')
   trellis.device('svg',file=paste0(gfx.dir,'age',gfx.ext),width=8,height=4)
   print(graph)
   dev.off()
@@ -420,8 +467,8 @@ try({
 
 #Admit Day
 try({
-  Datum <- names(table(df$admit.day))
-  Wochentag <- weekdays(as.Date(Datum,'%Y-%m-%d'))
+  Datum <- names(table(format(as.Date(df$admit.day), '%d.%m.%Y')))
+  Wochentag <- weekdays(as.Date(names(table(df$admit.day))))
   Anzahl <- as.vector(table(df$admit.day))
   b <- data.frame(Datum,Wochentag,Anzahl)
   xhtml.table(b, file=paste0(xml.dir,'admit.d.xml'),align=c('left','right','right'),widths=c(25,15,13))
@@ -489,7 +536,7 @@ try({
   pmin <- apply (crowdperday,1,min)
   whichmin=apply(crowdperday,1,which.min)
   pmean <- round(apply (crowdperday,1,mean),digits=0)
-  c <- data.frame(Datum=levels(df$admit.day),MaxTime=paste(whichmax,'Uhr'),MaxPat=pmax,MinTime=paste(whichmin,'Uhr'),MinPat=pmin,MeanPat=pmean)
+  c <- data.frame(Datum,MaxTime=paste(whichmax,'Uhr'),MaxPat=pmax,MinTime=paste(whichmin,'Uhr'),MinPat=pmin,MeanPat=pmean)
   xhtml.table(c, file=paste0(xml.dir,'crowding.d.xml'),align=c('left','right','right','right','right','right'),widths=c(15,15,15,15,15,15))
 }, silent=FALSE)
 
@@ -508,6 +555,9 @@ try({
 }, silent=FALSE)
 
 try({
+  
+  lt_zero <- length(df$los[df$los < 0]) - length(df$los[is.na(df$los)])
+  gt_day <- length(df$los[df$los > 24*60]) - length(df$los[is.na(df$los)])
   df$los = df$discharge.ts - df$admit.ts
   los_NA <- sum(is.na(df$los))
   los <- df$los[df$los<=10*60]
@@ -517,13 +567,13 @@ try({
   los_removed <- length(df$los)-length(los)-los_NA-los_invalid
   los_erfasst=length(los)
   
-  Wert <- c('Anzahl Zeiten beruecksichtigt','Anzahl fehlende Zeiten','Anzahl ungueltige Werte (<0;>24h)','Anzahl zwischen 10h und 24h','Mittelwert','Median','Standardabweichung','Minimum','Maximum')
+  Kennzahl <- c('Anzahl Zeiten beruecksichtigt','Anzahl fehlende Zeiten','Anzahl ungueltige Werte (<0h)','Anzahl ungueltige Werte (>24h)','Anzahl zwischen 10h und 24h','Mittelwert','Median','Standardabweichung','Minimum','Maximum')
   Zeit <- c(round(mean(na.omit(los)),1),median(na.omit(los)),round(stdabw(na.omit(los)),1),min(na.omit(los)),max(na.omit(los)))
   Zeit <- sprintf(fmt="%.0f",Zeit)
   Zeit <- paste(Zeit, 'Min')
-  Zeit <- c(los_erfasst,los_NA,los_invalid,los_removed,Zeit)
+  Zeit <- c(los_erfasst,los_NA,lt_zero,gt_day,los_removed,Zeit)
  
-  b <- data.frame(Wert,Zeit)
+  b <- data.frame(Kennzahl,Zeit)
   xhtml.table(b, file=paste0(xml.dir,'los.xml'),align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
@@ -542,13 +592,13 @@ try({
     if (!is.na(df$discharge.day[i])) {
       if (as.Date(df$discharge.day[i],'%Y-%m-%d') == as.Date('2015-11-27','%Y-%m-%d')) {
         hour_discharge <- df$discharge.h[i]
-        discharges[hour_discharge] <- discharges[hour_dicharge]  + 1
+        discharges[hour_discharge] <- discharges[hour_discharge]  + 1
       }
     }
   }
   colors=rainbow(3)
   svg(paste0(gfx.dir,'admit_discharge','.svg'))
-  plot(crowdperday[27,],xlab = 'Uhrzeit [Stunde]',ylab='Anzahl Patienten',ylim=c(0,65),sub='rot=Anzahl Patienten, blau=Aufnahmen, grün=Entlassungen')
+  plot(crowdperday[27,],xlab = 'Uhrzeit [Stunde]',ylab='Durchschnittliche Anzahl Patienten',ylim=c(0,65),sub='rot=Anzahl Patienten, blau=Aufnahmen, grün=Entlassungen')
   lines(crowdperday[27,],type="b",col=colors[1])
   lines(admits,type="b",col=colors[3])
   lines(discharges,type="b",col=colors[2])

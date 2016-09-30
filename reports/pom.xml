@@ -1,27 +1,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<name>AKTIN : DWH Query : Wolfsburg Monthly Report</name>
-
-	<groupId>org.aktin</groupId>
-	<artifactId>wolfsburg-monthly-report</artifactId>
+	<packaging>pom</packaging>
+	
+	<groupId>org.aktin.reports</groupId>
+	<artifactId>pom</artifactId>
 	<version>0.1-SNAPSHOT</version>
+  
+	<name>AKTIN : DWH Query : Reports</name>
+	<description>AKTIN reports parent pom</description>
 
 	<parent>
 		<groupId>org.aktin</groupId>
 		<artifactId>dwh-query</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
-	<build>
-		<!--
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
-		-->
-		<plugins>
-		</plugins>
-	</build>
+		
+	<modules>
+		<module>wolfsburg-monthly</module>
+		<module>cda-field-stats</module>
+	</modules>
 	<dependencies>
 		<!-- -->
 		<dependency>
@@ -44,4 +41,5 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 	</dependencies>
+
 </project>

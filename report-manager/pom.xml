@@ -22,6 +22,7 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<!-- TODO separate report-api project -->
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
@@ -49,17 +50,17 @@
 		<dependency>
 			<groupId>de.sekmi.histream</groupId>
 			<artifactId>histream-i2b2</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>0.10-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.sekmi.histream</groupId>
 			<artifactId>histream-export</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>0.10-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.sekmi.histream</groupId>
 			<artifactId>histream-export</artifactId>
-			<version>0.9-SNAPSHOT</version>
+			<version>0.10-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

@@ -33,7 +33,7 @@ public class Snueffelstueck {
 		//toDo - not implemented yet
 		//at this point Data Sources (TSV) are just present in the WorkDir
 		try {
-			DataExtractor DatEx = new DataExtractor(null);
+			DataExtractorImpl DatEx = new DataExtractorImpl(null);
 			DatEx.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -49,8 +49,8 @@ public class Snueffelstueck {
 		Path script;
 		try {
 			String [] files = ReportWolfsburg.copyResourcesForR(work);
-			script = fs.getPath(files[0]);
-			RExecutor.runRscript(work,script);
+			// first element is file to execute
+			RExecutor.runRscript(work,files[0]);
 			//ToDo - runRScript does not get the whole list of files, so we'll probably want to delete the R files here since we wont need them anymore
 			deleteResources(files,work);
 			//log.info("R Script executed");

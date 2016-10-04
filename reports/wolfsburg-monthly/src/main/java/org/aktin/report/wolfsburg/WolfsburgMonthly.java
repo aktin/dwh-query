@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.util.logging.Logger;
 
 import javax.xml.transform.Source;
+
+import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.AnnotatedReport;
 
 @AnnotatedReport.Report(
@@ -68,6 +70,15 @@ public class WolfsburgMonthly extends AnnotatedReport {
 	public Source getExportDescriptor() {
 		URL url = getClass().getResource("/export-descriptor.xml");
 		return this.createStreamSource(url);
+	}
+
+	@Override
+	public String[] getRequiredPreferenceKeys() {
+		return new String[]{
+				PreferenceKey.organisationName.key(),
+				PreferenceKey.organisationUnit.key(),
+				PreferenceKey.commonName.key()
+		};
 	}
 
 }

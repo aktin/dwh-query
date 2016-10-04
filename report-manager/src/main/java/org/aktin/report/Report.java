@@ -108,7 +108,17 @@ public interface Report {
 	 */
 	InputStream readStaticWebResource(String path);
 	
-	
+
+	/**
+	 * Get required preference keys, which will be used to add
+	 * preference values during report creation.
+	 * <p>The default implementation returns an empty list</p>
+	 * 
+	 * @return preference keys
+	 */
+	default String[] getRequiredPreferenceKeys(){
+		return new String[]{};
+	}
 	/**
 	 * Copies all scripts and resource needed for the Rscript invocation
 	 * to the specified working directory. The file names of all copied

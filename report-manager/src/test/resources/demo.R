@@ -1,0 +1,5 @@
+library(lattice)
+graph <- barchart(runif(10) ~ x, horizontal=FALSE)
+trellis.device('svg',file='barchart1.svg',width=8, height=4)
+print(graph)
+dev.off()

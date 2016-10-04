@@ -9,9 +9,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.sql.DataSource;
 
-import org.aktin.report.Report;
+import javax.annotation.PreDestroy;
+import javax.ejb.Singleton;
+import javax.sql.DataSource;
+import javax.xml.transform.Source;
+
+import org.aktin.dwh.DataExtractor;
 
 import de.sekmi.histream.ObservationFactory;
 import de.sekmi.histream.export.TableExport;
@@ -39,11 +43,12 @@ import de.sekmi.histream.impl.ObservationFactoryImpl;
  * @author R.W.Majeed
  *
  */
-class DataExtractor implements Closeable{
+@Singleton
+class DataExtractorImpl implements DataExtractor, Closeable{
 	//private static final Logger log = Logger.getLogger(DataExtractor.class.getName());
 	private I2b2ExtractorFactory extractor;
 	private ObservationFactory of;
-	
+
 	/**
 	 * Opens database connections to i2b2 and prepares
 	 * SQL statements for execution.
@@ -51,32 +56,12 @@ class DataExtractor implements Closeable{
 	 * @throws IOException io error
 	 * @throws SQLException sql error
 	 */
-	public DataExtractor(DataSource crc_ds) throws IOException, SQLException{
+	public DataExtractorImpl(DataSource crc_ds) throws IOException, SQLException{
 		// use JNDI for database connection
 		of = new ObservationFactoryImpl();
 		// TODO need patient and encounter extension? if yes, add to factory
 		extractor = new I2b2ExtractorFactory(crc_ds, of);
 	}
-	/*
-		// ++++Testing+++++
-
-		String[] resNames = {"patients.txt","encounters.txt", "CEDIS.csv"};
-		String resPrefix = "/";
-		FileSystem fs = FileSystems.getDefault();
-		Path work = fs.getPath("C:/temp/RScript-Tempdir"); //WorkDir is a parameter for following steps
-		copyResources(resNames, resPrefix, work);
-	}
-	
-	private void copyResources(String[] names, String resourcePrefix, Path workingDirectory) throws IOException{
-		//System.out.println(names.toString());
-		//log.info(resourcePrefix);
-		for( String name : names ){
-			//log.info(name);
-			try( InputStream in = getClass().getResourceAsStream(resourcePrefix+name) ){
-				Files.copy(in, workingDirectory.resolve(name));				
-			}
-		}		
-	}*/
 
 	/**
 	 * Collect concept notations and checks whether the wildcard notations
@@ -89,7 +74,7 @@ class DataExtractor implements Closeable{
 		boolean hasWildcard = false;
 		for( Concept concept : concepts ){
 			if( concept.getIRI() != null ){
-				throw new UnsupportedOperationException("Concept specification via IRI currently supported: "+concept.getIRI());
+				throw new UnsupportedOperationException("Concept specification via IRI not supported yet: "+concept.getIRI());
 			}else if( concept.getWildcardNotation() != null ){
 				hasWildcard = true;
 				notations.add(concept.getWildcardNotation());
@@ -121,8 +106,9 @@ class DataExtractor implements Closeable{
 	 * @throws ExportException error with export processing
 	 * @throws UnsupportedOperationException concepts are specified via IRI, which is currently not supported
 	 */
-	public String[] extractData(Instant fromTimestamp, Instant endTimestamp, Report report, Path destinationDir) throws IOException, SQLException, ExportException, UnsupportedOperationException{
-		ExportDescriptor ed = ExportDescriptor.parse(report.getExportDescriptor());
+	@Override
+	public String[] extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor, Path destinationDir) throws IOException, SQLException, UnsupportedOperationException{
+		ExportDescriptor ed = ExportDescriptor.parse(exportDescriptor);
 		TableExport fac = new TableExport(ed);
 
 		// load concept notations
@@ -139,6 +125,9 @@ class DataExtractor implements Closeable{
 		// perform the export operation
 		try( I2b2Extractor ext = extractor.extract(Timestamp.from(fromTimestamp), Timestamp.from(endTimestamp), notations) ){
 			fac.export(ext, csv);
+		} catch (ExportException e) {
+			// TODO distinct exception will be better than wrapping in IOException
+			throw new IOException(e);
 		}
 		csv.close(); // not needed
 
@@ -156,6 +145,7 @@ class DataExtractor implements Closeable{
 	/**
 	 * Closes data base connection to the i2b2 database
 	 */
+	@PreDestroy
 	@Override
 	public void close() throws IOException {
 		try {

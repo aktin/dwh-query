@@ -33,7 +33,7 @@
 			</fo:declarations>
 			<fo:page-sequence master-reference="page-layout">
 				<fo:flow flow-name="body" id="mybody">
-					<fo:block xsl:use-attribute-sets="headerformat">
+					<fo:block>
 						Krankenhaus XXX
 					</fo:block>
 					<fo:block>lalala</fo:block>

@@ -2,7 +2,10 @@ package org.aktin.report.schedule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
+
 import javax.annotation.Resource;
+import javax.ejb.ScheduleExpression;
 import javax.ejb.Startup;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
@@ -13,6 +16,7 @@ import javax.naming.NamingException;
 
 import org.aktin.Module;
 import org.aktin.dwh.db.Manager;
+import org.aktin.report.Report;
 import org.aktin.report.manager.ReportManager;
 
 /**
@@ -37,6 +41,8 @@ public class ReportSchedule extends Module {
 	@Inject
 	private ReportManager reports;
 	
+	private Map<Timer, Report> schedule;
+	
 	@Inject
 	public ReportSchedule(ReportManager reports) throws SQLException, NamingException{
 		this.reports = reports;
@@ -47,11 +53,22 @@ public class ReportSchedule extends Module {
 	private void loadSchedule() throws SQLException, NamingException{
 		try( Connection c = Manager.openConnection() ){
 			// TODO load config from database
+			// create timer callbacks
+			if( true )return;
+			Report report = null;
+			// TODO find report
+			ScheduleExpression expr = new ScheduleExpression();
+			// TODO use schedule from database
+			Timer t = timer.createCalendarTimer(expr);
+			schedule.put(t, report);
+			
 		}
 	}
 	
 	@Timeout
 	private void timerCallback(Timer timer){
+		Report report = schedule.get(timer);
+		
 		// TODO check schedule, create report, submit result
 	}
 

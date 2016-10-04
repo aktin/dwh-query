@@ -70,12 +70,19 @@ class RScript {
 		// get the output stream of the process and print it
 		InputStream output = process.getInputStream();
 
+		int exitCode;
 		try {
-			log.info("R Script Return Code:" + Integer.toString((process.waitFor()))); // Should
-																						// return
-																						// 0
+			exitCode = process.waitFor();
 		} catch (InterruptedException e) {
 			throw new IOException("Interrupted during R execution", e);
+		}
+		if( exitCode != 0 ){
+			// Rscript did not terminate successfully
+			// something went wrong
+			if (error.available() > 0) {
+				log.warning("Rscript stderr: "+convertStreamToString(error));
+			}
+			throw new IOException("R execution failed with exit code "+exitCode);
 		}
 
 		/*
@@ -86,9 +93,6 @@ class RScript {
 		 * output.read()); }
 		 */
 
-		if (error.available() > 0) {
-			log.info(convertStreamToString(error));
-		}
 		if (output.available() > 0) {
 			log.info(convertStreamToString(output));
 		}

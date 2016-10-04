@@ -32,7 +32,7 @@ public class SimpleReport extends AnnotatedReport{
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
 		String file = "demo.R";
 		try( InputStream in = getClass().getResourceAsStream("/"+file) ){
-			Files.copy(in, workingDirectory);			
+			Files.copy(in, workingDirectory.resolve(file));			
 		}
 		return new String[]{file};
 	}
@@ -42,7 +42,7 @@ public class SimpleReport extends AnnotatedReport{
 		String[] files = new String[]{"empty.xml","fo-report-test.xsl"};
 		for( String file : files ){
 			try( InputStream in = getClass().getResourceAsStream("/"+file) ){
-				Files.copy(in, workingDirectory);			
+				Files.copy(in, workingDirectory.resolve(file));			
 			}			
 		}
 		return files;

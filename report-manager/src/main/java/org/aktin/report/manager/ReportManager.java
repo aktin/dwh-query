@@ -1,5 +1,8 @@
 package org.aktin.report.manager;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -13,12 +16,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.aktin.Module;
 import org.aktin.Preference;
@@ -26,6 +40,10 @@ import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.Report;
+import org.apache.fop.apps.FOPException;
+import org.apache.fop.apps.Fop;
+import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.MimeConstants;
 
 /**
  * Manage all registered reports. Generate
@@ -51,6 +69,7 @@ import org.aktin.report.Report;
 @Singleton
 //@Preferences(group="reports")
 public class ReportManager extends Module{
+	private static final Logger log = Logger.getLogger(ReportManager.class.getName());	
 	@Inject @Any
 	Instance<Report> cdiReports;
 	private Report[] staticReports;
@@ -171,6 +190,8 @@ public class ReportManager extends Module{
 		}
 		prefFiles = writePreferences(prefs, temp, "Generated preferences for report "+report.getId());
 		
+		String[] fopFiles;
+
 		synchronized( report ){
 			files = report.copyResourcesForR(temp);
 			// run main script
@@ -182,11 +203,71 @@ public class ReportManager extends Module{
 			deleteFiles(temp, files);
 			// run Apache FOP
 			
+			fopFiles = report.copyResourcesForFOP(temp);
+			runFOP(fopFiles, temp, reportDestination);
 		}
+		// 
+		
 		deleteFiles(temp, prefFiles);
 
+		deleteFiles(temp, fopFiles);
+		// output remaining files for debugging
+		String[] leftFiles;
+		try( Stream<Path> remaining = Files.list(temp) ){
+			leftFiles = remaining.map(path -> temp.relativize(path).toString()).toArray(len -> new String[len]);
+		}
+		if( leftFiles.length != 0 ){
+			// report forgotten files
+			reportAndRemoveRemainingFiles(report, temp, leftFiles);
+		}
 		// remove directory
 		Files.delete(temp);
 	}
-	
+
+	private void runFOP(String[] files, Path workingPath, Path destPDF) throws IOException{
+		Transformer ft;
+		try {
+			//Second file from Report interface is the XSL file
+			ft = TransformerFactory.newInstance().newTransformer(new StreamSource(Files.newInputStream(workingPath.resolve(files[1])), files[1]));
+		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
+			throw new IOException("Unable to construct FOP transformation",e);
+		}
+
+		FopFactory ff = FopFactory.newInstance(workingPath.toUri());
+		try( OutputStream out = Files.newOutputStream(destPDF) ){
+			// Step 3: Construct fop with desired output format
+			Fop fop = ff.newFop(MimeConstants.MIME_PDF, out);
+			TransformerFactory factory = TransformerFactory.newInstance();
+			// configuration of transformer factory
+			//First file from Report interface is the XML input (Source)
+			Source src = new StreamSource(workingPath.resolve(files[0]).toFile());
+		    // Resulting SAX events (the generated FO) must be piped through to FOP
+		    Result res = new SAXResult(fop.getDefaultHandler());
+		    // Step 6: Start XSLT transformation and FOP processing
+		    ft.transform(src, res);
+		    // XXX fatal FOP errors will not stop the transformation
+		    // TODO add FOP error handling
+		} catch (FOPException e) {
+			throw new IOException(e);
+		} catch (TransformerException e) {
+			throw new IOException("FOP transformation failed",e);
+		}
+	}
+	private void reportAndRemoveRemainingFiles(Report report, Path dir, String[] leftFiles){
+		StringBuilder sb = new StringBuilder();
+		for( int i=0; i<leftFiles.length; i++ ){
+			if( i != 0 ){
+				sb.append(' ');					
+			}
+			sb.append(leftFiles[i]);
+			try {
+				Files.delete(dir.resolve(leftFiles[i]));
+			} catch (IOException e) {
+				log.warning("Unable to remove remaining file: "+leftFiles[i]);
+			}
+		}
+		log.warning("Report "+report.getId()+" left files: "+sb.toString());		
+	}
+
+
 }

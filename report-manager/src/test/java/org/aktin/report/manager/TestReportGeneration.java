@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
 import java.time.Instant;
 
-import javax.tools.StandardJavaFileManager;
 
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.prefs.impl.TestPreferences;
@@ -55,9 +53,17 @@ public class TestReportGeneration {
 		TestExport export = new TestExport();
 		manager.setDataExtractor(export);
 		Path dest = Files.createTempFile("report", ".pdf");
-		manager.generateReport(report, Instant.parse("2015-01-01T00:00"), Instant.parse("2015-01-01T00:00"), dest);
+		manager.generateReport(report, Instant.parse("2015-01-01T00:00:00Z"), Instant.parse("2015-01-01T00:00:00Z"), dest);
+
+		// expect report written (will always be true, because createTempFile will create the file)
+		Assert.assertTrue(Files.exists(dest));
+		// expect non-empty file
+		Assert.assertTrue(Files.size(dest) > 0);
+
 		Files.delete(dest);
 	}
+
+	// TODO write test cases which expect failure on FOP error or R error
 
 //	public static void main(String args[]){
 //		

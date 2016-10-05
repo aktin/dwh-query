@@ -169,6 +169,7 @@ public class ReportManager extends Module{
 	 */
 	public void generateReport(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination) throws IOException{
 		Path temp = Files.createTempDirectory("report-"+report.getId());
+		log.info("Using temporary directory: "+temp);
 		String[] files;
 		String[] dataFiles;
 		String[] prefFiles;

@@ -9,13 +9,13 @@ import java.util.logging.Logger;
 
 import javax.xml.transform.Source;
 
-import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.AnnotatedReport;
 
 @AnnotatedReport.Report(
 		displayName="AKTIN Monatsbericht", 
 		description="Standardisierter Monatsbericht des AKTIN Projekts",
-		defaultPeriod="P1M"
+		defaultPeriod="P1M",
+		preferences={"local.o", "local.ou", "local.cn"} // see dwh-api/org.aktin.dwh.PreferenceKey
 		)
 public class WolfsburgMonthly extends AnnotatedReport {
 	private static final Logger log = Logger.getLogger(WolfsburgMonthly.class.getName());	
@@ -70,15 +70,6 @@ public class WolfsburgMonthly extends AnnotatedReport {
 	public Source getExportDescriptor() {
 		URL url = getClass().getResource("/export-descriptor.xml");
 		return this.createStreamSource(url);
-	}
-
-	@Override
-	public String[] getRequiredPreferenceKeys() {
-		return new String[]{
-				PreferenceKey.organisationName.key(),
-				PreferenceKey.organisationUnit.key(),
-				PreferenceKey.commonName.key()
-		};
 	}
 
 }

@@ -13,7 +13,8 @@ import org.aktin.report.AnnotatedReport;
 @AnnotatedReport.Report(
 		displayName="TestReport", 
 		description="Report for testing",
-		defaultPeriod="P1M"
+		defaultPeriod="P1M",
+		preferences={"local.o", "local.ou", "local.cn"} // see dwh-api/org.aktin.dwh.PreferenceKey
 		)
 public class SimpleReport extends AnnotatedReport{
 

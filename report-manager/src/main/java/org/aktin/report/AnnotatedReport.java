@@ -61,6 +61,7 @@ public abstract class AnnotatedReport implements Report{
 		String displayName();
 		String description();
 		String defaultPeriod() default "";
+		String[] preferences() default {};
 	}
 	
 	@Target(ElementType.FIELD)
@@ -178,5 +179,11 @@ public abstract class AnnotatedReport implements Report{
 		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("Unable to access annotated field",e);
 		}
+	}
+
+	@Override
+	public final String[] getRequiredPreferenceKeys() {
+		AnnotatedReport.Report an = getClass().getAnnotation(AnnotatedReport.Report.class);
+		return an.preferences();
 	}
 }

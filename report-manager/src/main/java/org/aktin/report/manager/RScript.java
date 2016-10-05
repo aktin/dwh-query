@@ -84,6 +84,7 @@ class RScript {
 			}
 			throw new IOException("R execution failed with exit code "+exitCode);
 		}
+		error.close();
 
 		/*
 		 * for (int i = 0; i < error.available(); i++) { log.info("" +
@@ -94,8 +95,11 @@ class RScript {
 		 */
 
 		if (output.available() > 0) {
-			log.info(convertStreamToString(output));
+			log.warning("non-empty R stdout: "+convertStreamToString(output));
 		}
+		// read output stream
+		
+		output.close();
 
 		// TODO run, check output, clean up, etc.
 		// throw new UnsupportedOperationException("TODO implement");

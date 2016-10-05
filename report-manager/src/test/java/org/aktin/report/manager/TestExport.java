@@ -100,7 +100,8 @@ public class TestExport implements DataExtractor{
 			throw new IOException(e);
 		}
 		ExportDescriptor ed = ExportDescriptor.parse(exportDescriptor);
-		CSVWriter ew = new CSVWriter(destinationDir, '\t', ".csv");
+		CSVWriter ew = new CSVWriter(destinationDir, '\t', ".txt");
+		ew.setVisitTableName("encounters");
 		try {
 			ed.newExport().export(reader, ew);
 			reader.close();

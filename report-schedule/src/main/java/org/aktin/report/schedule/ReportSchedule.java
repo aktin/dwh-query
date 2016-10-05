@@ -13,9 +13,9 @@ import javax.ejb.TimerService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 import org.aktin.Module;
-import org.aktin.dwh.db.Manager;
 import org.aktin.report.Report;
 import org.aktin.report.manager.ReportManager;
 
@@ -38,6 +38,9 @@ public class ReportSchedule extends Module {
 	@Resource
 	private TimerService timer;
 	
+	// TODO inject
+	private DataSource ds;
+	
 	@Inject
 	private ReportManager reports;
 	
@@ -51,7 +54,7 @@ public class ReportSchedule extends Module {
 	}
 	
 	private void loadSchedule() throws SQLException, NamingException{
-		try( Connection c = Manager.openConnection() ){
+		try( Connection c = ds.getConnection() ){
 			// TODO load config from database
 			// create timer callbacks
 			if( true )return;

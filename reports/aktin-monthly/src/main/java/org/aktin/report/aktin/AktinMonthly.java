@@ -1,4 +1,4 @@
-package org.aktin.report.wolfsburg;
+package org.aktin.report.aktin;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,10 +15,10 @@ import org.aktin.report.AnnotatedReport;
 		displayName="AKTIN Monatsbericht", 
 		description="Standardisierter Monatsbericht des AKTIN Projekts",
 		defaultPeriod="P1M",
-		preferences={"local.o", "local.ou", "local.cn"} // see dwh-api/org.aktin.dwh.PreferenceKey
+		preferences={"local.o", "local.ou"} // see dwh-api/org.aktin.dwh.PreferenceKey
 		)
-public class WolfsburgMonthly extends AnnotatedReport {
-	private static final Logger log = Logger.getLogger(WolfsburgMonthly.class.getName());	
+public class AktinMonthly extends AnnotatedReport {
+	private static final Logger log = Logger.getLogger(AktinMonthly.class.getName());	
 
 
 	@Option
@@ -40,7 +40,7 @@ public class WolfsburgMonthly extends AnnotatedReport {
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
 		//String[] resNames = {"empty-test.R","generate-report-resources-mod.R","xhtml-table.R"};
-		String[] resNames = {"generate-report-resources-mod.R","xhtml-table.R"};
+		String[] resNames = {"generate-report-resources.R","xhtml-table.R"};
 		String resPrefix = "/";
 		//log.info(workingDirectory.toString());
 		copyResources(resNames, resPrefix, workingDirectory);

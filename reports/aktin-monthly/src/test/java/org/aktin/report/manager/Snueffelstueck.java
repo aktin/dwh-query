@@ -26,7 +26,7 @@ public class Snueffelstueck {
 		
 		//Step 0: Instantiate WolfsburgMonthly
 		//not really a seperate step since nothing happens before Data Extraction
-		Report ReportWolfsburg = new org.aktin.report.wolfsburg.WolfsburgMonthly();
+		Report ReportAktin= new org.aktin.report.aktin.AktinMonthly();
 		
 		
 		//Step 1: Data Extraction
@@ -48,7 +48,7 @@ public class Snueffelstueck {
 		RScript RExecutor = new RScript();
 		Path script;
 		try {
-			String [] files = ReportWolfsburg.copyResourcesForR(work);
+			String [] files = ReportAktin.copyResourcesForR(work);
 			// first element is file to execute
 			RExecutor.runRscript(work,files[0]);
 			//ToDo - runRScript does not get the whole list of files, so we'll probably want to delete the R files here since we wont need them anymore

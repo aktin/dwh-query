@@ -1,4 +1,4 @@
-package org.aktin.report.wolfsburg;
+package org.aktin.report.aktin;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +21,7 @@ public class TestCopyResources {
 	 */
 	@Test
 	public void verifyResourcesCopied_R() throws IOException{
-		WolfsburgMonthly m = new WolfsburgMonthly();
+		AktinMonthly m = new AktinMonthly();
 		Path temp = Files.createTempDirectory("test-res-copy");
 		// should not throw any exception
 		String[] names = m.copyResourcesForR(temp);

@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-
+import java.util.Objects;
 
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.prefs.impl.TestPreferences;
@@ -43,18 +43,24 @@ public class TestReportGeneration {
 		}
 		Assert.fail("Path to Rscript not found. Please edit TestReportGeneration.java or define a (local) system property: "+PreferenceKey.rScriptBinary.key());
 	}
-	
 
-	@Test
-	public void verifyNonEmptySampleReportPDF() throws IOException{
-		Report report = new SimpleReport();
+	public static void generatePDF(Report report, Instant start, Instant end, Path pdf) throws IOException{
+		Objects.requireNonNull(rScript, "Please call TestReportGenerator.locateR() to locate Rscript");
 		ReportManager manager = new ReportManager(rScript.toString(), report);
 		manager.setPreferenceManager(TestPreferences.getTestPreferences());
 		TestExport export = new TestExport();
 		manager.setDataExtractor(export);
-		Path dest = Files.createTempFile("report", ".pdf");
-		manager.generateReport(report, Instant.parse("2015-01-01T00:00:00Z"), Instant.parse("2015-01-01T00:00:00Z"), dest);
+		manager.generateReport(report, start, end, pdf);
 
+	}
+
+	@Test
+	public void verifyNonEmptySampleReportPDF() throws IOException{
+		Report report = new SimpleReport();
+		Path dest = Files.createTempFile("report", ".pdf");
+
+		generatePDF(report, Instant.parse("2015-01-01T00:00:00Z"), Instant.parse("2015-01-01T00:00:00Z"), dest);
+		
 		// expect report written (will always be true, because createTempFile will create the file)
 		Assert.assertTrue(Files.exists(dest));
 		// expect non-empty file

@@ -6,16 +6,16 @@ import java.nio.file.Path;
 import java.time.Instant;
 
 import org.aktin.report.Report;
-import org.aktin.report.wolfsburg.WolfsburgMonthly;
+import org.aktin.report.aktin.AktinMonthly;
 
-public class TestWolfsburgMonthly {
+public class TestAktinMonthly {
 
 
 	public static void main(String[] args) throws IOException{
 		// needed to locate the Rscript binary for testing
 		TestReportGeneration.locateR();
 		
-		Report report = new WolfsburgMonthly();
+		Report report = new AktinMonthly();
 		Path dest = Files.createTempFile("report", ".pdf");
 
 		TestReportGeneration.generatePDF(report, Instant.parse("2015-01-01T00:00:00Z"), Instant.parse("2015-01-01T00:00:00Z"), dest);

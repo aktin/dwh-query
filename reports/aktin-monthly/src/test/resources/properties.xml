@@ -3,7 +3,7 @@
 	<comment>Generated report properties</comment>
 	<entry key="start">2016-10-01T00:00:00</entry>
 	<entry key="end">2016-10-31T00:00:00</entry>
-	<entry key="local.o">Klinik Organisation</entry>
-	<entry key="local.u">Klinik Abteilung</entry>
+	<entry key="local.o">AKTIN Modellklinik Musterhausen</entry>
+	<entry key="local.ou">Zentrale Notaufnahme</entry>
 	<entry key="local.cn">Klinik Common Name</entry>
-</propertie>
+</properties>

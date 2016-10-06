@@ -145,7 +145,7 @@ class PDFGenerator {
 	    }
 	    String ext = FilenameUtils.getExtension(file.getName());
 
-	    if (ext.equalsIgnoreCase("svg") || ext.equalsIgnoreCase("xml") || ext.equalsIgnoreCase("csv") || ext.equalsIgnoreCase("txt")) {
+	    if (ext.equalsIgnoreCase("svg") || ext.equalsIgnoreCase("xml") || ext.equalsIgnoreCase("csv") || ext.equalsIgnoreCase("txt") || ext.equalsIgnoreCase("png") ) {
 		    file.delete();
 	    } 
 	}

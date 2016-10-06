@@ -14,52 +14,52 @@
 
 <template>
   <section>
-    <header>1 Beschreibung der Patienten</header>
+    <header>Beschreibung der Patienten</header>
     <paragraph>Einleitungstext Patienten</paragraph>
     <section>
-        <header>1.1 Geschlechtsverteilung</header>
-        <table ref="t0.1">Tabelle 1: Geschlechtsverteilung</table>
+      <header>Geschlechtsverteilung</header>
+      <table ref="t0.1">Tabelle 1: Geschlechtsverteilung</table>
     </section>
     <section>
-        <header>1.2 Altersverteilung</header>
-        <plot ref="p0.2">Grafik 1: Altersverteilung</plot>
-        <table ref="t0.2">Tabelle 2: Altersverteilung (vollendete Lebensjahre)</table>
+      <header>Altersverteilung</header>
+      <plot ref="p0.2">Grafik 1: Altersverteilung</plot>
+      <table ref="t0.2">Tabelle 2: Altersverteilung (vollendete Lebensjahre)</table>
     </section>
   </section>
   <section>
-    <header>2 Fallzahlen</header>
+    <header>Fallzahlen</header>
     <paragraph>Einleitungstext <var ref="anzahl"/> Fallzahlen</paragraph>
     <section>
-      <header>2.1 Fallzahlen nach Kalendertagen</header>
+      <header>Fallzahlen nach Kalendertagen</header>
       <table ref="t1.1c">Tabelle 3: Fallzahlen nach Aufnahmetag</table>
     </section>
     <section>
-      <header>2.2 Fallzahlen nach Wochentag</header>
-      <plot ref="p1.2">Grafik 2: Fallzahlen nach Wochentag</plot>       
+      <header>Fallzahlen nach Wochentag</header>
+      <plot ref="p1.2">Grafik 2: Fallzahlen nach Wochentag</plot>
     </section>
     <section>
-      <header>2.3 Fallzahlen nach Aufnahme-Uhrzeit</header>
-      <plot ref="p1.1">Grafik 3: Durchschnittliche Fallzahlen nach Aufnahmezeit</plot>  
-      <table ref="t1.1a"></table>
+      <header>Fallzahlen nach Aufnahme-Uhrzeit</header>
+      <plot ref="p1.1">Grafik 3: Durchschnittliche Fallzahlen nach Aufnahmezeit</plot>
+      <table ref="t1.1a"/>
       <table ref="t1.1b">Tabelle 4: Durchschnittliche Fallzahlen nach Aufnahmezeit</table>
     </section>
     <section>
-      <header>2.4 Fallzahlen nach Wochentag und Aufnahmezeit</header>
+      <header>Fallzahlen nach Wochentag und Aufnahmezeit</header>
       <plot ref="p1.3">Grafik 4: Durchschnittliche Patientenzahl: Mo-Fr blau; Sa/So rot</plot>
     </section>
   </section>
   <section>
-    <header>3 Zuweisung und Transportmittel</header>
+    <header>Zuweisung und Transportmittel</header>
     <paragraph>Einleitungstext Zuweisung und Transportmittel</paragraph>
     <section>
-      <header>3.1 Fallzahlen nach Zuweisung</header>
-      <table ref="t1.2">Tabelle 5: Fallzahlen nach Zuweisung</table> 
+      <header>Fallzahlen nach Zuweisung</header>
+      <table ref="t1.2">Tabelle 5: Fallzahlen nach Zuweisung</table>
     </section>
     <section>
-      <header>3.2 Fallzahlen nach Transportmittel</header>
+      <header>Fallzahlen nach Transportmittel</header>
       <table ref="t1.3">Tabelle 6: Fallzahlen nach Transportmittel</table>
     </section>
-   <!--  <section>
+    <!--  <section>
       <header>1.6 Altersverteilung der Patienten nach Geschlecht</header>
       <plot ref="p5">Grafik 4: Altersverteilung der Patienten nach Geschlecht</plot>
       <table ref="t5">Tabelle 4: Altersverteilung der Patienten nach Geschlecht</table>
@@ -84,75 +84,77 @@
       <plot ref="p9">Grafik 8: Infektionssurveillance</plot>
       <table ref="t9" width="40%">Tabelle 8: Infektionssurveillance</table>
     </section>-->
-  </section> 
+  </section>
   <section>
-    <header>4 Ersteinschätzung</header>
+    <header>Ersteinschätzung</header>
     <paragraph>Einleitungstext Ersteinschätzung</paragraph>
     <section>
-        <header>4.1 Ersteinschätzung</header>
-        <plot ref="p4.1b">Grafik 9: Ersteinschätzung</plot>
-        <table ref="t4.1">Tabelle 7: Ersteinschätzung</table>
+      <header>Ersteinschätzung</header>
+      <plot ref="p4.1b">Grafik 9: Ersteinschätzung</plot>
+      <table ref="t4.1">Tabelle 7: Ersteinschätzung</table>
     </section>
 
   </section>
   <section>
-    <header>5 Prozesszeiten</header>
+    <header>Prozesszeiten</header>
     <paragraph>Einleitungstext Prozesszeiten <var ref="bereich"/></paragraph>
     <section>
-        <header>5.1 Ankunft/Aufnahme bis Ersteinschätzung</header>
-        <plot ref="p2.1">Grafik 10: Ankunft/Aufnahme bis Ersteinschätzung</plot>
-        <table ref="t2.1">Tabelle 8: Ankunft/Aufnahme bis Ersteinschätzung</table>
+      <header>Ankunft/Aufnahme bis Ersteinschätzung</header>
+      <plot ref="p2.1">Grafik 10: Ankunft/Aufnahme bis Ersteinschätzung</plot>
+      <table ref="t2.1">Tabelle 8: Ankunft/Aufnahme bis Ersteinschätzung</table>
     </section>
     <section>
-        <header>5.2 Ankunft/Aufnahme bis zum ersten Arztkontakt</header>
-        <plot ref="p2.2">Grafik 11: Ankunft/Aufnahme bis Arztkontakt</plot>
-        <table ref="t2.2">Tabelle 9: Ankunft/Aufnahme bis Arztkontakt</table>
+      <header>Ankunft/Aufnahme bis zum ersten Arztkontakt</header>
+      <plot ref="p2.2">Grafik 11: Ankunft/Aufnahme bis Arztkontakt</plot>
+      <table ref="t2.2">Tabelle 9: Ankunft/Aufnahme bis Arztkontakt</table>
     </section>
     <section>
-        <header>5.3 Erster Arztkontakt bis zum Therapiebeginn</header>
-        <plot ref="p2.3">Grafik 12: Erster Arztkontakt bis Therapiebeginn</plot>
-        <table ref="t2.3">Tabelle 10: Erster Arztkontakt bis Therapiebeginn</table>
+      <header>Erster Arztkontakt bis zum Therapiebeginn</header>
+      <plot ref="p2.3">Grafik 12: Erster Arztkontakt bis Therapiebeginn</plot>
+      <table ref="t2.3">Tabelle 10: Erster Arztkontakt bis Therapiebeginn</table>
     </section>
     <section>
-        <header>5.4 Prozesszeiten nach Kategorie der Ersteinschätzung</header>
-        <plot ref="p2.4">Grafik 13: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</plot>
-        <table ref="t2.4">Tabelle 11: Aufnahme bis Arztkontakt in Minuten, gruppiert nach Ersteinschätzung</table>
+      <header>Prozesszeiten nach Kategorie der Ersteinschätzung</header>
+      <plot ref="p2.4">Grafik 13: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</plot>
+      <table ref="t2.4">Tabelle 11: Aufnahme bis Arztkontakt in Minuten, gruppiert nach
+        Ersteinschätzung</table>
     </section>
   </section>
-      <section>
-        <header>6 Verlegung und Entlassung</header>
-        <paragraph>Einleitungstext Verlegung und Entlassung</paragraph>
-        <plot ref="p3.1">Grafik 14: Verlegung und Entlassung</plot>
-        <table ref="t3.1">Tabelle 12: Verlegung und Entlassung</table>
-      </section>
   <section>
-    <header>7 Aufenthaltsdauer der Patienten</header>
+    <header>Verlegung und Entlassung</header>
+    <paragraph>Einleitungstext Verlegung und Entlassung</paragraph>
+    <plot ref="p3.1">Grafik 14: Verlegung und Entlassung</plot>
+    <table ref="t3.1">Tabelle 12: Verlegung und Entlassung</table>
+  </section>
+  <section>
+    <header>Aufenthaltsdauer der Patienten</header>
     <plot ref="p2.5">Grafik 15: Aufenthaltsdauer</plot>
-    <table ref="t7.1">Tabelle 13: Aufenthaltsdauer in Minuten</table>  
-  </section>  
+    <table ref="t7.1">Tabelle 13: Aufenthaltsdauer in Minuten</table>
+  </section>
   <section>
-    <header>8 Vorstellungsgrund und Aufnahmediagnose</header>
+    <header>Vorstellungsgrund und Aufnahmediagnose</header>
     <paragraph>Einleitungstext Diagnosen</paragraph>
     <section>
-      <header>8.1 Top 20 Diagnosen</header>
+      <header>Top 20 Diagnosen</header>
       <plot ref="p4.1">Grafik 16: Top 20 Diagnosen (ICD 3-Steller)</plot>
-     <!-- <table ref="t4.1">Tabelle 11: Top 20 Diagnosen</table> -->
+      <!-- <table ref="t4.1">Tabelle 11: Top 20 Diagnosen</table> -->
     </section>
     <section>
-      <header>8.2 Top 10 Vorstellungsgründe (CEDIS)</header>
+      <header>Top 10 Vorstellungsgründe (CEDIS)</header>
       <plot ref="p4.2">Grafik 17: Top 10 Vorstellungsgründe</plot>
       <!-- <table ref="t4.2">Tabelle 12: Top 10 CEDIS</table> -->
     </section>
-      <section>
-      <header>8.3 Vorstellungsgründe (Gruppen)</header>
+    <section>
+      <header>Vorstellungsgründe (Gruppen)</header>
       <plot ref="p4.3">Grafik 18: Alle dokumentierten CEDIS Codes nach Gruppen</plot>
     </section>
   </section>
+  <!--
    <section>
   <header>9 Diagnostik</header>
     <paragraph>no data</paragraph>
-    <!--<plot ref="pa">Grafik 15: Diagnostik</plot>
-    <table ref="ta">Tabelle 15: Diagnostik</table>-->
+    <plot ref="pa">Grafik 15: Diagnostik</plot>
+    <table ref="ta">Tabelle 15: Diagnostik</table>
   </section>
   <section>
     <header>10 Vitalparameter und Scores</header>
@@ -162,17 +164,20 @@
     <header>11 Infektionssurveillance und isolierte Patienten</header>
     <paragraph>no data</paragraph>
   </section>
+  -->
+  <section>
+    <header>Crowding</header>
     <section>
-    <header>12 Crowding</header>
-    <section>
-      <header>12.1 Patienten vs. Tageszeit</header>
-        <paragraph>Anzahl Patienten, die sich zu einem bestimmten Zeitpunkt (x-Achse) in der Notaufnahme aufhalten</paragraph>
-        <plot ref="p7.1">Grafik 18: Crowding</plot>
+      <header>Patienten vs. Tageszeit</header>
+      <paragraph>Anzahl Patienten, die sich zu einem bestimmten Zeitpunkt (x-Achse) in der
+        Notaufnahme aufhalten</paragraph>
+      <plot ref="p7.1">Grafik 18: Crowding</plot>
     </section>
-        <section>
-      <header>12.2 Patientenzahlen pro Tag</header>
-        <paragraph>Maximum und Minimum der anwesenden Patienten mit Stunde des Auftretens und die durchschnittliche Anzahl anwesender Patienten pro Tag</paragraph>
-        <table ref="t12.2">Tabelle 14: Patientenzahlen pro Tag (Extremwerte)</table>
+    <section>
+      <header>Patientenzahlen pro Tag</header>
+      <paragraph>Maximum und Minimum der anwesenden Patienten mit Stunde des Auftretens und die
+        durchschnittliche Anzahl anwesender Patienten pro Tag</paragraph>
+      <table ref="t12.2">Tabelle 14: Patientenzahlen pro Tag (Extremwerte)</table>
     </section>
     <!--
     <section>

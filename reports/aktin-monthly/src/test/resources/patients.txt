@@ -1,4 +1,4 @@
-"patient_id"	"geburtsdatum_ts"	"geschlecht"
+"XXX"	"patient_id"	"geburtsdatum_ts"	"geschlecht"
 "1"	1	"1934-05-27"	"M"
 "2"	2	"1981-07-24"	"F"
 "3"	3	"1929-04-29"	"M"

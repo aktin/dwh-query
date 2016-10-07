@@ -1,4 +1,4 @@
-"encounter_id"	"patient_id"	"aufnahme_ts"	"isolation"	"isolationreason"	"zuweisung"	"triage_ts"	"triage"	"arztkontakt_ts"	"therapiebeginn_ts"	"cedis"	"keime"	"behandlungsende"	"entlassung_ts"	"transportmittel"	"entlassung"	"diagnose_fuehrend"
+"XXX"	"encounter_id"	"patient_id"	"aufnahme_ts"	"isolation"	"isolationreason"	"zuweisung"	"triage_ts"	"triage"	"arztkontakt_ts"	"therapiebeginn_ts"	"cedis"	"keime"	"behandlungsende"	"entlassung_ts"	"transportmittel"	"entlassung"	"diagnose_fuehrend"
 "1"	1	1	"2015-11-01 00:01"				"2015-11-01 00:05"	"MTS:4"	"2015-11-01 01:05"		"CEDIS555"	"AKTIN:PATHOGENE:MRSA:PB"	"2015-11-01 01:15"	"2015-11-01 01:19"		"AKTIN:TRANSFER:5"	"ICD10GM:I74.3"
 "2"	2	2	"2015-11-01 01:04"				"2015-11-01 01:10"	"MTS:4"	"2015-11-01 01:17"		"CEDIS251"		"2015-11-01 02:29"	"2015-11-01 03:07"		"AKTIN:TRANSFER:5"	"ICD10GM:R06.0"
 "3"	3	3	"2015-11-01 01:46"						"2015-11-01 01:53"		"CEDIS555"	"AKTIN:PATHOGENE:MRSA:PB"	"2015-11-01 03:16"	"2015-11-01 03:26"		"AKTIN:DISCHARGE:4"	"ICD10GM:R40.0"

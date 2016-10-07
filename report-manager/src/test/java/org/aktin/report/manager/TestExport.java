@@ -92,7 +92,7 @@ public class TestExport implements DataExtractor{
 	public String[] extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor,
 			Path destinationDir) throws IOException, SQLException {
 		ObservationFactory of = new ObservationFactoryImpl(new SimplePatientExtension(), new SimpleVisitExtension());
-		
+		// TODO filter eav data with timestamps
 		GroupedXMLReader reader;
 		try {
 			reader = new GroupedXMLReader(of, getClass().getResourceAsStream("/demo-eav-data.xml"));

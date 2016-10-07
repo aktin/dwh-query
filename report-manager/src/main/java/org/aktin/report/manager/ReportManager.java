@@ -38,6 +38,7 @@ import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.Report;
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
@@ -223,22 +224,25 @@ public class ReportManager extends Module{
 	}
 
 	private void runFOP(String[] files, Path workingPath, Path destPDF) throws IOException{
+		TransformerFactory factory = TransformerFactory.newInstance();
 		Transformer ft;
 		try {
 			log.info("runFOP with Path: "+workingPath.toString()+"; URI: "+workingPath.toUri());
 			log.info("Resolved path: "+workingPath.resolve(files[1])+"; XSL-File: "+ files[1]);
-			//Second file from Report interface is the XSL file
-			//ft = TransformerFactory.newInstance().newTransformer(new StreamSource(Files.newInputStream(workingPath.resolve(files[1])), files[1]));
-			ft = TransformerFactory.newInstance().newTransformer(new StreamSource( workingPath.resolve(files[1]).toFile() ));
+			//Second file from Report interface is the XSL file	
+			//ft = factory.newTransformer(new StreamSource(Files.newInputStream(workingPath.resolve(files[1])), files[1]));
+			ft = factory.newTransformer(new StreamSource( workingPath.resolve(files[1]).toFile() ));
 		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
 			throw new IOException("Unable to construct FOP transformation",e);
 		}
 
 		FopFactory ff = FopFactory.newInstance(workingPath.toUri());
+		FOUserAgent ua = ff.newFOUserAgent();
+		FOEventListener events = new FOEventListener();
+		ua.getEventBroadcaster().addEventListener(events);
 		try( OutputStream out = Files.newOutputStream(destPDF) ){
 			// Step 3: Construct fop with desired output format
-			Fop fop = ff.newFop(MimeConstants.MIME_PDF, out);
-			// TransformerFactory factory = TransformerFactory.newInstance();
+			Fop fop = ff.newFop(MimeConstants.MIME_PDF, ua, out);
 			// configuration of transformer factory
 			// First file from Report interface is the XML input (Source)
 			Source src = new StreamSource(workingPath.resolve(files[0]).toFile());
@@ -252,6 +256,10 @@ public class ReportManager extends Module{
 			throw new IOException(e);
 		} catch (TransformerException e) {
 			throw new IOException("FOP transformation failed",e);
+		}
+		if( !events.isEmpty() ){
+			log.warning("FOP errors: "+events.getSummary());
+			throw new IOException("Errors during FOP processing");
 		}
 	}
 	private void reportAndRemoveRemainingFiles(Report report, Path dir, String[] leftFiles){
@@ -267,7 +275,7 @@ public class ReportManager extends Module{
 				log.warning("Unable to remove remaining file: "+leftFiles[i]);
 			}
 		}
-		log.warning("Report "+report.getId()+" left files: "+sb.toString());		
+		log.warning("Report "+report.getId()+" left files: "+sb.toString());
 	}
 
 

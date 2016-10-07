@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.logging.Logger;
 
 import org.aktin.report.Report;
 import org.aktin.report.aktin.AktinMonthly;
 
 public class TestAktinMonthly {
+	private static final Logger log = Logger.getLogger(TestAktinMonthly.class.getName());	
 
 
 	public static void main(String[] args) throws IOException{
@@ -20,7 +22,7 @@ public class TestAktinMonthly {
 
 		TestReportGeneration.generatePDF(report, Instant.parse("2015-01-01T00:00:00Z"), Instant.parse("2015-01-01T00:00:00Z"), dest);
 		
-		System.out.println("Generated file: "+dest);
+		log.info("Generated file: "+dest);
 
 	}
 }

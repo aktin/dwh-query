@@ -20,8 +20,17 @@
 		<concept notation="AKTIN:COMPLAINT"/>	
 		<concept notation="AKTIN:SYMPTOMDURATION"/>	
 		<concept notation="AKTIN:ASSESSMENT"/>
+		<!--
         <group class="triage">
 			<concept wildcard-notation="MTS:*" />
+			<concept wildcard-notation="ESI:*" />			
+		</group>
+		Triage Group Combination does not work with start (see example below)
+		-->
+        <group class="MTS">
+			<concept wildcard-notation="MTS:*" />			
+		</group>
+        <group class="ESI">
 			<concept wildcard-notation="ESI:*" />			
 		</group>
 		<concept notation="LOINC:9279-1"/>	
@@ -196,7 +205,7 @@
 		<!-- XMLNS for XPath is assumed to be  http://sekmi.de/histream/ns/eav-data -->
         <!-- concepts for the visit table must occur only once per visit and may not repeat -->
 		<column header="patient_id" xpath="../@id"/>
-		<column header="visit_id" xpath="@id"/>
+		<column header="encounter_id" xpath="@id"/>
 		
         <column header="postleitzahl" xpath="eav:fact[@concept='AKTIN:ZIPCODE']/eav:value"/>
         <column header="versicherung_txt" xpath="eav:fact[@concept='AKTIN:KKNAME']/eav:value"/>
@@ -206,8 +215,12 @@
 		<column header="cedis" xpath="substring(eav:fact[@class='cedis']/@concept, 9)"/>
 		<column header="beschwerden_txt" xpath="eav:fact[@concept='AKTIN:COMPLAINT']/eav:value"/>
         <column header="postleitzahl" xpath="eav:fact[@concept='AKTIN:SYMPTOMDURATION']/eav:value"/>
+        <!--
 		<column header="triage" xpath="substring(eav:fact[@class='triage']/@concept, 5)"/>
 		<column header="triage_system" xpath="concat(substring(eav:fact[@class='triage']/@concept, 1, 3),substring(eav:fact[@concept='AKTIN:ASSESSMENT']/@concept, 7))"/>
+		-->
+        <column header="triage" xpath="concat(substring(eav:fact[@class='MTS']/@concept, 5), substring(eav:fact[@class='ESI']/@concept, 5))"/>
+		<column header="triage_system" xpath="concat(substring(eav:fact[@class='MTS']/@concept, 1, 3), substring(eav:fact[@class='ESI']/@concept, 1, 3), substring(eav:fact[@concept='AKTIN:ASSESSMENT']/@concept, 7))"/>
         <column header="atemfrequenz" xpath="eav:fact[@concept='LOINC:9279-1']/eav:value"/>
         <column header="saettigung" xpath="eav:fact[@concept='LOINC:20564-1']/eav:value"/>
         <column header="blutdruck_sys" xpath="eav:fact[@concept='LOINC:8480-6']/eav:value"/>
@@ -287,9 +300,11 @@
         <!-- <column header="entlassung" xpath="eav:fact[@class='entlassung']"/>  this does not work well with xpath selection of the value-->
         <column header="entlassung" xpath="concat(substring(eav:fact[@class='transfer']/@concept, 16),substring(eav:fact[@class='discharge']/@concept, 17))"/> 
         <column header="aufnahme_ts" xpath="eav:start"/>
-        <!-- ToDo: ERROR - for some reason the concat for triage@start does not work and neither does the simple version with just ESI/MTS - mystery :)
+        <!-- ToDo: ERROR - for some reason the concat for triage@start does not work this way
         <column header="triage_ts" xpath="concat(eav:fact[@class='triage']/@start, eav:fact[@concept='AKTIN:ASSESSMENT']/@start)"/> 
         <column header="triage_ts" xpath="eav:fact[@class='triage']/@start"/> -->
+        <column header="triage_ts" xpath="concat(eav:fact[@class='MTS']/@start, eav:fact[@class='ESI']/@start, eav:fact[@concept='AKTIN:ASSESSMENT']/@start)"/> 
+          
         <column header="arztkontakt_ts" xpath="eav:fact[@concept='AKTIN:PHYSENCOUNTER']/@start"/>
         <column header="therapiebeginn_ts" xpath="eav:fact[@concept='AKTIN:STARTTHERAPY']/@start"/>
         <column header="entlassung_ts" xpath="eav:end"/>
@@ -302,11 +317,11 @@
 	</visit-table>
 	
 	<!-- export separate table for repeating elements -->
-	<eav-table id="diagnose" xpath="eav:fact[@class='diagnose']">
+	<eav-table id="diagnoses" xpath="eav:fact[@class='diagnose']">
 		<!-- context for XPath expressions is each fact node -->
 		<column header="patient_id" xpath="../../@id"/>
-		<column header="visit_id" xpath="../@id"/>
-		<column header="diagnose_code" xpath="@concept"/>
+		<column header="encounter_id" xpath="../@id"/>
+		<column header="diagnose_code" xpath="substring(@concept,9)"/>
 		<column header="diagnose_fuehrend" xpath="substring(eav:modifier[@code='AKTIN:DIAG:F']/@code, 12)"/>
 		<column header="diagnose_zusatz" xpath="substring(eav:modifier[@code='AKTIN:DIAG:V' or @code='AKTIN:DIAG:Z' or @code='AKTIN:DIAG:A' or @code='AKTIN:DIAG:G']/@code, 12)"/>
 		<column header="diagnose_txt" xpath="eav:modifier[@code='originalText']/@value"/>

@@ -1,5 +1,0 @@
-Bezeichnung Krankenhaus
-Bezeichnung Notaufnahme/Abteilung
-(Bezeichnung NA-Leiter/Ansprechpartner)
-Berichtszeitraum Start+Ende (aus Reportzeitraum)
-Datenstand (aus Erzeugungsdatum)

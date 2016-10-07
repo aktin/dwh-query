@@ -32,7 +32,8 @@ public class AktinMonthly extends AnnotatedReport {
 			try( InputStream in = getClass().getResourceAsStream(resourcePrefix+name) ){
 				//System.out.println(in.toString());
 				//System.out.println(workingDirectory.resolve(name));
-				Files.copy(in, workingDirectory.resolve(name)); 				
+				Files.copy(in, workingDirectory.resolve(name)); 	
+				//log.info("Copying "+resourcePrefix+name+" to: "+workingDirectory.resolve(name));
 			}
 		}		
 	}
@@ -40,7 +41,7 @@ public class AktinMonthly extends AnnotatedReport {
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
 		//String[] resNames = {"empty-test.R","generate-report-resources-mod.R","xhtml-table.R"};
-		String[] resNames = {"generate-report-resources.R","xhtml-table.R"};
+		String[] resNames = {"generate-report-resources.R","xhtml-table.R","CEDIS.csv"};
 		String resPrefix = "/";
 		//log.info(workingDirectory.toString());
 		copyResources(resNames, resPrefix, workingDirectory);
@@ -52,7 +53,7 @@ public class AktinMonthly extends AnnotatedReport {
 	@Override
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
 		log.info("Using configuration option="+dummyOption);
-		String[] resNames = {"report-content.xml","fo-report-fertig.xsl","report-data.xml"};
+		String[] resNames = {"report-content.xml","fo-report-fertig.xsl","report-data.xml","aktin.png","bmbf.png","properties.xml"};
 		String resPrefix = "/";
 		copyResources(resNames, resPrefix, workingDirectory);
 		// return resource names within workingDirectory. 

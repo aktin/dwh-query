@@ -5,7 +5,7 @@
 	<xsl:template match="/template">
 		<xsl:variable name="colpos" select="count(preceding-sibling::xhtml:col)"/>
 		<xsl:variable name="datapos" select="count(preceding-sibling::xhtml:td)"/>
-		<fo:root>
+		<fo:root font-family="Helvetica">
 			<fo:layout-master-set>
 				<fo:simple-page-master master-name="page-layout" page-height="297mm"
 					page-width="210mm">
@@ -48,7 +48,6 @@
 							select="document('properties.xml')/properties/entry[@key = 'local.ou']/text()"
 						/>
 					</fo:block>
-					<!--  <fo:block><xsl:value-of select="document('report-local.xml')/report-local/text[@id='leitung']/text()"/></fo:block> -->
 					<fo:block>
 						<xsl:value-of
 							select="document('report-data.xml')/report-data/text[@id = 'monat']/text()"
@@ -59,18 +58,18 @@
 							select="document('report-data.xml')/report-data/text[@id = 'stand']/text()"
 						/>
 					</fo:block>
-					<fo:block space-before="200pt"> Verbesserung der Versorgungsforschung in der
+					<fo:block space-before="200pt">Verbesserung der Versorgungsforschung in der
 						Akutmedizin in Deutschland durch den Aufbau eines nationalen
-						Notaufnahmeregisters </fo:block>
+						Notaufnahmeregisters</fo:block>
 					<fo:block space-before="10pt">
 						<fo:external-graphic>
 							<xsl:attribute name="src">aktin.png</xsl:attribute>
 						</fo:external-graphic>
 					</fo:block>
-					<fo:block space-before="50pt"> Förderkennzeichen: 01KX1319B </fo:block>
+					<fo:block space-before="50pt">Förderkennzeichen: 01KX1319B</fo:block>
 					<fo:block space-before="10pt">
 						<fo:external-graphic>
-							<xsl:attribute name="src">BMBF.png</xsl:attribute>
+							<xsl:attribute name="src">bmbf.png</xsl:attribute>
 						</fo:external-graphic>
 					</fo:block>
 					<xsl:call-template name="genTOC"/>
@@ -86,6 +85,8 @@
 		<xsl:attribute name="border-collapse">collapse</xsl:attribute>
 		<xsl:attribute name="space-before">10pt</xsl:attribute>
 		<xsl:attribute name="keep-together">always</xsl:attribute>
+		<xsl:attribute name="table-layout">fixed</xsl:attribute>
+		<xsl:attribute name="width">100%</xsl:attribute>
 	</xsl:attribute-set>
 	<xsl:attribute-set name="tablehead">
 		<xsl:attribute name="font-weight">bold</xsl:attribute>
@@ -210,9 +211,14 @@
 	</xsl:template>
 
 	<xsl:template match="plot">
-		<xsl:variable name="id" select="@ref"/>
-		<xsl:variable name="href"
-			select="document('report-data.xml')/report-data/plot[@id = $id]/@href"/>
+        <xsl:variable name="id" select="@ref"/>
+		<xsl:variable name="href" select="document('report-data.xml')/report-data/plot[@id = $id]/@href"/>
+        <!--  should work to avoid errors with missing files, but check on $href always returns false => path problem?
+        <xsl:when test="fs:exists(fs:new($href))" xmlns:fs="java.io.File">
+        </xsl:when>
+        <xsl:otherwise>
+         do something here... default image
+        </xsl:otherwise>-->
 		<fo:block space-before="10pt">
 			<fo:external-graphic xsl:use-attribute-sets="plotformat">
 				<xsl:attribute name="src">

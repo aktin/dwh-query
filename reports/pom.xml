@@ -16,7 +16,7 @@
 	</parent>
 		
 	<modules>
-		<module>wolfsburg-monthly</module>
+		<module>aktin-monthly</module>
 		<module>cda-field-stats</module>
 	</modules>
 	<dependencies>

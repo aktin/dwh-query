@@ -24,10 +24,10 @@ stdabw <- function(x) {n=length(x) ; sqrt(var(x) * (n-1) / n)}
 #tmp = read.csv2(file='Daten_ZNA_Entenhausen.csv', as.is=TRUE, na.strings='')
 pat <- read.table(file='patients.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='')
 enc <- read.table(file='encounters.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='')
-
+diag <- read.table(file='diagnoses.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='')
 
 # create new data frame to contain clean values
-df = data.frame(patient=pat$patient_id, encounter=enc$dokument_id)
+df = data.frame(patient=pat$patient_id, encounter=enc$encounter_id)
 
 #load CEDIS mapping table
 cedis = read.csv2(file='CEDIS.csv', as.is=TRUE, na.strings='', header = FALSE)
@@ -51,7 +51,7 @@ df$triage.result = as.factor(substring(enc$triage, first=5))
 levels(df$triage.result) <- list("Rot"="1","Orange"="2","Gelb"="3","Gruen"="4","Blau"="5","Ohne"="NA")
 df$triage.result[is.na(df$triage.result)] <- 'Ohne'
 df$cedis = as.factor(substring(enc$cedis, first=9))
-df$diagnosis = as.factor(substring(enc$diagnose_fuehrend, first=9, last =11)) #ICD10 Codes Category (3-char only)
+#df$diagnosis = as.factor(substring(diag$diagnose_fuehrend, last=3)) #ICD10 Codes Category (3-char only)
 #df$discharge = as.factor(substring(enc$entlassung, first=7))
 df$sex = pat$geschlecht
 # TODO more columns
@@ -142,7 +142,7 @@ try({
   # Save as SVG file
   trellis.device(gfx.dev,file=paste0(gfx.dir,'admit.h',gfx.ext), width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 # Write table
 try({
@@ -174,7 +174,7 @@ try({
   graph <- barchart(round(table(df$admit.wd)/weekdaycounts,digits = 0), horizontal=FALSE, xlab="Wochentag", ylab="Durchschnittliche Anzahl Patienten")
   trellis.device('svg',file=paste0(gfx.dir,'admit.wd',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 # Counts per Hour/Weekday
@@ -188,7 +188,7 @@ try({
   legend('topleft',1:length(weekday.levels), legend=weekday.levels, cex=0.8, col=colors, title="Tage")
   #trellis.device('svg',file=paste0(gfx.dir,'admit.hwd',gfx.ext),width=8,height=4)
   #print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 # Counts per Hour/Weekday vs. Weekend
@@ -207,7 +207,7 @@ try({
   lines(weekend/2,type="b",col=colors[1])
 
   #legend('topleft',1:length(weekday.levels), legend=weekday.levels, cex=0.8, col=colors, title="Tage")
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 #Transport and referral
@@ -239,7 +239,7 @@ try({
   plot(ecdf(df$phys.d), xlim=c(1,200), xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]", ylab="Cummulative Percentage")
   #trellis.device('svg',file=paste0(gfx.dir,'phys.d.hist',gfx.ext),width=8,height=4)
   #print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 try({
   a <- df$phys.d[df$phys.d<180]
@@ -249,7 +249,7 @@ try({
   graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,180,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'phys.d.hist',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 try({
@@ -274,7 +274,7 @@ try({
   graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'triage.d.hist',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 try({
@@ -298,7 +298,7 @@ try({
   graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zum Therapiebeginn [Minuten]",ylab="relative Häufigkeit [%]",sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'therapy.d.hist',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 try({
@@ -322,7 +322,7 @@ try({
   graph <- barchart(avg ~ triage, data=x, horizontal=FALSE, ylab="Durchschn. Zeit bis Arztkontakt [Min.]", xlab="Triage",sub=paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'triage.phys.d.avg',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 # Time to discharge
@@ -334,7 +334,7 @@ try({
   graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,600,length=11),sub=paste("Fehlende Werte: ", isNA, "; Werte über 600 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'discharge.d.hist',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 #try({
@@ -355,7 +355,7 @@ try({
   graph <- barchart( a, horizontal=FALSE, xlab="Ersteinschätzung", ylab='Anzahl Patienten')
   trellis.device('svg',file=paste0(gfx.dir,'triage',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 # A little more sophisticated: Table with many aggregate functions
@@ -388,7 +388,7 @@ try({
   graph <- barchart(discharge_table[c(13:1)], xlab="Entlassung & Verlegung (Häufigkeit)")
   trellis.device('svg',file=paste0(gfx.dir,'discharge',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 try({
   b <- data.frame(Kategorie=names(discharge_table), Anzahl=gformat(discharge_table), Anteil=gformat(round((discharge_table / sum(discharge_table))*100,digits = 1)))
@@ -407,7 +407,7 @@ try({
   graph <- barchart( y, xlab="Top 10 CEDIS Vorstellungsgründe (Häufigkeit)")
   trellis.device('svg',file=paste0(gfx.dir,'cedis_top10',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 #CEDIS Groups
@@ -420,9 +420,11 @@ try({
   graph <- barchart(df$cedis,xlab="CEDIS Vorstellungsgründe nach Gruppen (Häufigkeit)")
   trellis.device('svg',file=paste0(gfx.dir,'cedis_groups',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
+#### ICD 
+if (FALSE) {
 #TOP20 ICD
 try({
   t <- table(df$diagnosis) #frequencies
@@ -430,8 +432,10 @@ try({
   graph <- barchart( x [1:20], xlab="Top 20 ICD Abschlussdiagnosen (Häufigkeit)")
   trellis.device('svg',file=paste0(gfx.dir,'icd_top20',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
+  
+}
 
 #Patient Sex
 try({
@@ -462,7 +466,7 @@ try({
   graph <- histogram(x,xlab="Alter [Jahre]",ylab="Anzahl Patienten",type='count',breaks=seq(0,110,length=12),sub='Werte größer 110 werden als 110 gewertet')
   trellis.device('svg',file=paste0(gfx.dir,'age',gfx.ext),width=8,height=4)
   print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 #Admit Day
@@ -551,7 +555,7 @@ try({
   lines(apply (crowdperday,2,min),type="b",col=colors[3])
   #trellis.device('svg',file=paste0(gfx.dir,'crowding',gfx.ext),width=8,height=4)
   #print(graph)
-  dev.off()
+  no_output <- dev.off() #silent
 }, silent=FALSE)
 
 try({
@@ -602,6 +606,6 @@ try({
   lines(crowdperday[27,],type="b",col=colors[1])
   lines(admits,type="b",col=colors[3])
   lines(discharges,type="b",col=colors[2])
-  dev.off()
+  no_output <- dev.off() #silent
   
 }, silent=FALSE)

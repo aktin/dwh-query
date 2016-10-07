@@ -196,7 +196,7 @@
 		<!-- XMLNS for XPath is assumed to be  http://sekmi.de/histream/ns/eav-data -->
         <!-- concepts for the visit table must occur only once per visit and may not repeat -->
 		<column header="patient_id" xpath="../@id"/>
-		<column header="visit_id" xpath="@id"/>
+		<column header="encounter_id" xpath="@id"/>
 		
         <column header="postleitzahl" xpath="eav:fact[@concept='AKTIN:ZIPCODE']/eav:value"/>
         <column header="versicherung_txt" xpath="eav:fact[@concept='AKTIN:KKNAME']/eav:value"/>

@@ -225,8 +225,11 @@ public class ReportManager extends Module{
 	private void runFOP(String[] files, Path workingPath, Path destPDF) throws IOException{
 		Transformer ft;
 		try {
+			log.info("runFOP with Path: "+workingPath.toString()+"; URI: "+workingPath.toUri());
+			log.info("Resolved path: "+workingPath.resolve(files[1])+"; XSL-File: "+ files[1]);
 			//Second file from Report interface is the XSL file
-			ft = TransformerFactory.newInstance().newTransformer(new StreamSource(Files.newInputStream(workingPath.resolve(files[1])), files[1]));
+			//ft = TransformerFactory.newInstance().newTransformer(new StreamSource(Files.newInputStream(workingPath.resolve(files[1])), files[1]));
+			ft = TransformerFactory.newInstance().newTransformer(new StreamSource( workingPath.resolve(files[1]).toFile() ));
 		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
 			throw new IOException("Unable to construct FOP transformation",e);
 		}
@@ -235,9 +238,9 @@ public class ReportManager extends Module{
 		try( OutputStream out = Files.newOutputStream(destPDF) ){
 			// Step 3: Construct fop with desired output format
 			Fop fop = ff.newFop(MimeConstants.MIME_PDF, out);
-			TransformerFactory factory = TransformerFactory.newInstance();
+			// TransformerFactory factory = TransformerFactory.newInstance();
 			// configuration of transformer factory
-			//First file from Report interface is the XML input (Source)
+			// First file from Report interface is the XML input (Source)
 			Source src = new StreamSource(workingPath.resolve(files[0]).toFile());
 		    // Resulting SAX events (the generated FO) must be piped through to FOP
 		    Result res = new SAXResult(fop.getDefaultHandler());

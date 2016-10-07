@@ -259,7 +259,7 @@ public class ReportManager extends Module{
 		}
 		if( !events.isEmpty() ){
 			log.warning("FOP errors: "+events.getSummary());
-			throw new IOException("Errors during FOP processing");
+			//throw new IOException("Errors during FOP processing"); //do not throw until FOP-"unstable"-Errors are solved
 		}
 	}
 	private void reportAndRemoveRemainingFiles(Report report, Path dir, String[] leftFiles){

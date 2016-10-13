@@ -67,7 +67,7 @@ public class TestReportGeneration {
 		// expect non-empty file
 		Assert.assertTrue(Files.size(dest) > 0);
 
-		Files.delete(dest);
+		//Files.delete(dest); TODO Removed for Testing
 	}
 
 	// TODO write test cases which expect failure on FOP error or R error

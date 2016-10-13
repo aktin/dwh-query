@@ -13,7 +13,7 @@ round_df <- function(df, digits) {
 options(OutDec= ",")
 
 gformat <- function(num,digits=0) {
-  prettyOut <- format(round(as.numeric(num), 1), nsmall=digits, big.mark=".")
+  prettyOut <- format(round(as.numeric(num), digits), nsmall=digits, big.mark=".")
   (prettyOut)
 }
 
@@ -24,36 +24,73 @@ stdabw <- function(x) {n=length(x) ; sqrt(var(x) * (n-1) / n)}
 #tmp = read.csv2(file='Daten_ZNA_Entenhausen.csv', as.is=TRUE, na.strings='')
 pat <- read.table(file='patients.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='')
 enc <- read.table(file='encounters.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='')
-diag <- read.table(file='diagnoses.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='')
+diag <- read.table(file='diagnoses.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='',stringsAsFactors=FALSE, colClasses = c("character"))
 
 # create new data frame to contain clean values
 df = data.frame(patient=pat$patient_id, encounter=enc$encounter_id)
 
 #load CEDIS mapping table
-cedis = read.csv2(file='CEDIS.csv', as.is=TRUE, na.strings='', header = FALSE)
+cedis = read.csv2(file='CEDIS.csv', as.is=TRUE, na.strings='', header = FALSE, sep=';')
 
 # parse timestamps and date fields
 # The timestamp values are assumed to belong to the local timezone
 # TODO check timezones 
 df$dob = strptime(pat$geburtsdatum_ts,format="%F")
-df$triage.ts = strptime(enc$triage_ts,format="%F %H:%M")
-df$admit.ts = strptime(enc$aufnahme_ts,format="%F %H:%M")
-df$phys.ts = strptime(enc$arztkontakt_ts, format="%F %H:%M")
-df$therapy.ts = strptime(enc$therapiebeginn_ts, format="%F %H:%M")
-df$discharge.ts = strptime(enc$entlassung_ts, format="%F %H:%M")
+#df$triage.ts = strptime(enc$triage_ts,format="%F %H:%M")
+#df$admit.ts = strptime(enc$aufnahme_ts,format="%F %H:%M")
+#df$phys.ts = strptime(enc$arztkontakt_ts, format="%F %H:%M")
+#df$therapy.ts = strptime(enc$therapiebeginn_ts, format="%F %H:%M")
+#df$discharge.ts = strptime(enc$entlassung_ts, format="%F %H:%M")
+df$triage.ts = strptime(enc$triage_ts,format="%FT%H:%M")
+df$admit.ts = strptime(enc$aufnahme_ts,format="%FT%H:%M")
+df$phys.ts = strptime(enc$arztkontakt_ts, format="%FT%H:%M")
+df$therapy.ts = strptime(enc$therapiebeginn_ts, format="%FT%H:%M")
+df$discharge.ts = strptime(enc$entlassung_ts, format="%FT%H:%M")
 
 # TODO This is probably not the ideal way to calculate the age
 df$age = floor(as.numeric(difftime(df$admit.ts,df$dob))/365.25)
+df$sex = pat$geschlecht
 
-
-# remove prefixes from string values
-df$triage.result = as.factor(substring(enc$triage, first=5))
+df$triage.result = as.factor(enc$triage)
 levels(df$triage.result) <- list("Rot"="1","Orange"="2","Gelb"="3","Gruen"="4","Blau"="5","Ohne"="NA")
 df$triage.result[is.na(df$triage.result)] <- 'Ohne'
-df$cedis = as.factor(substring(enc$cedis, first=9))
-#df$diagnosis = as.factor(substring(diag$diagnose_fuehrend, last=3)) #ICD10 Codes Category (3-char only)
-#df$discharge = as.factor(substring(enc$entlassung, first=7))
-df$sex = pat$geschlecht
+
+#Diagnoses
+df_diag <- data.frame(as.factor(diag$diagnose_code)) #ICD10 Codes Category (3-char only)
+df_diag$diagnosis = as.factor(substring(diag$diagnose_code, first=1, last=3)) #ICD10 Codes Category (3-char only)
+df_diag$fuehrend = diag$diagnose_fuehrend
+
+# Referral Codes
+df$referral <- factor(x=enc$zuweisung)
+#levels(df$referral) <- list("Vertragsarzt"="AKTIN:REFERRAL:VAP","KV-Notfallpraxis am Krankenhaus"="AKTIN:REFERRAL:KVNPIK","	KV-Notdienst ausserhalb des Krankenhauses	"="AKTIN:REFERRAL:KVNDAK","Rettungsdienst"="AKTIN:REFERRAL:RD","Notarzt"="AKTIN:REFERRAL:NA","Klinik/Verlegung"="AKTIN:REFERRAL:KLINV","Zuweisung nicht durch Arzt"="AKTIN:REFERRAL:NPHYS")
+levels(df$referral) <- list("Vertragsarzt"="VAP","KV-Notfallpraxis am Krankenhaus"="KVNPIK","	KV-Notdienst ausserhalb des Krankenhauses	"="KVNDAK","Rettungsdienst"="RD","Notarzt"="NA","Klinik/Verlegung"="KLINV","Zuweisung nicht durch Arzt"="NPHYS")
+
+#Transport Codes
+df$transport <- factor(x=enc$transportmittel)
+#levels(df$transport) <- list("Ohne"="AKTIN:TRANSPORT:NA","KTW"="AKTIN:TRANSPORT:1","RTW"="AKTIN:TRANSPORT:2","NAW/NEF/ITW"="AKTIN:TRANSPORT:3","RTH/ITH"="AKTIN:TRANSPORT:4","Anderes"="AKTIN:TRANSPORT:OTH")
+levels(df$transport) <- list("Ohne"="NA","KTW"="1","RTW"="2","NAW/NEF/ITW"="3","RTH/ITH"="4","Anderes"="OTH")
+
+#Discharge Codes
+df$discharge = factor(x=enc$entlassung)
+#levels(df$discharge) <- list("Tod"="AKTIN:DISCHARGE:1","Gegen aerztl. Rat"="AKTIN:DISCHARGE:2","Abbruch durch Pat."="AKTIN:DISCHARGE:3","Nach Hause"="AKTIN:DISCHARGE:4","Zu weiterbehandl. Arzt"="AKTIN:DISCHARGE:5","Kein Arztkontakt"="AKTIN:DISCHARGE:6","Sonstiges"="AKTIN:DISCHARGE:OTH","Intern: Funktion"="AKTIN:TRANSFER:1","Extern: Funktion"="AKTIN:TRANSFER:2","Intern: Ueberwachung"="AKTIN:TRANSFER:3","Extern: Ueberwachung"="AKTIN:TRANSFER:4","Intern: Normalstation"="AKTIN:TRANSFER:5","Extern: Normalstation"="AKTIN:TRANSFER:6")
+levels(df$discharge) <- list("Tod"="DISCHARGE:1","Gegen aerztl. Rat"="DISCHARGE:2","Abbruch durch Pat."="DISCHARGE:3","Nach Hause"="DISCHARGE:4","Zu weiterbehandl. Arzt"="DISCHARGE:5","Kein Arztkontakt"="DISCHARGE:6","Sonstiges"="DISCHARGE:OTH","Intern: Funktion"="TRANSFER:1","Extern: Funktion"="TRANSFER:2","Intern: Ueberwachung"="TRANSFER:3","Extern: Ueberwachung"="TRANSFER:4","Intern: Normalstation"="TRANSFER:5","Extern: Normalstation"="TRANSFER:6")
+
+#Isolation Codes
+df$isolation_grund = factor(x=enc$isolation_grund)
+levels(df$isolation_grund) <- list("Multiresistenter Keim"="U80","Gastroenteritis"="A09.9","Tuberkulose"="A16.9","Meningitis"="G03.9","Andere"="OTH")
+
+#CEDIS Codes
+df$cedis <- factor(x=enc$cedis,t(cedis[1]))
+
+#Multiresistente Erreger
+df$keime <- factor(enc$keime)
+df$keime_mrsa <- factor(enc$keime_mrsa)
+df$keime_3mrgn <- factor(enc$keime_3mrgn)
+df$keime_4mrgn <- factor(enc$keime_4mrgn)
+df$keime_vre <- factor(enc$keime_vre)
+df$keime_andere <- factor(enc$keime_andere)
+
+
 # TODO more columns
 
 
@@ -95,7 +132,7 @@ df$phys.d <- df$phys.ts - df$admit.ts
 df$phys.d[df$phys.d < 0] <- NA
 df$phys.d[df$phys.d > 24*60] <- NA
 
-# Time to therapy
+# Time phys to therapy
 df$therapy.d <- df$therapy.ts - df$phys.ts
 # Values out of bounds (<0h or >24h) => NA
 df$therapy.d[df$therapy.d < 0] <- NA
@@ -106,22 +143,6 @@ df$discharge.d <- df$discharge.ts - df$admit.ts
 # Values out of bounds (<0h or >24h) => NA
 df$discharge.d[df$discharge.d < 0] <- NA
 df$discharge.d[df$discharge.d > 24*60] <- NA     #could be more than 24 hours!
-
-# Referral Codes
-df$referral <- factor(x=enc$zuweisung)
-levels(df$referral) <- list("Vertragsarzt"="AKTIN:REFERRAL:VAP","KV-Notfallpraxis am Krankenhaus"="AKTIN:REFERRAL:KVNPIK","	KV-Notdienst ausserhalb des Krankenhauses	"="AKTIN:REFERRAL:KVNDAK","Rettungsdienst"="AKTIN:REFERRAL:RD","Notarzt"="AKTIN:REFERRAL:NA","Klinik/Verlegung"="AKTIN:REFERRAL:KLINV","Zuweisung nicht durch Arzt"="AKTIN:REFERRAL:NPHYS")
-
-#Transport Codes
-df$transport <- factor(x=enc$transportmittel)
-levels(df$transport) <- list("Ohne"="AKTIN:TRANSPORT:NA","KTW"="AKTIN:TRANSPORT:1","RTW"="AKTIN:TRANSPORT:2","NAW/NEF/ITW"="AKTIN:TRANSPORT:3","RTH/ITH"="AKTIN:TRANSPORT:4","Anderes"="AKTIN:TRANSPORT:OTH")
-
-#Discharge Codes
-df$discharge = factor(x=enc$entlassung)
-levels(df$discharge) <- list("Tod"="AKTIN:DISCHARGE:1","Gegen aerztl. Rat"="AKTIN:DISCHARGE:2","Abbruch durch Pat."="AKTIN:DISCHARGE:3","Nach Hause"="AKTIN:DISCHARGE:4","Zu weiterbehandl. Arzt"="AKTIN:DISCHARGE:5","Kein Arztkontakt"="AKTIN:DISCHARGE:6","Sonstiges"="AKTIN:DISCHARGE:OTH","Intern: Funktion"="AKTIN:TRANSFER:1","Extern: Funktion"="AKTIN:TRANSFER:2","Intern: Ueberwachung"="AKTIN:TRANSFER:3","Extern: Ueberwachung"="AKTIN:TRANSFER:4","Intern: Normalstation"="AKTIN:TRANSFER:5","Extern: Normalstation"="AKTIN:TRANSFER:6")
-
-#CEDIS Codes
-df$cedis <- factor(x=enc$cedis,t(cedis[1]))
-
 
 # XHTML tables
 source('xhtml-table.R')
@@ -146,8 +167,10 @@ try({
 }, silent=FALSE)
 # Write table
 try({
-  xhtml.table(round(table(df$admit.h)[1:12]/length(levels(df$admit.day)),digits=1), file=paste0(xml.dir,'admit.h.xml'),align='center')
-  xhtml.table(round(table(df$admit.h)[13:24]/length(levels(df$admit.day)),digits=1), file=paste0(xml.dir,'admit2.h.xml'),align='center')
+  table_pretty <- format(round(table(df$admit.h)[1:12]/length(levels(df$admit.day)), 1), nsmall=1, big.mark=".")
+  xhtml.table(table_pretty, file=paste0(xml.dir,'admit.h.xml'),align='center')
+  table_pretty <- format(round(table(df$admit.h)[13:24]/length(levels(df$admit.day)), 1), nsmall=1, big.mark=".")
+  xhtml.table(table_pretty, file=paste0(xml.dir,'admit2.h.xml'),align='center')
 }, silent=FALSE)
 
 #calculate number of weekdays in the current period (month)
@@ -181,7 +204,7 @@ try({
 try({
   colors <- rainbow(length(weekday.levels)) 
   svg(paste0(gfx.dir,'admit.hwd','.svg'))
-  plot(admit.hwd[1,], xlab="Uhrzeit [Stunde]", ylab="Anzahl Patienten")   #ToDo: How To Plot a Matrix?
+  plot(admit.hwd[1,], xlab="Uhrzeit [Stunde]", ylab="Durchschnittliche Anzahl Patienten")   #ToDo: How To Plot a Matrix?
   for (i in 1:length(weekday.levels)) {
     lines(admit.hwd[i,],type="b",col=colors[i])
   }
@@ -213,18 +236,18 @@ try({
 #Transport and referral
 try({
   table_formatted <- table(df$transport,useNA = "always")
-  names(table_formatted)[length(names(table_formatted))]<-'keine Daten'
+  names(table_formatted)[length(names(table_formatted))]<-'Keine Daten'
   a <- table_formatted
-  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat(round((a / sum(a))*100,digits = 1)))
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
   xhtml.table(c, file=paste0(xml.dir,'transport.xml'),align=c('left','right','right'),widths=c(25,17,17))
   
   table_formatted <- table(df$referral,useNA = "always")
-  names(table_formatted)[length(names(table_formatted))]<-'keine Daten'
+  names(table_formatted)[length(names(table_formatted))]<-'Keine Daten'
   a <- table_formatted
-  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat(round((a / sum(a))*100,digits = 1)))
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
@@ -246,7 +269,10 @@ try({
   outofbounds <- length(df$phys.d) - length(a)
   isNA <- length(df$phys.d[is.na(df$phys.d )])
   b <- a[!is.na(a)]
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,180,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds))
+  #Absolute Zahlen
+  #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,180,length=13),scales = list(x = list(at = seq(0,180,length=7))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds))
+  #Relative Häufigkeiten
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Relative Häufigkeit [%]",breaks=seq(0,180,length=13),scales = list(x = list(at = seq(0,180,length=7))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'phys.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
@@ -271,7 +297,10 @@ try({
   outofbounds <- length(df$triage.d) - length(a)
   isNA <- length(df$triage.d[is.na(df$triage.d )])
   b <- a[!is.na(a)]
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
+  #Absolute Zahlen
+  #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
+  #Relative Häufigkeiten
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Relative Häufigkeit [%]",breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'triage.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
@@ -289,17 +318,20 @@ try({
   xhtml.table(b, file=paste0(xml.dir,'triage.d.xml'),align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
-# Time to therapy
-try({
+# Time physician to therapy
+tryCatch({
   a <- df$therapy.d[df$therapy.d<60]
   outofbounds <- length(df$therapy.d) - length(a)
   isNA <- length(df$therapy.d[is.na(df$therapy.d )])
   b <- a[!is.na(a)]
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zum Therapiebeginn [Minuten]",ylab="relative Häufigkeit [%]",sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit vom ersten Arztkontakt bis zum Therapiebeginn [Minuten]",ylab="relative Häufigkeit [%]",sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'therapy.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
-}, silent=FALSE)
+}, error = function(err) {
+  file.copy(paste0(gfx.dir,'dummy',gfx.ext),paste0(gfx.dir,'therapy.d.hist',gfx.ext))
+  return(err)
+}, silent=TRUE)
 
 try({
   used <- length(a)-length(a[is.na(a)])
@@ -319,7 +351,7 @@ try({
   outofbounds <- length(df$phys.d) - length(a)
   b <- df$triage.result[df$phys.d<180]
   x <- aggregate(x=list(avg=a), by=list(triage=b), FUN=mean, na.rm=TRUE)
-  graph <- barchart(avg ~ triage, data=x, horizontal=FALSE, ylab="Durchschn. Zeit bis Arztkontakt [Min.]", xlab="Triage",sub=paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds))
+  graph <- barchart(avg ~ triage, data=x, horizontal=FALSE, ylab="Durchschn. Zeit bis Arztkontakt [Min.]", xlab="Triage-Gruppe",sub=paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'triage.phys.d.avg',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
@@ -331,7 +363,7 @@ try({
   outofbounds <- length(df$discharge.d) - length(a)
   isNA <- length(df$discharge.d[is.na(df$discharge.d )])
   b <- a[!is.na(a)]
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,600,length=11),sub=paste("Fehlende Werte: ", isNA, "; Werte über 600 Minuten: ", outofbounds))
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,600,length=11),scales = list(x = list(at = seq(0,600,length=11))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 600 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'discharge.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
@@ -346,7 +378,7 @@ try({
 try({
   table_formatted <- table(df$triage.result,useNA = "ifany")
   a <- table_formatted
-  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat(round((a / sum(a))*100,digits = 1)))
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
@@ -384,65 +416,91 @@ try({
 #Entlassung & Co
 try({
   discharge_table <- table(df$discharge,useNA = "always")[c(12,8,10,13,9,11,4,5,6,3,2,1,7,14)]
-  names(discharge_table)[length(names(discharge_table))]<-'keine Daten'
-  graph <- barchart(discharge_table[c(13:1)], xlab="Entlassung & Verlegung (Häufigkeit)")
+  names(discharge_table)[length(names(discharge_table))]<-'Keine Daten'
+  graph <- barchart(discharge_table[c(13:1)], xlab="Anzahl Patienten")
   trellis.device('svg',file=paste0(gfx.dir,'discharge',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
 }, silent=FALSE)
 try({
-  b <- data.frame(Kategorie=names(discharge_table), Anzahl=gformat(discharge_table), Anteil=gformat(round((discharge_table / sum(discharge_table))*100,digits = 1)))
+  b <- data.frame(Kategorie=names(discharge_table), Anzahl=gformat(discharge_table), Anteil=gformat((discharge_table / sum(discharge_table))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(discharge_table)),Anteil=gformat(100,digits=1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
   xhtml.table(c, file=paste0(xml.dir,'discharge.xml'),align=c('left','right','right'),widths=c(30,15,15))
 }, silent=FALSE)
 
-#TOP10 CEDIS
+#TOP20 CEDIS
 try({
   t <- table(df$cedis) #frequencies
   x <- sort(t, decreasing = TRUE)
-  y <- x [1:10]
-  names(y) <- c('Unbekannt','Schmerzen obere Extremität','Schmerzen untere Extremität','Bauchschmerzen','Verletzung obere Extremität','Brustschmerz (kardial)','Luftnot','Rückenschmerzen','Verletzung untere Extremität','Hypertonie')
-  graph <- barchart( y, xlab="Top 10 CEDIS Vorstellungsgründe (Häufigkeit)")
-  trellis.device('svg',file=paste0(gfx.dir,'cedis_top10',gfx.ext),width=8,height=4)
+  y <- x [1:20]
+  names(y) <- factor(names(y),t(cedis[1]),labels=t(cedis[3]))
+  graph <- barchart( y, xlab="Anzahl Patienten")
+  trellis.device('svg',file=paste0(gfx.dir,'cedis_top',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
+  
+  a <- t
+  a["999"] <- 0
+  a <- sort(a, decreasing = TRUE)
+  a <- a [1:20]
+  a[21] <- t["999"]
+  names(a)[21] <- "999"
+  names(a) <- factor(names(a),t(cedis[1]),labels=t(cedis[3]))
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(t))*100,digits = 1))
+  b <- rbind(b, data.frame(Kategorie="Vorstellungsgrund nicht dokumentiert",Anzahl=gformat(sum(is.na(df$cedis))), Anteil=gformat((sum(is.na(df$cedis)) / length(df$cedis))*100,digits = 1)))
+  ges <- sum(is.na(df$cedis))+sum(a)
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(ges),Anteil=gformat(ges / length(df$cedis)*100,digits=1)))
+  #c[,3] <- sprintf(fmt="%.1f",c[,3])
+  c[,3] <- paste(c[,3],'%')
+  xhtml.table(c, file=paste0(xml.dir,'cedis.xml'),align=c('left','right','right'),widths=c(60,20,20))
+  
+  
 }, silent=FALSE)
 
 #CEDIS Groups
-#HOW can I map the CEDIS levels? 001-012=CV, 051-056=HNE,...
-#This causes warnings, but it works :)
+#This causes warnings (duplicate levels in factors, which is ok here), but it works :)
 try({
-  df$cedis <- factor(x=enc$cedis,t(cedis[1]),labels=t(cedis[2]))  #map Categories
-  df$cedis <- factor(x=df$cedis,t(cedis[1]),labels=t(cedis[3]))   #map Labels
-  df$cedis <- droplevels(df$cedis) #not ideal, only showing used categories
-  graph <- barchart(df$cedis,xlab="CEDIS Vorstellungsgründe nach Gruppen (Häufigkeit)")
+  cedis_cat_top <- factor(x=enc$cedis,t(cedis[1]),labels=t(cedis[2])) #map Categories
+  cedis_cat_top <- factor(x=cedis_cat_top,t(cedis[1]),labels=t(cedis[3]))   #map Labels
+  cedis_cat_top <- droplevels(cedis_cat_top) #not ideal, only showing used categories
+  graph <- barchart(cedis_cat_top,xlab="Anzahl Patienten")
   trellis.device('svg',file=paste0(gfx.dir,'cedis_groups',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
 }, silent=FALSE)
 
-#### ICD 
-if (FALSE) {
 #TOP20 ICD
 try({
-  t <- table(df$diagnosis) #frequencies
+  f_diag <- df_diag$diagnosis[df_diag$fuehrend=='F'] 
+  t <- table(f_diag) #frequencies
   x <- sort(t, decreasing = TRUE)
-  graph <- barchart( x [1:20], xlab="Top 20 ICD Abschlussdiagnosen (Häufigkeit)")
-  trellis.device('svg',file=paste0(gfx.dir,'icd_top20',gfx.ext),width=8,height=4)
+  graph <- barchart( x [1:20], xlab="Anzahl Patienten")
+  trellis.device('svg',file=paste0(gfx.dir,'icd_top',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
+  
+  a <- t
+  a <- sort(a, decreasing = TRUE)
+  a <- a [1:20]
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(t))*100,digits = 1))
+  b <- rbind(b, data.frame(Kategorie="Nicht dokumentiert",Anzahl=gformat(sum(is.na(f_diag))), Anteil=gformat((sum(is.na(f_diag)) / length(f_diag))*100,digits = 1)))
+  ges <- sum(is.na(f_diag))+sum(a)
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(ges),Anteil=gformat((ges / length(f_diag)*100),digits = 1)))
+  #c[,3] <- sprintf(fmt="%.1f",c[,3])
+  c[,3] <- paste(c[,3],'%')
+  xhtml.table(c, file=paste0(xml.dir,'icd.xml'),align=c('left','right','right'),widths=c(40,20,20))
+  
 }, silent=FALSE)
   
-}
 
 #Patient Sex
 try({
   table_formatted <- table(df$sex,useNA = "always")
-  names(table_formatted) <- c('Weiblich', 'Maennlich','keine Angabe')
+  names(table_formatted) <- c('Weiblich', 'Maennlich','Keine Angabe')
   a <- table_formatted
-  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat(round((a / sum(a))*100,digits = 1)))
+  b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
   ##c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
@@ -560,9 +618,9 @@ try({
 
 try({
   
+  df$los = df$discharge.ts - df$admit.ts
   lt_zero <- length(df$los[df$los < 0]) - length(df$los[is.na(df$los)])
   gt_day <- length(df$los[df$los > 24*60]) - length(df$los[is.na(df$los)])
-  df$los = df$discharge.ts - df$admit.ts
   los_NA <- sum(is.na(df$los))
   los <- df$los[df$los<=10*60]
   los <- los[!is.na(los)]
@@ -608,4 +666,28 @@ try({
   lines(discharges,type="b",col=colors[2])
   no_output <- dev.off() #silent
   
+}, silent=FALSE)
+
+#Isolierte Patienten
+try({
+  isoreason_table <- table(df$isolation_grund,useNA = "always")
+  names(isoreason_table)[length(names(isoreason_table))]<-'Keine Daten'
+  b <- data.frame(Kategorie=names(isoreason_table), Anzahl=gformat(isoreason_table), Anteil=gformat((isoreason_table / sum(isoreason_table))*100,digits = 1))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(isoreason_table)),Anteil=gformat(100,digits=1)))
+  c[,3] <- paste(c[,3],'%')
+  xhtml.table(c, file=paste0(xml.dir,'isoreason.xml'),align=c('left','right','right'),widths=c(30,15,15))
+}, silent=FALSE)
+
+#Multiresistente Erreger
+try({
+  mrsa_patient <- cbind(df$keime,df$keime_mrsa,df$keime_3mrgn,df$keime_4mrgn,df$keime_vre)
+  mrsa_patient <- rowSums(mrsa_patient,na.rm=TRUE)
+  mrsa_table <-                   data.frame(Kategorie="MRSA", Bekannt=sum(df$keime_mrsa == 'MRSA',na.rm=TRUE), Verdacht=sum(df$keime_mrsa == 'MRSA:SUSP',na.rm=TRUE))
+  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="3-MRGN",Bekannt=sum(df$keime_3mrgn == '3MRGN',na.rm=TRUE),Verdacht=sum(df$keime_mrsa == '3MRGN:SUSP',na.rm=TRUE)))
+  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="4-MRGN",Bekannt=sum(df$keime_3mrgn == '4MRGN',na.rm=TRUE),Verdacht=sum(df$keime_mrsa == '4MRGN:SUSP',na.rm=TRUE)))
+  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="VRE",Bekannt=sum(df$keime_3mrgn == 'VRE',na.rm=TRUE),Verdacht=sum(df$keime_mrsa == 'VRE:SUSP',na.rm=TRUE)))
+  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Andere",Bekannt=sum(df$keime_3mrgn == 'OTH',na.rm=TRUE),Verdacht=sum(df$keime_mrsa == 'OTH:SUSP',na.rm=TRUE)))
+  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="keine Keime",Bekannt=sum(df$keime == 'AMRO:NEG',na.rm=TRUE),Verdacht='-'))
+  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="keine Angabe",Bekannt=sum(mrsa_patient<1),Verdacht='-'))
+  xhtml.table(mrsa_table, file=paste0(xml.dir,'multiresistant.xml'),align=c('left','right','right'),widths=c(30,15,15))
 }, silent=FALSE)

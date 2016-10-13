@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.logging.Logger;
 
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.aktin.report.AnnotatedReport;
 
@@ -52,8 +53,8 @@ public class AktinMonthly extends AnnotatedReport {
 
 	@Override
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
-		log.info("Using configuration option="+dummyOption);
-		String[] resNames = {"report-content.xml","fo-report-fertig.xsl","report-data.xml","aktin.png","bmbf.png","properties.xml"};
+		//log.info("Using configuration option="+dummyOption);
+		String[] resNames = {"report-content.xml","fo-report-fertig.xsl","report-data.xml","AKTIN_Logo_final.svg","BMBF.svg","dummy.svg"};
 		String resPrefix = "/";
 		copyResources(resNames, resPrefix, workingDirectory);
 		// return resource names within workingDirectory. 
@@ -69,8 +70,7 @@ public class AktinMonthly extends AnnotatedReport {
 
 	@Override
 	public Source getExportDescriptor() {
-		URL url = getClass().getResource("/export-descriptor.xml");
-		return this.createStreamSource(url);
+		return new StreamSource(getClass().getResourceAsStream("/export-descriptor.xml"));
 	}
 
 }

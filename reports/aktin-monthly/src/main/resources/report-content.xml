@@ -13,9 +13,29 @@
 ]>
 
 <template>
+  <intro>Sehr geehrte Projektpartner im AKTIN-Projekt,
+
+hiermit präsentieren wir Ihnen den Monatsbericht aus Ihrer Notaufnahme. Dieser wird automatisch aus den Daten generiert, welche in Ihrem primären Dokumentationssystem elektronisch erhoben und dann in das lokale Datawarehouse des Notaufnahmeregisters importiert werden.
+
+Neben der Beschreibung Ihrer Patienten nach Alter und Geschlecht werden die Fallzahlen nach Tag und Uhrzeit der administrativen Aufnahme dargestellt. Es werden mehrere Prozesszeiten abgebildet, gegebenenfalls auch geschichtet nach den Kategorien eines von Ihnen verwendeten Ersteinschätzungssystems. Außerdem berichten wir die Vorstellungsgründe und die führenden Diagnosen.
+
+Bitte verstehen Sie diesen Bericht als „work in progress“. Er wurde auf Basis der Daten einer AKTIN-Modellklinik entwickelt. Da in Ihrer Notaufnahme das Patientenkollektiv bzw. die Datenstruktur anders aussehen kann, bleiben möglicherweise einzelne Tabellen oder Grafiken leer. Auch werden eventuell nicht plausible Werte dargestellt. Anhand der nun vorliegenden ersten Berichte können zukünftig sukzessive weitere Plausibilitätskontrollen sowie Datenbereinigungen umgesetzt werden.
+
+Bitte teilen Sie uns Änderungswünsche und Verbesserungsvorschläge für die folgenden Berichte mit und kontaktieren Sie uns auch gerne bei weiteren Rückfragen.
+
+Wir freuen uns auf die weitere Zusammenarbeit mit Ihnen!
+
+Ihr
+
+AKTIN-Team
+
+------------------------
+E-Mail:	office@aktin.org
+Homepage:	www.aktin.org
+  </intro>
   <section>
     <header>Beschreibung der Patienten</header>
-    <paragraph>Einleitungstext Patienten</paragraph>
+    <paragraph>Im <var ref="monat"/>  <var ref="jahr"/> wurden in der Notaufnahme insgesamt <var ref="anzahl"/> Patienten behandelt. Deren Geschlechts- und Altersverteilung wird in den folgenden Tabellen und Grafiken dargestellt.</paragraph>
     <section>
       <header>Geschlechtsverteilung</header>
       <table ref="t0.1">Tabelle 1: Geschlechtsverteilung</table>
@@ -28,7 +48,7 @@
   </section>
   <section>
     <header>Fallzahlen</header>
-    <paragraph>Einleitungstext <var ref="anzahl"/> Fallzahlen</paragraph>
+    <paragraph>In diesem Abschnitt werden die Fallzahlen berichtet, sowohl absolut als auch die durchschnittlich behandelten Patienten pro Wochentag und Uhrzeit. Ausschlaggebend sind dabei immer das Datum und der Zeitpunkt der administrativen Aufnahme.</paragraph>
     <section>
       <header>Fallzahlen nach Kalendertagen</header>
       <table ref="t1.1c">Tabelle 3: Fallzahlen nach Aufnahmetag</table>
@@ -50,7 +70,6 @@
   </section>
   <section>
     <header>Zuweisung und Transportmittel</header>
-    <paragraph>Einleitungstext Zuweisung und Transportmittel</paragraph>
     <section>
       <header>Fallzahlen nach Zuweisung</header>
       <table ref="t1.2">Tabelle 5: Fallzahlen nach Zuweisung</table>
@@ -87,7 +106,7 @@
   </section>
   <section>
     <header>Ersteinschätzung</header>
-    <paragraph>Einleitungstext Ersteinschätzung</paragraph>
+    <paragraph>Im Folgenden wird die Verteilung der Patienten auf die Kategorien innerhalb des verwendeten Ersteinschätzungssystems dargestellt.</paragraph>
     <section>
       <header>Ersteinschätzung</header>
       <plot ref="p4.1b">Grafik 9: Ersteinschätzung</plot>
@@ -97,7 +116,7 @@
   </section>
   <section>
     <header>Prozesszeiten</header>
-    <paragraph>Einleitungstext Prozesszeiten <var ref="bereich"/></paragraph>
+    <paragraph>Bei den Prozesszeiten wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Ersteinschätzung später als 60 Minuten nach administrativer Aufnahme, erster Arztkontakt später als 180 Minuten nach administrativer Aufnahme sowie negative Prozesszeiten.</paragraph>
     <section>
       <header>Ankunft/Aufnahme bis Ersteinschätzung</header>
       <plot ref="p2.1">Grafik 10: Ankunft/Aufnahme bis Ersteinschätzung</plot>
@@ -122,27 +141,27 @@
   </section>
   <section>
     <header>Verlegung und Entlassung</header>
-    <paragraph>Einleitungstext Verlegung und Entlassung</paragraph>
     <plot ref="p3.1">Grafik 14: Verlegung und Entlassung</plot>
     <table ref="t3.1">Tabelle 12: Verlegung und Entlassung</table>
   </section>
   <section>
     <header>Aufenthaltsdauer der Patienten</header>
+    <paragraph>Bei der Gesamtaufenthaltsdauer wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Aufenthaltsdauer länger als 24 Stunden sowie negative Zeiten.</paragraph>
     <plot ref="p2.5">Grafik 15: Aufenthaltsdauer</plot>
     <table ref="t7.1">Tabelle 13: Aufenthaltsdauer in Minuten</table>
   </section>
   <section>
-    <header>Vorstellungsgrund und Aufnahmediagnose</header>
-    <paragraph>Einleitungstext Diagnosen</paragraph>
+    <header>Vorstellungsgrund und und führende Diagnose</header>
+    <paragraph>Die kodierten Diagnosen nach ICD-10-GM werden hier als sogenannte 3-Steller berichtet, sofern sie in dem primären Dokumentationssystem als „führende Diagnose“ definiert sind. Weitere Diagnosen werden nicht berücksichtigt, ebenso wie Diagnosen, die mit einem Zusatzkennzeichen versehen sind.</paragraph>
     <section>
       <header>Top 20 Diagnosen</header>
       <plot ref="p4.1">Grafik 16: Top 20 Diagnosen (ICD 3-Steller)</plot>
-      <!-- <table ref="t4.1">Tabelle 11: Top 20 Diagnosen</table> -->
+      <table ref="t4.3">Tabelle 11: Top 20 Diagnosen</table>
     </section>
     <section>
-      <header>Top 10 Vorstellungsgründe (CEDIS)</header>
-      <plot ref="p4.2">Grafik 17: Top 10 Vorstellungsgründe</plot>
-      <!-- <table ref="t4.2">Tabelle 12: Top 10 CEDIS</table> -->
+      <header>Top 20 Vorstellungsgründe (CEDIS)</header>
+      <plot ref="p4.2">Grafik 17: Top 20 Vorstellungsgründe</plot>
+      <table ref="t4.2">Tabelle 12: Top 20 Vorstellungsgründe</table>
     </section>
     <section>
       <header>Vorstellungsgründe (Gruppen)</header>
@@ -166,6 +185,18 @@
   </section>
   -->
   <section>
+    <header>Multiresistente Erreger und isolierte Patienten</header>
+    <section>
+      <header>Multiresistente Erreger</header>
+      <table ref="t9.1">Tabelle 14: Multiresistente Erreger</table>
+    </section>
+    <section>
+      <header>Isolierte Patienten</header>
+      <table ref="t9.2">Tabelle 15: Isolationsgründe</table>
+    </section>
+  </section>
+  
+  <section>
     <header>Crowding</header>
     <section>
       <header>Patienten vs. Tageszeit</header>
@@ -177,7 +208,7 @@
       <header>Patientenzahlen pro Tag</header>
       <paragraph>Maximum und Minimum der anwesenden Patienten mit Stunde des Auftretens und die
         durchschnittliche Anzahl anwesender Patienten pro Tag</paragraph>
-      <table ref="t12.2">Tabelle 14: Patientenzahlen pro Tag (Extremwerte)</table>
+      <table ref="t12.2">Tabelle 16: Patientenzahlen pro Tag (Extremwerte)</table>
     </section>
     <!--
     <section>

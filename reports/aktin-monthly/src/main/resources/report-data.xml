@@ -1,7 +1,9 @@
 <report-data>
-	<text id="monat">Monatsbericht: Oktober 2015</text>
-	<text id="stand">Datenstand: 05.11.2015</text>
-	<text id="anzahl">xxx</text>
+	<text id="monat_compl">Monatsbericht: Oktober 2015</text>
+	<text id="stand">Datenstand: 05.11.1984</text>
+	<text id="anzahl">1234</text>
+	<text id="monat">Aprimber</text>
+	<text id="jahr">1984</text>
     <table id="t0.1" href="sex.xml"/>
     <table id="t0.2" href="age.xml"/>
 	<table id="t1.1a" href="admit.h.xml"/>
@@ -16,8 +18,12 @@
     <table id="t2.5" href="discharge.d.xml"/>
     <table id="t3.1" href="discharge.xml"/>
     <table id="t4.1" href="triage.xml"/>
+    <table id="t4.2" href="cedis.xml"/>
+    <table id="t4.3" href="icd.xml"/>
     <table id="t7.1" href="los.xml"/>
     <table id="t12.2" href="crowding.d.xml"/>
+    <table id="t9.1" href="multiresistant.xml"/>
+    <table id="t9.2" href="isoreason.xml"/>
     <plot id="p0.2" href="age.svg"/>
 	<plot id="p1.1" href="admit.h.svg"/>
 	<plot id="p1.2" href="admit.wd.svg"/>
@@ -29,8 +35,8 @@
     <plot id="p2.5" href="discharge.d.hist.svg"/>
     <plot id="p3.1" href="discharge.svg"/>
     <plot id="p4.1b" href="triage.svg"/>
-    <plot id="p4.1" href="icd_top20.svg"/>
-    <plot id="p4.2" href="cedis_top10.svg"/>
+    <plot id="p4.1" href="icd_top.svg"/>
+    <plot id="p4.2" href="cedis_top.svg"/>
     <plot id="p4.3" href="cedis_groups.svg"/>
     <plot id="p7.1" href="crowding.svg"/>
     <plot id="p12.3" href="admit_discharge.svg"/>

@@ -115,7 +115,7 @@ public class Snueffelstueck {
 	
 	private String[] copyTestResourcesForR(Path workingDirectory) throws IOException {
 		//String[] resNames = {"empty-test.R","generate-report-resources-mod.R","xhtml-table.R"};
-		String[] resNames = {"patients.txt","encounters.txt","CEDIS.csv","properties.xml","aktin.png","bmbf.png"};
+		String[] resNames = {"patients.txt","encounters.txt","diagnoses.txt","aktin.png","bmbf.png"};
 		String resPrefix = "/";
 		//log.info(workingDirectory.toString());
 		copyResources(resNames, resPrefix, workingDirectory);

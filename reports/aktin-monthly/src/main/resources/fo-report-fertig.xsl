@@ -8,11 +8,13 @@
 		<fo:root font-family="Helvetica">
 			<fo:layout-master-set>
 				<fo:simple-page-master master-name="page-layout" page-height="297mm"
-					page-width="210mm">
-					<!-- margin-top="20mm" margin-bottom="20mm"
-		  		margin-left="25mm" margin-right="25mm"> -->
-					<fo:region-body margin="1in" region-name="body"/>
-					<fo:region-after region-name="footer-normal" extent="20mm"/>
+					page-width="210mm"
+					margin-top="10mm">
+					<fo:region-body region-name="body"
+                    margin-top="10mm" margin-bottom="20mm"
+                    margin-left="25mm" margin-right="25mm"/>
+					<fo:region-before region-name="header-normal" extent="15mm"/>
+					<fo:region-after region-name="footer-normal" extent="10mm"/>
 				</fo:simple-page-master>
 			</fo:layout-master-set>
 			<fo:declarations>
@@ -33,45 +35,43 @@
 				</x:xmpmeta>
 			</fo:declarations>
 			<fo:page-sequence master-reference="page-layout">
+                <fo:static-content flow-name="header-normal">
+					<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht D06 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'monat']/text()"/>&#160;<xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'jahr']/text()"/></fo:block>
+				</fo:static-content>
 				<fo:static-content flow-name="footer-normal">
-					<fo:block text-align="center">Seite <fo:page-number/> von
+					<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/> von
 							<fo:page-number-citation-last ref-id="end"/></fo:block>
 				</fo:static-content>
 				<fo:flow flow-name="body" id="mybody">
 					<fo:block xsl:use-attribute-sets="headerformat">
-						<xsl:value-of
-							select="document('properties.xml')/properties/entry[@key = 'local.o']/text()"
-						/>
+						<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/>
 					</fo:block>
 					<fo:block>
-						<xsl:value-of
-							select="document('properties.xml')/properties/entry[@key = 'local.ou']/text()"
-						/>
+						<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.ou']/text()"/>
 					</fo:block>
 					<fo:block>
-						<xsl:value-of
-							select="document('report-data.xml')/report-data/text[@id = 'monat']/text()"
-						/>
+						<xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'monat_compl']/text()"/>
 					</fo:block>
 					<fo:block>
-						<xsl:value-of
-							select="document('report-data.xml')/report-data/text[@id = 'stand']/text()"
-						/>
+						<xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'stand']/text()"/>
 					</fo:block>
-					<fo:block space-before="200pt">Verbesserung der Versorgungsforschung in der
+					<fo:block space-before="75mm">Verbesserung der Versorgungsforschung in der
 						Akutmedizin in Deutschland durch den Aufbau eines nationalen
 						Notaufnahmeregisters</fo:block>
-					<fo:block space-before="10pt">
+					<fo:block space-before="10mm">
 						<fo:external-graphic>
-							<xsl:attribute name="src">aktin.png</xsl:attribute>
+							<xsl:attribute name="src">AKTIN_Logo_final.svg</xsl:attribute>
+							<xsl:attribute name="content-height">30mm</xsl:attribute>
 						</fo:external-graphic>
 					</fo:block>
-					<fo:block space-before="50pt">Förderkennzeichen: 01KX1319B</fo:block>
-					<fo:block space-before="10pt">
+					<fo:block space-before="25mm">Förderkennzeichen: 01KX1319A-E</fo:block>
+					<fo:block space-before="5mm">
 						<fo:external-graphic>
-							<xsl:attribute name="src">bmbf.png</xsl:attribute>
+							<xsl:attribute name="src">BMBF.svg</xsl:attribute>
+							<xsl:attribute name="content-height">30mm</xsl:attribute>
 						</fo:external-graphic>
 					</fo:block>
+					<xsl:apply-templates select="./intro"/>
 					<xsl:call-template name="genTOC"/>
 					<xsl:apply-templates select="./section"/>
 					<fo:block id="end"/>
@@ -111,21 +111,29 @@
 		<xsl:attribute name="space-before">30pt</xsl:attribute>
 		<xsl:attribute name="space-after">30pt</xsl:attribute>
 	</xsl:attribute-set>
-	<xsl:attribute-set name="textheaderformat">
+	<xsl:attribute-set name="textheaderformat"> <!-- Überschriften im Fließtext -->
 		<xsl:attribute name="font-size">15pt</xsl:attribute>
 		<xsl:attribute name="font-weight">bold</xsl:attribute>
-		<xsl:attribute name="space-before">30pt</xsl:attribute>
-		<xsl:attribute name="keep-with-next">always</xsl:attribute>
+		<xsl:attribute name="page-break-before">always</xsl:attribute>
+		<xsl:attribute name="space-after">10pt</xsl:attribute>
+		<xsl:attribute name="keep-with-next">always</xsl:attribute>		
 	</xsl:attribute-set>
 	<xsl:attribute-set name="subheaderformat">
 		<xsl:attribute name="font-size">14pt</xsl:attribute>
-		<xsl:attribute name="space-before">30pt</xsl:attribute>
+		<xsl:attribute name="space-before">20pt</xsl:attribute>
 		<xsl:attribute name="keep-with-next">always</xsl:attribute>
 	</xsl:attribute-set>
 	<xsl:attribute-set name="plotformat">
 		<xsl:attribute name="inline-progression-dimension">100%</xsl:attribute>
 		<xsl:attribute name="content-height">scale-to-fit</xsl:attribute>
 		<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
+		<xsl:attribute name="space-before">0pt</xsl:attribute>
+		<xsl:attribute name="space-before.precedence">force</xsl:attribute> <!-- Plot haben sonst zu viel Abstand -->
+	</xsl:attribute-set>
+    <xsl:attribute-set name="headerfooter">
+		<xsl:attribute name="text-align">center</xsl:attribute>
+		<xsl:attribute name="font-size">9pt</xsl:attribute>
+		<xsl:attribute name="font-style">italic</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:template name="genTOC">
@@ -151,7 +159,7 @@
 						</xsl:when>
 						<xsl:otherwise>
 							<xsl:variable name="chapNum">
-								<xsl:number from="CHAPTER" count="section" format="1. "
+								<xsl:number from="CHAPTER" count="section" format="1 "
 									level="multiple"/>
 							</xsl:variable>
 							<fo:block text-indent="10mm">
@@ -168,6 +176,12 @@
 			</xsl:for-each>
 		</fo:block>
 	</xsl:template>
+	
+    <xsl:template match="intro">
+		<fo:block padding-top="40mm" linefeed-treatment="preserve" break-before="page" break-after="page">
+			<xsl:apply-templates select="text()"/>
+		</fo:block>
+	</xsl:template>
 
 	<xsl:template match="section">
 		<fo:block id="{generate-id(.)}">
@@ -182,14 +196,14 @@
 				<xsl:variable name="chapNum">
 					<xsl:number from="CHAPTER" count="section" format="1 " level="multiple"/>
 				</xsl:variable>
-				<fo:block page-break-before="always" xsl:use-attribute-sets="textheaderformat">
+				<fo:block xsl:use-attribute-sets="textheaderformat">
 					<xsl:value-of select="$chapNum"/>
 					<xsl:value-of select="./text()"/>
 				</fo:block>
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:variable name="chapNum">
-					<xsl:number from="CHAPTER" count="section" format="1. " level="multiple"/>
+					<xsl:number from="CHAPTER" count="section" format="1 " level="multiple"/>
 				</xsl:variable>
 				<fo:block xsl:use-attribute-sets="subheaderformat">
 					<xsl:value-of select="$chapNum"/>
@@ -219,13 +233,13 @@
         <xsl:otherwise>
          do something here... default image
         </xsl:otherwise>-->
-		<fo:block space-before="10pt">
+		<fo:block>
 			<fo:external-graphic xsl:use-attribute-sets="plotformat">
 				<xsl:attribute name="src">
 					<xsl:value-of select="$href"/>
 				</xsl:attribute>
 			</fo:external-graphic>
-			<fo:block keep-with-previous="always">
+			<fo:block font-size="9pt" keep-with-previous="always" space-after="10mm">
 				<xsl:value-of select="./text()"/>
 			</fo:block>
 		</fo:block>
@@ -236,7 +250,7 @@
 		<xsl:variable name="href"
 			select="document('report-data.xml')/report-data/table[@id = $id]/@href"/>
 		<xsl:apply-templates select="document($href)"/>
-		<fo:block keep-with-previous="always" space-before="10pt">
+		<fo:block font-size="9pt" keep-with-previous="always" space-before="3mm" space-after="3mm">
 			<xsl:value-of select="./text()"/>
 		</fo:block>
 	</xsl:template>

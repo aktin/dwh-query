@@ -298,7 +298,7 @@
 		<column header="diagnostik_mrt_ergebnis" xpath="substring(eav:fact[@class='d_mrt']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
 	
         <!-- <column header="entlassung" xpath="eav:fact[@class='entlassung']"/>  this does not work well with xpath selection of the value-->
-        <column header="entlassung" xpath="concat(substring(eav:fact[@class='transfer']/@concept, 16),substring(eav:fact[@class='discharge']/@concept, 17))"/> 
+        <column header="entlassung" xpath="concat(substring(eav:fact[@class='transfer']/@concept, 7),substring(eav:fact[@class='discharge']/@concept, 7))"/> 
         <column header="aufnahme_ts" xpath="eav:start"/>
         <!-- ToDo: ERROR - for some reason the concat for triage@start does not work this way
         <column header="triage_ts" xpath="concat(eav:fact[@class='triage']/@start, eav:fact[@concept='AKTIN:ASSESSMENT']/@start)"/> 

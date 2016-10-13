@@ -153,7 +153,7 @@ public class ReportManager extends Module{
 	}
 	private void deleteFiles(Path dir, String[] files) throws IOException{
 		for( String file : files ){
-			Files.delete(dir.resolve(file));
+			//Files.delete(dir.resolve(file)); TODO comment for debug
 		}		
 	}
 
@@ -220,15 +220,13 @@ public class ReportManager extends Module{
 			reportAndRemoveRemainingFiles(report, temp, leftFiles);
 		}
 		// remove directory
-		Files.delete(temp);
+		//Files.delete(temp); TODO deleted for debugging
 	}
 
 	private void runFOP(String[] files, Path workingPath, Path destPDF) throws IOException{
 		TransformerFactory factory = TransformerFactory.newInstance();
 		Transformer ft;
-		try {
-			log.info("runFOP with Path: "+workingPath.toString()+"; URI: "+workingPath.toUri());
-			log.info("Resolved path: "+workingPath.resolve(files[1])+"; XSL-File: "+ files[1]);
+		try {		
 			//Second file from Report interface is the XSL file	
 			//ft = factory.newTransformer(new StreamSource(Files.newInputStream(workingPath.resolve(files[1])), files[1]));
 			ft = factory.newTransformer(new StreamSource( workingPath.resolve(files[1]).toFile() ));
@@ -269,11 +267,12 @@ public class ReportManager extends Module{
 				sb.append(' ');					
 			}
 			sb.append(leftFiles[i]);
+			/* TODO Comment for debug
 			try {
-				Files.delete(dir.resolve(leftFiles[i]));
+				//Files.delete(dir.resolve(leftFiles[i]));
 			} catch (IOException e) {
 				log.warning("Unable to remove remaining file: "+leftFiles[i]);
-			}
+			} */
 		}
 		log.warning("Report "+report.getId()+" left files: "+sb.toString());
 	}

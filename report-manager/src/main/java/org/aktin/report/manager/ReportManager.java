@@ -1,35 +1,22 @@
 package org.aktin.report.manager;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
+import javax.annotation.Resource;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.aktin.Module;
 import org.aktin.Preference;
@@ -37,11 +24,6 @@ import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.Report;
-import org.apache.fop.apps.FOPException;
-import org.apache.fop.apps.FOUserAgent;
-import org.apache.fop.apps.Fop;
-import org.apache.fop.apps.FopFactory;
-import org.apache.fop.apps.MimeConstants;
 
 /**
  * Manage all registered reports. Generate
@@ -67,13 +49,16 @@ import org.apache.fop.apps.MimeConstants;
 @Singleton
 //@Preferences(group="reports")
 public class ReportManager extends Module{
-	private static final Logger log = Logger.getLogger(ReportManager.class.getName());	
+//	private static final Logger log = Logger.getLogger(ReportManager.class.getName());	
 	@Inject @Any
 	Instance<Report> cdiReports;
 	private Report[] staticReports;
 	
 	@Inject @Preference(key=PreferenceKey.i2b2Project)
 	String rScript;
+	
+	private Executor executor;
+	private boolean keepIntermediateFiles;
 	
 
 	/**
@@ -101,7 +86,7 @@ public class ReportManager extends Module{
 	public ReportManager(String rScript, Report...reports){
 		this.rScript = rScript;
 		this.staticReports = reports;
-		
+		this.keepIntermediateFiles = false;
 	}
 
 	@Inject
@@ -111,6 +96,11 @@ public class ReportManager extends Module{
 	@Inject
 	public void setPreferenceManager(Preferences prefs){
 		this.preferenceManager = prefs;
+	}
+
+	@Resource
+	public void setExecutor(Executor executor){
+		this.executor = executor;
 	}
 	public Iterable<Report> reports(){
 		if( cdiReports != null ) {
@@ -122,41 +112,33 @@ public class ReportManager extends Module{
 		}
 	}
 
-	/**
-	 * Write preferences to properties and xml files. Creates
-	 * two files named {@code prefs.properties} and {@code prefs.xml}
-	 * @param prefs preferences
-	 * @param dir output directory
-	 * @param comments comments
-	 * @return file names of generated files
-	 * @throws IOException file error
-	 */
-	private String[] writePreferences(Map<String, ?> prefs, Path dir, String comments) throws IOException{
-		Properties p = new Properties();
-		final String[] files = {"prefs.properties","prefs.xml"};
-		p.putAll(prefs);
-		try( OutputStream out = Files.newOutputStream(dir.resolve(files[0]), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW) ){
-			p.store(out, comments);			
-		}
-		try( OutputStream out = Files.newOutputStream(dir.resolve(files[1]), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW) ){
-			p.storeToXML(out, comments);			
-		}catch( IOException e ){
-			// second file failed, make sure the first one is deleted
-			try{
-				Files.delete(dir.resolve(files[0]));
-			}catch( IOException e2 ){
-				e.addSuppressed(e2);
-			}
-			throw e;
-		}
-		return files;
+	public void setKeepIntermediateFiles(boolean keepFiles){
+		this.keepIntermediateFiles = keepFiles;
 	}
-	private void deleteFiles(Path dir, String[] files) throws IOException{
-		for( String file : files ){
-			//Files.delete(dir.resolve(file)); TODO comment for debug
-		}		
+	public CompletableFuture<ReportExecution> generateReport(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination) throws IOException{
+		// TODO find a way to pass report specific configuration. e.g. Map<String,Object>
+		ReportExecution re = new ReportExecution(report, fromTimestamp, endTimestamp, reportDestination);
+		re.createTempDirectory();
+
+		// to keep all generated files, use #setKeepIntermediateFiles
+		re.setKeepIntermediateFiles(keepIntermediateFiles);
+
+		return re.extractData(extractor).thenApplyAsync( Void ->  {
+			try {
+				re.writePreferences(preferenceManager);
+				re.runR(Paths.get(ReportManager.this.rScript));
+				re.runFOP();
+				re.cleanup();
+			} catch (IOException e) {
+				throw new CompletionException(e);
+			}
+			return re;
+		}, getExecutor() );
 	}
 
+	private Executor getExecutor(){
+		return executor;
+	}
 	/**
 	 * Generate a report
 	 * @param report report template
@@ -165,117 +147,26 @@ public class ReportManager extends Module{
 	 * @param reportDestination destination file where the report file will be written to
 	 * @throws IOException error
 	 */
-	public void generateReport(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination) throws IOException{
-		Path temp = Files.createTempDirectory("report-"+report.getId());
-		log.info("Using temporary directory: "+temp);
-		String[] files;
-		String[] dataFiles;
-		String[] prefFiles;
-		
-		// extract data and copy data files to temp directory
+	@Deprecated
+	public void generateReportNow(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination) throws IOException{
+		ReportExecution re = new ReportExecution(report, fromTimestamp, endTimestamp, reportDestination);
+		re.createTempDirectory();
+
 		try {
-			dataFiles = extractor.extractData(fromTimestamp, endTimestamp, report.getExportDescriptor(), temp);
-		} catch (SQLException e) {
+			re.extractData(extractor).get();
+		} catch (InterruptedException e) {
 			throw new IOException(e);
+		} catch (ExecutionException e) {
+			throw new IOException(e.getCause());
 		}
 
-		// write report options and preferences to xml
-		Map<String, Object> prefs = new HashMap<>();
-		prefs.put("start", fromTimestamp.toString());
-		prefs.put("end", endTimestamp.toString());
-		// add requested local preferences, e.g. local.o/ou/cn
-		for( String key : report.getRequiredPreferenceKeys() ){
-			prefs.put(key, preferenceManager.get(key));
-		}
-		prefFiles = writePreferences(prefs, temp, "Generated preferences for report "+report.getId());
-		
-		String[] fopFiles;
+		re.writePreferences(preferenceManager);
 
-		synchronized( report ){
-			files = report.copyResourcesForR(temp);
-			// run main script
-			RScript rScript = new RScript(Paths.get(this.rScript));
-			rScript.runRscript(temp, files[0]);
-			// delete data files
-			deleteFiles(temp, dataFiles);
-			// delete copied R source files
-			deleteFiles(temp, files);
-			// run Apache FOP
-			
-			fopFiles = report.copyResourcesForFOP(temp);
-			runFOP(fopFiles, temp, reportDestination);
-		}
+		re.runR(Paths.get(this.rScript));
+		re.runFOP();
 		// 
 		
-		deleteFiles(temp, prefFiles);
-
-		deleteFiles(temp, fopFiles);
-		// output remaining files for debugging
-		String[] leftFiles;
-		try( Stream<Path> remaining = Files.list(temp) ){
-			leftFiles = remaining.map(path -> temp.relativize(path).toString()).toArray(len -> new String[len]);
-		}
-		if( leftFiles.length != 0 ){
-			// report forgotten files
-			reportAndRemoveRemainingFiles(report, temp, leftFiles);
-		}
-		// remove directory
-		//Files.delete(temp); TODO deleted for debugging
+		re.cleanup();
 	}
-
-	private void runFOP(String[] files, Path workingPath, Path destPDF) throws IOException{
-		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer ft;
-		try {		
-			//Second file from Report interface is the XSL file	
-			//ft = factory.newTransformer(new StreamSource(Files.newInputStream(workingPath.resolve(files[1])), files[1]));
-			ft = factory.newTransformer(new StreamSource( workingPath.resolve(files[1]).toFile() ));
-		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
-			throw new IOException("Unable to construct FOP transformation",e);
-		}
-
-		FopFactory ff = FopFactory.newInstance(workingPath.toUri());
-		FOUserAgent ua = ff.newFOUserAgent();
-		FOEventListener events = new FOEventListener();
-		ua.getEventBroadcaster().addEventListener(events);
-		try( OutputStream out = Files.newOutputStream(destPDF) ){
-			// Step 3: Construct fop with desired output format
-			Fop fop = ff.newFop(MimeConstants.MIME_PDF, ua, out);
-			// configuration of transformer factory
-			// First file from Report interface is the XML input (Source)
-			Source src = new StreamSource(workingPath.resolve(files[0]).toFile());
-		    // Resulting SAX events (the generated FO) must be piped through to FOP
-		    Result res = new SAXResult(fop.getDefaultHandler());
-		    // Step 6: Start XSLT transformation and FOP processing
-		    ft.transform(src, res);
-		    // XXX fatal FOP errors will not stop the transformation
-		    // TODO add FOP error handling
-		} catch (FOPException e) {
-			throw new IOException(e);
-		} catch (TransformerException e) {
-			throw new IOException("FOP transformation failed",e);
-		}
-		if( !events.isEmpty() ){
-			log.warning("FOP errors: "+events.getSummary());
-			//throw new IOException("Errors during FOP processing"); //do not throw until FOP-"unstable"-Errors are solved
-		}
-	}
-	private void reportAndRemoveRemainingFiles(Report report, Path dir, String[] leftFiles){
-		StringBuilder sb = new StringBuilder();
-		for( int i=0; i<leftFiles.length; i++ ){
-			if( i != 0 ){
-				sb.append(' ');					
-			}
-			sb.append(leftFiles[i]);
-			/* TODO Comment for debug
-			try {
-				//Files.delete(dir.resolve(leftFiles[i]));
-			} catch (IOException e) {
-				log.warning("Unable to remove remaining file: "+leftFiles[i]);
-			} */
-		}
-		log.warning("Report "+report.getId()+" left files: "+sb.toString());
-	}
-
 
 }

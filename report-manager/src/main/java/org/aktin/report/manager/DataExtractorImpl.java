@@ -9,6 +9,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executor;
 
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
@@ -48,6 +51,8 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	//private static final Logger log = Logger.getLogger(DataExtractor.class.getName());
 	private I2b2ExtractorFactory extractor;
 	private ObservationFactory of;
+	// TODO use resource/inject annotation to get a ManagedExecutorService
+	private Executor executor;
 
 	/**
 	 * Opens database connections to i2b2 and prepares
@@ -107,7 +112,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	 * @throws UnsupportedOperationException concepts are specified via IRI, which is currently not supported
 	 */
 	@Override
-	public String[] extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor, Path destinationDir) throws IOException, SQLException, UnsupportedOperationException{
+	public CompletableFuture<String[]> extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor, Path destinationDir){
 		ExportDescriptor ed = ExportDescriptor.parse(exportDescriptor);
 		TableExport fac = new TableExport(ed);
 
@@ -122,24 +127,27 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		csv.setPatientTableName("patients");
 		csv.setVisitTableName("encounters");
 
-		// perform the export operation
-		try( I2b2Extractor ext = extractor.extract(Timestamp.from(fromTimestamp), Timestamp.from(endTimestamp), notations) ){
-			fac.export(ext, csv);
-		} catch (ExportException e) {
-			// TODO distinct exception will be better than wrapping in IOException
-			throw new IOException(e);
-		}
-		csv.close(); // not needed
+		return CompletableFuture.supplyAsync(() -> {
+			// perform the export operation
+			try( I2b2Extractor ext = extractor.extract(Timestamp.from(fromTimestamp), Timestamp.from(endTimestamp), notations) ){
+				fac.export(ext, csv);
+			} catch (ExportException | SQLException | IOException e) {
+				// wrap for completable
+				throw new CompletionException(e);
+			}
+			csv.close(); // not needed
 
-		// construct generated file names
-		EavTable[] eav = ed.getEAVTables();
-		String[] files = new String[eav.length+2];
-		files[0] = csv.fileNameForTable("patients");
-		files[1] = csv.fileNameForTable("encounters");
-		for( int i=0; i<eav.length; i++ ){
-			files[2+i] = csv.fileNameForTable(eav[i].getId());
-		}
-		return files;
+			// construct generated file names
+			EavTable[] eav = ed.getEAVTables();
+			String[] files = new String[eav.length+2];
+			files[0] = csv.fileNameForTable("patients");
+			files[1] = csv.fileNameForTable("encounters");
+			for( int i=0; i<eav.length; i++ ){
+				files[2+i] = csv.fileNameForTable(eav[i].getId());
+			}
+			return files;
+			
+		}, this.executor);
 	}
 
 	/**

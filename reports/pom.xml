@@ -47,6 +47,26 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.aktin</groupId>
+			<artifactId>report-manager</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aktin.dwh</groupId>
+			<artifactId>dwh-prefs</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aktin.dwh</groupId>
+			<artifactId>dwh-prefs</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 </project>

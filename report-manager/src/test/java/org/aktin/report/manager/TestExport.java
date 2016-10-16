@@ -2,11 +2,12 @@ package org.aktin.report.manager;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -37,6 +38,32 @@ import de.sekmi.histream.io.Streams;
 public class TestExport implements DataExtractor{
 	// TODO validate CDA to export
 	
+	private String resourceData;
+
+	/**
+	 * Use a small data set. Same as {@link #small()}.
+	 */
+	public TestExport(){
+		resourceData = "/demo-eav-data_simple.xml";
+	}
+
+	/**
+	 * Use a large test data set
+	 * @return extractor
+	 */
+	public static TestExport large(){
+		TestExport e = new TestExport();
+		e.resourceData = "/demo-eav-data.xml";
+		return e;
+	}
+	/**
+	 * Use a small test data set
+	 * @return extractor
+	 */
+	public static TestExport small(){
+		TestExport e = new TestExport();
+		return e;
+	}
 	/**
 	 * Read demo-eav-data.xml from src/test/resources and export all data to in-memory tables.
 	 * The export descriptor is also located in src/test/resources.
@@ -49,13 +76,13 @@ public class TestExport implements DataExtractor{
 	public void verifyEavToExport() throws Exception{
 		ObservationFactory of = new ObservationFactoryImpl(new SimplePatientExtension(), new SimpleVisitExtension());
 		
-		GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream("/demo-eav-data.xml"));
+		GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData));
 		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));
 		MemoryExportWriter ew = new MemoryExportWriter();
 		ed.newExport().export(reader, ew);
 		reader.close();
 		ew.close();
-		ew.dump();
+		//ew.dump();
 		
 	}
 	
@@ -89,15 +116,17 @@ public class TestExport implements DataExtractor{
 	}
 
 	@Override
-	public String[] extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor,
-			Path destinationDir) throws IOException, SQLException {
+	public CompletableFuture<String[]> extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor,
+			Path destinationDir) {
+		return CompletableFuture.supplyAsync( () -> {
+			
 		ObservationFactory of = new ObservationFactoryImpl(new SimplePatientExtension(), new SimpleVisitExtension());
 		// TODO filter eav data with timestamps
 		GroupedXMLReader reader;
 		try {
-			reader = new GroupedXMLReader(of, getClass().getResourceAsStream("/demo-eav-data.xml"));
+			reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData));
 		} catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
-			throw new IOException(e);
+			throw new CompletionException(e);
 		}
 		ExportDescriptor ed = ExportDescriptor.parse(exportDescriptor);
 		CSVWriter ew = new CSVWriter(destinationDir, '\t', ".txt");
@@ -105,8 +134,8 @@ public class TestExport implements DataExtractor{
 		try {
 			ed.newExport().export(reader, ew);
 			reader.close();
-		} catch (ExportException | XMLStreamException e) {
-			throw new IOException(e);
+		} catch (ExportException | XMLStreamException | IOException e) {
+			throw new CompletionException(e);
 		}
 		ew.close();
 
@@ -119,6 +148,7 @@ public class TestExport implements DataExtractor{
 			files[2+i] = ew.fileNameForTable(t[i].getId());
 		}
 		return files;
+		} );
 	}
 
 }

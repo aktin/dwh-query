@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.prefs.impl.TestPreferences;
@@ -45,22 +47,33 @@ public class TestReportGeneration {
 		Assert.fail("Path to Rscript not found. Please edit TestReportGeneration.java or define a (local) system property: "+PreferenceKey.rScriptBinary.key());
 	}
 
-	public static void generatePDF(Report report, Instant start, Instant end, Path pdf) throws IOException{
+	public static void generatePDF(Report report, Instant start, Instant end, Path pdf, TestExport dataset, boolean keepIntermediateFiles) throws IOException{
 		Objects.requireNonNull(rScript, "Please call TestReportGenerator.locateR() to locate Rscript");
 		ReportManager manager = new ReportManager(rScript.toString(), report);
+		manager.setExecutor(ForkJoinPool.commonPool());
+		manager.setKeepIntermediateFiles(keepIntermediateFiles);
 		manager.setPreferenceManager(TestPreferences.getTestPreferences());
-		TestExport export = new TestExport();
-		manager.setDataExtractor(export);
-		manager.generateReport(report, start, end, pdf);
-
+		manager.setDataExtractor(dataset);
+		try {
+			manager.generateReport(report, start, end, pdf).get();
+		} catch (InterruptedException e) {
+			// will not happen during testing
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
+			if( e.getCause() instanceof IOException ){
+				throw (IOException)e.getCause();
+			}else{
+				throw new IOException(e.getCause());
+			}
+		}
 	}
 
 	@Test
-	public void verifyNonEmptySampleReportPDF() throws IOException{
+	public void verifyNonEmptySampleReportPDF() throws Exception{
 		Report report = new SimpleReport();
 		Path dest = Files.createTempFile("report", ".pdf");
 
-		generatePDF(report, Instant.parse("2015-01-01T00:00:00Z"), Instant.parse("2015-01-01T00:00:00Z"), dest);
+		generatePDF(report, Instant.parse("2015-01-01T00:00:00Z"), Instant.parse("2015-01-01T00:00:00Z"), dest, TestExport.small(), false);
 		
 		// expect report written (will always be true, because createTempFile will create the file)
 		Assert.assertTrue(Files.exists(dest));

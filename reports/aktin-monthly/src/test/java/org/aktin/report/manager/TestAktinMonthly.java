@@ -24,7 +24,8 @@ public class TestAktinMonthly {
 		Report report = new AktinMonthly();
 		Path dest = Files.createTempFile("report", ".pdf");
 
-		TestReportGeneration.generatePDF(report, Instant.parse("2015-11-01T00:00:00Z"), Instant.parse("2015-12-01T00:00:00Z"), dest);
+		// doesn't work with small data set: TestExport.small(). TODO add unit test for small data set
+		TestReportGeneration.generatePDF(report, Instant.parse("2015-11-01T00:00:00Z"), Instant.parse("2015-12-01T00:00:00Z"), dest, TestExport.large(), true);
 		
 		log.info("Generated file: "+dest);
 		

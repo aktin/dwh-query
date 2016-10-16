@@ -5,8 +5,13 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 import javax.xml.stream.XMLStreamException;
+
+import org.junit.Test;
 
 import de.sekmi.histream.ObservationFactory;
 import de.sekmi.histream.i2b2.I2b2Extractor;
@@ -15,9 +20,29 @@ import de.sekmi.histream.i2b2.PostgresPatientStore;
 import de.sekmi.histream.i2b2.PostgresVisitStore;
 import de.sekmi.histream.impl.ObservationFactoryImpl;
 import de.sekmi.histream.io.GroupedXMLWriter;
+import org.junit.Assert;
 
 public class TestReportManager {
 
+	@Test
+	public void verifyUnwrappedUncheckedException() throws InterruptedException{
+		Runnable r1 = () -> {
+			try{
+				throw new IOException("test");
+			}catch( Exception e ){
+				throw new CompletionException(e);				
+			}
+		};
+//		Runnable r2 = () -> {};
+		
+		Void v;
+		try {
+			v = CompletableFuture.runAsync(r1).get();
+			Assert.assertNull(v);
+		} catch (ExecutionException e) {
+			Assert.assertTrue(e.getCause().getClass() == IOException.class);
+		}
+	}
 	public static void main(String[] args) throws SQLException, XMLStreamException, ClassNotFoundException, IOException{
 		Class.forName("org.postgresql.Driver");
 		LocalI2b2DataSource ds = new LocalI2b2DataSource();

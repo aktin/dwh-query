@@ -3,7 +3,7 @@
 	<name>AKTIN : DWH Query : Reports : AKTIN Monthly</name>
 
 	<groupId>org.aktin.reports</groupId>
-	<artifactId>AKTIN-monthly</artifactId>
+	<artifactId>aktin-monthly</artifactId>
 	<version>0.1-SNAPSHOT</version>
 
 	<parent>

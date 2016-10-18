@@ -86,14 +86,6 @@ class RScript {
 		}
 		error.close();
 
-		/*
-		 * for (int i = 0; i < error.available(); i++) { log.info("" +
-		 * error.read()); }
-		 * 
-		 * for (int i = 0; i < output.available(); i++) { log.info("" +
-		 * output.read()); }
-		 */
-
 		if (output.available() > 0) {
 			log.warning("non-empty R stdout: "+convertStreamToString(output));
 		}

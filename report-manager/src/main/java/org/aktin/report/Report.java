@@ -42,6 +42,13 @@ public interface Report {
 	default String getId(){
 		return getClass().getCanonicalName();
 	}
+	/**
+	 * Version string for the report template.
+	 * @return version string
+	 */
+	default String getVersion(){
+		return getClass().getPackage().getImplementationVersion();
+	}
 
 	/**
 	 * Get the report name
@@ -145,6 +152,5 @@ public interface Report {
 	 * 
 	 * @throws IOException IO error. No files were copied.
 	 */
-	String[] copyResourcesForFOP(Path workingDirectory)throws IOException;
-	
+	String[] copyResourcesForFOP(Path workingDirectory)throws IOException;	
 }

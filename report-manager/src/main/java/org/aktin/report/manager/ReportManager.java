@@ -54,7 +54,7 @@ public class ReportManager extends Module{
 	Instance<Report> cdiReports;
 	private Report[] staticReports;
 	
-	@Inject @Preference(key=PreferenceKey.i2b2Project)
+	@Inject @Preference(key=PreferenceKey.rScriptBinary)
 	String rScript;
 	
 	private Executor executor;

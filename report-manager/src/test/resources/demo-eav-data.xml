@@ -20,7 +20,7 @@
 			<fact concept="AKTIN:PATHOGENE:MRSA"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-01T01:19:00"><fact concept="entlassung" start="2015-11-01T01:19:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:I74.3"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:I74.3"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="2">
@@ -388,7 +388,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-01T12:03:00"><fact concept="entlassung" start="2015-11-01T12:03:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:K82.8"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:K82.8"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="18">
@@ -411,7 +411,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-01T15:31:00"><fact concept="entlassung" start="2015-11-01T15:31:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:N44.1"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:N44.1"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="19">
@@ -733,7 +733,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-01T14:13:00"><fact concept="entlassung" start="2015-11-01T14:13:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:S32.89"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:S32.89"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="33">
@@ -894,7 +894,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-01T18:14:00"><fact concept="entlassung" start="2015-11-01T18:14:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:I50.13"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:I50.13"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="40">
@@ -940,7 +940,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-01T16:05:00"><fact concept="entlassung" start="2015-11-01T16:05:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:A09.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:A09.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="42">
@@ -1446,7 +1446,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-01T21:40:00"><fact concept="entlassung" start="2015-11-01T21:40:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:R06.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:R06.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="64">
@@ -1492,7 +1492,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-01T20:30:00"><fact concept="entlassung" start="2015-11-01T20:30:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:N39.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:N39.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="66">
@@ -1538,7 +1538,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-02T02:04:00"><fact concept="entlassung" start="2015-11-02T02:04:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:I63.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:I63.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="68">
@@ -2159,7 +2159,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-02T12:01:00"><fact concept="entlassung" start="2015-11-02T12:01:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:G44.2"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:G44.2"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="95">
@@ -2389,7 +2389,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-02T17:37:00"><fact concept="entlassung" start="2015-11-02T17:37:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:K83.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:K83.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="105">
@@ -8894,7 +8894,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:2" start="2015-11-06T08:42:00"><fact concept="entlassung" start="2015-11-06T08:42:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:T81.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:T81.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 	<patient id="388">
@@ -8917,7 +8917,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:3" start="2015-11-06T10:43:00"><fact concept="entlassung" start="2015-11-06T10:43:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:I21.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:I21.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 	<patient id="389">
@@ -23287,7 +23287,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="entlassung" start="2015-11-14T23:04:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:R31"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:R31"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1014">
@@ -23310,7 +23310,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-14T21:11:00"><fact concept="entlassung" start="2015-11-14T21:11:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:L03.3"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:L03.3"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1015">
@@ -23333,7 +23333,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="entlassung" start="2015-11-14T21:26:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:S22.01"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:S22.01"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1016">
@@ -23954,7 +23954,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-15T12:22:00"><fact concept="entlassung" start="2015-11-15T12:22:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:H92.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:H92.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1043">
@@ -24161,7 +24161,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-15T12:36:00"><fact concept="entlassung" start="2015-11-15T12:36:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:S93.40"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:S93.40"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1052">
@@ -24391,7 +24391,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-15T15:36:00"><fact concept="entlassung" start="2015-11-15T15:36:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:R07.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:R07.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1062">
@@ -34740,7 +34740,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-21T14:43:00"><fact concept="entlassung" start="2015-11-21T14:43:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:R42"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:R42"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1512">
@@ -34786,7 +34786,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-21T15:53:00"><fact concept="entlassung" start="2015-11-21T15:53:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:S22.06"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:S22.06"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1514">
@@ -34809,7 +34809,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-21T13:49:00"><fact concept="entlassung" start="2015-11-21T13:49:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:K59.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:K59.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1515">
@@ -37337,7 +37337,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-22T20:58:00"><fact concept="entlassung" start="2015-11-22T20:58:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:I82.9"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:I82.9"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1625">
@@ -37360,7 +37360,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-22T21:28:00"><fact concept="entlassung" start="2015-11-22T21:28:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:A09.9"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:A09.9"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1626">
@@ -37383,7 +37383,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-22T20:53:00"><fact concept="entlassung" start="2015-11-22T20:53:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:A46"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:A46"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1627">
@@ -45684,7 +45684,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-27T19:39:00"><fact concept="entlassung" start="2015-11-27T19:39:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:K92.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:K92.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1988">
@@ -47731,7 +47731,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:TRANSFER:3" start="2015-11-29T03:40:00"><fact concept="entlassung" start="2015-11-29T03:40:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:N13.2"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:N13.2"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="2077">
@@ -47754,7 +47754,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-28T22:50:00"><fact concept="entlassung" start="2015-11-28T22:50:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:R31"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:R31"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="2078">
@@ -48237,7 +48237,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-29T03:18:00"><fact concept="entlassung" start="2015-11-29T03:18:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:R42"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:R42"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
 	<patient id="2099">
@@ -51088,7 +51088,7 @@
 			<fact concept="AKTIN:PATHOGENE:MRSA"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-12-01T01:26:00"><fact concept="entlassung" start="2015-12-01T01:26:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:I48.9"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:I48.9"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
 </eav-data>

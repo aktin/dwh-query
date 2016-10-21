@@ -35,15 +35,15 @@ Homepage:	www.aktin.org
   </intro>
   <section>
     <header>Beschreibung der Patienten</header>
-    <paragraph>Im <var ref="monat"/>  <var ref="jahr"/> wurden in der Notaufnahme insgesamt <var ref="anzahl"/> Patienten behandelt. Deren Geschlechts- und Altersverteilung wird in den folgenden Tabellen und Grafiken dargestellt.</paragraph>
+    <paragraph>Im Zeitraum <pref ref="zeitraum"/> wurden in der Notaufnahme insgesamt <pref ref="anzahl"/> Patienten behandelt. Deren Geschlechts- und Altersverteilung wird in den folgenden Tabellen und Grafiken dargestellt.</paragraph>
     <section>
       <header>Geschlechtsverteilung</header>
-      <table ref="t0.1">Tabelle 1: Geschlechtsverteilung</table>
+      <table ref="t1.1">Tabelle 1.1: Geschlechtsverteilung</table>
     </section>
     <section>
       <header>Altersverteilung</header>
-      <plot ref="p0.2">Grafik 1: Altersverteilung</plot>
-      <table ref="t0.2">Tabelle 2: Altersverteilung (vollendete Lebensjahre)</table>
+      <plot ref="p1.1">Grafik 1.1: Altersverteilung</plot>
+      <table ref="t1.2">Tabelle 1.2: Altersverteilung (vollendete Lebensjahre)</table>
     </section>
   </section>
   <section>
@@ -51,32 +51,32 @@ Homepage:	www.aktin.org
     <paragraph>In diesem Abschnitt werden die Fallzahlen berichtet, sowohl absolut als auch die durchschnittlich behandelten Patienten pro Wochentag und Uhrzeit. Ausschlaggebend sind dabei immer das Datum und der Zeitpunkt der administrativen Aufnahme.</paragraph>
     <section>
       <header>Fallzahlen nach Kalendertagen</header>
-      <table ref="t1.1c">Tabelle 3: Fallzahlen nach Aufnahmetag</table>
+      <table ref="t2.1">Tabelle 2.1: Fallzahlen nach Aufnahmetag</table>
     </section>
     <section>
       <header>Fallzahlen nach Wochentag</header>
-      <plot ref="p1.2">Grafik 2: Fallzahlen nach Wochentag</plot>
+      <plot ref="p2.1">Grafik 2.1: Fallzahlen nach Wochentag</plot>
     </section>
     <section>
       <header>Fallzahlen nach Aufnahme-Uhrzeit</header>
-      <plot ref="p1.1">Grafik 3: Durchschnittliche Fallzahlen nach Aufnahmezeit</plot>
-      <table ref="t1.1a"/>
-      <table ref="t1.1b">Tabelle 4: Durchschnittliche Fallzahlen nach Aufnahmezeit</table>
+      <plot ref="p2.2">Grafik 2.2: Durchschnittliche Fallzahlen nach Aufnahmezeit</plot>
+      <table ref="t2.2a"/>
+      <table ref="t2.2b">Tabelle 2.2: Durchschnittliche Fallzahlen nach Aufnahmezeit</table>
     </section>
     <section>
       <header>Fallzahlen nach Wochentag und Aufnahmezeit</header>
-      <plot ref="p1.3">Grafik 4: Durchschnittliche Patientenzahl: Mo-Fr blau; Sa/So rot</plot>
+      <plot ref="p2.3">Grafik 2.3: Durchschnittliche Patientenzahl: Mo-Fr blaue Quadrate; Sa/So rote Dreiecke</plot>
     </section>
   </section>
   <section>
     <header>Zuweisung und Transportmittel</header>
     <section>
       <header>Fallzahlen nach Zuweisung</header>
-      <table ref="t1.2">Tabelle 5: Fallzahlen nach Zuweisung</table>
+      <table ref="t3.1">Tabelle 3.1: Fallzahlen nach Zuweisung</table>
     </section>
     <section>
       <header>Fallzahlen nach Transportmittel</header>
-      <table ref="t1.3">Tabelle 6: Fallzahlen nach Transportmittel</table>
+      <table ref="t3.2">Tabelle 3.2: Fallzahlen nach Transportmittel</table>
     </section>
     <!--  <section>
       <header>1.6 Altersverteilung der Patienten nach Geschlecht</header>
@@ -109,8 +109,8 @@ Homepage:	www.aktin.org
     <paragraph>Im Folgenden wird die Verteilung der Patienten auf die Kategorien innerhalb des verwendeten Ersteinschätzungssystems dargestellt.</paragraph>
     <section>
       <header>Ersteinschätzung</header>
-      <plot ref="p4.1b">Grafik 9: Ersteinschätzung</plot>
-      <table ref="t4.1">Tabelle 7: Ersteinschätzung</table>
+      <plot ref="p4.1">Grafik 4.1: Ersteinschätzung</plot>
+      <table ref="t4.1">Tabelle 4.1: Ersteinschätzung</table>
     </section>
 
   </section>
@@ -119,53 +119,53 @@ Homepage:	www.aktin.org
     <paragraph>Bei den Prozesszeiten wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Ersteinschätzung später als 60 Minuten nach administrativer Aufnahme, erster Arztkontakt später als 180 Minuten nach administrativer Aufnahme sowie negative Prozesszeiten.</paragraph>
     <section>
       <header>Ankunft/Aufnahme bis Ersteinschätzung</header>
-      <plot ref="p2.1">Grafik 10: Ankunft/Aufnahme bis Ersteinschätzung</plot>
-      <table ref="t2.1">Tabelle 8: Ankunft/Aufnahme bis Ersteinschätzung</table>
+      <plot ref="p5.1">Grafik 5.1: Ankunft/Aufnahme bis Ersteinschätzung</plot>
+      <table ref="t5.1">Tabelle 5.1: Ankunft/Aufnahme bis Ersteinschätzung</table>
     </section>
     <section>
       <header>Ankunft/Aufnahme bis zum ersten Arztkontakt</header>
-      <plot ref="p2.2">Grafik 11: Ankunft/Aufnahme bis Arztkontakt</plot>
-      <table ref="t2.2">Tabelle 9: Ankunft/Aufnahme bis Arztkontakt</table>
+      <plot ref="p5.2">Grafik 5.2: Ankunft/Aufnahme bis Arztkontakt</plot>
+      <table ref="t5.2">Tabelle 5.2: Ankunft/Aufnahme bis Arztkontakt</table>
     </section>
-    <section>
+    <!--<section>
       <header>Erster Arztkontakt bis zum Therapiebeginn</header>
       <plot ref="p2.3">Grafik 12: Erster Arztkontakt bis Therapiebeginn</plot>
       <table ref="t2.3">Tabelle 10: Erster Arztkontakt bis Therapiebeginn</table>
-    </section>
+    </section> -->
     <section>
-      <header>Prozesszeiten nach Kategorie der Ersteinschätzung</header>
-      <plot ref="p2.4">Grafik 13: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</plot>
-      <table ref="t2.4">Tabelle 11: Aufnahme bis Arztkontakt in Minuten, gruppiert nach
+      <header break-before="manual">Prozesszeiten nach Kategorie der Ersteinschätzung</header>
+      <plot ref="p5.3">Grafik 5.3: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</plot>
+      <table ref="t5.3">Tabelle 5.3: Aufnahme bis Arztkontakt in Minuten, gruppiert nach
         Ersteinschätzung</table>
     </section>
   </section>
   <section>
     <header>Verlegung und Entlassung</header>
-    <plot ref="p3.1">Grafik 14: Verlegung und Entlassung</plot>
-    <table ref="t3.1">Tabelle 12: Verlegung und Entlassung</table>
+    <plot ref="p6.1">Grafik 6.1: Verlegung und Entlassung</plot>
+    <table ref="t6.1">Tabelle 6.1: Verlegung und Entlassung</table>
   </section>
   <section>
     <header>Aufenthaltsdauer der Patienten</header>
     <paragraph>Bei der Gesamtaufenthaltsdauer wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Aufenthaltsdauer länger als 24 Stunden sowie negative Zeiten.</paragraph>
-    <plot ref="p2.5">Grafik 15: Aufenthaltsdauer</plot>
-    <table ref="t7.1">Tabelle 13: Aufenthaltsdauer in Minuten</table>
+    <plot ref="p7.1">Grafik 7.1: Aufenthaltsdauer</plot>
+    <table ref="t7.1">Tabelle 7.1: Aufenthaltsdauer in Minuten</table>
   </section>
   <section>
     <header>Vorstellungsgrund und und führende Diagnose</header>
-    <paragraph>Die kodierten Diagnosen nach ICD-10-GM werden hier als sogenannte 3-Steller berichtet, sofern sie in dem primären Dokumentationssystem als „führende Diagnose“ definiert sind. Weitere Diagnosen werden nicht berücksichtigt, ebenso wie Diagnosen, die mit einem Zusatzkennzeichen versehen sind.</paragraph>
+    <paragraph>Die kodierten Diagnosen nach ICD-10-GM werden hier als sogenannte 3-Steller berichtet, sofern sie in dem primären Dokumentationssystem als „führende Diagnose“ definiert sind. Weitere Diagnosen werden nicht berücksichtigt.</paragraph>
     <section>
       <header>Top 20 Diagnosen</header>
-      <plot ref="p4.1">Grafik 16: Top 20 Diagnosen (ICD 3-Steller)</plot>
-      <table ref="t4.3">Tabelle 11: Top 20 Diagnosen</table>
+      <plot ref="p8.1">Grafik 8.1: Top 20 Diagnosen (ICD 3-Steller)</plot>
+      <table ref="t8.1">Tabelle 8.1: Top 20 Diagnosen</table>
     </section>
     <section>
       <header>Top 20 Vorstellungsgründe (CEDIS)</header>
-      <plot ref="p4.2">Grafik 17: Top 20 Vorstellungsgründe</plot>
-      <table ref="t4.2">Tabelle 12: Top 20 Vorstellungsgründe</table>
+      <plot ref="p8.2">Grafik 8.2: Top 20 Vorstellungsgründe</plot>
+      <table ref="t8.2">Tabelle 8.2: Top 20 Vorstellungsgründe</table>
     </section>
     <section>
       <header>Vorstellungsgründe (Gruppen)</header>
-      <plot ref="p4.3">Grafik 18: Alle dokumentierten CEDIS Codes nach Gruppen</plot>
+      <plot ref="p8.3">Grafik 8.3: Alle dokumentierten CEDIS Codes nach Gruppen</plot>
     </section>
   </section>
   <!--
@@ -188,14 +188,14 @@ Homepage:	www.aktin.org
     <header>Multiresistente Erreger und isolierte Patienten</header>
     <section>
       <header>Multiresistente Erreger</header>
-      <table ref="t9.1">Tabelle 14: Multiresistente Erreger</table>
+      <table ref="t9.1">Tabelle 9.1: Multiresistente Erreger</table>
     </section>
     <section>
       <header>Isolierte Patienten</header>
-      <table ref="t9.2">Tabelle 15: Isolationsgründe</table>
+      <table ref="t9.2">Tabelle 9.2: Isolationsgründe</table>
     </section>
   </section>
-  
+  <!-- removed until review/test
   <section>
     <header>Crowding</header>
     <section>
@@ -210,11 +210,12 @@ Homepage:	www.aktin.org
         durchschnittliche Anzahl anwesender Patienten pro Tag</paragraph>
       <table ref="t12.2">Tabelle 16: Patientenzahlen pro Tag (Extremwerte)</table>
     </section>
+    -->
     <!--
     <section>
       <header>12.3 Patientenzahlen gegen Aufnahmen und Entlassungen</header>
         <paragraph>Entwicklung der anwesenden Patienten einem ausgewählten Tag (Maximum Patientenzahl)</paragraph>
         <plot ref="p12.3">Grafik 19: Tagesanalyse</plot>
-    </section> -->
-  </section>
+    </section>
+  </section> -->
 </template>

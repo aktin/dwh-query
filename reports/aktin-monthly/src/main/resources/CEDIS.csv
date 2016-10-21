@@ -1,23 +1,23 @@
 CV;CV;Kardiovaskulaer;Kardiovaskulaer
-1;CV;Herzstillstand (nicht traumatisch);Herzstillstand (nicht traumatisch)
-2;CV;Herzstillstand (traumatisch);Herzstillstand (traumatisch)
-3;CV;Brustschmerz (kardial);Brustschmerz (kardial)
-4;CV;Brustschmerz (nicht kardial);Brustschmerz (nicht kardial)
-5;CV;Palpitationen/unregelmaessiger Herzschlag;Palpitationen/unregelmaessiger Herzschlag
-6;CV;Hypertonie;Hypertonie
-7;CV;Allgemeine Schwaeche;Allgemeine Schwaeche
-8;CV;Synkope/Praesynkope;Synkope/Praesynkope
-9;CV;Oedem, generalisiert;Oedem, generalisiert
-10;CV;Beinschwellung/Oedem;Beinschwellung/Oedem
-11;CV;Kuehle, pulslose Extremitaet;Kuehle, pulslose Extremitaet
-12;CV;Eine Extremitaet geroetet, ueberwaermt;Eine Extremitaet geroetet, ueberwaermt
+001;CV;Herzstillstand (nicht traumatisch);Herzstillstand (nicht traumatisch)
+002;CV;Herzstillstand (traumatisch);Herzstillstand (traumatisch)
+003;CV;Brustschmerz (kardial);Brustschmerz (kardial)
+004;CV;Brustschmerz (nicht kardial);Brustschmerz (nicht kardial)
+005;CV;Palpitationen/unregelmaessiger Herzschlag;Palpitationen/unregelmaessiger Herzschlag
+006;CV;Hypertonie;Hypertonie
+007;CV;Allgemeine Schwaeche;Allgemeine Schwaeche
+008;CV;Synkope/Praesynkope;Synkope/Praesynkope
+009;CV;Oedem, generalisiert;Oedem, generalisiert
+010;CV;Beinschwellung/Oedem;Beinschwellung/Oedem
+011;CV;Kuehle, pulslose Extremitaet;Kuehle, pulslose Extremitaet
+012;CV;Eine Extremitaet geroetet, ueberwaermt;Eine Extremitaet geroetet, ueberwaermt
 HNE;HNE;HNO (Ohren);HNO (Ohren)
-51;HNE;Ohrenschmerzen;Ohrenschmerzen
-52;HNE;Fremdkoerper im Ohr;Fremdkoerper im Ohr
-53;HNE;Hoerverlust;Hoerverlust
-54;HNE;Tinnitus;Tinnitus
-55;HNE;Ausfluss aus dem Ohr;Ausfluss aus dem Ohr
-56;HNE;Ohrverletzung;Ohrverletzung
+051;HNE;Ohrenschmerzen;Ohrenschmerzen
+052;HNE;Fremdkoerper im Ohr;Fremdkoerper im Ohr
+053;HNE;Hoerverlust;Hoerverlust
+054;HNE;Tinnitus;Tinnitus
+055;HNE;Ausfluss aus dem Ohr;Ausfluss aus dem Ohr
+056;HNE;Ohrverletzung;Ohrverletzung
 HNM;HNM;HNO (Mund, Rachen, Hals);HNO (Mund, Rachen, Hals)
 101;HNM;Zahn-/Zahnfleischprobleme;Zahn-/Zahnfleischprobleme
 102;HNM;Trauma Gesicht;Trauma Gesicht

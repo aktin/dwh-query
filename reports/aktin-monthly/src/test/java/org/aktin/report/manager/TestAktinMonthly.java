@@ -16,15 +16,14 @@ public class TestAktinMonthly {
 
 	
 	@Test
-	public void testAKTINreport() throws IOException{
+	public void testAKTINreportMax() throws IOException{
 		// needed to locate the Rscript binary for testing
-		log.info("Running AKTIN Monthly Report Test");
+		log.info("Running AKTIN Monthly Report Test (Big Data Set)");
 		TestReportGeneration.locateR();
 		
 		Report report = new AktinMonthly();
 		Path dest = Files.createTempFile("report", ".pdf");
 
-		// doesn't work with small data set: TestExport.small(). TODO add unit test for small data set
 		TestReportGeneration.generatePDF(report, Instant.parse("2015-11-01T00:00:00Z"), Instant.parse("2015-12-01T00:00:00Z"), dest, TestExport.large(), true);
 		
 		log.info("Generated file: "+dest);
@@ -38,18 +37,26 @@ public class TestAktinMonthly {
 
 	}
 	
-	/*
 	@Test
-	public static void main(String[] args) throws IOException{
+	public void testAKTINreportMin() throws IOException{
 		// needed to locate the Rscript binary for testing
+		log.info("Running AKTIN Monthly Report Test  (Minimal Data Set)");
 		TestReportGeneration.locateR();
 		
 		Report report = new AktinMonthly();
 		Path dest = Files.createTempFile("report", ".pdf");
 
-		TestReportGeneration.generatePDF(report, Instant.parse("2015-11-01T00:00:00Z"), Instant.parse("2015-12-01T00:00:00Z"), dest);
+		TestReportGeneration.generatePDF(report, Instant.parse("2015-11-01T00:00:00Z"), Instant.parse("2015-12-01T00:00:00Z"), dest, TestExport.small(), true);
 		
 		log.info("Generated file: "+dest);
+		
+		// expect report written (will always be true, because createTempFile will create the file)
+		Assert.assertTrue(Files.exists(dest));
+		// expect non-empty file
+		Assert.assertTrue(Files.size(dest) > 0);
 
-	}  */
+		//Files.delete(dest);
+
+	}
+	
 }

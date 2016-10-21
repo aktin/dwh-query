@@ -2,7 +2,6 @@ package org.aktin.report.aktin;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Logger;
@@ -19,32 +18,24 @@ import org.aktin.report.AnnotatedReport;
 		preferences={"local.o", "local.ou"} // see dwh-api/org.aktin.dwh.PreferenceKey
 		)
 public class AktinMonthly extends AnnotatedReport {
-	private static final Logger log = Logger.getLogger(AktinMonthly.class.getName());	
+	//private static final Logger log = Logger.getLogger(AktinMonthly.class.getName());	
 
 
 	@Option
 	private Boolean dummyOption;
 	
 	private void copyResources(String[] names, String resourcePrefix, Path workingDirectory) throws IOException{
-		//System.out.println(names.toString());
-		//log.info(resourcePrefix);
 		for( String name : names ){
-			//log.info(name);
 			try( InputStream in = getClass().getResourceAsStream(resourcePrefix+name) ){
-				//System.out.println(in.toString());
-				//System.out.println(workingDirectory.resolve(name));
 				Files.copy(in, workingDirectory.resolve(name)); 	
-				//log.info("Copying "+resourcePrefix+name+" to: "+workingDirectory.resolve(name));
 			}
 		}		
 	}
 	
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
-		//String[] resNames = {"empty-test.R","generate-report-resources-mod.R","xhtml-table.R"};
-		String[] resNames = {"generate-report-resources.R","xhtml-table.R","CEDIS.csv"};
+		String[] resNames = {"generate-report-resources.R","xhtml-table.R","CEDIS.csv","ICD-3Steller.csv"};
 		String resPrefix = "/";
-		//log.info(workingDirectory.toString());
 		copyResources(resNames, resPrefix, workingDirectory);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.
@@ -54,7 +45,7 @@ public class AktinMonthly extends AnnotatedReport {
 	@Override
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
 		//log.info("Using configuration option="+dummyOption);
-		String[] resNames = {"report-content.xml","fo-report-fertig.xsl","report-data.xml","AKTIN_Logo_final.svg","BMBF.svg","dummy.svg"};
+		String[] resNames = {"report-content.xml","fo-report-fertig.xsl","report-data.xml","AKTIN_Logo_final.svg","BMBF.svg"};
 		String resPrefix = "/";
 		copyResources(resNames, resPrefix, workingDirectory);
 		// return resource names within workingDirectory. 

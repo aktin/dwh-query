@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:fo="http://www.w3.org/1999/XSL/Format"
+	xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	xmlns:fo="http://www.w3.org/1999/XSL/Format" 
 	version="1.0">
 	<xsl:template match="/template">
 		<xsl:variable name="colpos" select="count(preceding-sibling::xhtml:col)"/>
@@ -34,9 +35,10 @@
 					</rdf:RDF>
 				</x:xmpmeta>
 			</fo:declarations>
-			<fo:page-sequence master-reference="page-layout">
+			<fo:page-sequence master-reference="page-layout" language="de">
                 <fo:static-content flow-name="header-normal">
-					<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht D06 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'monat']/text()"/>&#160;<xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'jahr']/text()"/></fo:block>
+					<!-- <fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht D07 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'monat']/text()"/>&#160;<xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'jahr']/text()"/></fo:block> -->
+                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht D07 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template></fo:block>
 				</fo:static-content>
 				<fo:static-content flow-name="footer-normal">
 					<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/> von
@@ -50,10 +52,10 @@
 						<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.ou']/text()"/>
 					</fo:block>
 					<fo:block>
-						<xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'monat_compl']/text()"/>
+						Monatsbericht: <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template>
 					</fo:block>
 					<fo:block>
-						<xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'stand']/text()"/>
+						Datenstand: <xsl:call-template name="datenstand"><xsl:with-param name="timestamp" select="document('prefs.xml')/properties/entry[@key = 'report.data.timestamp']/text()"/></xsl:call-template>
 					</fo:block>
 					<fo:block space-before="75mm">Verbesserung der Versorgungsforschung in der
 						Akutmedizin in Deutschland durch den Aufbau eines nationalen
@@ -99,9 +101,9 @@
 		<!--<xsl:attribute name="border-style">solid</xsl:attribute>-->
 	</xsl:attribute-set>
 	<xsl:attribute-set name="celltext">
-		<xsl:attribute name="hyphenate">true</xsl:attribute>
-		<xsl:attribute name="hyphenation-remain-character-count">4</xsl:attribute>
-		<xsl:attribute name="xml:lang">de</xsl:attribute>
+		<xsl:attribute name="hyphenate">false</xsl:attribute>
+		<!-- <xsl:attribute name="hyphenation-remain-character-count">4</xsl:attribute> 
+		<xsl:attribute name="xml:lang">de</xsl:attribute> -->
 	</xsl:attribute-set>
 	<xsl:attribute-set name="headerformat">
 		<xsl:attribute name="font-size">20pt</xsl:attribute>
@@ -206,6 +208,9 @@
 					<xsl:number from="CHAPTER" count="section" format="1 " level="multiple"/>
 				</xsl:variable>
 				<fo:block xsl:use-attribute-sets="subheaderformat">
+					<xsl:if test="@break-before='manual'">
+						<xsl:attribute name="page-break-before">always</xsl:attribute>
+					</xsl:if>
 					<xsl:value-of select="$chapNum"/>
 					<xsl:value-of select="./text()"/>
 				</fo:block>
@@ -215,7 +220,7 @@
 
 	<xsl:template match="paragraph">
 		<fo:block>
-			<xsl:apply-templates select="text() | var"/>
+			<xsl:apply-templates select="text() | var | pref"/>
 		</fo:block>
 	</xsl:template>
 
@@ -233,7 +238,7 @@
         <xsl:otherwise>
          do something here... default image
         </xsl:otherwise>-->
-		<fo:block>
+		<fo:block font-size="0">
 			<fo:external-graphic xsl:use-attribute-sets="plotformat">
 				<xsl:attribute name="src">
 					<xsl:value-of select="$href"/>
@@ -308,6 +313,54 @@
 		<fo:table-row>
 			<xsl:apply-templates select="xhtml:td"/>
 		</fo:table-row>
+	</xsl:template>
+	
+	<xsl:template name="zeitraum">  <!-- todo: not done this might be interesting: <xsl:value-of select="functx:first-day-of-month($start)"/> -->
+        <xsl:param name="start"></xsl:param>
+        <xsl:param name="end"></xsl:param>
+		<xsl:variable name="start_year" select="substring-before($start, '-')" />
+		<xsl:variable name="start_month" select="substring-before(substring-after($start, '-'), '-')" />
+		<xsl:variable name="start_day" select="substring-before(substring-after(substring-after($start, '-'), '-'),'T')" />
+		<xsl:variable name="end_year" select="substring-before($end, '-')" />
+		<xsl:variable name="end_month" select="substring-before(substring-after($end, '-'), '-')" />
+		<xsl:variable name="end_day" select="substring-before(substring-after(substring-after($end, '-'), '-'),'T')" />
+		<xsl:choose>
+			<xsl:when test="(number($start_day)=1)and(number($end_day)=1)		and		((number($start_month)=number($end_month)-1) and (number($start_year)=number($end_year))		or		(number($start_month)=12) and (number($end_month=1)) and (number($start_year)=number($end_year)-1))">
+				<xsl:choose>
+					<xsl:when test="$start_month = '1' or $start_month= '01'"><xsl:value-of select="concat('Januar', ' ', $start_year)"/></xsl:when>
+					<xsl:when test="$start_month = '2' or $start_month= '02'"><xsl:value-of select="concat('Februar', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '3' or $start_month= '03'"><xsl:value-of select="concat('März', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '4' or $start_month= '04'"><xsl:value-of select="concat('April', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '5' or $start_month= '05'"><xsl:value-of select="concat('Mai', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '6' or $start_month= '06'"><xsl:value-of select="concat('Juni', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '7' or $start_month= '07'"><xsl:value-of select="concat('Juli', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '8' or $start_month= '08'"><xsl:value-of select="concat('August', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '9' or $start_month= '09'"><xsl:value-of select="concat('September', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '10'"><xsl:value-of select="concat('Oktober', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '11'"><xsl:value-of select="concat('November', ' ', $start_year)"/> </xsl:when>
+					<xsl:when test="$start_month= '12'"><xsl:value-of select="concat('Dezember', ' ', $start_year)"/> </xsl:when>
+				</xsl:choose>
+			</xsl:when>			
+			<xsl:otherwise>
+				<xsl:value-of select="concat($start_day, '.', $start_month, '.', $start_year,' - ',$end_day, '.', $end_month, '.', $end_year)"/> <!-- default output -->
+			</xsl:otherwise>
+		</xsl:choose>
+    </xsl:template>
+	
+	<xsl:template name="datenstand"> 
+		<xsl:param name="timestamp"></xsl:param>
+		<xsl:variable name="year" select="substring-before($timestamp, '-')" />
+		<xsl:variable name="month" select="substring-before(substring-after($timestamp, '-'), '-')" />
+		<xsl:variable name="day" select="substring-before(substring-after(substring-after($timestamp, '-'), '-'),'T')" />
+		<xsl:value-of select="concat($day, '.', $month, '.', $year)"/>	
+	</xsl:template>
+	
+	<xsl:template match="pref[@ref='zeitraum']">
+		<xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template>
+	</xsl:template>
+	
+	<xsl:template match="pref[@ref='anzahl']">
+		<xsl:value-of select="1234"/>	
 	</xsl:template>
 
 </xsl:stylesheet>

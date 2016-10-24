@@ -78,6 +78,7 @@ xhtml.table <- function(x, file=NULL, widths=NULL, align='auto', align.default='
 	}
 	doc = newXMLDoc(node=e)
 	if( !is.null(file) ){
+		# test supported encodings
 		no_output <- saveXML(doc, file=file, encoding = "utf-8", indent=TRUE) #silent
 	}else{
 		return(doc)

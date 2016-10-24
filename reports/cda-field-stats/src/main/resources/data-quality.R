@@ -132,9 +132,9 @@ var_list <- c("Alter",
               "Symptomdauer",
               "Triage",
               "Atemfrequenz",
-              "Sauerstoffsättigung",
+              "SauerstoffsÃ¤ttigung",
               "Herzfrequenz",
-              "Körperkerntemperatur",
+              "KÃ¶rperkerntemperatur",
               "Schmerzskala",
               "Glasgow Coma Scale",
               "GCS Augen",
@@ -173,7 +173,7 @@ var_count <- c(sum(!is.na(df$age)),
                 
 
 
-compl_table <- data.frame(Variable=var_list,Missing=encounter_num-var_count,Vollständig=gformat(var_count/encounter_num*100,digits = 2))
+compl_table <- data.frame(Variable=var_list,Missing=encounter_num-var_count,Anteil=gformat(var_count/encounter_num*100,digits = 2))
 compl_table[,3] <- paste(compl_table[,3],'%')
 xhtml.table(compl_table, file=paste0(xml.dir,'complete.xml'),align=c('left','right','right'),widths=c(40,15,15))
 

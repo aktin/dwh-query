@@ -18,7 +18,7 @@
     <paragraph>Im Zeitraum <pref ref="zeitraum"/> wurden in der Notaufnahme insgesamt <pref ref="anzahl"/> Patienten behandelt. Die folgende Tabelle stellt dar, wie vollständig die Angaben in diesem Zeitraum waren.</paragraph>
     <section>
       <header>Liste aller Items</header>
-      <table ref="t1.2">Tabelle 1.1: Vollzähligkeit der Datenelemente</table>
+      <table ref="t1.1">Tabelle 1.1: Vollzähligkeit der Datenelemente</table>
     </section>
   </section>
 </template>

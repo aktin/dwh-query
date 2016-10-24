@@ -112,6 +112,17 @@ public class ReportManager extends Module{
 		}
 	}
 
+	public Report getReport(String id){
+		// TODO hashtable implementation for O(1) access
+		for( Report report : reports() ){
+			if( id.equals(report.getId()) ){
+				return report;
+			}
+		}
+		// not found
+		return null;
+	}
+
 	public void setKeepIntermediateFiles(boolean keepFiles){
 		this.keepIntermediateFiles = keepFiles;
 	}

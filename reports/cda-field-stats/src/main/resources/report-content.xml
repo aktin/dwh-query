@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE template [
+  <!ELEMENT template (section)+>
+  <!ELEMENT section (header,(paragraph|section|table|plot)+)>
+  <!ELEMENT paragraph (#PCDATA | var)*>
+  <!ELEMENT header (#PCDATA)>
+  <!ELEMENT table (#PCDATA)>
+  <!ELEMENT plot (#PCDATA)>
+  <!ELEMENT var EMPTY>
+  <!ATTLIST var   ref  CDATA #REQUIRED>
+  <!ATTLIST table ref CDATA #REQUIRED>
+  <!ATTLIST plot ref CDATA #REQUIRED>
+]>
+
+<template>
+  <section>
+    <header>Vollzähligkeit</header>
+    <paragraph>Im Zeitraum <pref ref="zeitraum"/> wurden in der Notaufnahme insgesamt <pref ref="anzahl"/> Patienten behandelt. Die folgende Tabelle stellt dar, wie vollständig die Angaben in diesem Zeitraum waren.</paragraph>
+    <section>
+      <header>Liste aller Items</header>
+      <table ref="t1.2">Tabelle 1.1: Vollzähligkeit der Datenelemente</table>
+    </section>
+  </section>
+</template>

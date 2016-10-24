@@ -3,6 +3,7 @@
 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
 	xmlns:fo="http://www.w3.org/1999/XSL/Format" 
 	version="1.0">
+	<xsl:param name="prefs" select="document('prefs.xml')/properties"/>
 	<xsl:template match="/template">
 		<xsl:variable name="colpos" select="count(preceding-sibling::xhtml:col)"/>
 		<xsl:variable name="datapos" select="count(preceding-sibling::xhtml:td)"/>
@@ -37,7 +38,7 @@
 			</fo:declarations>
 			<fo:page-sequence master-reference="page-layout" language="de">
                 <fo:static-content flow-name="header-normal">			
-                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Qualitätsbericht D01 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template></fo:block>
+                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Qualitätsbericht D01 - <xsl:value-of select="$prefs/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template></fo:block>
 				</fo:static-content>
 				<fo:static-content flow-name="footer-normal">
 					<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/> von
@@ -45,16 +46,16 @@
 				</fo:static-content>
 				<fo:flow flow-name="body" id="mybody">
 					<fo:block xsl:use-attribute-sets="headerformat">
-						<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/>
+						<xsl:value-of select="$prefs/entry[@key = 'local.o']/text()"/>
 					</fo:block>
 					<fo:block>
 						<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.ou']/text()"/>
 					</fo:block>
 					<fo:block>
-						Monatsbericht: <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template>
+						Monatsbericht: <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="$prefs/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="$prefs/entry[@key = 'end']/text()"/></xsl:call-template>
 					</fo:block>
 					<fo:block>
-						Datenstand: <xsl:call-template name="datenstand"><xsl:with-param name="timestamp" select="document('prefs.xml')/properties/entry[@key = 'report.data.timestamp']/text()"/></xsl:call-template>
+						Datenstand: <xsl:call-template name="datenstand"><xsl:with-param name="timestamp" select="$prefs/entry[@key = 'report.data.timestamp']/text()"/></xsl:call-template>
 					</fo:block>
 					<fo:block space-before="75mm">Verbesserung der Versorgungsforschung in der
 						Akutmedizin in Deutschland durch den Aufbau eines nationalen
@@ -355,7 +356,7 @@
 	</xsl:template>
 	
 	<xsl:template match="pref[@ref='zeitraum']">
-		<xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template>
+		<xsl:call-template name="zeitraum"><xsl:with-param name="start" select="$prefs/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="$prefs/entry[@key = 'end']/text()"/></xsl:call-template>
 	</xsl:template>
 	
 	<xsl:template match="pref[@ref='anzahl']">

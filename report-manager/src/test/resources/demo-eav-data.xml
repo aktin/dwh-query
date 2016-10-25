@@ -24391,7 +24391,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-15T15:36:00"><fact concept="entlassung" start="2015-11-15T15:36:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:R07.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
+			<fact concept="ICD10GM:R07.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:V"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1062">

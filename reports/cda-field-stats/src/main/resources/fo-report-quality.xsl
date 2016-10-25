@@ -86,7 +86,7 @@
 		<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
 		<xsl:attribute name="border-collapse">collapse</xsl:attribute>
 		<xsl:attribute name="space-before">10pt</xsl:attribute>
-		<xsl:attribute name="keep-together">always</xsl:attribute>
+		<xsl:attribute name="keep-together">auto</xsl:attribute>
 		<xsl:attribute name="table-layout">fixed</xsl:attribute>
 		<xsl:attribute name="width">100%</xsl:attribute>
 	</xsl:attribute-set>

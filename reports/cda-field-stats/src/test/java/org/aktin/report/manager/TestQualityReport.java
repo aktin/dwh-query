@@ -38,7 +38,6 @@ public class TestQualityReport {
 	}
 	
 	
-	/*
 	@Test
 	public void testDataQualityReportMin() throws IOException{
 		// needed to locate the Rscript binary for testing
@@ -59,6 +58,6 @@ public class TestQualityReport {
 
 		//Files.delete(dest);
 
-	} */
+	} 
 	
 }

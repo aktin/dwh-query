@@ -86,6 +86,7 @@ levels(df$isolation_grund) <- list("Multiresistenter Keim"="U80","Gastroenteriti
 
 #CEDIS Codes
 #df$cedis <- factor(x=enc$cedis,t(cedis[1]))
+df$cedis <- factor(enc$cedis)
 
 #Multiresistente Erreger
 df$keime <- factor(enc$keime)
@@ -94,6 +95,11 @@ df$keime_3mrgn <- factor(enc$keime_3mrgn)
 df$keime_4mrgn <- factor(enc$keime_4mrgn)
 df$keime_vre <- factor(enc$keime_vre)
 df$keime_andere <- factor(enc$keime_andere)
+
+df$plz <- enc$postleitzahl
+df$iknr <- enc$versicherung_iknr
+df$vers_txt <- enc$versicherung_txt
+
 
 #Diagnoses
 df_diag$fuehrend = diag$diagnose_fuehrend
@@ -125,16 +131,18 @@ encounter_num <- length(df$encounter)
 var_list <- c("Alter",
               "Geschlecht",
               "Postleitzahl",
-              "Versicherung",
+              "Versicherung IK-Nummer",
+              "Versicherung Name",
               "Zuweisung",
               "Transportmittel",
               "CEDIS",
               "Symptomdauer",
               "Triage",
               "Atemfrequenz",
-              "Sauerstoffsättigung",
+              
+              "Sauerstoffsaettigung",
               "Herzfrequenz",
-              "Körperkerntemperatur",
+              "Koerperkerntemperatur",
               "Schmerzskala",
               "Glasgow Coma Scale",
               "GCS Augen",
@@ -142,39 +150,73 @@ var_list <- c("Alter",
               "GCS motorisch",
               "Pupillenweite rechts",
               "Pupillenweite links",
+              
               "Pupillenreaktion rechts",
               "Pupillenreaktion links",
-              "Rankin"
+              "Rankin",
+              "Schwangerschaft",
+              "Tetanusschutz",
+              "Allergien",
+              "Kontrastmittelallergie",
+              "Antibiotikaallergie",
+              "Sonstige Allergie",
+              "Isolation",
+              
+              "Isolationsgrund",
+              "Multiresistente Keime",
+              #Diagnostik
+              "FÃ¼hrende Diagnose",
+              "Verlegund/Entlassung"
+              #Zeitpunkte
+              #Module
               )
 var_count <- c(sum(!is.na(df$age)),
                sum(!is.na(df$sex)),
-               0,
-               0,
+               sum(!is.na(df$plz)),
+               sum(!is.na(df$iknr)),
+               sum(!is.na(df$vers_txt)),
                sum(!is.na(df$referral)),
                sum(!is.na(df$transport)),
+               sum(!is.na(df$cedis)),
+               0, #Symptomdauer
                sum(!is.na(df$triage.result)),
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0,
-               0
+               sum(!is.na(enc$atemfrequenz)),
+               
+               0, #SpO2
+               0, #HF
+               0, #KT
+               0, #Schmerz
+               0, #GCS
+               0, #GCS
+               0, #GCS
+               0, #GCS
+               0, #Pupillen
+               0, #Pupillen
+              
+               0, #Pupillen
+               0, #Pupillen
+               0, #Rankin
+               0, #Schwangerschaft
+               0, #Tetanus
+               0, #Allergien
+               0, #Allergien
+               0, #Allergien
+               0, #Allergien
+               sum(!is.na(df$isolation)),
+               
+               sum(!is.na(df$isolation_grund)),
+               sum(!(is.na(df$keime) & is.na(df$keime_vre) & is.na(df$keime_mrsa) & is.na(df$keime_3mrgn) & is.na(df$keime_4mrgn) & is.na(df$keime_andere))),
+               sum(!is.na(df_diag$zusatz)),
+               sum(!is.na(df$discharge))
                )
                 
+#,Missing=encounter_num-var_count
 
+compl_table <- data.frame(Variable=var_list,Anteil=gformat(var_count/encounter_num*100,digits = 2))
+compl_table[,2] <- paste(compl_table[,2],'%')
+xhtml.table(compl_table, file=paste0(xml.dir,'complete.xml'),align=c('left','right'),widths=c(35,15))
 
-compl_table <- data.frame(Variable=var_list,Missing=encounter_num-var_count,Vollständig=gformat(var_count/encounter_num*100,digits = 2))
-compl_table[,3] <- paste(compl_table[,3],'%')
-xhtml.table(compl_table, file=paste0(xml.dir,'complete.xml'),align=c('left','right','right'),widths=c(40,15,15))
-
+# Weitere Tabelle:
+#"Abschlussdiagnosen",
+#
 

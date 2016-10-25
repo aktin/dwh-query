@@ -60,7 +60,7 @@ class RScript {
 		// log.info(workingDir.toString());
 		// log.info(workingDir.resolve(mainScript).toString());
 		// log.info(rScriptExecutable.toString());
-		ProcessBuilder pb = new ProcessBuilder(rScriptExecutable.toString(), mainScript);
+		ProcessBuilder pb = new ProcessBuilder(rScriptExecutable.toString(), "--vanilla", mainScript);
 		pb.directory(workingDir.toFile());
 
 		Process process = pb.start();

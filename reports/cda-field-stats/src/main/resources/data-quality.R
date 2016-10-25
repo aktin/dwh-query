@@ -139,10 +139,10 @@ var_list <- c("Alter",
               "Symptomdauer",
               "Triage",
               "Atemfrequenz",
-              
-              "Sauerstoffsaettigung",
+
+              "Sauerstoffsättigung",
               "Herzfrequenz",
-              "Koerperkerntemperatur",
+              "Körperkerntemperatur",
               "Schmerzskala",
               "Glasgow Coma Scale",
               "GCS Augen",

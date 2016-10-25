@@ -51091,4 +51091,384 @@
 			<fact concept="ICD10GM:I48.9"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:G"/></fact>
 		</encounter>
 	</patient>
+    <patient id="9_HqQB6NX6yx-EJptbveg7_yJEY=">
+      <gender>male</gender>
+      <birthdate>1996-05-31</birthdate>
+      <deceased>2015-01-17T17:35</deceased>
+      <encounter id="ixC66Kf30G3X1ujHk3UauG_g9is=">
+         <start>2015-01-17T16:03</start>
+         <end>2015-01-17T17:35</end>
+         <!--772 Patientenadresse (PLZ)-->
+         <fact concept="AKTIN:ZIPCODE">
+            <value xsi:type="numeric">46240</value>
+         </fact>
+         <!--37 Zeitpunkt erster Arztkontakt-->
+         <fact concept="AKTIN:PHYSENCOUNTER" start="2015-01-17T16:32">
+            <modifier code="timeLow">
+               <value xsi:type="string">201501171632</value>
+            </modifier>
+            <modifier code="timeHigh">
+               <value xsi:type="string">201501171714</value>
+            </modifier>
+         </fact>
+         <!--38 Zeitpunkt Therapiebeginn-->
+         <fact concept="AKTIN:STARTTHERAPY" start="2015-01-17T16:03:00">
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">20150117160300</value>
+            </modifier>
+            <modifier code="effectiveTimeHigh">
+               <value xsi:type="string">20150117173500</value>
+            </modifier>
+         </fact>
+         <!--596 Patient verlegt / entlassen nach-->
+         <fact concept="AKTIN:DISCHARGE:1" start="2015-01-17T17:35">
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">201501171603</value>
+            </modifier>
+            <modifier code="effectiveTimeHigh">
+               <value xsi:type="string">201501171735</value>
+            </modifier>
+         </fact>
+         <!--60 Versicherungsname-->
+         <fact concept="AKTIN:KKNAME">
+            <value xsi:type="string">AOK Süd-Ostwestfalen Nord</value>
+         </fact>
+         <fact concept="AKTIN:IKNR">
+            <value xsi:type="string">987654321</value>
+         </fact>
+         <fact concept="AKTIN:VKNR">
+            <value xsi:type="string">54321</value>
+         </fact>
+         <!--884 Transportmittel-->
+         <fact concept="AKTIN:TRANSPORT:NA">
+            <modifier code="effectiveTimeHigh">
+               <value xsi:type="string">201501171603</value>
+            </modifier>
+         </fact>
+         <!--22 Zuweisung-->
+         <fact concept="AKTIN:REFERRAL:VAP"/>
+         <!--Beschwerden bei Vorstellung (Freitext)-->
+         <fact concept="AKTIN:COMPLAINT" start="2015-01-17">
+            <value xsi:type="string">Distorsionstrauma linker Fuß</value>
+         </fact>
+         <!--805 Beschwerden bei Vorstellung (CEDIS)-->
+         <fact concept="CEDIS30:557">
+            <modifier code="codeSystem">
+               <value xsi:type="string">1.2.276.0.76.5.439</value>
+            </modifier>
+            <modifier code="displayName">
+               <value xsi:type="string">Lower extremity injury</value>
+            </modifier>
+         </fact>
+         <!--212 Symptomdauer-->
+         <fact concept="AKTIN:SYMPTOMDURATION">
+            <value unit="h" xsi:type="numeric">1</value>
+         </fact>
+         <!--5 Schwangerschaftsstatus-->
+         <fact concept="AKTIN:PREGNANCY:0" start="2015-01-17T15:45">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">201501171545</value>
+            </modifier>
+         </fact>
+         <!--6 Tetanusschutz-->
+         <fact concept="LOINC:11458-7" start="2014">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">2014</value>
+            </modifier>
+         </fact>
+         <!--114 Rankin Scale-->
+         <fact concept="LOINC:75859-9" start="2015-01-17">
+            <value unit="{score}" xsi:type="numeric">2</value>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+         </fact>
+         <!--806/807 multiresistente Erreger-->
+         <fact concept="AKTIN:PATHOGENE:MRSA" start="2015-03-04">
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">20150304</value>
+            </modifier>
+         </fact>
+         <fact concept="AKTIN:PATHOGENE:4MRGN:SUSP" start="2015-03-04">
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">20150304</value>
+            </modifier>
+         </fact>
+         <!--9 Atemfrequenz-->
+         <fact concept="LOINC:9279-1" start="2015-01-17">
+            <value unit="/min" xsi:type="numeric">17</value>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+         </fact>
+         <!--10 Sauerstoffsättigung-->
+         <fact concept="LOINC:20564-1" start="2015-01-17">
+            <value unit="%" xsi:type="numeric">86.0</value>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+         </fact>
+         <!--11 Systolischer Blutdruck-->
+         <fact concept="LOINC:8480-6" start="2015-01-17">
+            <value unit="mm[Hg]" xsi:type="numeric">129</value>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+         </fact>
+         <!--12 Herzfrequenz-->
+         <fact concept="LOINC:8867-4" start="2015-01-17">
+            <value unit="/min" xsi:type="numeric">67</value>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+         </fact>
+         <!--17 Glasgow Coma Scale(-->
+         <fact concept="LOINC:9269-2" start="2015-01-17">
+            <value unit="{score}" xsi:type="numeric">9</value>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+         </fact>
+         <!--13 Glasgow Coma Scale Eye Opening(-->
+         <fact start="2015-01-17" concept="LOINC:9267-6">
+            <value unit="{score}" xsi:type="numeric">4</value>
+         </fact>
+         <!--14 Glasgow Coma Scale Verbal Response(-->
+         <fact start="2015-01-17" concept="LOINC:9270-0">
+            <value unit="{score}" xsi:type="numeric">3</value>
+         </fact>
+         <!--16 Glasgow Coma Scale Motor Response(-->
+         <fact start="2015-01-17" concept="LOINC:9268-4">
+            <value unit="{score}" xsi:type="numeric">2</value>
+         </fact>
+         <!--18 Pupillenweite bei Aufnahme in der Notaufnahme-->
+         <fact concept="AKTIN:SPPL:M" start="2015-01-17">
+            <modifier code="codeSystem">
+               <value xsi:type="string">1.2.276.0.76.3.1.195.5.49</value>
+            </modifier>
+            <modifier code="displayName">
+               <value xsi:type="string">mittel</value>
+            </modifier>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:TSITE:L"/>
+         </fact>
+         <!--19 Pupillenreaktion-->
+         <fact concept="AKTIN:RPPL:B" start="2015-01-17">
+            <modifier code="codeSystem">
+               <value xsi:type="string">1.2.276.0.76.3.1.195.5.50</value>
+            </modifier>
+            <modifier code="displayName">
+               <value xsi:type="string">prompt</value>
+            </modifier>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:TSITE:L"/>
+         </fact>
+         <!--19 Pupillenreaktion-->
+         <fact concept="AKTIN:RPPL:B" start="2015-01-17">
+            <modifier code="codeSystem">
+               <value xsi:type="string">1.2.276.0.76.3.1.195.5.50</value>
+            </modifier>
+            <modifier code="displayName">
+               <value xsi:type="string">prompt</value>
+            </modifier>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:TSITE:R"/>
+         </fact>
+         <!--20 Körperkerntemperatur-->
+         <fact concept="LOINC:8329-5" start="2015-01-17">
+            <value unit="Cel" xsi:type="numeric">37.0</value>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+         </fact>
+         <!--21 Schmerz bei Aufnahme-->
+         <fact concept="LOINC:72514-3" start="2015-01-17">
+            <value unit="{score}" xsi:type="numeric">2</value>
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+         </fact>
+         <!--Chest X-ray-->
+         <fact concept="LOINC:30745-4" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:PB"/>
+         </fact>
+         <!--Spine Cervical and Thoracic and Lumbar X-ray-->
+         <fact concept="LOINC:38008-9" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:UNK"/>
+         </fact>
+         <!--Pelvis X-ray-->
+         <fact concept="LOINC:28561-9:NEG" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:UNK"/>
+         </fact>
+         <!--Unspecified body region X-ray-->
+         <fact concept="LOINC:43468-8" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--Head CT-->
+         <fact concept="LOINC:24725-4" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--CT whole body-->
+         <fact concept="LOINC:46305-9" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--Laboratory studies-->
+         <fact concept="LOINC:26436-6" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--Unspecified body region MRI-->
+         <fact concept="LOINC:25056-3" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--Blood gas studies-->
+         <fact concept="LOINC:18767-4" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--Urinalysis dipstick panel-->
+         <fact concept="LOINC:50556-0" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--EKG 12 channel panel-->
+         <fact concept="LOINC:34534-8" start="2015-03-26T12:34">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">201503261234</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--Unspecified body region US-->
+         <fact concept="LOINC:25061-3" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--Unspecified body region CT-->
+         <fact concept="LOINC:25045-6" start="2015-01-17">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--Heart US-->
+         <fact concept="LOINC:42148-7" start="2015-03-26T12:34">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">201503261234</value>
+            </modifier>
+            <modifier code="AKTIN:RESULT:OPB"/>
+         </fact>
+         <!--Freitext für anamnestisch bestehende Unverträglichkeiten / Allergien-->
+         <fact concept="AKTIN:ALLERGY:TXT" start="2015-01-17">
+            <value xsi:type="string">Allergien: neinUnverträglichkeiten: nein</value>
+         </fact>
+         <!--31/32/33/34 Allergien-->
+         <fact concept="AKTIN:ALLERGY:ALGN:NEG">
+            <modifier code="effectiveTime">
+               <value xsi:type="string">NA</value>
+            </modifier>
+         </fact>
+         <fact concept="AKTIN:ALLERGY:V08" start="2015-01-17T15:44">
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">201501171544</value>
+            </modifier>
+            <modifier code="effectiveTimeHigh">
+               <value xsi:type="string">201501171659</value>
+            </modifier>
+         </fact>
+         <!--7 Isolation-->
+         <fact concept="AKTIN:ISOLATION:ISO"/>
+         <!--8 Isolation Begründung-->
+         <fact concept="AKTIN:ISOREASON:U80"/>
+         <!--8 Isolation Begründung-->
+         <fact concept="AKTIN:ISOREASON:G03.9"/>
+         <!--44 Abschlussdiagnosen-->
+         <fact concept="ICD10GM:S93.6" start="2015-01-17">
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">20150117</value>
+            </modifier>
+         </fact>
+         <fact concept="ICD10GM:S80.1" start="2015-01-17T15:56">
+            <modifier code="AKTIN:DIAG:F"/>
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">201501171556</value>
+            </modifier>
+            <modifier code="effectiveTimeHigh">
+               <value xsi:type="string">201501171557</value>
+            </modifier>
+         </fact>
+         <fact concept="ICD10GM:F55.2" start="2015-01-17T15:56">
+            <modifier code="AKTIN:DIAG:A"/>
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">201501171556</value>
+            </modifier>
+            <modifier code="effectiveTimeHigh">
+               <value xsi:type="string">201501171557</value>
+            </modifier>
+         </fact>
+         <fact concept="ICD10GM:H54.9" start="2015-01-17T15:56">
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">201501171556</value>
+            </modifier>
+            <modifier code="effectiveTimeHigh">
+               <value xsi:type="string">201501171557</value>
+            </modifier>
+         </fact>
+         <fact concept="ICD10GM:Y34.9!" start="2015-01-17T15:56">
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">201501171556</value>
+            </modifier>
+            <modifier code="effectiveTimeHigh">
+               <value xsi:type="string">201501171557</value>
+            </modifier>
+         </fact>
+         <!--804 Verwendetes Ersteinschätzungssystem/23 Ersteinschätzung/770 Zeitpunkt der Ersteinschätzung-->
+         <fact concept="MTS:4" start="2015-01-17T16:03">
+            <modifier code="effectiveTimeLow">
+               <value xsi:type="string">201501171603</value>
+            </modifier>
+            <modifier code="effectiveTimeHigh">
+               <value xsi:type="string">201501171608</value>
+            </modifier>
+         </fact>
+         <!--25-30+767 Zusatzmodule-->
+         <fact concept="LOINC:53576-5"/>
+         <fact concept="LOINC:11488-4"/>
+         <fact concept="LOINC:74198-3"/>
+      </encounter>
+   </patient>
 </eav-data>

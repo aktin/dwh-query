@@ -276,9 +276,9 @@ try({
   isNA <- length(df$phys.d[is.na(df$phys.d )])
   b <- a[!is.na(a)]
   #Absolute Zahlen
-  #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,180,length=13),scales = list(x = list(at = seq(0,180,length=7))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds))
-  #Relative Häufigkeiten
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Relative Häufigkeit [%]",breaks=seq(0,180,length=13),scales = list(x = list(at = seq(0,180,length=7))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds),col=std_cols1)
+  #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,180,length=13),scales = list(x = list(at = seq(0,180,length=7))),sub=paste("Fehlende Werte: ", isNA, "; Werte Ã¼ber 180 Minuten: ", outofbounds))
+  #Relative HÃ¤ufigkeiten
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Relative HÃ¤ufigkeit [%]",breaks=seq(0,180,length=13),scales = list(x = list(at = seq(0,180,length=7))),sub=paste("Fehlende Werte: ", isNA, "; Werte Ã¼ber 180 Minuten: ", outofbounds),col=std_cols1)
   trellis.device('svg',file=paste0(gfx.dir,'phys.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
@@ -303,9 +303,9 @@ try({
   isNA <- length(df$triage.d[is.na(df$triage.d )])
   b <- a[!is.na(a)]
   #Absolute Zahlen
-  #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
-  #Relative Häufigkeiten
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Relative Häufigkeit [%]",breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds),col=std_cols1)
+  #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte Ã¼ber 60 Minuten: ", outofbounds))
+  #Relative HÃ¤ufigkeiten
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Relative HÃ¤ufigkeit [%]",breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte Ã¼ber 60 Minuten: ", outofbounds),col=std_cols1)
   trellis.device('svg',file=paste0(gfx.dir,'triage.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
@@ -331,7 +331,7 @@ tryCatch({
   outofbounds <- length(df$therapy.d) - length(a)
   isNA <- length(df$therapy.d[is.na(df$therapy.d )])
   b <- a[!is.na(a)]
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit vom ersten Arztkontakt bis zum Therapiebeginn [Minuten]",ylab="relative Häufigkeit [%]",sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit vom ersten Arztkontakt bis zum Therapiebeginn [Minuten]",ylab="relative HÃ¤ufigkeit [%]",sub=paste("Fehlende Werte: ", isNA, "; Werte Ã¼ber 60 Minuten: ", outofbounds))
   trellis.device('svg',file=paste0(gfx.dir,'therapy.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
@@ -364,12 +364,12 @@ try({
   a <- df$phys.d[df$phys.d<180]
   outofbounds <- length(df$phys.d) - length(a)
   b <- df$triage.result[df$phys.d<180]
-  x <- aggregate(x=list(avg=a), by=list(triage=b), FUN=mean, na.rm=TRUE)
-  x_compl <- data.frame(triage=levels(df$triage.result),avg=c(0,0,0,0,0,0))
-  x_compl <- merge(x,x_compl,by="triage",all.y = TRUE)
-  x <- data.frame(triage=x_compl$triage,avg=x_compl$avg.x)
-  x$avg[is.na(x$avg)] <- 0
-  graph <- barchart(avg ~ triage, data=x, horizontal=FALSE, col=std_cols5 ,ylab="Durchschn. Zeit bis Arztkontakt [Min.]", xlab="Triage-Gruppe",sub=paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds),ylim=c(0,signif(max(as.numeric(x$avg)),digits=1) +10),origin=0)
+  y <- data.frame(time=a, triage=b)
+  x <- with(y, tapply(time, list(triage), FUN=mean, na.rm=TRUE))
+  x[is.na(x)] <- 0
+  y <- data.frame(avg=as.numeric(x), triage=factor(names(x), levels=c("Rot","Orange","Gelb","Gruen","Blau","Ohne")))
+  # TODO error below: Error in units == (un1 <- units[1L]), comparison of these types is not implemented
+  graph <- barchart(avg ~ triage, data=y, horizontal=FALSE, col=std_cols5 ,ylab="Durchschn. Zeit bis Arztkontakt [Min.]", xlab="Triage-Gruppe",sub=paste("Werte Ã¼ber 180 Minuten (unberÃ¼cksichtigt): ", outofbounds),ylim=c(0,signif(max(as.numeric(y$avg)),digits=1) +10),origin=0)
   #text(graph,x$triage,labels = x$triage,pos=1)
   trellis.device('svg',file=paste0(gfx.dir,'triage.phys.d.avg',gfx.ext),width=8,height=4)
   print(graph)
@@ -382,8 +382,8 @@ try({
   outofbounds <- length(df$discharge.d) - length(a)
   isNA <- length(df$discharge.d[is.na(df$discharge.d )])
   b <- a[!is.na(a)]
-  #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,600,length=11),scales = list(x = list(at = seq(0,600,length=11))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 600 Minuten: ", outofbounds),col=std_cols1)
-  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Relative Häufigkeit [%]",breaks=seq(0,600,length=11),scales = list(x = list(at = seq(0,600,length=11))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 600 Minuten: ", outofbounds),col=std_cols1)
+  #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,600,length=11),scales = list(x = list(at = seq(0,600,length=11))),sub=paste("Fehlende Werte: ", isNA, "; Werte Ã¼ber 600 Minuten: ", outofbounds),col=std_cols1)
+  graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Relative HÃ¤ufigkeit [%]",breaks=seq(0,600,length=11),scales = list(x = list(at = seq(0,600,length=11))),sub=paste("Fehlende Werte: ", isNA, "; Werte Ã¼ber 600 Minuten: ", outofbounds),col=std_cols1)
   trellis.device('svg',file=paste0(gfx.dir,'discharge.d.hist',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
@@ -404,12 +404,13 @@ try({
   c[,3] <- paste(c[,3],'%')
   xhtml.table(c, file=paste0(xml.dir,'triage.xml'),align=c('left','right','right'),widths=c(20,15,15))
   
-  graph <- barchart( a, horizontal=FALSE, xlab="Ersteinschätzung", ylab='Anzahl Patienten',col=c("firebrick3","orange","yellow","green","blue","white"),origin=0)
+  graph <- barchart( a, horizontal=FALSE, xlab="ErsteinschÃ¤tzung", ylab='Anzahl Patienten',col=c("firebrick3","orange","yellow","green","blue","white"),origin=0)
   trellis.device('svg',file=paste0(gfx.dir,'triage',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
 }, silent=FALSE)
 
+# TODO make sure that this works with NO data
 try({ ##this does not work if not all triage levels are present in the data; aggregate coerces df$triage.result to factor, losing all unused levels :(
   agg.funs <- list(Mittelwert=mean, Median=median, Minimum=min, Maximum=max)
   agg.list <- lapply(agg.funs, function(fun){aggregate(x=df$phys.d, by=list(triage=df$triage.result),FUN=fun, na.rm=TRUE)$x})
@@ -443,30 +444,30 @@ try({
 try({
   t <- table(df$cedis,useNA = "always") #frequencies
   y <- t
-  y["999"] <- 0 #remove it and put it at the bottom - "TOP20+Unknown+NA"
-  y[length(t)] <- 0 #<NA>
+  #remove it and put it at the bottom - "TOP20+Unknown+NA"
+  y[names(y)=='999'] <- 0
+  y[is.na(names(y))] <- 0
   y <- sort(y, decreasing = TRUE)
   y <- y [1:20]
   y[y==0] <- NA #remove unused
   y <- y[complete.cases(y)] #remove unused
-  y[length(y)+1] <- t["999"]
-  names(y)[length(y)] <- "999"
-  y[length(y)+1] <- t[length(t)]
-  names(y)[length(y)] <- "NA"
+  x <- data.frame(y)
+  x <- rbind(x, data.frame(Var1='999',Freq=t['999'], row.names=NULL))
+  x <- rbind(x, data.frame(Var1='NA',Freq=t[is.na(names(t))], row.names=NULL))
   #names(y) <- factor(names(y),t(cedis[1]),labels=t(cedis[3]))
   #names(y)[is.na(names(y))] <- 'Keine Daten'
-  graph <- barchart(rev(y), xlab="Anzahl Patienten",col=std_cols1,origin=0)
+  graph <- barchart(data=x, Var1 ~ Freq, xlab="Anzahl Patienten",col=std_cols1,origin=0)
   trellis.device('svg',file=paste0(gfx.dir,'cedis_top',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
   
-  codes <- names(y)
-  names(y) <- factor(names(y),t(cedis[1]),labels=t(cedis[3]))
-  names(y)[length(y)] <- "Vorstellungsgrund nicht dokumentiert"
-  kat <- paste(codes,": ",names(y),sep = '')
-  b <- data.frame(Kategorie=kat, Anzahl=gformat(y), Anteil=gformat((y / sum(t))*100,digits = 1))
+  y <- x
+  y$label <- as.character(factor(y$Var1, levels=cedis[[1]], labels=cedis[[3]]))
+  y$label[is.na(y$label)] <- "Vorstellungsgrund nicht dokumentiert"
+  kat <- paste(y$Var1,y$label, sep = ': ')
+  b <- data.frame(Kategorie=kat, Anzahl=gformat(y$Freq), Anteil=gformat((y$Freq / sum(t))*100,digits = 1))
   #b <- rbind(b, data.frame(Kategorie="Vorstellungsgrund nicht dokumentiert",Anzahl=gformat(sum(is.na(df$cedis))), Anteil=gformat((sum(is.na(df$cedis)) / length(df$cedis))*100,digits = 1)))
-  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(y)),Anteil=gformat(sum(y) / length(df$cedis)*100,digits=1)))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(y$Freq)),Anteil=gformat(sum(y$Freq) / length(df$cedis)*100,digits=1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
   xhtml.table(c, file=paste0(xml.dir,'cedis.xml'),align=c('left','right','right'),widths=c(60,15,15))
@@ -526,7 +527,7 @@ try({
   rownames(stacktable) <- c("F","G","V","Z","A")
   stacktable <- t(stacktable)
   stacktable <- stacktable[complete.cases(stacktable),] #remove rows
-  graph <- barchart(stacktable[dim(stacktable)[1]:1,1:5],xlab="Anzahl Patienten",sub="blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",col=std_cols5[5:1],origin=0)
+  graph <- barchart(stacktable[dim(stacktable)[1]:1,1:5],xlab="Anzahl Patienten",sub="blau=Ohne Zusatzkennzeichen, grÃ¼n=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",col=std_cols5[5:1],origin=0)
   #graph <- barchart( x [20:1], xlab="Anzahl Patienten",col=std_cols[1],origin=0)
   trellis.device('svg',file=paste0(gfx.dir,'icd_top',gfx.ext),width=8,height=4)
   print(graph)
@@ -577,7 +578,7 @@ try({
   x[x>110] <- 110
   x[x<0] <- NA
   x<-x[!is.na(x)]
-  graph <- histogram(x,xlab="Alter [Jahre]",ylab="Anzahl Patienten",type='count',breaks=seq(0,110,length=12),sub='Werte größer 110 werden als 110 gewertet',col=std_cols1)
+  graph <- histogram(x,xlab="Alter [Jahre]",ylab="Anzahl Patienten",type='count',breaks=seq(0,110,length=12),sub='Werte grÃ¶ÃŸer 110 werden als 110 gewertet',col=std_cols1)
   trellis.device('svg',file=paste0(gfx.dir,'age',gfx.ext),width=8,height=4)
   print(graph)
   no_output <- dev.off() #silent
@@ -764,12 +765,12 @@ try({
 #calculate length of observation based on admission day
 try({
   crowd.len <- max(df$admit.ts) - min(df$admit.ts)
-  #plot(apply (crowdperday,2,max),xlab = 'Uhrzeit [Stunde]',ylab='Anwesende Patienten',ylim=c(min(apply (crowdperday,2,min)),max(apply (crowdperday,2,max))),sub='rot=Maximum, blau=Minimum, grün=Durchschnitt')
+  #plot(apply (crowdperday,2,max),xlab = 'Uhrzeit [Stunde]',ylab='Anwesende Patienten',ylim=c(min(apply (crowdperday,2,min)),max(apply (crowdperday,2,max))),sub='rot=Maximum, blau=Minimum, grÃ¼n=Durchschnitt')
   #lines(crowding/as.numeric(round(crowd.len)),type="b",col=colors[2])
   #lines(apply (crowdperday,2,max),type="b",col=colors[1])
   #lines(apply (crowdperday,2,min),type="b",col=colors[3])
   svg(paste0(gfx.dir,'crowding','.svg'))
-  plot(apply(crowdperday_max,1,max),xlab = 'Uhrzeit [Stunde]',ylab='Anwesende Patienten',ylim=c(min(apply(crowdperday_min,1,min)),max(apply(crowdperday_max,1,max))),sub='rot=Maximum, blau=Minimum, grün=Durchschnitt')
+  plot(apply(crowdperday_max,1,max),xlab = 'Uhrzeit [Stunde]',ylab='Anwesende Patienten',ylim=c(min(apply(crowdperday_min,1,min)),max(apply(crowdperday_max,1,max))),sub='rot=Maximum, blau=Minimum, grÃ¼n=Durchschnitt')
   lines(colSums(crowdperday)/as.numeric(round(crowd.len)),type="b",col=std_cols3[2])
   lines(apply(crowdperday_max,1,max),type="b",col=std_cols3[1])
   lines(apply(crowdperday_min,1,min),type="b",col=std_cols3[3])
@@ -778,7 +779,7 @@ try({
 
 
 #Aufnahme vs. Entlassung
-#Testberechnung für einen Tag
+#Testberechnung fÃ¼r einen Tag
 try({
   admits <- rep(0,24)
   discharges <- rep(0,24)
@@ -797,7 +798,7 @@ try({
     }
   }
   svg(paste0(gfx.dir,'admit_discharge','.svg'))
-  plot(crowdperday[27,],xlab = 'Uhrzeit [Stunde]',ylab='Durchschnittliche Anzahl Patienten',ylim=c(0,65),sub='rot=Anzahl Patienten, blau=Aufnahmen, grün=Entlassungen')
+  plot(crowdperday[27,],xlab = 'Uhrzeit [Stunde]',ylab='Durchschnittliche Anzahl Patienten',ylim=c(0,65),sub='rot=Anzahl Patienten, blau=Aufnahmen, grÃ¼n=Entlassungen')
   lines(crowdperday[27,],type="b",col=std_cols3[1])
   lines(admits,type="b",col=std_cols3[3])
   lines(discharges,type="b",col=std_cols3[2])

@@ -97,8 +97,8 @@ GY;GY;Geburtshilfe/Gynaekologie;Geburtshilfe/Gynaekologie
 454;GY;Sexueller Uebergriff;Sexueller Uebergriff
 455;GY;Vaginale Blutung;Vaginale Blutung
 456;GY;Schamlippenschwellung;Schamlippenschwellung
-457;GY;Schwangerschaftsprobleme <= 20. SSW;Schwangerschaftsprobleme <= 20. SSW
-458;GY;Schwangerschaftsprobleme > 20. SSW;Schwangerschaftsprobleme > 20. SSW
+457;GY;Schwangerschaftsprobleme <=Â 20. SSW;Schwangerschaftsprobleme <=Â 20. SSW
+458;GY;Schwangerschaftsprobleme >Â 20. SSW;Schwangerschaftsprobleme >Â 20. SSW
 460;GY;Vaginale Schmerzen;Vaginale Schmerzen/Schmerzen beim Geschlechtsverkehr
 EC;EC;Augenheilkunde;Augenheilkunde
 502;EC;Exposition des Auges gegenueber Chemikalien;Exposition des Auges gegenueber Chemikalien
@@ -115,7 +115,7 @@ OC;OC;Orthopaedisch/Unfall-chirurgisch;Orthopaedisch/Unfall-chirurgisch
 551;OC;Rueckenschmerzen;Rueckenschmerzen
 552;OC;Traumatische Ruecken-/Wirbelsaeulenverletzung;Traumatische Ruecken-/Wirbelsaeulenverletzung
 553;OC;Amputation;Amputation
-554;OC;Schmerzen obere Extremitaet;Schmerzen obere Extremitaet
+554;OC;Schmerzen obere ExtremitÃ¤t;Schmerzen obere ExtremitÃ¤t
 555;OC;Schmerzen untere Extremitaet;Schmerzen untere Extremitaet
 556;OC;Verletzung obere Extremitaet;Verletzung obere Extremitaet
 557;OC;Verletzung untere Extremitaet;Verletzung untere Extremitaet
@@ -164,7 +164,7 @@ TR;SA;Trauma;Trauma
 805;SA;Isoliertes Abdominaltrauma - penetrierend;Isoliertes Abdominaltrauma - penetrierend
 806;SA;Isoliertes Abdominaltrauma - stumpf;Isoliertes Abdominaltrauma - stumpf
 MC;MC;Allgemeine und sonstige Beschwerden;Allgemeine und sonstige Beschwerden
-851;MC;Exposition ggü. einer uebertragbaren Krankheit;Exposition gegenueber einer uebertragbaren Krankheit
+851;MC;Exposition ggÃ¼. einer uebertragbaren Krankheit;Exposition gegenueber einer uebertragbaren Krankheit
 852;MC;Fieber;Fieber
 853;MC;Hyperglykaemie;Hyperglykaemie
 854;MC;Hypoglykaemie;Hypoglykaemie

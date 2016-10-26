@@ -13,6 +13,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -21,6 +24,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.SAXResult;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.aktin.Preferences;
@@ -31,6 +35,10 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 public class ReportExecution {
 	private static final Logger log = Logger.getLogger(ReportExecution.class.getName());	
@@ -161,18 +169,52 @@ public class ReportExecution {
 			deleteFiles(temp, files);
 		}
 	}
-	void runFOP() throws IOException{
-		fopFiles = report.copyResourcesForFOP(temp);
-
+	private XMLReader constructReader() throws IOException{
+		SAXParserFactory spf = SAXParserFactory.newInstance();
+		spf.setNamespaceAware(true);
+		//spf.setValidating(true);
+		XMLReader r;
+		try {
+			r = spf.newSAXParser().getXMLReader();
+		} catch (SAXException | ParserConfigurationException e) {
+			throw new IOException("Unable to create SAX XML reader", e);
+		}
+		r.setEntityResolver(new EntityResolver() {
+			@Override
+			public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+				log.info("Ignoring entity "+publicId+", "+systemId);
+				throw new RuntimeException("alala");
+				//return null;
+			}
+		});
+		return r;
+	}
+	private Transformer createTransformer(Source source) throws IOException{
 		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer ft;
+		// configuration of transformer factory
+		Transformer transformer;
 		try {		
-			//Second file from Report interface is the XSL file	
-			//ft = factory.newTransformer(new StreamSource(Files.newInputStream(workingPath.resolve(files[1])), files[1]));
-			ft = factory.newTransformer(new StreamSource( temp.resolve(fopFiles[1]).toFile() ));
+			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+//			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+//			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+			transformer = factory.newTransformer(source);
+			transformer.setErrorListener(new TransformationErrorListener(log));
 		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
 			throw new IOException("Unable to construct FOP transformation",e);
 		}
+		return transformer;
+	}
+
+	private Source createSource(Path path) throws IOException{
+		return new StreamSource( path.toFile() ); 
+//		return  new SAXSource(constructReader(), new InputSource(path.toUri().toString()));
+	}
+	void runFOP() throws IOException{
+		fopFiles = report.copyResourcesForFOP(temp);
+
+		//Second file from Report interface is the XSL file	
+//		Transformer ft = createTransformer(new StreamSource( temp.resolve(fopFiles[1]).toFile() ));
+		Transformer ft = createTransformer(createSource(temp.resolve(fopFiles[1])));
 
 		FopFactory ff = FopFactory.newInstance(temp.toUri());
 		FOUserAgent ua = ff.newFOUserAgent();
@@ -183,7 +225,8 @@ public class ReportExecution {
 			Fop fop = ff.newFop(MimeConstants.MIME_PDF, ua, out);
 			// configuration of transformer factory
 			// First file from Report interface is the XML input (Source)
-			Source src = new StreamSource(temp.resolve(fopFiles[0]).toFile());
+//			Source src = new StreamSource(temp.resolve(fopFiles[0]).toFile());
+			Source src = createSource(temp.resolve(fopFiles[0]));
 		    // Resulting SAX events (the generated FO) must be piped through to FOP
 		    Result res = new SAXResult(fop.getDefaultHandler());
 		    // Step 6: Start XSLT transformation and FOP processing

@@ -203,7 +203,7 @@ public class ReportExecution {
 //				log.info("Ignoring entity "+publicId+", "+systemId);
 //				throw new RuntimeException("alala");
 				// apparently not used at all
-//				return null;
+				if( true )return null;
 				if( systemId.endsWith(".dtd") ){
 					// provide empty DTD to prevent validation and remote retrieval of DTD documents
 					return new InputSource(new StringReader(" "));

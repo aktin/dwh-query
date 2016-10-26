@@ -44,6 +44,12 @@
 					<fo:block space-before="50pt">
 						Förderkennzeichen: 01KX1319B
 					</fo:block>
+					<fo:block space-before="50pt">
+						SVG: <fo:external-graphic src="barchart1.svg" content-height="30mm"/>
+					</fo:block>
+					<fo:block space-before="50pt">
+						PNG: <fo:external-graphic src="barchart1.png" content-height="30mm"/>
+					</fo:block>
 					<fo:block id="end" />
 				</fo:flow>
 			</fo:page-sequence>

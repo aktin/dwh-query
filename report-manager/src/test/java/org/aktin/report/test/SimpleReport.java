@@ -31,11 +31,13 @@ public class SimpleReport extends AnnotatedReport{
 
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
-		String file = "demo.R";
-		try( InputStream in = getClass().getResourceAsStream("/"+file) ){
-			Files.copy(in, workingDirectory.resolve(file));			
+		String[] files = new String[]{"demo.R", "include.R"};
+		for( String file : files ){
+			try( InputStream in = getClass().getResourceAsStream("/"+file) ){
+				Files.copy(in, workingDirectory.resolve(file));			
+			}
 		}
-		return new String[]{file};
+		return files;
 	}
 
 	@Override

@@ -81,6 +81,7 @@ public class TestReportGeneration {
 		// expect non-empty file
 		Assert.assertTrue(Files.size(dest) > 0);
 
+		System.out.println("Created PDF "+dest);
 		//Files.delete(dest); TODO Removed for Testing
 	}
 

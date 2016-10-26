@@ -4,12 +4,8 @@ report.generatedFile <- function(name){
 	cat(paste(name,"\n",sep=""), file="r-generated-files.txt", append=TRUE)
 }
 
+options(encoding = "UTF-8")
+source("include.R")
 
-x <- 1:10
-graph <- barchart(runif(10) ~ x, horizontal=FALSE)
-trellis.device('svg',file='barchart1.svg',width=8, height=4)
-print(graph)
-d <- dev.off()
-
-report.generatedFile('barchart1.svg')
+## oder source("include.R", encoding="UTF-8")
 

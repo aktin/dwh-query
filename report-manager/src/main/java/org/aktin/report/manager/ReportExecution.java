@@ -256,9 +256,25 @@ public class ReportExecution {
 			// delete FOP input files
 			deleteFiles(temp, fopFiles);
 
+			delete_r_generated_files(temp);
 		}
 	}
 
+	private void delete_r_generated_files(Path dir) throws IOException{
+		Path file = dir.resolve("r-generated-files.txt");
+		if( Files.notExists(file) ){
+			return;
+		}
+		try( BufferedReader r = Files.newBufferedReader(file, Charset.forName("UTF-8")) ){
+			String line = r.readLine();
+			while( line != null ){
+				Files.deleteIfExists(dir.resolve(line));
+				line = r.readLine();
+			}
+		}
+		// delete the r-generated-files.txt itself
+		Files.delete(file);
+	}
 	private void reportAndRemoveRemainingFiles(Report report, Path dir, String[] leftFiles){
 		StringBuilder sb = new StringBuilder();
 		for( int i=0; i<leftFiles.length; i++ ){

@@ -525,7 +525,7 @@ try({
   rownames(stacktable) <- c("F","G","V","Z","A")
   stacktable <- t(stacktable)
   stacktable <- stacktable[complete.cases(stacktable),] #remove rows
-  graph <- barchart(stacktable[dim(stacktable)[1]:1,1:5],xlab="Anzahl Patienten",sub="blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",col=std_cols5[5:1],origin=0)
+  graph <- barchart(stacktable[dim(stacktable)[1]:1,1:5],xlab="Anzahl Patienten",sub="blau=Ohne Zusatzkennzeichen, gr\U00FCn=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",col=std_cols5[5:1],origin=0)
   #graph <- barchart( x [20:1], xlab="Anzahl Patienten",col=std_cols[1],origin=0)
   report.svg(graph, 'icd_top') 
   
@@ -765,7 +765,7 @@ try({
   #lines(apply (crowdperday,2,max),type="b",col=colors[1])
   #lines(apply (crowdperday,2,min),type="b",col=colors[3])
   svg(paste0(gfx.dir,'crowding','.svg'))
-  plot(apply(crowdperday_max,1,max),xlab = 'Uhrzeit [Stunde]',ylab='Anwesende Patienten',ylim=c(min(apply(crowdperday_min,1,min)),max(apply(crowdperday_max,1,max))),sub='rot=Maximum, blau=Minimum, grün=Durchschnitt')
+  plot(apply(crowdperday_max,1,max),xlab = 'Uhrzeit [Stunde]',ylab='Anwesende Patienten',ylim=c(min(apply(crowdperday_min,1,min)),max(apply(crowdperday_max,1,max))),sub='rot=Maximum, blau=Minimum, gr\U00FCn=Durchschnitt')
   lines(colSums(crowdperday)/as.numeric(round(crowd.len)),type="b",col=std_cols3[2])
   lines(apply(crowdperday_max,1,max),type="b",col=std_cols3[1])
   lines(apply(crowdperday_min,1,min),type="b",col=std_cols3[3])

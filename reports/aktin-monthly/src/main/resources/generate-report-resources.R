@@ -1,7 +1,5 @@
 #!/usr/bin/Rscript
 
-#setwd("E:/GIT/aktin/dwh-query/wolfsburg-monthly-report/src/main/resources/")
-
 report.generatedFile <- function(name){
 	cat(paste(name,"\n",sep=""), file="r-generated-files.txt", append=TRUE)
 }
@@ -55,10 +53,10 @@ df = data.frame(patient=pat$patient_id, encounter=enc$encounter_id)
 df_diag <- data.frame(diagnosis=as.factor(substring(diag$diagnose_code, first=1, last=3)))
 
 #load CEDIS mapping table
-cedis = read.csv2(file='CEDIS.csv', as.is=TRUE, na.strings='', header = FALSE, sep=';')
+cedis = read.csv2(file='CEDIS.csv', as.is=TRUE, na.strings='', header = FALSE, sep=';', encoding = "UTF-8")
 
 #load ICD mapping table
-icd = read.csv2(file='ICD-3Steller.csv', as.is=TRUE, na.strings='', header = FALSE, sep=';')
+icd = read.csv2(file='ICD-3Steller.csv', as.is=TRUE, na.strings='', header = FALSE, sep=';', encoding = "UTF-8")
 
 # parse timestamps and date fields
 # The timestamp values are assumed to belong to the local timezone
@@ -456,7 +454,7 @@ try({
     # no CEDIS codes at all
     y <- data.frame() 
   }
-  x <- data.frame(y)
+  x <- data.frame(Var1=names(y),Freq=as.numeric(y))
   x <- rbind(x, data.frame(Var1='999',Freq=t['999'], row.names=NULL))
   x <- rbind(x, data.frame(Var1='NA',Freq=t[is.na(names(t))], row.names=NULL))
   x <- na.omit(x)
@@ -527,7 +525,7 @@ try({
   rownames(stacktable) <- c("F","G","V","Z","A")
   stacktable <- t(stacktable)
   stacktable <- stacktable[complete.cases(stacktable),] #remove rows
-  graph <- barchart(stacktable[dim(stacktable)[1]:1,1:5],xlab="Anzahl Patienten",sub="blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",col=std_cols5[5:1],origin=0)
+  graph <- barchart(stacktable[dim(stacktable)[1]:1,1:5],xlab="Anzahl Patienten",sub="blau=Ohne Zusatzkennzeichen, gr\U00FCn=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",col=std_cols5[5:1],origin=0)
   #graph <- barchart( x [20:1], xlab="Anzahl Patienten",col=std_cols[1],origin=0)
   report.svg(graph, 'icd_top') 
   
@@ -535,7 +533,8 @@ try({
   a <- sort(a, decreasing = TRUE)
   a <- a [1:20]
   codes <- names(a)
-  names(a) <- factor(names(a),t(icd[1]),labels=strtrim(t(icd[2]),60))
+  #names(a) <- factor(names(a),t(icd[1]),labels=strtrim(t(icd[2]),60))
+  names(a) <- factor(names(a),t(icd[1]),labels=t(icd[2]),60)
   a <- a[complete.cases(a)]
   codes <-  codes[complete.cases(codes)]
   kat <- paste(codes,": ",names(a),sep = '')
@@ -766,7 +765,7 @@ try({
   #lines(apply (crowdperday,2,max),type="b",col=colors[1])
   #lines(apply (crowdperday,2,min),type="b",col=colors[3])
   svg(paste0(gfx.dir,'crowding','.svg'))
-  plot(apply(crowdperday_max,1,max),xlab = 'Uhrzeit [Stunde]',ylab='Anwesende Patienten',ylim=c(min(apply(crowdperday_min,1,min)),max(apply(crowdperday_max,1,max))),sub='rot=Maximum, blau=Minimum, grün=Durchschnitt')
+  plot(apply(crowdperday_max,1,max),xlab = 'Uhrzeit [Stunde]',ylab='Anwesende Patienten',ylim=c(min(apply(crowdperday_min,1,min)),max(apply(crowdperday_max,1,max))),sub='rot=Maximum, blau=Minimum, gr\U00FCn=Durchschnitt')
   lines(colSums(crowdperday)/as.numeric(round(crowd.len)),type="b",col=std_cols3[2])
   lines(apply(crowdperday_max,1,max),type="b",col=std_cols3[1])
   lines(apply(crowdperday_min,1,min),type="b",col=std_cols3[3])

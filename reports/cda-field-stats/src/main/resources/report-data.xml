@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <report-data>
     <table id="t1.1" href="complete.xml"/>
+    <table id="t1.2" href="diagnoses.xml"/>
    <!--<plot id="p1.1" href="age.svg"/>-->
 </report-data>

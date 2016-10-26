@@ -18,6 +18,7 @@
 	<modules>
 		<module>aktin-monthly</module>
 		<module>cda-field-stats</module>
+		<module>demo-report</module>
 	</modules>
 	<dependencies>
 		<!-- -->

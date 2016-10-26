@@ -9,15 +9,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -65,6 +70,7 @@ public class ReportExecution {
 	 * Don't delete anything. Mainly useful for debugging.
 	 */
 	private boolean keepIntermediateFiles;
+	private Set<Path> virtuallyDeleted;
 	
 	ReportExecution(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination){
 		this.report = report;
@@ -75,6 +81,9 @@ public class ReportExecution {
 
 	public void setKeepIntermediateFiles(boolean keepFiles){
 		this.keepIntermediateFiles = keepFiles;
+		if( keepIntermediateFiles ){
+			this.virtuallyDeleted = new HashSet<>();
+		}
 	}
 
 	/**
@@ -144,7 +153,7 @@ public class ReportExecution {
 			p.storeToXML(out, comments);			
 		}catch( IOException e ){
 			// second file failed, make sure the first one is deleted
-			if( !keepIntermediateFiles )try{
+			try{
 				Files.delete(dir.resolve(files[0]));
 			}catch( IOException e2 ){
 				e.addSuppressed(e2);
@@ -153,10 +162,16 @@ public class ReportExecution {
 		}
 		return files;
 	}
-	private void deleteFiles(Path dir, String[] files) throws IOException{
+	private void deleteFiles(Path dir, String... files) throws IOException{
 		for( String file : files ){
-			Files.delete(dir.resolve(file));
-		}		
+			Path path = dir.resolve(file);
+			if( !keepIntermediateFiles ){
+				Files.delete(path);
+			}else{
+				// remember file as deleted
+				virtuallyDeleted.add(path);
+			}
+		}
 	}
 
 	void runR(Path rScriptExecutable) throws IOException{
@@ -164,20 +179,21 @@ public class ReportExecution {
 		// run main script
 		RScript rScript = new RScript(rScriptExecutable);
 		rScript.runRscript(temp, files[0]);
-		if( !keepIntermediateFiles ){
-			// delete data files
-			deleteFiles(temp, dataFiles);
-			// delete copied R source files
-			deleteFiles(temp, files);
-		}
+		// delete data files
+		deleteFiles(temp, dataFiles);
+		// delete copied R source files
+		deleteFiles(temp, files);
 	}
 	private XMLReader constructReader() throws IOException{
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		spf.setNamespaceAware(true);
-		//spf.setValidating(true);
+		spf.setValidating(false);
 		XMLReader r;
 		try {
-			r = spf.newSAXParser().getXMLReader();
+			spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			SAXParser parser = spf.newSAXParser();
+			parser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			r = parser.getXMLReader();
 		} catch (SAXException | ParserConfigurationException e) {
 			throw new IOException("Unable to create SAX XML reader", e);
 		}
@@ -249,15 +265,13 @@ public class ReportExecution {
 			log.warning("FOP errors: "+events.getSummary());
 			//throw new IOException("Errors during FOP processing"); //do not throw until FOP-"unstable"-Errors are solved
 		}
-		if( !keepIntermediateFiles ){
-			// preference files no longer needed
-			deleteFiles(temp, prefFiles);
-	
-			// delete FOP input files
-			deleteFiles(temp, fopFiles);
+		// preference files no longer needed
+		deleteFiles(temp, prefFiles);
 
-			delete_r_generated_files(temp);
-		}
+		// delete FOP input files
+		deleteFiles(temp, fopFiles);
+
+		delete_r_generated_files(temp);
 	}
 
 	private void delete_r_generated_files(Path dir) throws IOException{
@@ -267,10 +281,12 @@ public class ReportExecution {
 		}
 		try( BufferedReader r = Files.newBufferedReader(file, Charset.forName("UTF-8")) ){
 			String line = r.readLine();
+			List<String> lines = new ArrayList<>();
 			while( line != null ){
-				Files.deleteIfExists(dir.resolve(line));
+				lines.add(line);
 				line = r.readLine();
 			}
+			deleteFiles(dir, lines.toArray(new String[lines.size()]));
 		}
 		// delete the r-generated-files.txt itself
 		Files.delete(file);
@@ -278,21 +294,25 @@ public class ReportExecution {
 	private void reportAndRemoveRemainingFiles(Report report, Path dir, String[] leftFiles){
 		StringBuilder sb = new StringBuilder();
 		for( int i=0; i<leftFiles.length; i++ ){
-			if( i != 0 ){
-				sb.append(' ');					
-			}
-			sb.append(leftFiles[i]);
+			Path path = dir.resolve(leftFiles[i]);
 
 			if( keepIntermediateFiles ){
+				if( !virtuallyDeleted.contains(path) ){
+					sb.append(' ').append(leftFiles[i]);
+				}
 				continue;
+			}else{
+				sb.append(' ').append(leftFiles[i]);
 			}
 			try {
-				Files.delete(dir.resolve(leftFiles[i]));
+				Files.delete(path);
 			} catch (IOException e) {
 				log.warning("Unable to remove remaining file: "+leftFiles[i]);
 			}
 		}
-		log.warning("Report "+report.getId()+" left files: "+sb.toString());
+		if( sb.length() > 0 ){
+			log.warning("Report "+report.getId()+" left files:"+sb.toString());
+		}
 	}
 
 	void cleanup() throws IOException{
@@ -301,10 +321,8 @@ public class ReportExecution {
 		try( Stream<Path> remaining = Files.list(temp) ){
 			leftFiles = remaining.map(path -> temp.relativize(path).toString()).toArray(len -> new String[len]);
 		}
-		if( leftFiles.length != 0 ){
-			// report forgotten files
-			reportAndRemoveRemainingFiles(report, temp, leftFiles);
-		}
+		// report forgotten files
+		reportAndRemoveRemainingFiles(report, temp, leftFiles);
 		// remove directory
 		if( !keepIntermediateFiles ){
 			Files.delete(temp);

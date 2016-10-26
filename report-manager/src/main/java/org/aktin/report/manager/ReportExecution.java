@@ -1,7 +1,10 @@
 package org.aktin.report.manager;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -25,7 +28,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamSource;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
@@ -182,9 +184,16 @@ public class ReportExecution {
 		r.setEntityResolver(new EntityResolver() {
 			@Override
 			public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-				log.info("Ignoring entity "+publicId+", "+systemId);
-				throw new RuntimeException("alala");
-				//return null;
+//				log.info("Ignoring entity "+publicId+", "+systemId);
+//				throw new RuntimeException("alala");
+				// apparently not used at all
+//				return null;
+				if( systemId.endsWith(".dtd") ){
+					// provide empty DTD to prevent validation and remote retrieval of DTD documents
+					return new InputSource(new StringReader(" "));
+				}else{
+					return null; // default behaviour
+				}
 			}
 		});
 		return r;
@@ -206,14 +215,13 @@ public class ReportExecution {
 	}
 
 	private Source createSource(Path path) throws IOException{
-		return new StreamSource( path.toFile() ); 
-//		return  new SAXSource(constructReader(), new InputSource(path.toUri().toString()));
+//		return new StreamSource( path.toFile() ); 
+		return  new SAXSource(constructReader(), new InputSource(path.toUri().toString()));
 	}
 	void runFOP() throws IOException{
 		fopFiles = report.copyResourcesForFOP(temp);
 
 		//Second file from Report interface is the XSL file	
-//		Transformer ft = createTransformer(new StreamSource( temp.resolve(fopFiles[1]).toFile() ));
 		Transformer ft = createTransformer(createSource(temp.resolve(fopFiles[1])));
 
 		FopFactory ff = FopFactory.newInstance(temp.toUri());
@@ -225,7 +233,6 @@ public class ReportExecution {
 			Fop fop = ff.newFop(MimeConstants.MIME_PDF, ua, out);
 			// configuration of transformer factory
 			// First file from Report interface is the XML input (Source)
-//			Source src = new StreamSource(temp.resolve(fopFiles[0]).toFile());
 			Source src = createSource(temp.resolve(fopFiles[0]));
 		    // Resulting SAX events (the generated FO) must be piped through to FOP
 		    Result res = new SAXResult(fop.getDefaultHandler());
@@ -248,6 +255,7 @@ public class ReportExecution {
 	
 			// delete FOP input files
 			deleteFiles(temp, fopFiles);
+
 		}
 	}
 

@@ -34,7 +34,7 @@
 			<fo:page-sequence master-reference="page-layout">
 				<fo:flow flow-name="body" id="mybody">
 					<fo:block>
-						Krankenhaus XXX
+						Krankenhaus <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.ou']/text()"/>
 					</fo:block>
 					<fo:block>lalala</fo:block>
 					<fo:block space-before="200pt">

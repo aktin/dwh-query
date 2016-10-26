@@ -2,6 +2,24 @@
 
 #setwd("E:/GIT/aktin/dwh-query/wolfsburg-monthly-report/src/main/resources/")
 
+report.generatedFile <- function(name){
+	cat(paste(name,"\n",sep=""), file="r-generated-files.txt", append=TRUE)
+}
+gfx.dir <- ''
+gfx.ext <- '.svg'
+gfx.dev <- 'svg'
+report.svg <- function(graph, name, width=8, height=4){
+  trellis.device(gfx.dev,file=paste0(gfx.dir,name,gfx.ext), width=width,height=height)
+  print(graph)
+  no_output <- dev.off() #silent
+  report.generatedFile(paste0(name,gfx.ext))
+}
+xml.dir <- ''
+report.table <- function(x, name, widths=NULL, align='auto', align.default='left', na.subst=''){
+  xhtml.table(x, file=paste0(xml.dir, name), widths=widths, align=align, align.default=align.default, na.subst=na.subst)
+  report.generatedFile(name)
+}
+
 std_cols1 <- c("firebrick3")
 std_cols3 <- c("firebrick3","blue","green")
 std_cols5 <- c("firebrick3","orange","yellow","green","blue","white")
@@ -154,28 +172,22 @@ df$discharge.d[df$discharge.d > 24*60] <- NA     #could be more than 24 hours!
 
 # XHTML tables
 source('xhtml-table.R')
-xml.dir <- ''
 
 # Graphics & Plots
 library(lattice)
 
-gfx.dir <- ''
-gfx.ext <- '.svg'
-gfx.dev <- 'svg'
 
 # Counts per Hour
 try({
   graph <- barchart(table(df$admit.h)/length(levels(df$admit.day)), horizontal=FALSE, xlab="Uhrzeit [Stunde]", ylab="Durchschnittliche Anzahl Patienten",col=std_cols1,origin=0)
-  trellis.device(gfx.dev,file=paste0(gfx.dir,'admit.h',gfx.ext), width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'admit.h')
 }, silent=FALSE)
 # Write table
 try({
   table_pretty <- format(round(table(df$admit.h)[1:12]/length(levels(df$admit.day)), 1), nsmall=1, big.mark=".")
-  xhtml.table(table_pretty, file=paste0(xml.dir,'admit.h.xml'),align='center')
+  report.table(table_pretty,name='admit.h.xml',align='center')
   table_pretty <- format(round(table(df$admit.h)[13:24]/length(levels(df$admit.day)), 1), nsmall=1, big.mark=".")
-  xhtml.table(table_pretty, file=paste0(xml.dir,'admit2.h.xml'),align='center')
+  report.table(table_pretty,name='admit2.h.xml',align='center')
 }, silent=FALSE)
 
 #calculate number of weekdays in the current period (month)
@@ -216,9 +228,7 @@ try({
   plottable <- round(table(df$admit.wd)/weekdaycounts,digits = 0)
   plottable[is.na(plottable)] <- 0
   graph <- barchart(plottable, horizontal=FALSE, xlab="Wochentag", ylab="Durchschnittliche Anzahl Patienten",col=std_cols1,origin=0)
-  trellis.device('svg',file=paste0(gfx.dir,'admit.wd',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'admit.wd')
 }, silent=FALSE)
 
 # Counts per Hour/Weekday
@@ -249,6 +259,7 @@ try({
 
   #legend('topleft',1:length(weekday.levels), legend=weekday.levels, cex=0.8, col=colors, title="Tage")
   no_output <- dev.off() #silent
+  report.generatedFile('admit.hwd.weekend.svg')
 }, silent=FALSE)
 
 #Transport and referral
@@ -259,7 +270,7 @@ try({
   b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
   c[,3] <- paste(c[,3],'%')
-  xhtml.table(c, file=paste0(xml.dir,'transport.xml'),align=c('left','right','right'),widths=c(25,15,15))
+  report.table(c,name='transport.xml',align=c('left','right','right'),widths=c(25,15,15))
   
   table_formatted <- table(df$referral,useNA = "always")
   names(table_formatted)[length(names(table_formatted))]<-'Keine Daten'
@@ -267,7 +278,7 @@ try({
   b <- data.frame(Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
   c[,3] <- paste(c[,3],'%')
-  xhtml.table(c, file=paste0(xml.dir,'referral.xml'),align=c('left','right','right'),widths=c(60,15,15))
+  report.table(c,name='referral.xml',align=c('left','right','right'),widths=c(60,15,15))
 }, silent=FALSE)
 
 try({
@@ -279,9 +290,7 @@ try({
   #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,180,length=13),scales = list(x = list(at = seq(0,180,length=7))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds))
   #Relative Häufigkeiten
   graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Arztkontakt [Minuten]",ylab="Relative Häufigkeit [%]",breaks=seq(0,180,length=13),scales = list(x = list(at = seq(0,180,length=7))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", outofbounds),col=std_cols1)
-  trellis.device('svg',file=paste0(gfx.dir,'phys.d.hist',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'phys.d.hist')
 }, silent=FALSE)
 
 try({
@@ -293,7 +302,7 @@ try({
   Zeit <- c(used,isNA,outofbounds,Zeit)
   
   b <- data.frame(Kennzahl,Zeit)
-  xhtml.table(b, file=paste0(xml.dir,'phys.d.xml'),align=c('left','right'),widths=c(45,15))
+  report.table(b,name='phys.d.xml',align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
 # Time to triage
@@ -306,9 +315,7 @@ try({
   #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
   #Relative Häufigkeiten
   graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis Triage [Minuten]",ylab="Relative Häufigkeit [%]",breaks=seq(0,60,length=13),sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds),col=std_cols1)
-  trellis.device('svg',file=paste0(gfx.dir,'triage.d.hist',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'triage.d.hist')
 }, silent=FALSE)
 
 try({
@@ -320,7 +327,7 @@ try({
   Zeit <- c(used,isNA,outofbounds,Zeit)
   
   b <- data.frame(Kennzahl,Zeit)
-  xhtml.table(b, file=paste0(xml.dir,'triage.d.xml'),align=c('left','right'),widths=c(45,15))
+  report.table(b,name='triage.d.xml',align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
 if (FALSE) { ##not used
@@ -332,9 +339,7 @@ tryCatch({
   isNA <- length(df$therapy.d[is.na(df$therapy.d )])
   b <- a[!is.na(a)]
   graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit vom ersten Arztkontakt bis zum Therapiebeginn [Minuten]",ylab="relative Häufigkeit [%]",sub=paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", outofbounds))
-  trellis.device('svg',file=paste0(gfx.dir,'therapy.d.hist',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'therapy.d.hist')
 }, error = function(err) {
   par(mar = c(0,0,0,0))
   svg(paste0(gfx.dir,'therapy.d.hist','.svg'))
@@ -356,7 +361,7 @@ try({
   Zeit <- c(used,isNA,outofbounds,Zeit)
   
   b <- data.frame(Kennzahl,Zeit)
-  xhtml.table(b, file=paste0(xml.dir,'therapy.d.xml'),align=c('left','right'),widths=c(45,15))
+  report.table(b,'therapy.d.xml',align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
 # Time to physician mean grouped by triage result
@@ -371,9 +376,7 @@ try({
   # TODO error below: Error in units == (un1 <- units[1L]), comparison of these types is not implemented
   graph <- barchart(avg ~ triage, data=y, horizontal=FALSE, col=std_cols5 ,ylab="Durchschn. Zeit bis Arztkontakt [Min.]", xlab="Triage-Gruppe",sub=paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds),ylim=c(0,signif(max(as.numeric(y$avg)),digits=1) +10),origin=0)
   #text(graph,x$triage,labels = x$triage,pos=1)
-  trellis.device('svg',file=paste0(gfx.dir,'triage.phys.d.avg',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'triage.phys.d.avg')
 }, silent=FALSE)
 
 # Time to discharge
@@ -384,15 +387,13 @@ try({
   b <- a[!is.na(a)]
   #graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Anzahl Patienten",type='count',breaks=seq(0,600,length=11),scales = list(x = list(at = seq(0,600,length=11))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 600 Minuten: ", outofbounds),col=std_cols1)
   graph <- histogram(as.numeric(b,unit='mins'),xlab="Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",ylab="Relative Häufigkeit [%]",breaks=seq(0,600,length=11),scales = list(x = list(at = seq(0,600,length=11))),sub=paste("Fehlende Werte: ", isNA, "; Werte über 600 Minuten: ", outofbounds),col=std_cols1)
-  trellis.device('svg',file=paste0(gfx.dir,'discharge.d.hist',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'discharge.d.hist')
 }, silent=FALSE)
 
 #try({
 #  output <- c('','intern','extern','Fallzahl','1000','500','Mittelwert','120','180')
 #  dim(output) <- c(3,3)
-#  xhtml.table(output, file=paste0(xml.dir,'discharge.d.xml'))
+#  report.table(output,'discharge.d.xml'))
 #}, silent=FALSE)
 
 try({
@@ -402,25 +403,26 @@ try({
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
-  xhtml.table(c, file=paste0(xml.dir,'triage.xml'),align=c('left','right','right'),widths=c(20,15,15))
+  report.table(c,'triage.xml',align=c('left','right','right'),widths=c(20,15,15))
   
   graph <- barchart( a, horizontal=FALSE, xlab="Ersteinschätzung", ylab='Anzahl Patienten',col=c("firebrick3","orange","yellow","green","blue","white"),origin=0)
-  trellis.device('svg',file=paste0(gfx.dir,'triage',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'triage')
 }, silent=FALSE)
 
-# TODO make sure that this works with NO data
-try({ ##this does not work if not all triage levels are present in the data; aggregate coerces df$triage.result to factor, losing all unused levels :(
+try({
+  y <- data.frame(triage=df$triage.result, time=df$phys.d)
+  
   agg.funs <- list(Mittelwert=mean, Median=median, Minimum=min, Maximum=max)
-  agg.list <- lapply(agg.funs, function(fun){aggregate(x=df$phys.d, by=list(triage=df$triage.result),FUN=fun, na.rm=TRUE)$x})
+  agg.list <- lapply(agg.funs, function(fun){
+    with(y, tapply(time, list(triage), FUN=fun, na.rm=TRUE))})
+    
   agg.list$Mittelwert <- round(agg.list$Mittelwert,1)
   agg.list$Median <- round(agg.list$Median,0)
-  agg.length <- aggregate(x=list(count=df$phys.d), by=list(triage=df$triage.result), FUN=length)
-  x <- data.frame(Kategorie=levels(df$triage.result), Anzahl=agg.length$count, agg.list)
+  agg.list$Anzahl <- with(y, tapply(time, list(triage), FUN=length))
+  agg.list$Anzahl[is.na(agg.list$Anzahl)] <- 0
+  x <- data.frame(Kategorie=levels(df$triage.result),agg.list)
   rm(agg.funs, agg.list)
-  #x[,3] <- paste(x[,3],'min')
-  xhtml.table(x, file=paste0(xml.dir,'triage.phys.d.xml'),align=c('left','right','right','right','right','right'),width=15)
+  report.table(x,'triage.phys.d.xml',align=c('left','right','right','right','right','right'),width=15)
 }, silent=FALSE)
 
 #Entlassung & Co
@@ -428,16 +430,14 @@ try({
   discharge_table <- table(df$discharge,useNA = "always")[c(12,8,10,13,9,11,4,5,6,3,2,1,7,14)] #reorder rows
   names(discharge_table)[length(names(discharge_table))]<-'Keine Daten'
   graph <- barchart(discharge_table[c(13:1)], xlab="Anzahl Patienten",col=std_cols1,origin=0)
-  trellis.device('svg',file=paste0(gfx.dir,'discharge',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'discharge')
 }, silent=FALSE)
 try({
   b <- data.frame(Kategorie=names(discharge_table), Anzahl=gformat(discharge_table), Anteil=gformat((discharge_table / sum(discharge_table))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(discharge_table)),Anteil=gformat(100,digits=1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
-  xhtml.table(c, file=paste0(xml.dir,'discharge.xml'),align=c('left','right','right'),widths=c(30,15,15))
+  report.table(c,name='discharge.xml',align=c('left','right','right'),widths=c(30,15,15))
 }, silent=FALSE)
 
 #TOP20 CEDIS
@@ -447,19 +447,21 @@ try({
   #remove it and put it at the bottom - "TOP20+Unknown+NA"
   y[names(y)=='999'] <- 0
   y[is.na(names(y))] <- 0
-  y <- sort(y, decreasing = TRUE)
-  y <- y [1:20]
-  y[y==0] <- NA #remove unused
-  y <- y[complete.cases(y)] #remove unused
+  if( length(which(y > 0)) > 0 ){
+    # at least one CDIS code available
+    y <- sort(y, decreasing = TRUE)
+    y <- y [1:20]
+    y[y==0] <- NA #remove unused
+  }else{
+    # no CEDIS codes at all
+    y <- data.frame() 
+  }
   x <- data.frame(y)
   x <- rbind(x, data.frame(Var1='999',Freq=t['999'], row.names=NULL))
   x <- rbind(x, data.frame(Var1='NA',Freq=t[is.na(names(t))], row.names=NULL))
-  #names(y) <- factor(names(y),t(cedis[1]),labels=t(cedis[3]))
-  #names(y)[is.na(names(y))] <- 'Keine Daten'
+  x <- na.omit(x)
   graph <- barchart(data=x, Var1 ~ Freq, xlab="Anzahl Patienten",col=std_cols1,origin=0)
-  trellis.device('svg',file=paste0(gfx.dir,'cedis_top',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'cedis_top')
   
   y <- x
   y$label <- as.character(factor(y$Var1, levels=cedis[[1]], labels=cedis[[3]]))
@@ -470,7 +472,7 @@ try({
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(y$Freq)),Anteil=gformat(sum(y$Freq) / length(df$cedis)*100,digits=1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
-  xhtml.table(c, file=paste0(xml.dir,'cedis.xml'),align=c('left','right','right'),widths=c(60,15,15))
+  report.table(c,name='cedis.xml',align=c('left','right','right'),widths=c(60,15,15))
 }, silent=FALSE)
 
 #CEDIS Groups
@@ -486,9 +488,7 @@ try({
   x <- table(x,useNA = 'always')
   names(x)[length(x)] <- "Vorstellungsgrund nicht dokumentiert"
   graph <- barchart(rev(x),xlab="Anzahl Patienten",col=std_cols1,origin=0)
-  trellis.device('svg',file=paste0(gfx.dir,'cedis_groups',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'cedis_groups')
 }, silent=FALSE)
 
 #TOP20 ICD
@@ -529,9 +529,7 @@ try({
   stacktable <- stacktable[complete.cases(stacktable),] #remove rows
   graph <- barchart(stacktable[dim(stacktable)[1]:1,1:5],xlab="Anzahl Patienten",sub="blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",col=std_cols5[5:1],origin=0)
   #graph <- barchart( x [20:1], xlab="Anzahl Patienten",col=std_cols[1],origin=0)
-  trellis.device('svg',file=paste0(gfx.dir,'icd_top',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'icd_top') 
   
   a <- t
   a <- sort(a, decreasing = TRUE)
@@ -547,7 +545,7 @@ try({
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(ges),Anteil=gformat((ges / length(f_diag)*100),digits = 1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
-  xhtml.table(c, file=paste0(xml.dir,'icd.xml'),align=c('left','right','right'),widths=c(70,15,15))
+  report.table(c,name='icd.xml',align=c('left','right','right'),widths=c(70,15,15))
   
 }, silent=FALSE)
   
@@ -561,7 +559,7 @@ try({
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
   ##c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
-  xhtml.table(c, file=paste0(xml.dir,'sex.xml'),align=c('left','right','right'),widths=c(25,15,15))
+  report.table(c,name='sex.xml',align=c('left','right','right'),widths=c(25,15,15))
 }, silent=FALSE)
 
 #Patient Age
@@ -571,7 +569,7 @@ try({
   #Alter <- sprintf(fmt="%.1f",Alter)
   Alter <- paste(Alter,'Jahre')
   b <- data.frame(Kennzahl,Alter)
-  xhtml.table(b, file=paste0(xml.dir,'age.xml'),align=c('left','right'),widths=c(30,15))
+  report.table(b,name='age.xml',align=c('left','right'),widths=c(30,15))
 }, silent=FALSE)
 try({
   x<-df$age
@@ -579,9 +577,7 @@ try({
   x[x<0] <- NA
   x<-x[!is.na(x)]
   graph <- histogram(x,xlab="Alter [Jahre]",ylab="Anzahl Patienten",type='count',breaks=seq(0,110,length=12),sub='Werte größer 110 werden als 110 gewertet',col=std_cols1)
-  trellis.device('svg',file=paste0(gfx.dir,'age',gfx.ext),width=8,height=4)
-  print(graph)
-  no_output <- dev.off() #silent
+  report.svg(graph, 'age')
 }, silent=FALSE)
 
 #Admit Day
@@ -590,7 +586,7 @@ try({
   Wochentag <- weekdays(as.Date(names(table(df$admit.day))))
   Anzahl <- as.vector(table(df$admit.day))
   b <- data.frame(Datum,Wochentag,Anzahl)
-  xhtml.table(b, file=paste0(xml.dir,'admit.d.xml'),align=c('left','right','right'),widths=c(25,15,13))
+  report.table(b,name='admit.d.xml',align=c('left','right','right'),widths=c(25,15,13))
 }, silent=FALSE)
 
 if (FALSE) { ###long comment xxx todo: fix/test crowding
@@ -759,7 +755,7 @@ try({
   whichmin=apply(crowdperday,1,which.min)
   pmean <- round(apply (crowdperday,1,mean),digits=0)
   c <- data.frame(Datum,MaxTime=paste(whichmax,'Uhr'),MaxPat=pmax,MinTime=paste(whichmin,'Uhr'),MinPat=pmin,MeanPat=pmean)
-  xhtml.table(c, file=paste0(xml.dir,'crowding.d.xml'),align=c('left','right','right','right','right','right'),widths=c(15,15,15,15,15,15))
+  report.table(c,name='crowding.d.xml',align=c('left','right','right','right','right','right'),widths=c(15,15,15,15,15,15))
 }, silent=FALSE)
 
 #calculate length of observation based on admission day
@@ -828,7 +824,7 @@ try({
   Zeit <- c(los_erfasst,los_NA,lt_zero,gt_day,los_removed,Zeit)
  
   b <- data.frame(Kennzahl,Zeit)
-  xhtml.table(b, file=paste0(xml.dir,'los.xml'),align=c('left','right'),widths=c(45,15))
+  report.table(b,name='los.xml',align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
 #Isolierte Patienten
@@ -843,7 +839,7 @@ try({
   b <- data.frame(Kategorie=names(isoreason_table), Anzahl=gformat(isoreason_table), Anteil=gformat((isoreason_table / sum(isoreason_table))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(isoreason_table)),Anteil=gformat(100,digits=1)))
   c[,3] <- paste(c[,3],'%')
-  xhtml.table(c, file=paste0(xml.dir,'isoreason.xml'),align=c('left','right','right'),widths=c(30,15,15))
+  report.table(c,name='isoreason.xml',align=c('left','right','right'),widths=c(30,15,15))
 }, silent=FALSE)
 
 #Multiresistente Erreger
@@ -857,5 +853,5 @@ try({
   mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Andere",Bekannt=sum(df$keime_3mrgn == 'OTH',na.rm=TRUE),Verdacht=sum(df$keime_mrsa == 'OTH:SUSP',na.rm=TRUE)))
   mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Keine Keime",Bekannt=sum(df$keime == 'AMRO:NEG',na.rm=TRUE),Verdacht='-'))
   mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Keine Angabe",Bekannt=sum(mrsa_patient<1),Verdacht='-'))
-  xhtml.table(mrsa_table, file=paste0(xml.dir,'multiresistant.xml'),align=c('left','right','right'),widths=c(30,15,15))
+  report.table(mrsa_table,name='multiresistant.xml',align=c('left','right','right'),widths=c(30,15,15))
 }, silent=FALSE)

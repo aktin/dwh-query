@@ -1,188 +1,188 @@
-CV;CV;Kardiovaskulaer;Kardiovaskulaer
-001;CV;Herzstillstand (nicht traumatisch);Herzstillstand (nicht traumatisch)
-002;CV;Herzstillstand (traumatisch);Herzstillstand (traumatisch)
-003;CV;Brustschmerz (kardial);Brustschmerz (kardial)
-004;CV;Brustschmerz (nicht kardial);Brustschmerz (nicht kardial)
-005;CV;Palpitationen/unregelmaessiger Herzschlag;Palpitationen/unregelmaessiger Herzschlag
-006;CV;Hypertonie;Hypertonie
-007;CV;Allgemeine Schwaeche;Allgemeine Schwaeche
-008;CV;Synkope/Praesynkope;Synkope/Praesynkope
-009;CV;Oedem, generalisiert;Oedem, generalisiert
-010;CV;Beinschwellung/Oedem;Beinschwellung/Oedem
-011;CV;Kuehle, pulslose Extremitaet;Kuehle, pulslose Extremitaet
-012;CV;Eine Extremitaet geroetet, ueberwaermt;Eine Extremitaet geroetet, ueberwaermt
-HNE;HNE;HNO (Ohren);HNO (Ohren)
-051;HNE;Ohrenschmerzen;Ohrenschmerzen
-052;HNE;Fremdkoerper im Ohr;Fremdkoerper im Ohr
-053;HNE;Hoerverlust;Hoerverlust
-054;HNE;Tinnitus;Tinnitus
-055;HNE;Ausfluss aus dem Ohr;Ausfluss aus dem Ohr
-056;HNE;Ohrverletzung;Ohrverletzung
-HNM;HNM;HNO (Mund, Rachen, Hals);HNO (Mund, Rachen, Hals)
-101;HNM;Zahn-/Zahnfleischprobleme;Zahn-/Zahnfleischprobleme
-102;HNM;Trauma Gesicht;Trauma Gesicht
-103;HNM;Halsschmerzen (wunder Rachen);Halsschmerzen (wunder Rachen)
-104;HNM;Halsschwellung/-schmerzen;Halsschwellung/-schmerzen
-105;HNM;Trauma Hals;Trauma Hals
-106;HNM;Schluckbeschwerden/Dysphagie;Schluckbeschwerden/Dysphagie
-107;HNM;Schmerzen im Gesicht (nicht traumatisch, nicht dental);Schmerzen im Gesicht (nicht traumatisch, nicht dental)
-HNN;HNN;HNO (Nase);HNO (Nase)
-151;HNN;Nasenbluten;Nasenbluten
-152;HNN;Verstopfte Nase/Heuschnupfen;Verstopfte Nase/Heuschnupfen
-153;HNN;Fremdkoerper in der Nase;Fremdkoerper in der Nase
-154;HNN;Beschwerden eines Infektes der oberen Luftwege;Beschwerden eines Infektes der oberen Luftwege
-155;HNN;Trauma Nase;Trauma Nase
-EV;EV;Umweltbedingt;Umweltbedingt
-201;EV;Erfrierung/Kaelteverletzung;Erfrierung/Kaelteverletzung
-202;EV;Schaedliche Inhalation;Schaedliche Inhalation
-203;EV;Stromunfall;Stromunfall
-204;EV;Exposition gegenueber Chemikalien;Exposition gegenueber Chemikalien
-205;EV;Unterkuehlung;Unterkuehlung
-206;EV;Beinahe-Ertrinken;Beinahe-Ertrinken
-GI;GI;Gastrointestinal ;Gastrointestinal 
-251;GI;Bauchschmerzen;Bauchschmerzen
-252;GI;Appetitlosigkeit;Appetitlosigkeit
-253;GI;Verstopfung;Verstopfung
-254;GI;Durchfall;Durchfall
-255;GI;Fremdkoerper im Rektum;Fremdkoerper im Rektum
-256;GI;Leistenschmerzen/-schwellung;Leistenschmerzen/-schwellung
-257;GI;Uebelkeit und/oder Erbrechen;Uebelkeit und/oder Erbrechen
-258;GI;Rektale/perineale Schmerzen;Rektale/perineale Schmerzen
-259;GI;Bluterbrechen;Bluterbrechen
-260;GI;Peranaler Blutabgang/Teerstuhl;Peranaler Blutabgang/Teerstuhl
-261;GI;Ikterus;Ikterus
-262;GI;Schluckauf;Schluckauf
-263;GI;Abdominelle Raumforderung/gespanntes Abdomen;Abdominelle Raumforderung/gespanntes Abdomen
-264;GI;Trauma anal/rektal;Trauma anal/rektal
-265;GI;Fremdkoerper oral/oesophageal;Fremdkoerper oral/oesophageal
-266;GI;Trinkstoerung des Neugeborenen;Trinkstoerung des Neugeborenen
-267;GI;Neugeborenenikterus;Neugeborenenikterus
-GU;GU;Urogenital;Urogenital
-301;GU;Flankenschmerz;Flankenschmerz
-302;GU;Haematurie;Haematurie
-303;GU;Genitaler Ausfluss/Laesion;Genitaler Ausfluss/Laesion
-304;GU;Penisschwellung;Penisschwellung
-305;GU;Skrotale Schmerzen und/oder Schwellung;Skrotale Schmerzen und/oder Schwellung
-306;GU;Harnverhalt;Harnverhalt
-307;GU;Beschwerden eines Harnwegsinfektes;Beschwerden eines Harnwegsinfektes
-308;GU;Oligurie;Oligurie
-309;GU;Polyurie;Polyurie
-310;GU;Trauma genital;Trauma genital
-MH;MH;Psychische Verfassung;Psychische Verfassung
-351;MH;Depression/Suizidalitaet/Selbstschaedigung;Depression/Suizidalitaet/absichtliche Selbstschaedigung
-352;MH;Angst/situationsbezogene Krise;Angst/situationsbezogene Krise
-353;MH;Halluzinationen/Wahnvorstellungen;Halluzinationen/Wahnvorstellungen
-354;MH;Schlafstoerung;Schlafstoerung
-355;MH;Gewalttaetiges Verhalten/Fremdgefaehrdung;Gewalttaetiges Verhalten/Fremdgefaehrdung
-356;MH;Soziales Problem;Soziales Problem
-358;MH;Sonderbares Verhalten;Sonderbares Verhalten
-359;MH;Sorge um das Wohlergehen des Patienten;Sorge um das Wohlergehen des Patienten
-360;MH;Kindliche Verhaltensauffaelligkeit;Kindliche Verhaltensauffaelligkeit
-NC;NC;Neurologisch;Neurologisch
-401;NC;Veraenderter Bewusstseinszustand;Veraenderter Bewusstseinszustand
-402;NC;Verwirrtheit;Verwirrtheit
-403;NC;Schwindel;Schwindel
-404;NC;Kopfschmerz;Kopfschmerz
-405;NC;Krampfanfall;Krampfanfall
-406;NC;Gangstoerung/Ataxie;Gangstoerung/Ataxie
-407;NC;Kopfverletzung;Kopfverletzung
-408;NC;Zittern;Zittern
-409;NC;Symptome eines Schlaganfalls oder TIA;Schwaeche in den Extremitaeten/Symptome eines Schlaganfalls oder TIA
-410;NC;Sensibilitaetsstoerung/Paraesthesie;Sensibilitaetsstoerung/Paraesthesie
-411;NC;Schlaffes Kind;Schlaffes Kind
-GY;GY;Geburtshilfe/Gynaekologie;Geburtshilfe/Gynaekologie
-451;GY;Menstruationsbeschwerden;Menstruationsbeschwerden
-452;GY;Fremdkoerper in der Vagina;Fremdkoerper in der Vagina
-453;GY;Vaginaler Ausfluss;Vaginaler Ausfluss
-454;GY;Sexueller Uebergriff;Sexueller Uebergriff
-455;GY;Vaginale Blutung;Vaginale Blutung
-456;GY;Schamlippenschwellung;Schamlippenschwellung
-457;GY;Schwangerschaftsprobleme <= 20. SSW;Schwangerschaftsprobleme <= 20. SSW
-458;GY;Schwangerschaftsprobleme > 20. SSW;Schwangerschaftsprobleme > 20. SSW
-460;GY;Vaginale Schmerzen;Vaginale Schmerzen/Schmerzen beim Geschlechtsverkehr
-EC;EC;Augenheilkunde;Augenheilkunde
-502;EC;Exposition des Auges gegenueber Chemikalien;Exposition des Auges gegenueber Chemikalien
-503;EC;Fremdkoerper im Auge;Fremdkoerper im Auge
-504;EC;Sehstoerung;Sehstoerung
-505;EC;Augenschmerzen;Augenschmerzen
-506;EC;Rote Augen, Ausfluss aus dem Auge;Rote Augen, Ausfluss aus dem Auge
-507;EC;Lichtscheu;Lichtscheu
-508;EC;Doppelbilder;Doppelbilder
-509;EC;Periorbitale Schwellung;Periorbitale Schwellung
-510;EC;Trauma Auge;Trauma Auge
-511;EC;Kontrolluntersuchung der Augen;Kontrolluntersuchung der Augen
-OC;OC;Orthopaedisch/Unfall-chirurgisch;Orthopaedisch/Unfall-chirurgisch
-551;OC;Rueckenschmerzen;Rueckenschmerzen
-552;OC;Traumatische Ruecken-/Wirbelsaeulenverletzung;Traumatische Ruecken-/Wirbelsaeulenverletzung
-553;OC;Amputation;Amputation
-554;OC;Schmerzen obere Extremität;Schmerzen obere Extremität
-555;OC;Schmerzen untere Extremität;Schmerzen untere Extremitaet
-556;OC;Verletzung obere Extremitaet;Verletzung obere Extremitaet
-557;OC;Verletzung untere Extremitaet;Verletzung untere Extremitaet
-558;OC;Gelenkschwellung;Gelenkschwellung
-559;OC;Kindliche Gangstoerung/Schmerzen beim Gehen;Kindliche Gangstoerung/Schmerzen beim Gehen
-RC;RC;Respiratorisch;Respiratorisch
-651;RC;Luftnot;Luftnot
-652;RC;Atemstillstand;Atemstillstand
-653;RC;Husten/Verschleimung;Husten/Verschleimung
-654;RC;Hyperventilation;Hyperventilation
-655;RC;Bluthusten;Bluthusten
-656;RC;Fremdkoerper in den Atemwegen;Fremdkoerper in den Atemwegen
-657;RC;Allergische Reaktion;Allergische Reaktion
-658;RC;Stridor;Stridor
-659;RC;Giemen ohne weitere Beschwerden;Giemen ohne weitere Beschwerden
-660;RC;Apnoeanfaelle bei Saeuglingen;Apnoeanfaelle bei Saeuglingen
-661;RC;Grippeaehnliche Erkrankung;Grippeaehnliche Erkrankung
-SK;SK;Haut;Haut
-701;SK;Biss;Biss
-702;SK;Insektenstich;Insektenstich
-703;SK;Abschuerfung;Abschuerfung
-704;SK;Riss-/Quetsch-/Schnitt-/Stichwunde;Riss-/Quetsch-/Schnitt-/Stichwunde
-705;SK;Verbrennung;Verbrennung
-706;SK;Kontakt mit Blut oder Koerperfluessigkeiten;Kontakt mit Blut oder Koerperfluessigkeiten
-707;SK;Juckreiz;Juckreiz
-708;SK;Hautausschlag;Hautausschlag
-709;SK;Lokalisierte Schwellung/Roetung;Lokalisierte Schwellung/Roetung
-710;SK;Wundkontrolle;Wundkontrolle
-711;SK;Sonstige Hautprobleme;Sonstige Hautprobleme
-712;SK;Schwellung/Beule/Schwiele;Schwellung/Beule/Schwiele
-713;SK;Roetung/Spannungsgefuehl in der Brust;Roetung/Spannungsgefuehl in der Brust
-714;SK;Ausschluss eines Parasitenbefalls;Ausschluss eines Parasitenbefalls
-715;SK;Zyanose;Zyanose
-716;SK;Spontane Hauteinblutungen;Spontane Hauteinblutungen
-717;SK;Fremdkoerper in der Haut;Fremdkoerper in der Haut
-718;SK;Nagelprobleme;Nagelprobleme
-SA;SA;Substanzmissbrauch;Substanzmissbrauch
-751;SA;Substanzmissbrauch/Intoxikation;Substanzmissbrauch/Intoxikation
-752;SA;Einnahme einer Ueberdosierung;Einnahme einer Ueberdosierung
-753;SA;Substanzentzug;Substanzentzug
-TR;SA;Trauma;Trauma
-801;SA;Schweres Trauma - penetrierend;Schweres Trauma - penetrierend
-802;SA;Schweres Trauma - stumpf;Schweres Trauma - stumpf
-803;SA;Isoliertes Thoraxtrauma - penetrierend;Isoliertes Thoraxtrauma - penetrierend
-804;SA;Isoliertes Thoraxtrauma - stumpf;Isoliertes Thoraxtrauma - stumpf
-805;SA;Isoliertes Abdominaltrauma - penetrierend;Isoliertes Abdominaltrauma - penetrierend
-806;SA;Isoliertes Abdominaltrauma - stumpf;Isoliertes Abdominaltrauma - stumpf
-MC;MC;Allgemeine und sonstige Beschwerden;Allgemeine und sonstige Beschwerden
-851;MC;Exposition ggü. einer uebertragbaren Krankheit;Exposition gegenueber einer uebertragbaren Krankheit
-852;MC;Fieber;Fieber
-853;MC;Hyperglykaemie;Hyperglykaemie
-854;MC;Hypoglykaemie;Hypoglykaemie
-855;MC;Direkte Ueberweisung/Weiterleitung;Direkte Ueberweisung/Weiterleitung
-856;MC;Verbandswechsel;Verbandswechsel
-857;MC;Entfernung von Klammern/Naehten;Entfernung von Klammern/Naehten
-858;MC;Gipskontrolle;Gipskontrolle
-859;MC;Bildgebung/Blutuntersuchung;Bildgebung/Blutuntersuchung
-860;MC;Problem mit Medizinprodukt;Problem mit Medizinprodukt
-861;MC;Verschreibung/Bedarf an Medikamenten;Verschreibung/Bedarf an Medikamenten
-862;MC;Entfernung Ring;Entfernung Ring
-863;MC;Auffaellige Ergebnisse Labor/Bildgebung;Auffaellige Ergebnisse Labor/Bildgebung
-864;MC;Blaesse/Anaemie;Blaesse/Anaemie
-865;MC;Postoperative Komplikationen;Postoperative Komplikationen
-866;MC;Geringfuegige unspezifische Beschwerden;Geringfuegige unspezifische Beschwerden
-867;MC;Unstillbares Schreien;Unstillbares Schreien
-868;MC;Angeborene Probleme bei Kindern;Angeborene Probleme bei Kindern
-869;MC;Neugeborenes;Neugeborenes
-870;MC;Intravenoese Therapie;Intravenoese Therapie
-998;998;Patient vor Ersteinschaetzung wieder gegangen;Patient aufgenommen und vor Ersteinschaetzung wieder gegangen
-999;999;Unbekannt;Unbekannt
+CV;CV;Kardiovaskulär;
+001;CV;Herzstillstand (nicht traumatisch);
+002;CV;Herzstillstand (traumatisch);
+003;CV;Brustschmerz (kardial);
+004;CV;Brustschmerz (nicht kardial);
+005;CV;Palpitationen/unregelmäßiger Herzschlag;
+006;CV;Hypertonie;
+007;CV;Allgemeine Schwäche;
+008;CV;Synkope/Präsynkope;
+009;CV;Ödem, generalisiert;
+010;CV;Beinschwellung/Ödem;
+011;CV;Kühle, pulslose Extremität;
+012;CV;Eine Extremität gerötet, überwärmt;
+HNE;HNE;HNO (Ohren);
+051;HNE;Ohrenschmerzen;
+052;HNE;Fremdkörper im Ohr;
+053;HNE;Hörverlust;
+054;HNE;Tinnitus;
+055;HNE;Ausfluss aus dem Ohr;
+056;HNE;Ohrverletzung;
+HNM;HNM;HNO (Mund, Rachen, Hals);
+101;HNM;Zahn-/Zahnfleischprobleme;
+102;HNM;Trauma Gesicht;
+103;HNM;Halsschmerzen (wunder Rachen);
+104;HNM;Halsschwellung/-schmerzen;
+105;HNM;Trauma Hals;
+106;HNM;Schluckbeschwerden/Dysphagie;
+107;HNM;Schmerzen im Gesicht (nicht traumatisch, nicht dental);
+HNN;HNN;HNO (Nase);
+151;HNN;Nasenbluten;
+152;HNN;Verstopfte Nase/Heuschnupfen;
+153;HNN;Fremdkörper in der Nase;
+154;HNN;Beschwerden eines Infektes der oberen Luftwege;
+155;HNN;Trauma Nase;
+EV;EV;Umweltbedingt;
+201;EV;Erfrierung/Kälteverletzung;
+202;EV;Schädliche Inhalation;
+203;EV;Stromunfall;
+204;EV;Exposition gegenüber Chemikalien;
+205;EV;Unterkühlung;
+206;EV;Beinahe-Ertrinken;
+GI;GI;Gastrointestinal ;
+251;GI;Bauchschmerzen;
+252;GI;Appetitlosigkeit;
+253;GI;Verstopfung;
+254;GI;Durchfall;
+255;GI;Fremdkörper im Rektum;
+256;GI;Leistenschmerzen/-schwellung;
+257;GI;Übelkeit und/oder Erbrechen;
+258;GI;Rektale/perineale Schmerzen;
+259;GI;Bluterbrechen;
+260;GI;Peranaler Blutabgang/Teerstuhl;
+261;GI;Ikterus;
+262;GI;Schluckauf;
+263;GI;Abdominelle Raumforderung/gespanntes Abdomen;
+264;GI;Trauma anal/rektal;
+265;GI;Fremdkörper oral/ösophageal;
+266;GI;Trinkstörung des Neugeborenen;
+267;GI;Neugeborenenikterus;
+GU;GU;Urogenital;
+301;GU;Flankenschmerz;
+302;GU;Hämaturie;
+303;GU;Genitaler Ausfluss/Läsion;
+304;GU;Penisschwellung;
+305;GU;Skrotale Schmerzen und/oder Schwellung;
+306;GU;Harnverhalt;
+307;GU;Beschwerden eines Harnwegsinfektes;
+308;GU;Oligurie;
+309;GU;Polyurie;
+310;GU;Trauma genital;
+MH;MH;Psychische Verfassung;
+351;MH;Depression/Suizidalität/absichtliche Selbstschädigung;
+352;MH;Angst/situationsbezogene Krise;
+353;MH;Halluzinationen/Wahnvorstellungen;
+354;MH;Schlafstörung;
+355;MH;Gewalttätiges Verhalten/Fremdgefährdung;
+356;MH;Soziales Problem;
+358;MH;Sonderbares Verhalten;
+359;MH;Sorge um das Wohlergehen des Patienten;
+360;MH;Kindliche Verhaltensauffälligkeit;
+NC;NC;Neurologisch;
+401;NC;Veränderter Bewußtseinszustand;
+402;NC;Verwirrtheit;
+403;NC;Schwindel;
+404;NC;Kopfschmerz;
+405;NC;Krampfanfall;
+406;NC;Gangstörung/Ataxie;
+407;NC;Kopfverletzung;
+408;NC;Zittern;
+409;NC;Symptome eines Schlaganfalls oder TIA;Schwäche in den Extremitäten/Symptome eines Schlaganfalls oder TIA
+410;NC;Sensibilitätsstörung/Parästhesie;
+411;NC;Schlaffes Kind;
+GY;GY;Geburtshilfe/Gynäkologie;
+451;GY;Menstruationsbeschwerden;
+452;GY;Fremdkörper in der Vagina;
+453;GY;Vaginaler Ausfluss;
+454;GY;Sexueller Übergriff;
+455;GY;Vaginale Blutung;
+456;GY;Schamlippenschwellung;
+457;GY;Schwangerschaftsprobleme ? 20. SSW;
+458;GY;Schwangerschaftsprobleme > 20. SSW;
+460;GY;Vaginale Schmerzen/Schmerzen beim Geschlechtsverkehr;
+EC;EC;Augenheilkunde;
+502;EC;Exposition des Auges gegenüber Chemikalien;
+503;EC;Fremdkörper im Auge;
+504;EC;Sehstörung;
+505;EC;Augenschmerzen;
+506;EC;Rote Augen, Ausfluss aus dem Auge;
+507;EC;Lichtscheu;
+508;EC;Doppelbilder;
+509;EC;Periorbitale Schwellung;
+510;EC;Trauma Auge;
+511;EC;Kontrolluntersuchung der Augen;
+OC;OC;Orthopädisch/Unfall-chirurgisch;
+551;OC;Rückenschmerzen;
+552;OC;Traumatische Rücken-/Wirbelsäulenverletzung;
+553;OC;Amputation;
+554;OC;Schmerzen obere Extremität;
+555;OC;Schmerzen untere Extremität;
+556;OC;Verletzung obere Extremität;
+557;OC;Verletzung untere Extremität;
+558;OC;Gelenkschwellung;
+559;OC;Kindliche Gangstörung/Schmerzen beim Gehen;
+RC;RC;Respiratorisch;
+651;RC;Luftnot;
+652;RC;Atemstillstand;
+653;RC;Husten/Verschleimung;
+654;RC;Hyperventilation;
+655;RC;Bluthusten;
+656;RC;Fremdkörper in den Atemwegen;
+657;RC;Allergische Reaktion;
+658;RC;Stridor;
+659;RC;Giemen ohne weitere Beschwerden;
+660;RC;Apnoeanfälle bei Säuglingen;
+661;RC;Grippeähnliche Erkrankung;
+SK;SK;Haut;
+701;SK;Biss;
+702;SK;Insektenstich;
+703;SK;Abschürfung;
+704;SK;Riss-/Quetsch-/Schnitt-/Stichwunde;
+705;SK;Verbrennung;
+706;SK;Kontakt mit Blut oder Körperflüssigkeiten;
+707;SK;Juckreiz;
+708;SK;Hautausschlag;
+709;SK;Lokalisierte Schwellung/Rötung;
+710;SK;Wundkontrolle;
+711;SK;Sonstige Hautprobleme;
+712;SK;Schwellung/Beule/Schwiele;
+713;SK;Rötung/Spannungsgefühl in der Brust;
+714;SK;Ausschluß eines Parasitenbefalls;
+715;SK;Zyanose;
+716;SK;Spontane Hauteinblutungen;
+717;SK;Fremdkörper in der Haut;
+718;SK;Nagelprobleme;
+SA;SA;Substanzmissbrauch;
+751;SA;Substanzmissbrauch/Intoxikation;
+752;SA;Einnahme einer Überdosierung;
+753;SA;Substanzentzug;
+TR;SA;Trauma;
+801;SA;Schweres Trauma - penetrierend;
+802;SA;Schweres Trauma - stumpf;
+803;SA;Isoliertes Thoraxtrauma - penetrierend;
+804;SA;Isoliertes Thoraxtrauma - stumpf;
+805;SA;Isoliertes Abdominaltrauma - penetrierend;
+806;SA;Isoliertes Abdominaltrauma - stumpf;
+MC;MC;Allgemeine und sonstige Beschwerden;
+851;MC;Exposition gegenüber einer übertragbaren Krankheit;
+852;MC;Fieber;
+853;MC;Hyperglykämie;
+854;MC;Hypoglykämie;
+855;MC;Direkte Überweisung/Weiterleitung;
+856;MC;Verbandswechsel;
+857;MC;Entfernung von Klammern/Nähten;
+858;MC;Gipskontrolle;
+859;MC;Bildgebung/Blutuntersuchung;
+860;MC;Problem mit Medizinprodukt;
+861;MC;Verschreibung/Bedarf an Medikamenten;
+862;MC;Entfernung Ring;
+863;MC;Auffällige Ergebnisse Labor/Bildgebung;
+864;MC;Blässe/Anämie;
+865;MC;Postoperative Komplikationen;
+866;MC;Geringfügige unspezifische Beschwerden;
+867;MC;Unstillbares Schreien;
+868;MC;Angeborene Probleme bei Kindern;
+869;MC;Neugeborenes;
+870;MC;Intravenöse Therapie;
+998;998;Patient vor Ersteinschätzung wieder gegangen;Patient aufgenommen und vor Ersteinschätzung wieder gegangen
+999;999;Unbekannt;

@@ -16,11 +16,7 @@
     <table id="t8.2" href="cedis.xml"/>
     <table id="t9.1" href="multiresistant.xml"/>
     <table id="t9.2" href="isoreason.xml"/>
-    
-    
 
-
-    
 
     <plot id="p1.1" href="age.svg"/>
 	<plot id="p2.1" href="admit.wd.svg"/>

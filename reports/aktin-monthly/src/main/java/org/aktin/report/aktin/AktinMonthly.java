@@ -25,7 +25,7 @@ public class AktinMonthly extends AnnotatedReport {
 	
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
-		String[] resNames = {"generate-report-resources.R","xhtml-table.R","CEDIS.csv","ICD-3Steller.csv"};
+		String[] resNames = {"generate-report-resources.R","xhtml-table.R","CEDIS.csv","ICD-3Steller.csv","factors.csv","parse_derive.R","chapter1.R","chapter2.R","chapter3.R","chapter4.R","chapter5.R","chapter6.R","chapter7.R","chapter8.R","chapter9.R"};
 		copyClasspathResources(workingDirectory, resNames);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.

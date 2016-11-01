@@ -10,6 +10,7 @@
 			<start>2015-11-01T00:01:00</start>
 			<end>2015-11-01T01:19:00</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
+			<fact concept="AKTIN:REFERRAL:KVNPIK"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="zuweisung"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -56,6 +57,7 @@
 			<start>2015-11-01T01:46:00</start>
 			<end>2015-11-01T03:26:00</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
+			<fact concept="AKTIN:REFERRAL:KVNDAK"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="zuweisung"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -309,6 +311,7 @@
 			<start>2015-11-01T09:30:00</start>
 			<end>2015-11-01T10:55:00</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
+			<fact concept="AKTIN:REFERRAL:RD"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="zuweisung"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -21575,8 +21578,7 @@
 			<start>2015-11-13T16:18:00</start>
 			<end>2015-11-13T19:36:00</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
-			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:ISOLATION:ISO:NEG"><fact concept="isolation"/></fact>
 			<fact concept="zuweisung"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="triage"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T16:34:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -21598,8 +21600,7 @@
 			<start>2015-11-13T16:45:00</start>
 			<end>2015-11-13T18:08:00</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
-			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:ISOLATION:RISO"><fact concept="isolation"/></fact>
 			<fact concept="zuweisung"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="triage"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T16:54:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -21651,7 +21652,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T18:13:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:254"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:MRSA:SUSP"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-13T19:50:00"><fact concept="entlassung" start="2015-11-13T19:50:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:J44.19"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21674,7 +21675,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T17:44:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:409"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:3MRGN:SUSP"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:TRANSFER:3" start="2015-11-13T21:05:00"><fact concept="entlassung" start="2015-11-13T21:05:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:I10.01"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21697,7 +21698,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T17:53:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:551"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:3MRGN:SUSP"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-13T18:03:00"><fact concept="entlassung" start="2015-11-13T18:03:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:R31"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21720,7 +21721,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T20:09:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:007"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:3MRGN"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-13T21:11:00"><fact concept="entlassung" start="2015-11-13T21:11:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:I21.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21743,7 +21744,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T18:45:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:554"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:4MRGN:SUSP"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-13T22:01:00"><fact concept="entlassung" start="2015-11-13T22:01:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:I21.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21766,7 +21767,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T20:31:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:555"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:4MRGN:SUSP"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-13T20:39:00"><fact concept="entlassung" start="2015-11-13T20:39:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:R10.1"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21789,7 +21790,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T20:10:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:251"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:4MRGN"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-13T21:25:00"><fact concept="entlassung" start="2015-11-13T21:25:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:T78.3"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21812,7 +21813,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T20:37:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:404"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:VRE:SUSP"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:DISCHARGE:2" start="2015-11-13T20:49:00"><fact concept="entlassung" start="2015-11-13T20:49:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:N23"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21835,7 +21836,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T20:55:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:007"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:VRE:SUSP"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-13T22:06:00"><fact concept="entlassung" start="2015-11-13T22:06:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:J69.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21858,7 +21859,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-14T04:10:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:554"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:VRE"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:DISCHARGE:3" start="2015-11-14T06:52:00"><fact concept="entlassung" start="2015-11-14T06:52:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:R10.4"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21881,7 +21882,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T19:58:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:555"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:OTH:SUSP"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-13T20:58:00"><fact concept="entlassung" start="2015-11-13T20:58:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:E14.01"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21904,7 +21905,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T21:27:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:409"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:OTH:SUSP"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:TRANSFER:3" start="2015-11-13T21:39:00"><fact concept="entlassung" start="2015-11-13T21:39:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:A06.1"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -21950,7 +21951,7 @@
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-13T22:05:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:409"><fact concept="cedis"/></fact>
-			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:PATHOGENE:OTH"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:TRANSFER:5" start="2015-11-13T22:13:00"><fact concept="entlassung" start="2015-11-13T22:13:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:H93.3"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
@@ -23806,6 +23807,7 @@
 			<start>2015-11-15T08:33:00</start>
 			<end>2015-11-15T11:32:00</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
+			<fact concept="AKTIN:REFERRAL:KLINV"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="zuweisung"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -35705,7 +35707,6 @@
 			<fact concept="AKTIN:PATHOGENE:MRSA"><fact concept="keime"/></fact>
 			<fact concept="entlassung" start="2015-11-22T00:59:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:J18.8"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
 		</encounter>
 	</patient>
 	<patient id="1554">
@@ -35724,7 +35725,6 @@
 			<fact concept="MTS:3" start="2015-11-22T00:45:00"><fact concept="triage" start="2015-11-22T00:45:00"/></fact>
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-22T01:03:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="CEDIS30:006"><fact concept="cedis"/></fact>
 			<fact concept="AKTIN:PATHOGENE:MRSA"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:DISCHARGE:2" start="2015-11-22T01:08:00"><fact concept="entlassung" start="2015-11-22T01:08:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -35751,7 +35751,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:5" start="2015-11-22T05:26:00"><fact concept="entlassung" start="2015-11-22T05:26:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="ICD10GM:R31"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
+			<fact concept="ICD10GM:R31"></fact>
 		</encounter>
 	</patient>
 	<patient id="1556">
@@ -37980,6 +37980,7 @@
 			<fact concept="CEDIS30:999"><fact concept="cedis"/></fact>
 			<fact concept="AKTIN:PATHOGENE:MRSA"><fact concept="keime"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-23T21:33:00"><fact concept="entlassung" start="2015-11-23T21:33:00"/></fact>
+			<fact concept="AKTIN:TRANSPORT:1"></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:I51.9"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
 		</encounter>
@@ -43591,6 +43592,7 @@
 			<fact concept="keime"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-26T19:30:00"><fact concept="entlassung" start="2015-11-26T19:30:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:TRANSPORT:3"></fact>
 			<fact concept="ICD10GM:I47.2"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
 		</encounter>
 	</patient>
@@ -47087,6 +47089,7 @@
 			<fact concept="AKTIN:PATHOGENE:MRSA"><fact concept="keime"/></fact>
 			<fact concept="entlassung" start="2015-11-28T14:43:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:TRANSPORT:OTH"></fact>
 			<fact concept="ICD10GM:N23"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
 		</encounter>
 	</patient>

@@ -1,0 +1,15 @@
+Discharge;Geschlecht;Triage;los_txt;phys_txt;triage_txt
+Intern: Normalstation;Weiblich;Rot;Anzahl Zeiten berücksichtigt;Anzahl Zeiten berücksichtigt;Anzahl Zeiten berücksichtigt
+Intern: Funktion;Männlich;Orange;Anzahl fehlende Zeiten;Anzahl fehlende Zeiten;Anzahl fehlende Zeiten
+Intern: Überwachung;Keine Angabe;Gelb;Anzahl ungültige Werte (<0h);Anzahl ungültige Werte (>180min);Anzahl ungültige Werte (>60min)
+Extern: Normalstation;;Grün;Anzahl ungültige Werte (>24h);Mittelwert;Mittelwert
+Extern: Funktion;;Blau;Anzahl zwischen 10h und 24h;Median;Median
+Extern: Überwachung;;Ohne;Mittelwert;Standardabweichung;Standardabweichung
+Nach Hause;;;Median;Minimum;Minimum
+Zu weiterbehandl. Arzt;;;Standardabweichung;Maximum;Maximum
+Kein Arztkontakt;;;Minimum
+Abbruch durch Pat.;;;Maximum
+Gegen ärztl. Rat
+Tod
+Sonstiges
+Keine Daten

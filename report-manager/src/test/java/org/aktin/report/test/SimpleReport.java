@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -32,22 +33,14 @@ public class SimpleReport extends AnnotatedReport{
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
 		String[] files = new String[]{"demo.R", "include.R"};
-		for( String file : files ){
-			try( InputStream in = getClass().getResourceAsStream("/"+file) ){
-				Files.copy(in, workingDirectory.resolve(file));			
-			}
-		}
+		copyClasspathResources(workingDirectory, files);
 		return files;
 	}
 
 	@Override
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
 		String[] files = new String[]{"empty.xml","fo-report-test.xsl"};
-		for( String file : files ){
-			try( InputStream in = getClass().getResourceAsStream("/"+file) ){
-				Files.copy(in, workingDirectory.resolve(file));			
-			}			
-		}
+		copyClasspathResources(workingDirectory, files);
 		return files;
 	}
 

@@ -1,6 +1,7 @@
 package org.aktin.report;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,9 +9,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -185,5 +189,15 @@ public abstract class AnnotatedReport implements Report{
 	public final String[] getRequiredPreferenceKeys() {
 		AnnotatedReport.Report an = getClass().getAnnotation(AnnotatedReport.Report.class);
 		return an.preferences();
+	}
+
+	protected void copyClasspathResources(Path destination, String...names) throws IOException{
+		Class<?> clazz = getClass();
+		for( String file : names ){
+			try( InputStream in = clazz.getResourceAsStream("/"+file) ){
+				Objects.requireNonNull(in, "File not found in classpath of "+clazz.getName()+": "+file);
+				Files.copy(in, destination.resolve(file));
+			}
+		}		
 	}
 }

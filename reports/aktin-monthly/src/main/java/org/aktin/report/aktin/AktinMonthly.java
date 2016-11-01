@@ -2,9 +2,8 @@ package org.aktin.report.aktin;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -24,19 +23,10 @@ public class AktinMonthly extends AnnotatedReport {
 	@Option
 	private Boolean dummyOption;
 	
-	private void copyResources(String[] names, String resourcePrefix, Path workingDirectory) throws IOException{
-		for( String name : names ){
-			try( InputStream in = getClass().getResourceAsStream(resourcePrefix+name) ){
-				Files.copy(in, workingDirectory.resolve(name)); 	
-			}
-		}		
-	}
-	
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
-		String[] resNames = {"generate-report-resources.R","xhtml-table.R","CEDIS.csv","ICD-3Steller.csv","factors.csv","parse_derive.R","chapter1.R","chapter2.R","chapter3.R","chapter4.R","chapter5.R","chapter6.R","chapter7.R","chapter8.R","chapter9.R"};
-		String resPrefix = "/";
-		copyResources(resNames, resPrefix, workingDirectory);
+		String[] resNames = {"generate-report-resources.R","xhtml-table.R","CEDIS.csv","ICD-3Steller.csv"};
+		copyClasspathResources(workingDirectory, resNames);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.
 		return resNames;
@@ -46,8 +36,7 @@ public class AktinMonthly extends AnnotatedReport {
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
 		//log.info("Using configuration option="+dummyOption);
 		String[] resNames = {"report-content.xml","fo-report-fertig.xsl","report-data.xml","AKTIN_Logo_final.svg","BMBF.svg"};
-		String resPrefix = "/";
-		copyResources(resNames, resPrefix, workingDirectory);
+		copyClasspathResources(workingDirectory, resNames);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.
 		return resNames;

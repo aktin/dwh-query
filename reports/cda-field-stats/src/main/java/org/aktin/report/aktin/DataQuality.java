@@ -27,12 +27,6 @@ public class DataQuality extends AnnotatedReport {
 	}
 
 	@Override
-	public InputStream readStaticWebResource(String path) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
 		String[] files = new String[]{"data-quality.R","xhtml-table.R"};
 		for( String file : files ){

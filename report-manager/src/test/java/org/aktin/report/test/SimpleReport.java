@@ -25,12 +25,6 @@ public class SimpleReport extends AnnotatedReport{
 	}
 
 	@Override
-	public InputStream readStaticWebResource(String path) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
 		String[] files = new String[]{"demo.R", "include.R"};
 		copyClasspathResources(workingDirectory, files);

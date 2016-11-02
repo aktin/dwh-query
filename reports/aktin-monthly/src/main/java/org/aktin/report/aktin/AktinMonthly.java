@@ -18,10 +18,6 @@ import org.aktin.report.AnnotatedReport;
 		)
 public class AktinMonthly extends AnnotatedReport {
 	//private static final Logger log = Logger.getLogger(AktinMonthly.class.getName());	
-
-
-	@Option
-	private Boolean dummyOption;
 	
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
@@ -40,12 +36,6 @@ public class AktinMonthly extends AnnotatedReport {
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.
 		return resNames;
-	}
-
-	@Override
-	public InputStream readStaticWebResource(String path) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

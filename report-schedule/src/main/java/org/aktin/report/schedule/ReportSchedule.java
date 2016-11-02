@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 
 import org.aktin.Module;
 import org.aktin.report.Report;
-import org.aktin.report.manager.ReportManager;
+import org.aktin.report.ReportManager;
 
 /**
  * Reads schedule from database to generate reports and sends
@@ -50,7 +50,7 @@ public class ReportSchedule extends Module {
 	public ReportSchedule(ReportManager reports) throws SQLException, NamingException{
 		this.reports = reports;
 		loadSchedule();
-		this.reports.getVersion(); // prevent unused warning for now
+		this.reports.getClass(); // prevent unused warning for now
 	}
 	
 	private void loadSchedule() throws SQLException, NamingException{

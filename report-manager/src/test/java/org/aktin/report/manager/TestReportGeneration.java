@@ -50,7 +50,7 @@ public class TestReportGeneration {
 
 	public static void generatePDF(Report report, Instant start, Instant end, Path pdf, TestExport dataset, boolean keepIntermediateFiles) throws IOException{
 		Objects.requireNonNull(rScript, "Please call TestReportGenerator.locateR() to locate Rscript");
-		ReportManager manager = new ReportManager(rScript.toString(), report);
+		ReportManagerImpl manager = new ReportManagerImpl(rScript.toString(), report);
 		manager.setExecutor(ForkJoinPool.commonPool());
 		manager.setKeepIntermediateFiles(keepIntermediateFiles);
 		manager.setPreferenceManager(TestPreferences.getTestPreferences());

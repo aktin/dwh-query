@@ -24,6 +24,7 @@ import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.Report;
+import org.aktin.report.ReportManager;
 
 /**
  * Manage all registered reports. Generate
@@ -48,7 +49,7 @@ import org.aktin.report.Report;
  */
 @Singleton
 //@Preferences(group="reports")
-public class ReportManager extends Module{
+public class ReportManagerImpl extends Module implements ReportManager{
 //	private static final Logger log = Logger.getLogger(ReportManager.class.getName());	
 	@Inject @Any
 	Instance<Report> cdiReports;
@@ -74,7 +75,7 @@ public class ReportManager extends Module{
 	/**
 	 * Empty constructor for CDI
 	 */
-	protected ReportManager(){
+	protected ReportManagerImpl(){
 	}
 
 	/**
@@ -83,7 +84,7 @@ public class ReportManager extends Module{
 	 * @param rScript
 	 * @param reports
 	 */
-	public ReportManager(String rScript, Report...reports){
+	public ReportManagerImpl(String rScript, Report...reports){
 		this.rScript = rScript;
 		this.staticReports = reports;
 		this.keepIntermediateFiles = false;
@@ -102,6 +103,10 @@ public class ReportManager extends Module{
 	public void setExecutor(Executor executor){
 		this.executor = executor;
 	}
+	/* (non-Javadoc)
+	 * @see org.aktin.report.manager.ReportManager#reports()
+	 */
+	@Override
 	public Iterable<Report> reports(){
 		if( cdiReports != null ) {
 			return cdiReports;
@@ -112,6 +117,10 @@ public class ReportManager extends Module{
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.aktin.report.manager.ReportManager#getReport(java.lang.String)
+	 */
+	@Override
 	public Report getReport(String id){
 		// TODO hashtable implementation for O(1) access
 		for( Report report : reports() ){
@@ -126,6 +135,10 @@ public class ReportManager extends Module{
 	public void setKeepIntermediateFiles(boolean keepFiles){
 		this.keepIntermediateFiles = keepFiles;
 	}
+	/* (non-Javadoc)
+	 * @see org.aktin.report.manager.ReportManager#generateReport(org.aktin.report.Report, java.time.Instant, java.time.Instant, java.nio.file.Path)
+	 */
+	@Override
 	public CompletableFuture<ReportExecution> generateReport(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination) throws IOException{
 		// TODO find a way to pass report specific configuration. e.g. Map<String,Object>
 		ReportExecution re = new ReportExecution(report, fromTimestamp, endTimestamp, reportDestination);
@@ -137,7 +150,7 @@ public class ReportManager extends Module{
 		return re.extractData(extractor).thenApplyAsync( Void ->  {
 			try {
 				re.writePreferences(preferenceManager);
-				re.runR(Paths.get(ReportManager.this.rScript));
+				re.runR(Paths.get(ReportManagerImpl.this.rScript));
 				re.runFOP();
 				re.cleanup();
 			} catch (IOException e) {

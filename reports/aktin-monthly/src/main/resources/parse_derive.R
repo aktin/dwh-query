@@ -16,7 +16,7 @@ df$discharge.ts = strptime(enc$entlassung_ts, format="%FT%H:%M")
 # TODO This is probably not the ideal way to calculate the age
 df$age = floor(as.numeric(difftime(df$admit.ts,df$dob))/365.25)
 df$sex = factor(merge(enc,pat,by="patient_id")$geschlecht)
-levels(df$sex) <- list("male"="male","female"="female")
+levels(df$sex) <- list("male"="male","female"="female","unbestimmt"="indeterminate")
 
 df$triage.result = as.factor(enc$triage)
 levels(df$triage.result) <- list("Rot"="1","Orange"="2","Gelb"="3","Grün"="4","Blau"="5","Ohne"="NA")

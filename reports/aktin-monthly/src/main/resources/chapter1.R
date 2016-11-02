@@ -1,8 +1,6 @@
 #Patient Sex
 try({
-  #table_formatted <- table(df$sex,useNA = "always")
-  #names(table_formatted) <- c('Weiblich', 'Männlich','Keine Angabe')
-  a <- table(df$sex,useNA = "always")
+  a <- table(df$sex,useNA = "no") #NA values are not possible in Histream patient
   b <- data.frame(Kategorie=factors$Geschlecht[!is.na(factors$Geschlecht)], Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
   c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
   ##c[,3] <- sprintf(fmt="%.1f",c[,3])

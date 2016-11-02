@@ -245,7 +245,7 @@
         <column header="allergie_antibiotika" xpath="substring(eav:fact[@class='allergie_antibiotika']/@concept, 15)"/>
         <column header="allergie_sonstige" xpath="substring(eav:fact[@class='allergie_sonstige']/@concept, 15)"/>
         <column header="allergie_txt" xpath="eav:fact[@concept='AKTIN:ALLERGY:TXT']/eav:value"/>
-        <column header="isolation" xpath="substring(eav:fact[@class='isolation']/@concept, string-length(eav:fact[@class='isolation']/@concept)-2)"/>
+        <column header="isolation" xpath="substring(eav:fact[@class='isolation']/@concept, 17)"/>
         <column header="isolation_grund" xpath="substring(eav:fact[@class='isolation_grund']/@concept, 17)"/>
 		<column header="keime" xpath="substring(eav:fact[@concept='AKTIN:PATHOGENE:AMRO:NEG']/@concept, 17)"/>
 		<column header="keime_mrsa" xpath="substring(eav:fact[@class='keime_mrsa']/@concept, 17)"/>

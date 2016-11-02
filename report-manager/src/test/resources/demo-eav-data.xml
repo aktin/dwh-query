@@ -24,7 +24,7 @@
 			<fact concept="ICD10GM:I74.3"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:A"/></fact>
 		</encounter>
 	</patient>
-	<patient id="2">
+	<patient id="1">
 		<given-name>2</given-name>
 		<surname>2</surname>
 		<gender>female</gender>
@@ -47,7 +47,7 @@
 			<fact concept="ICD10GM:R06.0"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
 		</encounter>
 	</patient>
-	<patient id="3">
+	<patient id="1">
 		<given-name>3</given-name>
 		<surname>3</surname>
 		<gender>male</gender>
@@ -9740,7 +9740,7 @@
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
-			<fact concept="zuweisung"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
+			<fact concept="AKTIN:REFERRAL:OTH"><fact concept="zuweisung"/></fact>
 			<fact concept="triage"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-06T17:15:00"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -42601,7 +42601,7 @@
 			<fact concept="AKTIN:STARTTHERAPY"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="CEDIS30:555"><fact concept="cedis"/></fact>
 			<fact concept="AKTIN:PATHOGENE:MRSA"><fact concept="keime"/></fact>
-			<fact concept="AKTIN:DISCHARGE:4" start="2015-11-26T03:01:00"><fact concept="entlassung" start="2015-11-26T03:01:00"/></fact>
+			<fact concept="AKTIN:DISCHARGE:6" start="2015-11-26T03:01:00"><fact concept="entlassung" start="2015-11-26T03:01:00"/></fact>
 			<fact concept="transportmittel"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="ICD10GM:J18.9"><modifier xmlns:eav="http://sekmi.de/histream/ns/eav-data" code="AKTIN:DIAG:F"/></fact>
 		</encounter>
@@ -51099,37 +51099,37 @@
       <birthdate>1996-05-31</birthdate>
       <deceased>2015-01-17T17:35</deceased>
       <encounter id="ixC66Kf30G3X1ujHk3UauG_g9is=">
-         <start>2015-01-17T16:03</start>
-         <end>2015-01-17T17:35</end>
+         <start>2015-11-30T23:18:00</start>
+         <end>2015-12-01T01:42:00</end>
          <!--772 Patientenadresse (PLZ)-->
          <fact concept="AKTIN:ZIPCODE">
             <value xsi:type="numeric">46240</value>
          </fact>
          <!--37 Zeitpunkt erster Arztkontakt-->
-         <fact concept="AKTIN:PHYSENCOUNTER" start="2015-01-17T16:32">
+         <fact concept="AKTIN:PHYSENCOUNTER" start="2015-11-30T23:55">
             <modifier code="timeLow">
-               <value xsi:type="string">201501171632</value>
+               <value xsi:type="string">201511302355</value>
             </modifier>
             <modifier code="timeHigh">
-               <value xsi:type="string">201501171714</value>
+               <value xsi:type="string">201512010114</value>
             </modifier>
          </fact>
          <!--38 Zeitpunkt Therapiebeginn-->
-         <fact concept="AKTIN:STARTTHERAPY" start="2015-01-17T16:03:00">
+         <fact concept="AKTIN:STARTTHERAPY" start="2015-11-30T23:59">
             <modifier code="effectiveTimeLow">
-               <value xsi:type="string">20150117160300</value>
+               <value xsi:type="string">201511302359</value>
             </modifier>
             <modifier code="effectiveTimeHigh">
-               <value xsi:type="string">20150117173500</value>
+               <value xsi:type="string">201512010114</value>
             </modifier>
          </fact>
          <!--596 Patient verlegt / entlassen nach-->
-         <fact concept="AKTIN:DISCHARGE:1" start="2015-01-17T17:35">
+         <fact concept="AKTIN:DISCHARGE:1" start="2015-12-01T01:42">
             <modifier code="effectiveTimeLow">
-               <value xsi:type="string">201501171603</value>
+               <value xsi:type="string">201512010142</value>
             </modifier>
             <modifier code="effectiveTimeHigh">
-               <value xsi:type="string">201501171735</value>
+               <value xsi:type="string">201512010145</value>
             </modifier>
          </fact>
          <!--60 Versicherungsname-->

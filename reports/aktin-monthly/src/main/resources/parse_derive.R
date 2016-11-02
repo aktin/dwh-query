@@ -1,7 +1,7 @@
 # parse timestamps and date fields
 # The timestamp values are assumed to belong to the local timezone
 # TODO check timezones 
-df$dob = strptime(pat$geburtsdatum_ts,format="%F")
+df$dob = strptime(merge(enc,pat,by="patient_id")$geburtsdatum_ts,format="%F")
 #df$triage.ts = strptime(enc$triage_ts,format="%F %H:%M")
 #df$admit.ts = strptime(enc$aufnahme_ts,format="%F %H:%M")
 #df$phys.ts = strptime(enc$arztkontakt_ts, format="%F %H:%M")
@@ -15,7 +15,7 @@ df$discharge.ts = strptime(enc$entlassung_ts, format="%FT%H:%M")
 
 # TODO This is probably not the ideal way to calculate the age
 df$age = floor(as.numeric(difftime(df$admit.ts,df$dob))/365.25)
-df$sex = factor(pat$geschlecht)
+df$sex = factor(merge(enc,pat,by="patient_id")$geschlecht)
 levels(df$sex) <- list("male"="male","female"="female")
 
 df$triage.result = as.factor(enc$triage)

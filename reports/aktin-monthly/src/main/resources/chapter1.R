@@ -13,7 +13,7 @@ try({
 #Patient Age
 try({
   Kennzahl <- c('Mittelwert','Median','Standardabweichung','Minimum','Maximum')
-  Alter <- c(round(mean(na.omit(df$age)),0),median(na.omit(df$age)),round(stdabw(na.omit(df$age)),0),min(na.omit(df$age)),max(na.omit(df$age)))
+  Alter <- c(round(mean(na.omit(df$age)),0),round(median(na.omit(df$age)),0),round(stdabw(na.omit(df$age)),0),min(na.omit(df$age)),max(na.omit(df$age)))
   #Alter <- sprintf(fmt="%.1f",Alter)
   Alter <- paste(Alter,'Jahre')
   b <- data.frame(Kennzahl,Alter)

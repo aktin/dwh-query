@@ -50,7 +50,7 @@ enc <- read.table(file='encounters.txt',header=TRUE, sep='\t', as.is=TRUE, na.st
 diag <- read.table(file='diagnoses.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='',stringsAsFactors=FALSE, colClasses = "character", encoding = "UTF-8")
 
 # create new data frame for encounter data to contain clean values
-df = data.frame(patient=pat$patient_id, encounter=enc$encounter_id)
+df = data.frame(patient=enc$patient_id, encounter=enc$encounter_id)
 
 # create new data frame for diagnoses data to contain clean values
 df_diag <- data.frame(diagnosis=as.factor(substring(diag$diagnose_code, first=1, last=3)))

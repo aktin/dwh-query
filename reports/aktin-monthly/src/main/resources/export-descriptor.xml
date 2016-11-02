@@ -36,6 +36,7 @@
 		<concept notation="LOINC:9279-1"/>	
 		<concept notation="LOINC:20564-1"/>	
 		<concept notation="LOINC:8480-6"/>	
+		<concept notation="LOINC:8867-4"/>	
 		<concept notation="LOINC:8329-5"/>	
         <concept notation="LOINC:72514-3"/>	
         <concept notation="LOINC:9269-2"/>	
@@ -214,7 +215,7 @@
 		<column header="zuweisung" xpath="substring(eav:fact[@class='zuweisung']/@concept, 16)"/>
 		<column header="cedis" xpath="substring(eav:fact[@class='cedis']/@concept, 9)"/>
 		<column header="beschwerden_txt" xpath="eav:fact[@concept='AKTIN:COMPLAINT']/eav:value"/>
-        <column header="postleitzahl" xpath="eav:fact[@concept='AKTIN:SYMPTOMDURATION']/eav:value"/>
+        <column header="symptomdauer" xpath="eav:fact[@concept='AKTIN:SYMPTOMDURATION']/eav:value"/>
         <!--
 		<column header="triage" xpath="substring(eav:fact[@class='triage']/@concept, 5)"/>
 		<column header="triage_system" xpath="concat(substring(eav:fact[@class='triage']/@concept, 1, 3),substring(eav:fact[@concept='AKTIN:ASSESSMENT']/@concept, 7))"/>
@@ -224,6 +225,7 @@
         <column header="atemfrequenz" xpath="eav:fact[@concept='LOINC:9279-1']/eav:value"/>
         <column header="saettigung" xpath="eav:fact[@concept='LOINC:20564-1']/eav:value"/>
         <column header="blutdruck_sys" xpath="eav:fact[@concept='LOINC:8480-6']/eav:value"/>
+        <column header="herzfrequenz" xpath="eav:fact[@concept='LOINC:8867-4']/eav:value"/>
         <column header="kerntemperatur" xpath="eav:fact[@concept='LOINC:8329-5']/eav:value"/>
         <column header="schmerzskala" xpath="eav:fact[@concept='LOINC:72514-3']/eav:value"/>
         <column header="gcs_summe" xpath="eav:fact[@concept='LOINC:9269-2']/eav:value"/>
@@ -243,7 +245,7 @@
         <column header="allergie_antibiotika" xpath="substring(eav:fact[@class='allergie_antibiotika']/@concept, 15)"/>
         <column header="allergie_sonstige" xpath="substring(eav:fact[@class='allergie_sonstige']/@concept, 15)"/>
         <column header="allergie_txt" xpath="eav:fact[@concept='AKTIN:ALLERGY:TXT']/eav:value"/>
-        <column header="isolation" xpath="substring(eav:fact[@class='isolation']/@concept, string-length(eav:fact[@class='isolation']/@concept)-2)"/>
+        <column header="isolation" xpath="substring(eav:fact[@class='isolation']/@concept, 17)"/>
         <column header="isolation_grund" xpath="substring(eav:fact[@class='isolation_grund']/@concept, 17)"/>
 		<column header="keime" xpath="substring(eav:fact[@concept='AKTIN:PATHOGENE:AMRO:NEG']/@concept, 17)"/>
 		<column header="keime_mrsa" xpath="substring(eav:fact[@class='keime_mrsa']/@concept, 17)"/>
@@ -253,49 +255,49 @@
 		<column header="keime_andere" xpath="substring(eav:fact[@class='keime_andere']/@concept, 17)"/>
 		<column header="diagnostik_labor" xpath="substring(eav:fact[@class='d_labor']/@concept, 7)"/>
 		<column header="diagnostik_labor_ts" xpath="eav:fact[@class='d_labor']/@start"/>
-		<column header="diagnostik_labor_ergebnis" xpath="substring(eav:fact[@class='d_labor']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>	
+		<column header="diagnostik_labor_ergebnis" xpath="substring(eav:fact[@class='d_labor']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>	
         <column header="diagnostik_blutgase" xpath="substring(eav:fact[@class='d_blutgase']/@concept, 7)"/>
 		<column header="diagnostik_blutgase_ts" xpath="eav:fact[@class='d_blutgase']/@start"/>
-		<column header="diagnostik_blutgase_ergebnis" xpath="substring(eav:fact[@class='d_blutgase']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+		<column header="diagnostik_blutgase_ergebnis" xpath="substring(eav:fact[@class='d_blutgase']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
         <column header="diagnostik_urinschnelltest" xpath="substring(eav:fact[@class='d_urinschnelltest']/@concept, 7)"/>
 		<column header="diagnostik_urinschnelltest_ts" xpath="eav:fact[@class='d_urinschnelltest']/@start"/>
-		<column header="diagnostik_urinschnelltest_ergebnis" xpath="substring(eav:fact[@class='d_urinschnelltest']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+		<column header="diagnostik_urinschnelltest_ergebnis" xpath="substring(eav:fact[@class='d_urinschnelltest']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
         <column header="diagnostik_ekg" xpath="substring(eav:fact[@class='d_ekg']/@concept, 7)"/>
 		<column header="diagnostik_ekg_ts" xpath="eav:fact[@class='d_ekg']/@start"/>
-		<column header="diagnostik_ekg_ergebnis" xpath="substring(eav:fact[@class='d_ekg']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
+		<column header="diagnostik_ekg_ergebnis" xpath="substring(eav:fact[@class='d_ekg']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>		
         <column header="diagnostik_sonographie" xpath="substring(eav:fact[@class='d_sonographie']/@concept, 7)"/>
 		<column header="diagnostik_sonographie_ts" xpath="eav:fact[@class='d_sonographie']/@start"/>
-		<column header="diagnostik_sonographie_ergebnis" xpath="substring(eav:fact[@class='d_sonographie']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+		<column header="diagnostik_sonographie_ergebnis" xpath="substring(eav:fact[@class='d_sonographie']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
         <column header="diagnostik_echokardiographie" xpath="substring(eav:fact[@class='d_echokardiographie']/@concept, 7)"/>
 		<column header="diagnostik_echokardiographie_ts" xpath="eav:fact[@class='d_echokardiographie']/@start"/>
-		<column header="diagnostik_echokardiographie_ergebnis" xpath="substring(eav:fact[@class='d_echokardiographie']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
+		<column header="diagnostik_echokardiographie_ergebnis" xpath="substring(eav:fact[@class='d_echokardiographie']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>		
 		<column header="diagnostik_ct_kopf" xpath="substring(eav:fact[@class='d_ct_kopf']/@concept, 7)"/>
 		<column header="diagnostik_ct_kopf_ts" xpath="eav:fact[@class='d_ct_kopf']/@start"/>
-		<column header="diagnostik_ct_kopf_ergebnis" xpath="substring(eav:fact[@class='d_ct_kopf']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
-        <column header="diagnostik_ct_" xpath="substring(eav:fact[@class='d_ct']/@concept, 7)"/>
+		<column header="diagnostik_ct_kopf_ergebnis" xpath="substring(eav:fact[@class='d_ct_kopf']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>		
+        <column header="diagnostik_ct" xpath="substring(eav:fact[@class='d_ct']/@concept, 7)"/>
 		<column header="diagnostik_ct_ts" xpath="eav:fact[@class='d_ct']/@start"/>
-		<column header="diagnostik_ct_ergebnis" xpath="substring(eav:fact[@class='d_ct']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
+		<column header="diagnostik_ct_ergebnis" xpath="substring(eav:fact[@class='d_ct']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>		
 		<column header="diagnostik_ct_trauma" xpath="substring(eav:fact[@class='d_ct_trauma']/@concept, 7)"/>
 		<column header="diagnostik_ct_trauma_ts" xpath="eav:fact[@class='d_ct_trauma']/@start"/>
-		<column header="diagnostik_ct_trauma_ergebnis" xpath="substring(eav:fact[@class='d_ct_trauma']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+		<column header="diagnostik_ct_trauma_ergebnis" xpath="substring(eav:fact[@class='d_ct_trauma']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
 		<column header="diagnostik_roentgen_wirbelsaeule" xpath="substring(eav:fact[@class='d_roentgen_wirbelsaeule']/@concept, 7)"/>
 		<column header="diagnostik_roentgen_wirbelsaeule_ts" xpath="eav:fact[@class='d_roentgen_wirbelsaeule']/@start"/>
-		<column header="diagnostik_roentgen_wirbelsaeule_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_wirbelsaeule']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>		
+		<column header="diagnostik_roentgen_wirbelsaeule_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_wirbelsaeule']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>		
 		<column header="diagnostik_roentgen_thorax" xpath="substring(eav:fact[@class='d_roentgen_thorax']/@concept, 7)"/>
 		<column header="diagnostik_roentgen_thorax_ts" xpath="eav:fact[@class='d_roentgen_thorax']/@start"/>
-		<column header="diagnostik_roentgen_thorax_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_thorax']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
-        <column header="diagnostik_roentgen_becken_" xpath="substring(eav:fact[@class='d_roentgen_becken']/@concept, 7)"/>
+		<column header="diagnostik_roentgen_thorax_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_thorax']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
+        <column header="diagnostik_roentgen_becken" xpath="substring(eav:fact[@class='d_roentgen_becken']/@concept, 7)"/>
 		<column header="diagnostik_roentgen_becken_ts" xpath="eav:fact[@class='d_roentgen_becken']/@start"/>
-		<column header="diagnostik_roentgen_becken_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_becken']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
-        <column header="diagnostik_roentgen_extremitaeten_" xpath="substring(eav:fact[@class='d_roentgen_extremitaeten']/@concept, 7)"/>
+		<column header="diagnostik_roentgen_becken_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_becken']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
+        <column header="diagnostik_roentgen_extremitaeten" xpath="substring(eav:fact[@class='d_roentgen_extremitaeten']/@concept, 7)"/>
 		<column header="diagnostik_roentgen_extremitaeten_ts" xpath="eav:fact[@class='d_roentgen_extremitaeten']/@start"/>
-		<column header="diagnostik_roentgen_extremitaeten_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_extremitaeten']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
-        <column header="diagnostik_roentgen_sonstiges_" xpath="substring(eav:fact[@class='d_roentgen_sonstiges']/@concept, 7)"/>
+		<column header="diagnostik_roentgen_extremitaeten_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_extremitaeten']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
+        <column header="diagnostik_roentgen_sonstiges" xpath="substring(eav:fact[@class='d_roentgen_sonstiges']/@concept, 7)"/>
 		<column header="diagnostik_roentgen_sonstiges_ts" xpath="eav:fact[@class='d_roentgen_sonstiges']/@start"/>
-		<column header="diagnostik_roentgen_sonstiges_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_sonstiges']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
-        <column header="diagnostik_mrt_" xpath="substring(eav:fact[@class='d_mrt']/@concept, 7)"/>
+		<column header="diagnostik_roentgen_sonstiges_ergebnis" xpath="substring(eav:fact[@class='d_roentgen_sonstiges']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
+        <column header="diagnostik_mrt" xpath="substring(eav:fact[@class='d_mrt']/@concept, 7)"/>
 		<column header="diagnostik_mrt_ts" xpath="eav:fact[@class='d_mrt']/@start"/>
-		<column header="diagnostik_mrt_ergebnis" xpath="substring(eav:fact[@class='d_mrt']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB']/@code, 14)"/>
+		<column header="diagnostik_mrt_ergebnis" xpath="substring(eav:fact[@class='d_mrt']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
 	
         <!-- <column header="entlassung" xpath="eav:fact[@class='entlassung']"/>  this does not work well with xpath selection of the value-->
         <column header="entlassung" xpath="concat(substring(eav:fact[@class='transfer']/@concept, 7),substring(eav:fact[@class='discharge']/@concept, 7))"/> 

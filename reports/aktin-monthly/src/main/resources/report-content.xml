@@ -17,9 +17,9 @@
 
 hiermit präsentieren wir Ihnen den Monatsbericht aus Ihrer Notaufnahme. Dieser wird automatisch aus den Daten generiert, welche in Ihrem primären Dokumentationssystem elektronisch erhoben und dann in das lokale Datawarehouse des Notaufnahmeregisters importiert werden.
 
-Neben der Beschreibung Ihrer Patienten nach Alter und Geschlecht werden die Fallzahlen nach Tag und Uhrzeit der administrativen Aufnahme dargestellt. Es werden mehrere Prozesszeiten abgebildet, gegebenenfalls auch geschichtet nach den Kategorien eines von Ihnen verwendeten Ersteinschätzungssystems. Außerdem berichten wir die Vorstellungsgründe und die führenden Diagnosen.
+Neben der Beschreibung Ihrer Patienten(-fälle) nach Alter und Geschlecht werden die Fallzahlen nach Tag und Uhrzeit der administrativen Aufnahme dargestellt. Es werden mehrere Prozesszeiten abgebildet, gegebenenfalls auch geschichtet nach den Kategorien eines von Ihnen verwendeten Ersteinschätzungssystems. Außerdem berichten wir die Vorstellungsgründe und die führenden Diagnosen.
 
-Bitte verstehen Sie diesen Bericht als „work in progress“. Er wurde auf Basis der Daten einer AKTIN-Modellklinik entwickelt. Da in Ihrer Notaufnahme das Patientenkollektiv bzw. die Datenstruktur anders aussehen kann, bleiben möglicherweise einzelne Tabellen oder Grafiken leer. Auch werden eventuell nicht plausible Werte dargestellt. Anhand der nun vorliegenden ersten Berichte können zukünftig sukzessive weitere Plausibilitätskontrollen sowie Datenbereinigungen umgesetzt werden.
+Bitte verstehen Sie diesen Bericht als „work in progress“. Er wurde auf Basis der Daten einer AKTIN-Modellklinik entwickelt. Da in Ihrer Notaufnahme das Patienten(-fälle)kollektiv bzw. die Datenstruktur anders aussehen kann, bleiben möglicherweise einzelne Tabellen oder Grafiken leer. Auch werden eventuell nicht plausible Werte dargestellt. Anhand der nun vorliegenden ersten Berichte können zukünftig sukzessive weitere Plausibilitätskontrollen sowie Datenbereinigungen umgesetzt werden.
 
 Bitte teilen Sie uns Änderungswünsche und Verbesserungsvorschläge für die folgenden Berichte mit und kontaktieren Sie uns auch gerne bei weiteren Rückfragen.
 
@@ -34,7 +34,7 @@ E-Mail:	office@aktin.org
 Homepage:	www.aktin.org
   </intro>
   <section>
-    <header>Beschreibung der Patienten</header>
+    <header>Beschreibung der Patienten(-fälle)</header>
     <paragraph>Im Zeitraum <pref ref="zeitraum"/> wurden in der Notaufnahme insgesamt <pref ref="anzahl"/> Patienten behandelt. Deren Geschlechts- und Altersverteilung wird in den folgenden Tabellen und Grafiken dargestellt.</paragraph>
     <section>
       <header>Geschlechtsverteilung</header>
@@ -48,7 +48,7 @@ Homepage:	www.aktin.org
   </section>
   <section>
     <header>Fallzahlen</header>
-    <paragraph>In diesem Abschnitt werden die Fallzahlen berichtet, sowohl absolut als auch die durchschnittlich behandelten Patienten pro Wochentag und Uhrzeit. Ausschlaggebend sind dabei immer das Datum und der Zeitpunkt der administrativen Aufnahme.</paragraph>
+    <paragraph>In diesem Abschnitt werden die Fallzahlen berichtet, sowohl absolut als auch die durchschnittlich behandelten Patienten(-fälle) pro Wochentag und Uhrzeit. Ausschlaggebend sind dabei immer das Datum und der Zeitpunkt der administrativen Aufnahme.</paragraph>
     <section>
       <header>Fallzahlen nach Kalendertagen</header>
       <table ref="t2.1">Tabelle 2.1: Fallzahlen nach Aufnahmetag</table>
@@ -65,7 +65,7 @@ Homepage:	www.aktin.org
     </section>
     <section>
       <header>Fallzahlen nach Wochentag und Aufnahmezeit</header>
-      <plot ref="p2.3">Grafik 2.3: Durchschnittliche Patientenzahl: Mo-Fr blaue Quadrate; Sa/So rote Dreiecke</plot>
+      <plot ref="p2.3">Grafik 2.3: Durchschnittliche Fallzahlen: Mo-Fr blaue Quadrate; Sa/So rote Dreiecke</plot>
     </section>
   </section>
   <section>
@@ -106,7 +106,7 @@ Homepage:	www.aktin.org
   </section>
   <section>
     <header>Ersteinschätzung</header>
-    <paragraph>Im Folgenden wird die Verteilung der Patienten auf die Kategorien innerhalb des verwendeten Ersteinschätzungssystems dargestellt.</paragraph>
+    <paragraph>Im Folgenden wird die Verteilung der Patienten(-fälle) auf die Kategorien innerhalb des verwendeten Ersteinschätzungssystems dargestellt.</paragraph>
     <section>
       <header>Ersteinschätzung</header>
       <plot ref="p4.1">Grafik 4.1: Ersteinschätzung</plot>
@@ -145,7 +145,7 @@ Homepage:	www.aktin.org
     <table ref="t6.1">Tabelle 6.1: Verlegung und Entlassung</table>
   </section>
   <section>
-    <header>Aufenthaltsdauer der Patienten</header>
+    <header>Aufenthaltsdauer der Patienten(-fälle)</header>
     <paragraph>Bei der Gesamtaufenthaltsdauer wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Aufenthaltsdauer länger als 24 Stunden sowie negative Zeiten.</paragraph>
     <plot ref="p7.1">Grafik 7.1: Aufenthaltsdauer</plot>
     <table ref="t7.1">Tabelle 7.1: Aufenthaltsdauer in Minuten</table>
@@ -154,9 +154,9 @@ Homepage:	www.aktin.org
     <header>Vorstellungsgrund und und führende Diagnose</header>
     <paragraph>Die kodierten Diagnosen nach ICD-10-GM werden hier als sogenannte 3-Steller berichtet, sofern sie in dem primären Dokumentationssystem als „führende Diagnose“ definiert sind. Weitere Diagnosen werden nicht berücksichtigt.</paragraph>
     <section>
-      <header>Top 20 Diagnosen</header>
-      <plot ref="p8.1">Grafik 8.1: Top 20 Diagnosen (ICD 3-Steller)</plot>
-      <table ref="t8.1">Tabelle 8.1: Top 20 Diagnosen</table>
+      <header>Top 20 führende Diagnosen</header>
+      <plot ref="p8.1">Grafik 8.1: Top 20 führende Diagnosen (ICD 3-Steller)</plot>
+      <table ref="t8.1">Tabelle 8.1: Top 20 führende Diagnosen</table>
     </section>
     <section>
       <header>Top 20 Vorstellungsgründe (CEDIS)</header>
@@ -185,13 +185,13 @@ Homepage:	www.aktin.org
   </section>
   -->
   <section>
-    <header>Multiresistente Erreger und isolierte Patienten</header>
+    <header>Multiresistente Erreger und isolierte Patienten(-fälle)</header>
     <section>
       <header>Multiresistente Erreger</header>
       <table ref="t9.1">Tabelle 9.1: Multiresistente Erreger</table>
     </section>
     <section>
-      <header>Isolierte Patienten</header>
+      <header>Isolierte Patienten(-fälle)</header>
       <table ref="t9.2">Tabelle 9.2: Isolationsgründe</table>
     </section>
   </section>

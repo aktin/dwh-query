@@ -45,35 +45,35 @@ xhtml.table <- function(x, file='', widths=NULL, align='auto', align.default='le
 		stop('length of align does not match length of names(x)')
 	}
 
-  #Output XML-Header
-  cat('<?xml version="1.0" encoding="utf-8"?>\n<table xmlns="http://www.w3.org/1999/xhtml">\n',file=file,append=FALSE)
+	#Output XML-Header
+	cat('<?xml version="1.0" encoding="utf-8"?>\n<table xmlns="http://www.w3.org/1999/xhtml">\n',file=file,append=FALSE)
   
 	for (i in 1:length(names(x))) {
 		#newXMLNode("col", attrs = c(align = align[i],width=paste0(widths[i],'%')), parent=e)
-	  cat(paste0('\t<col align="',align[i],'" width="',widths[i],'%"/>\n'),file=file,append=TRUE)
+		cat(paste0('\t<col align="',align[i],'" width="',widths[i],'%"/>\n'),file=file,append=TRUE)
 	}
-  cat("\t<thead>\n\t\t<tr>\n",file=file,append=TRUE)
+	cat("\t<thead>\n\t\t<tr>\n",file=file,append=TRUE)
 	#h <- newXMLNode("thead", parent=e)
 	#tr <- newXMLNode("tr", parent=h)
 	for( i in names(x) ){
 		#newXMLNode(name="th", text=i, parent=tr)
-	  cat(paste0("\t\t\t<th>",i,"</th>\n"),file=file,append=TRUE)
+		cat(paste0("\t\t\t<th>",i,"</th>\n"),file=file,append=TRUE)
 	}
-  cat('\t\t</tr>\n\t</thead>\n',file=file,append=TRUE)
+	cat('\t\t</tr>\n\t</thead>\n',file=file,append=TRUE)
 	#b <- newXMLNode("tbody", parent=e)
-  cat("\t<tbody>\n",file=file,append=TRUE)
+	cat("\t<tbody>\n",file=file,append=TRUE)
 	if( length(dim(x)) == 1 ){
 		# only one dimension / row
 		#tr <- newXMLNode("tr", parent=b)
-	  cat('\t\t<tr>',file=file,append=TRUE)
+		cat('\t\t<tr>',file=file,append=TRUE)
 		for( i in x ){
 			if( is.na(i) | is.nan(i) | is.infinite(i)){
 				i <- na.subst
 			}
 			#newXMLNode(name="td", text=i, parent=tr)
-		  cat(paste0('\t\t\t<td>',i,'</td>\n'),file=file,append=TRUE)
+			cat(paste0('\t\t\t<td>',i,'</td>\n'),file=file,append=TRUE)
 		}
-	  cat('\t\t</tr>\n',file=file,append=TRUE)
+		cat('\t\t</tr>\n',file=file,append=TRUE)
 	}else{
 		# multiple rows
 		for( r in 1:nrow(x) ){
@@ -86,8 +86,8 @@ xhtml.table <- function(x, file='', widths=NULL, align='auto', align.default='le
 				#newXMLNode(name="td", text=i, parent=tr)
 				cat(paste0('\t\t\t<td>',i,'</td>\n'),file=file,append=TRUE)
 			}
-		  cat('\t\t</tr>\n',file=file,append=TRUE)
+			cat('\t\t</tr>\n',file=file,append=TRUE)
 		}
 	}
-  cat('\t</tbody>\n</table>',file=file,append=TRUE)
+	cat('\t</tbody>\n</table>',file=file,append=TRUE)
 }

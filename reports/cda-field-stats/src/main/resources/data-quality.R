@@ -1,5 +1,23 @@
 #!/usr/bin/Rscript
 
+report.generatedFile <- function(name){
+  cat(paste(name,"\n",sep=""), file="r-generated-files.txt", append=TRUE)
+}
+gfx.dir <- ''
+gfx.ext <- '.svg'
+gfx.dev <- 'svg'
+report.svg <- function(graph, name, width=8, height=4){
+  trellis.device(gfx.dev,file=paste0(gfx.dir,name,gfx.ext), width=width,height=height)
+  print(graph)
+  no_output <- dev.off() #silent
+  report.generatedFile(paste0(name,gfx.ext))
+}
+xml.dir <- ''
+report.table <- function(x, name, widths=NULL, align='auto', align.default='left', na.subst=''){
+  xhtml.table(x, file=paste0(xml.dir, name), widths=widths, align=align, align.default=align.default, na.subst=na.subst)
+  report.generatedFile(name)
+}
+
 options(OutDec= ",")
 
 gformat <- function(num,digits=0) {
@@ -218,32 +236,45 @@ encounter_num <- length(enc$encounter_id)
 
 enc_table <- data.frame(Variable=var_list,Anteil=gformat(var_count/encounter_num*100,digits = 2))
 enc_table[,2] <- paste(enc_table[,2],'%')
-xhtml.table(enc_table, file=paste0(xml.dir,'complete.xml'),align=c('left','right'),widths=c(50,15))
+report.table(enc_table, name='complete.xml',align=c('left','right'),widths=c(50,15))
 
-
-
-#Abschlussdiagnosen
-diag$diagnose_code_count <- 0
-diag$diagnose_code_count[!is.na(diag$diagnose_code)] <- 1
-diagnose_count <- aggregate(diag$diagnose_code_count, by=list(Encounter=diag$encounter_id), FUN=sum)
-
-diag$ausschluss_count <- 0
-diag$ausschluss_count[diag$diagnose_zusatz=="A"] <- 1
-ausschluss_count <- aggregate(diag$ausschluss_count, by=list(Encounter=diag$encounter_id), FUN=sum)
-#sum(ausschluss_count$x,na.rm = TRUE)
-
-diag$zustand_count <- 0
-diag$zustand_count[diag$diagnose_zusatz=="Z"] <- 1
-zustand_count <- aggregate(diag$zustand_count, by=list(Encounter=diag$encounter_id), FUN=sum)
-
-diag$gesichert_count <- 0
-diag$gesichert_count[diag$diagnose_zusatz=="G"] <- 1
-gesichert_count <- aggregate(diag$gesichert_count, by=list(Encounter=diag$encounter_id), FUN=sum)
-
-diag$verdacht_count <- 0
-diag$verdacht_count[diag$diagnose_zusatz=="V"] <- 1
-verdacht_count <- aggregate(diag$verdacht_count, by=list(Encounter=diag$encounter_id), FUN=sum)
-
+if (length(diag$diagnose_code_count)) {
+  
+  #Abschlussdiagnosen
+  diag$diagnose_code_count <- 0
+  diag$diagnose_code_count[!is.na(diag$diagnose_code)] <- 1
+  diagnose_count <- aggregate(diag$diagnose_code_count, by=list(Encounter=diag$encounter_id), FUN=sum)
+  
+  diag$ausschluss_count <- 0
+  diag$ausschluss_count[diag$diagnose_zusatz=="A"] <- 1
+  ausschluss_count <- aggregate(diag$ausschluss_count, by=list(Encounter=diag$encounter_id), FUN=sum)
+  #sum(ausschluss_count$x,na.rm = TRUE)
+  
+  diag$zustand_count <- 0
+  diag$zustand_count[diag$diagnose_zusatz=="Z"] <- 1
+  zustand_count <- aggregate(diag$zustand_count, by=list(Encounter=diag$encounter_id), FUN=sum)
+  
+  diag$gesichert_count <- 0
+  diag$gesichert_count[diag$diagnose_zusatz=="G"] <- 1
+  gesichert_count <- aggregate(diag$gesichert_count, by=list(Encounter=diag$encounter_id), FUN=sum)
+  
+  diag$verdacht_count <- 0
+  diag$verdacht_count[diag$diagnose_zusatz=="V"] <- 1
+  verdacht_count <- aggregate(diag$verdacht_count, by=list(Encounter=diag$encounter_id), FUN=sum)
+} else
+{
+  diagnose_count <- data.frame(1)
+  diagnose_count$x <- 0
+  ausschluss_count <- data.frame(1)
+  ausschluss_count$x <- 0
+  zustand_count <- data.frame(1)
+  zustand_count$x <- 0
+  gesichert_count <- data.frame(1)
+  gesichert_count$x <- 0
+  verdacht_count <- data.frame(1)
+  verdacht_count$x <- 0
+  
+}
 
 diag_table <- data.frame(Variable="Fälle mit mindestens einer Diagnose",Anteil=gformat(length(diagnose_count$x[diagnose_count$x > 0])/encounter_num*100,digits = 2))
 diag_table <- rbind(diag_table,data.frame(Variable="Fälle mit (genau) einer führenden Diagnose",Anteil=gformat(sum(!is.na(diag$diagnose_fuehrend))/encounter_num*100,digits = 2)))
@@ -252,4 +283,4 @@ diag_table <- rbind(diag_table,data.frame(Variable="Fälle mit mindestens einer 
 diag_table <- rbind(diag_table,data.frame(Variable="Fälle mit mindestens einer 'Zustand nach'-Diagnose",Anteil=gformat(length(zustand_count$x[zustand_count$x > 0])/encounter_num*100,digits = 2)))
 diag_table <- rbind(diag_table,data.frame(Variable="Fälle mit mindestens einer Ausschlussdiagnose",Anteil=gformat(length(ausschluss_count$x[ausschluss_count$x > 0])/encounter_num*100,digits = 2)))
 diag_table[,2] <- paste(diag_table[,2],'%')
-xhtml.table(diag_table, file=paste0(xml.dir,'diagnoses.xml'),align=c('left','right'),widths=c(65,15))
+report.table(diag_table, name='diagnoses.xml',align=c('left','right'),widths=c(65,15))

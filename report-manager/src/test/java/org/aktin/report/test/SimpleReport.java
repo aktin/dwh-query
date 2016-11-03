@@ -1,10 +1,7 @@
 package org.aktin.report.test;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;

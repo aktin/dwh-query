@@ -1,9 +1,9 @@
 package org.aktin.report.manager;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +31,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 
@@ -46,9 +47,11 @@ import org.apache.fop.apps.MimeConstants;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
-public class ReportExecution implements GeneratedReport{
+public class ReportExecution implements GeneratedReport, URIResolver{
 	private static final Logger log = Logger.getLogger(ReportExecution.class.getName());	
 
 	private Report report;
@@ -73,12 +76,22 @@ public class ReportExecution implements GeneratedReport{
 	 */
 	private boolean keepIntermediateFiles;
 	private Set<Path> virtuallyDeleted;
-	
+
+	private SAXParserFactory parserFactory;
+
 	ReportExecution(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination){
 		this.report = report;
 		this.fromTimestamp = fromTimestamp;
 		this.endTimestamp = endTimestamp;
 		this.reportDestination = reportDestination;
+		parserFactory = SAXParserFactory.newInstance();
+		parserFactory.setNamespaceAware(true);
+		parserFactory.setValidating(false);
+		try {
+			parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		} catch (SAXNotRecognizedException | SAXNotSupportedException | ParserConfigurationException e) {
+			log.warning("Unable to set FEATURE_SECURE_PROCESSING in parser factory");
+		}
 	}
 
 	public void setKeepIntermediateFiles(boolean keepFiles){
@@ -182,34 +195,17 @@ public class ReportExecution implements GeneratedReport{
 		// delete copied R source files
 		deleteFiles(temp, files);
 	}
+
 	private XMLReader constructReader() throws IOException{
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-		spf.setNamespaceAware(true);
-		spf.setValidating(false);
 		XMLReader r;
 		try {
-			spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-			SAXParser parser = spf.newSAXParser();
+			SAXParser parser = parserFactory.newSAXParser();
 			parser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 			r = parser.getXMLReader();
 		} catch (SAXException | ParserConfigurationException e) {
 			throw new IOException("Unable to create SAX XML reader", e);
 		}
-		r.setEntityResolver(new EntityResolver() {
-			@Override
-			public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-//				log.info("Ignoring entity "+publicId+", "+systemId);
-//				throw new RuntimeException("alala");
-				// apparently not used at all
-				if( true )return null;
-				if( systemId.endsWith(".dtd") ){
-					// provide empty DTD to prevent validation and remote retrieval of DTD documents
-					return new InputSource(new StringReader(" "));
-				}else{
-					return null; // default behaviour
-				}
-			}
-		});
+		r.setEntityResolver(new NullEntityResolver());
 		return r;
 	}
 	private Transformer createTransformer(Source source) throws IOException{
@@ -220,16 +216,24 @@ public class ReportExecution implements GeneratedReport{
 			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 //			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 //			factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
-			transformer = factory.newTransformer(source);
+			if( source == null ){
+				transformer = factory.newTransformer();
+			}else{
+				transformer = factory.newTransformer(source);
+			}
 			transformer.setErrorListener(new TransformationErrorListener(log));
 		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
 			throw new IOException("Unable to construct FOP transformation",e);
 		}
 		return transformer;
 	}
-
+	private static class NullEntityResolver implements EntityResolver {
+		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+			log.info("Entity resolved to empty resource: "+ publicId + " / " + systemId);
+			return new InputSource(new ByteArrayInputStream(new byte[0]));
+		}
+	}
 	private Source createSource(Path path) throws IOException{
-//		return new StreamSource( path.toFile() ); 
 		return  new SAXSource(constructReader(), new InputSource(path.toUri().toString()));
 	}
 	void runFOP() throws IOException{
@@ -237,7 +241,7 @@ public class ReportExecution implements GeneratedReport{
 
 		//Second file from Report interface is the XSL file	
 		Transformer ft = createTransformer(createSource(temp.resolve(fopFiles[1])));
-
+		ft.setURIResolver(this);
 		FopFactory ff = FopFactory.newInstance(temp.toUri());
 		FOUserAgent ua = ff.newFOUserAgent();
 		FOEventListener events = new FOEventListener();
@@ -356,4 +360,84 @@ public class ReportExecution implements GeneratedReport{
 	public String getTemplateVersion() {
 		 return this.report.getVersion();
 	}
+
+	@Override
+	public Source resolve(String href, String base) throws TransformerException {
+		log.info("Resolving '"+href+"' / base="+base);
+		try {
+			return createSource(temp.resolve(href));
+		} catch (IOException e) {
+			throw new TransformerException("Unable to resolve source: "+href, e);
+		}
+	}
+
+//	private Source createOfflineSource(Path path) throws IOException{
+//	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//	factory.setValidating(false); // turns off validation
+//	factory.setSchema(null);      // turns off use of schema
+//	                          // but that's *still* not enough!
+//	factory.setNamespaceAware(true);
+//	DocumentBuilder builder;
+//	try {
+//		builder = factory.newDocumentBuilder();
+//	} catch (ParserConfigurationException e) {
+//		throw new IOException(e);
+//	}
+//	builder.setEntityResolver(new NullEntityResolver());
+//	Document dom;
+//	try( InputStream in = Files.newInputStream(path) ) {
+//		dom = builder.parse(in);
+//	} catch (SAXException e) {
+//		throw new IOException(e);
+//	}
+//	return new DOMSource(dom, path.toUri().toString());
+//}
+//private Path createFoXml() throws IOException{
+//	//Second file from Report interface is the XSL file	
+//	Transformer ft = createTransformer(createOfflineSource(temp.resolve(fopFiles[1])));
+//	ft.setURIResolver(this);
+//	Path foXML = Files.createTempFile(temp, "fo", ".xml");
+//	try( OutputStream out = Files.newOutputStream(foXML) ){
+//		Source src = createOfflineSource(temp.resolve(fopFiles[0]));
+//	    // Resulting SAX events (the generated FO) must be piped through to FOP
+//	    Result res = new StreamResult(out);
+//	    ft.transform(src, res);	
+//	} catch (TransformerException e) {
+//		throw new IOException("FOP transformation failed", e);
+//	}
+//	return foXML;
+//}
+//private void createFoPDF(Path foXML) throws IOException{
+//	FopFactory ff = FopFactory.newInstance(temp.toUri());
+//	FOUserAgent ua = ff.newFOUserAgent();
+//	FOEventListener events = new FOEventListener();
+//	ua.getEventBroadcaster().addEventListener(events);
+//	Transformer ft = createTransformer(null);
+//	try( OutputStream out = Files.newOutputStream(reportDestination) ){
+//		Fop fop = ff.newFop(MimeConstants.MIME_PDF, ua, out);
+//		ft.transform(new SAXSource(new InputSource(foXML.toUri().toString())), new SAXResult(fop.getDefaultHandler()));
+//	} catch (FOPException e) {
+//		throw new IOException(e);
+//	} catch (TransformerException e) {
+//		throw new IOException("FOP transformation failed",e);
+//	}
+//	if( !events.isEmpty() ){
+//		log.warning("FOP errors: "+events.getSummary());
+//		//throw new IOException("Errors during FOP processing"); //do not throw until FOP-"unstable"-Errors are solved
+//	}
+//}
+//protected void runFOP_twostep() throws IOException{
+//	fopFiles = report.copyResourcesForFOP(temp);
+//	Path fo = createFoXml();
+//	createFoPDF(fo);
+//	// fo XML can be deleted
+//	deleteFiles(temp, fo.relativize(temp).toString());
+//	// preference files no longer needed
+//	deleteFiles(temp, prefFiles);
+//
+//	// delete FOP input files
+//	deleteFiles(temp, fopFiles);
+//
+//	delete_r_generated_files(temp);		
+//}
 }

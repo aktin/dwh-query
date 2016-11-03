@@ -6,6 +6,12 @@
 #
 
 #library(XML)
+xml.escape <- function(x){
+	x <- gsub(pattern='&', replacement='&amp;', x=x)
+	x <- gsub(pattern='<', replacement='&lt;', x=x)
+	x <- gsub(pattern='>', replacement='&gt;', x=x)
+	return(x)
+}
 
 #' Create XHTML for tabular data
 #'
@@ -51,14 +57,14 @@ xhtml.table <- function(x, file='', widths=NULL, align='auto', align.default='le
   
 	for (i in 1:length(names(x))) {
 		#newXMLNode("col", attrs = c(align = align[i],width=paste0(widths[i],'%')), parent=e)
-		cat(paste0('\t<col align="',align[i],'" width="',widths[i],'%"/>\n'),file=fd,append=TRUE)
+		cat('\t<col align="',align[i],'" width="',widths[i],'%"/>\n',sep='',file=fd,append=TRUE)
 	}
 	cat("\t<thead>\n\t\t<tr>\n",file=fd,append=TRUE)
 	#h <- newXMLNode("thead", parent=e)
 	#tr <- newXMLNode("tr", parent=h)
 	for( i in names(x) ){
 		#newXMLNode(name="th", text=i, parent=tr)
-		cat(paste0("\t\t\t<th>",i,"</th>\n"),file=fd,append=TRUE)
+		cat("\t\t\t<th>",xml.escape(i),"</th>\n", sep='',file=fd,append=TRUE)
 	}
 	cat('\t\t</tr>\n\t</thead>\n',file=fd,append=TRUE)
 	#b <- newXMLNode("tbody", parent=e)
@@ -72,7 +78,7 @@ xhtml.table <- function(x, file='', widths=NULL, align='auto', align.default='le
 				i <- na.subst
 			}
 			#newXMLNode(name="td", text=i, parent=tr)
-			cat(paste0('\t\t\t<td>',i,'</td>\n'),file=fd,append=TRUE)
+			cat('\t\t\t<td>',xml.escape(i),'</td>\n', sep='',file=fd,append=TRUE)
 		}
 		cat('\t\t</tr>\n',file=fd,append=TRUE)
 	}else{
@@ -85,7 +91,7 @@ xhtml.table <- function(x, file='', widths=NULL, align='auto', align.default='le
 					i <- na.subst
 				}
 				#newXMLNode(name="td", text=i, parent=tr)
-				cat(paste0('\t\t\t<td>',i,'</td>\n'),file=fd,append=TRUE)
+				cat('\t\t\t<td>',xml.escape(i),'</td>\n', sep='',file=fd,append=TRUE)
 			}
 			cat('\t\t</tr>\n',file=fd,append=TRUE)
 		}

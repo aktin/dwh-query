@@ -30,8 +30,9 @@ Ihr
 AKTIN-Team
 
 ------------------------
-E-Mail:	office@aktin.org
-Homepage:	www.aktin.org
+E-Mail: office@aktin.org
+Telefon: 0391 – 67 21384
+Homepage: www.aktin.org
   </intro>
   <section>
     <header>Beschreibung der Patienten(-fälle)</header>
@@ -156,7 +157,7 @@ Homepage:	www.aktin.org
     <section>
       <header>Top 20 führende Diagnosen</header>
       <plot ref="p8.1">Grafik 8.1: Top 20 führende Diagnosen (ICD 3-Steller)</plot>
-      <table ref="t8.1">Tabelle 8.1: Top 20 führende Diagnosen</table>
+      <table ref="t8.1">Tabelle 8.1: Top 20 Diagnosen (Angaben zu Zusatzkennzeichen für die Diagnosesicherheit siehe Grafik 8.1)</table>
     </section>
     <section>
       <header>Top 20 Vorstellungsgründe (CEDIS)</header>

@@ -14,12 +14,12 @@
 
 <template>
   <section>
-    <header>Vollzähligkeit</header>
+    <header>Vollständigkeit</header>
     <paragraph>Im Zeitraum <pref ref="zeitraum"/> wurden in der Notaufnahme insgesamt <pref ref="anzahl"/> Patienten behandelt.</paragraph>
-    <paragraph>Die folgenden Tabellen stellen dar, wie vollständig die Angaben in diesem Zeitraum waren. Jede explizit Angabe (auch "Nein" oder ähnliches in einer Auswahl) wird gezählt. Als fehlend zählen nur Angaben, die leer sind. Natürlich ist dies in vielen Fällen auch kein Hinweis auf mangelnde Datenqualität. Falls allerdings wichtige Angaben, die eigentlich routinemäßig erhoben werden sollten, viel zu selten auftauchen, könnte dies ein Hinweis auf Probleme beim Daten-Import sein.</paragraph>
+    <paragraph>Die folgenden Tabellen stellen dar, wie vollständig die Angaben in diesem Zeitraum waren. Jede explizite Angabe (auch "Nein" oder ähnliches in einer Auswahl) wird gezählt. Als fehlend gelten nur Angaben, die leer sind. Fehlende Angaben sind nicht unbedingt ein Hinweis auf mangelnde Datenqualität. Sie können aber Lücken in der Dokumentation von obligatorisch zu erhebenden Variablen oder auch Probleme bei Daten-Import aufzeigen.</paragraph>
     <section>
       <header>Daten auf der Ebene Patientenkontakt</header>
-      <table ref="t1.1">Tabelle 1.1: Vollzähligkeit der Datenelemente</table>
+      <table ref="t1.1">Tabelle 1.1: Vollständigkeit der Datenelemente</table>
     </section>
     <section>
       <header>Abschlussdiagnosen</header>

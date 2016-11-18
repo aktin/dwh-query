@@ -38,7 +38,7 @@
 			</fo:declarations>
 			<fo:page-sequence master-reference="page-layout" language="de">
                 <fo:static-content flow-name="header-normal">			
-                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Qualitätsbericht D01 - <xsl:value-of select="$prefs/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template></fo:block>
+                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Datenbericht D02 - <xsl:value-of select="$prefs/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template></fo:block>
 				</fo:static-content>
 				<fo:static-content flow-name="footer-normal">
 					<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/> von

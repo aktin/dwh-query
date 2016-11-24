@@ -38,7 +38,7 @@
 			<fo:page-sequence master-reference="page-layout" language="de">
                 <fo:static-content flow-name="header-normal">
 					<!-- <fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht D07 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'monat']/text()"/>&#160;<xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'jahr']/text()"/></fo:block> -->
-                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht D09 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template></fo:block>
+                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht D09 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template></fo:block>
 				</fo:static-content>
 				<fo:static-content flow-name="footer-normal">
 					<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/> von
@@ -52,7 +52,7 @@
 						<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.ou']/text()"/>
 					</fo:block>
 					<fo:block>
-						Monatsbericht: <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template>
+						Monatsbericht: <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template>
 					</fo:block>
 					<fo:block>
 						Datenstand: <xsl:call-template name="datenstand"><xsl:with-param name="timestamp" select="document('prefs.xml')/properties/entry[@key = 'report.data.timestamp']/text()"/></xsl:call-template>
@@ -356,11 +356,15 @@
 	</xsl:template>
 	
 	<xsl:template match="pref[@ref='zeitraum']">
-		<xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'end']/text()"/></xsl:call-template>
+		<xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template>
 	</xsl:template>
 	
-	<xsl:template match="pref[@ref='anzahl']">
-		<xsl:value-of select="1234"/>	
+	<xsl:template match="pref[@ref='patients']">
+		<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.patients']/text()"/>
+	</xsl:template>
+	
+    <xsl:template match="pref[@ref='encounters']">
+		<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.encounters']/text()"/>
 	</xsl:template>
 
 </xsl:stylesheet>

@@ -36,7 +36,7 @@ Homepage: www.aktin.org
   </intro>
   <section>
     <header>Beschreibung der Patienten(-fälle)</header>
-    <paragraph>Im Zeitraum <pref ref="zeitraum"/> wurden in der Notaufnahme insgesamt <pref ref="anzahl"/> Patienten behandelt. Deren Geschlechts- und Altersverteilung wird in den folgenden Tabellen und Grafiken dargestellt.</paragraph>
+    <paragraph>Im Zeitraum <pref ref="zeitraum"/> wurden in der Notaufnahme insgesamt <pref ref="encounters"/> Fälle (von <pref ref="encounters"/> verschiedenen Patienten behandelt). Deren Geschlechts- und Altersverteilung wird in den folgenden Tabellen und Grafiken dargestellt.</paragraph>
     <section>
       <header>Geschlechtsverteilung</header>
       <table ref="t1.1">Tabelle 1.1: Geschlechtsverteilung</table>

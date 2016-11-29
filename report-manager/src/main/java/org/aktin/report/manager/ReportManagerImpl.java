@@ -135,6 +135,7 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	public void setKeepIntermediateFiles(boolean keepFiles){
 		this.keepIntermediateFiles = keepFiles;
 	}
+
 	/* (non-Javadoc)
 	 * @see org.aktin.report.manager.ReportManager#generateReport(org.aktin.report.Report, java.time.Instant, java.time.Instant, java.nio.file.Path)
 	 */

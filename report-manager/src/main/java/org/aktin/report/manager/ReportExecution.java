@@ -118,9 +118,11 @@ public class ReportExecution implements GeneratedReport, URIResolver{
 		// write report options and preferences to xml
 		Map<String, String> prefs = new HashMap<>();
 		// TODO rename to report.data.start, report.data.end
-		prefs.put("start", fromTimestamp.toString());
-		prefs.put("end", endTimestamp.toString());
+		prefs.put("report.data.start", fromTimestamp.toString());
+		prefs.put("report.data.end", endTimestamp.toString());
 		prefs.put("report.data.timestamp", getDataTimestamp().toString());
+		// report.data.patients
+		// report.data.encounters
 		prefs.put("report.template.id", getTemplateId());
 		prefs.put("report.template.version", getTemplateVersion());
 		// add requested local preferences, e.g. local.o/ou/cn

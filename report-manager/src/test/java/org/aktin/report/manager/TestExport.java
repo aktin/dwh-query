@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -89,10 +87,11 @@ public class TestExport implements DataExtractor{
 	// Dump data from a local i2b2 database to stdout (in eav-xml format)
 	public static void main(String[] args) throws Exception{
 		DataSource t = new LocalI2b2DataSource();
-		Map<String,String> config = new HashMap<>();
-		config.put("project", "AKTIN");
-		PostgresPatientStore ps = new PostgresPatientStore(t,config);
-		PostgresVisitStore vs = new PostgresVisitStore(t,config);
+		String projectId = "AKTIN";
+		PostgresPatientStore ps = new PostgresPatientStore();
+		ps.open(t.getConnection(), projectId);
+		PostgresVisitStore vs = new PostgresVisitStore();
+		ps.open(t.getConnection(), projectId);
 		ObservationFactory of = new ObservationFactoryImpl(ps, vs);
 //		ExportDescriptor ed = JAXB.unmarshal(TestExport.class.getResourceAsStream("/export-descriptor.xml"), ExportDescriptor.class);
 //		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));

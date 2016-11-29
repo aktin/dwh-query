@@ -9,16 +9,24 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import javax.ejb.Singleton;
+import javax.enterprise.concurrent.ManagedExecutorService;
+import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.xml.transform.Source;
 
+import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
+import org.aktin.dwh.PreferenceKey;
 
 import de.sekmi.histream.ObservationFactory;
 import de.sekmi.histream.export.TableExport;
@@ -29,7 +37,8 @@ import de.sekmi.histream.export.config.ExportException;
 import de.sekmi.histream.export.csv.CSVWriter;
 import de.sekmi.histream.i2b2.I2b2Extractor;
 import de.sekmi.histream.i2b2.I2b2ExtractorFactory;
-import de.sekmi.histream.impl.ObservationFactoryImpl;
+import de.sekmi.histream.i2b2.PostgresPatientStore;
+import de.sekmi.histream.i2b2.PostgresVisitStore;
 
 /**
  * Takes a time interval and concept list and extracts all
@@ -50,9 +59,7 @@ import de.sekmi.histream.impl.ObservationFactoryImpl;
 class DataExtractorImpl implements DataExtractor, Closeable{
 	//private static final Logger log = Logger.getLogger(DataExtractor.class.getName());
 	private I2b2ExtractorFactory extractor;
-	private ObservationFactory of;
-	// TODO use resource/inject annotation to get a ManagedExecutorService
-	private Executor executor;
+	private Executor executor; // will be filled via resource injection or setter method
 
 	/**
 	 * Opens database connections to i2b2 and prepares
@@ -61,11 +68,27 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	 * @throws IOException io error
 	 * @throws SQLException sql error
 	 */
-	public DataExtractorImpl(DataSource crc_ds) throws IOException, SQLException{
-		// use JNDI for database connection
-		of = new ObservationFactoryImpl();
-		// TODO need patient and encounter extension? if yes, add to factory
-		extractor = new I2b2ExtractorFactory(crc_ds, of);
+	public DataExtractorImpl(DataSource crc_ds, PostgresPatientStore patientStore, PostgresVisitStore visitStore, ObservationFactory factory) throws IOException, SQLException{
+		extractor = new I2b2ExtractorFactory(crc_ds, factory);
+		extractor.setPatientLookup(patientStore::lookupPatientNum);
+		extractor.setVisitLookup(visitStore::lookupEncounterNum);
+	}
+
+	@Inject
+	public DataExtractorImpl(Preferences prefs, PostgresPatientStore patientStore, PostgresVisitStore visitStore, ObservationFactory factory) throws NamingException, SQLException{
+		InitialContext ctx = new InitialContext();
+		DataSource crcDS = (DataSource)ctx.lookup(prefs.get(PreferenceKey.i2b2DatasourceCRC));
+		extractor = new I2b2ExtractorFactory(crcDS, factory);
+		extractor.setPatientLookup(patientStore::lookupPatientNum);
+		extractor.setVisitLookup(visitStore::lookupEncounterNum);		
+	}
+
+	@Resource
+	public void setExecutor(ManagedExecutorService executor){
+		this.executor = executor;
+	}
+	public void setExecutor(Executor executor){
+		this.executor = executor;
 	}
 
 	/**
@@ -113,6 +136,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	 */
 	@Override
 	public CompletableFuture<String[]> extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor, Path destinationDir){
+		Objects.requireNonNull(this.executor, "Executor not provided/injected");
 		ExportDescriptor ed = ExportDescriptor.parse(exportDescriptor);
 		TableExport fac = new TableExport(ed);
 

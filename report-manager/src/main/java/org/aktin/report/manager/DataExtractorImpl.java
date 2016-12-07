@@ -26,9 +26,11 @@ import javax.xml.transform.Source;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
+import org.aktin.dwh.ExtractedData;
 import org.aktin.dwh.PreferenceKey;
 
 import de.sekmi.histream.ObservationFactory;
+import de.sekmi.histream.export.ExportSummary;
 import de.sekmi.histream.export.TableExport;
 import de.sekmi.histream.export.config.Concept;
 import de.sekmi.histream.export.config.EavTable;
@@ -112,30 +114,9 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		}
 		return hasWildcard;
 	}
-	/**
-	 * Extracts data to a directory. After return, the directory
-	 * will contain the following files:
-	 * <ul>
-	 * 	<li>patients.txt</li>
-	 *  <li>encounters.txt</li>
-	 *  <li>[table_name].txt for each additional table
-	 * </ul>
-	 * <p>
-	 * In case of a checked exception, it is guaranteed that no files and 
-	 * directories are created.
-	 * <p>
-	 * @param fromTimestamp start timestamp for the data to extract
-	 * @param endTimestamp end timestamp for the data to extract
-	 * @param report report for which the data will be extracted
-	 * @return File names of the created files
-	 * 
-	 * @throws IOException error writing files
-	 * @throws SQLException error while extracting data
-	 * @throws ExportException error with export processing
-	 * @throws UnsupportedOperationException concepts are specified via IRI, which is currently not supported
-	 */
+
 	@Override
-	public CompletableFuture<String[]> extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor, Path destinationDir){
+	public CompletableFuture<ExtractedData> extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor, Path destinationDir){
 		Objects.requireNonNull(this.executor, "Executor not provided/injected");
 		ExportDescriptor ed = ExportDescriptor.parse(exportDescriptor);
 		TableExport fac = new TableExport(ed);
@@ -152,9 +133,11 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		csv.setVisitTableName("encounters");
 
 		return CompletableFuture.supplyAsync(() -> {
+			ExtractedDataImpl edi;
 			// perform the export operation
 			try( I2b2Extractor ext = extractor.extract(Timestamp.from(fromTimestamp), Timestamp.from(endTimestamp), notations) ){
-				fac.export(ext, csv);
+				ExportSummary sum = fac.export(ext, csv);
+				edi = new ExtractedDataImpl(sum);
 			} catch (ExportException | SQLException | IOException e) {
 				// wrap for completable
 				throw new CompletionException(e);
@@ -169,7 +152,8 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 			for( int i=0; i<eav.length; i++ ){
 				files[2+i] = csv.fileNameForTable(eav[i].getId());
 			}
-			return files;
+			edi.setDataFileNames(files);
+			return edi;
 			
 		}, this.executor);
 	}

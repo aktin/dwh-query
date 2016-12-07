@@ -36,7 +36,10 @@
 					<fo:block>
 						Krankenhaus <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.ou']/text()"/>
 					</fo:block>
-					<fo:block>lalala</fo:block>
+					<fo:block>
+	Number of Patients: <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.patients']/text()"/>,
+	Number of Encounters: <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.encounters']/text()"/>					
+					</fo:block>
 					<fo:block space-before="200pt">
 						Verbesserung der Versorgungsforschung in der Akutmedizin in Deutschland durch
 						den Aufbau eines nationalen Notaufnahmeregisters

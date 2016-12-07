@@ -14,9 +14,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
 
 import org.aktin.dwh.DataExtractor;
+import org.aktin.dwh.ExtractedData;
 import org.junit.Test;
 
 import de.sekmi.histream.ObservationFactory;
+import de.sekmi.histream.export.ExportSummary;
 import de.sekmi.histream.export.MemoryExportWriter;
 import de.sekmi.histream.export.config.EavTable;
 import de.sekmi.histream.export.config.ExportDescriptor;
@@ -42,7 +44,7 @@ public class TestExport implements DataExtractor{
 	 * Use a small data set. Same as {@link #small()}.
 	 */
 	public TestExport(){
-		resourceData = "/demo-eav-data_simple.xml";
+		resourceData = "/demo-eav-data.xml";
 	}
 
 	/**
@@ -77,7 +79,8 @@ public class TestExport implements DataExtractor{
 		GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData));
 		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));
 		MemoryExportWriter ew = new MemoryExportWriter();
-		ed.newExport().export(reader, ew);
+		ExportSummary summary = ed.newExport().export(reader, ew);
+		
 		reader.close();
 		ew.close();
 		//ew.dump();
@@ -115,7 +118,7 @@ public class TestExport implements DataExtractor{
 	}
 
 	@Override
-	public CompletableFuture<String[]> extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor,
+	public CompletableFuture<ExtractedData> extractData(Instant fromTimestamp, Instant endTimestamp, Source exportDescriptor,
 			Path destinationDir) {
 		return CompletableFuture.supplyAsync( () -> {
 			
@@ -130,8 +133,10 @@ public class TestExport implements DataExtractor{
 		ExportDescriptor ed = ExportDescriptor.parse(exportDescriptor);
 		CSVWriter ew = new CSVWriter(destinationDir, '\t', ".txt");
 		ew.setVisitTableName("encounters");
+		ExtractedDataImpl edi;
 		try {
-			ed.newExport().export(reader, ew);
+			ExportSummary summary = ed.newExport().export(reader, ew);
+			edi = new ExtractedDataImpl(summary);
 			reader.close();
 		} catch (ExportException | XMLStreamException | IOException e) {
 			throw new CompletionException(e);
@@ -146,7 +151,8 @@ public class TestExport implements DataExtractor{
 		for( int i=0; i<t.length; i++ ){
 			files[2+i] = ew.fileNameForTable(t[i].getId());
 		}
-		return files;
+		edi.setDataFileNames(files);
+		return edi;
 		} );
 	}
 

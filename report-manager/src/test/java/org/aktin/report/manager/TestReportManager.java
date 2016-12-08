@@ -3,6 +3,11 @@ package org.aktin.report.manager;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -18,6 +23,8 @@ import de.sekmi.histream.i2b2.PostgresPatientStore;
 import de.sekmi.histream.i2b2.PostgresVisitStore;
 import de.sekmi.histream.impl.ObservationFactoryImpl;
 import de.sekmi.histream.io.GroupedXMLWriter;
+
+import org.aktin.report.test.SimpleReport;
 import org.junit.Assert;
 
 public class TestReportManager {
@@ -40,6 +47,24 @@ public class TestReportManager {
 		} catch (ExecutionException e) {
 			Assert.assertTrue(e.getCause().getClass() == IOException.class);
 		}
+	}
+
+	@Test
+	public void expectSimpleReportAvailable(){
+		ReportManagerImpl manager = new ReportManagerImpl("asf", new SimpleReport());
+		// check by id
+		Assert.assertNotNull(manager.getReport(SimpleReport.class.getName()));
+		// check in list
+		Assert.assertEquals(SimpleReport.class, manager.reports().iterator().next().getClass());
+	}
+
+	@Test
+	public void addPeriodToInstant(){
+		Instant i = Instant.now();
+		Period p = Period.ofMonths(-1);
+		LocalDateTime dt = LocalDateTime.ofInstant(i, ZoneId.of("Europe/Berlin"));
+		//i = Instant.parse("2016-10-01T00:00:00Z");
+		dt.plus(p);
 	}
 	public static void main(String[] args) throws SQLException, XMLStreamException, ClassNotFoundException, IOException{
 		Class.forName("org.postgresql.Driver");

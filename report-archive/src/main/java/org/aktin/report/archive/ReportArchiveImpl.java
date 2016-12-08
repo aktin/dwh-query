@@ -63,7 +63,7 @@ public class ReportArchiveImpl implements ReportArchive{
 			rs.close();
 			st.close();
 		} catch (SQLException e) {
-			throw new IOException();
+			throw new IOException(e);
 		}
 	}
 

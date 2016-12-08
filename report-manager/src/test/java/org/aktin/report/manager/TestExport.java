@@ -90,6 +90,7 @@ public class TestExport implements DataExtractor{
 		MemoryExportWriter ew = new MemoryExportWriter();
 		ExportSummary summary = ed.newExport().export(reader, ew);
 		Assert.assertEquals(1, summary.getPatientCount());
+		Assert.assertEquals(1, summary.getVisitCount());
 		reader.close();
 		ew.close();
 		//ew.dump();

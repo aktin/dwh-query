@@ -35,6 +35,7 @@
 	
 	<modules>
 		<module>report-manager</module>
+		<module>report-archive</module>
 		<module>report-schedule</module>
 		<module>reports</module>
 	</modules>

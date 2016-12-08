@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eav-data xmlns="http://sekmi.de/histream/ns/eav-data"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<meta>
+		<etl-strategy>replace-source</etl-strategy>
+		<source timestamp="2015-01-17T16:33:00" id="-9EJch-dWAPQzv0Zezz2DQbbdow=" />
+	</meta>
+<!-- patient encounter without facts is treated same as no patient/encounter at al -->
+<!--
+	<patient id="9_HqQB6NX6yx-EJptbveg7_yJEY=">
+		<gender>male</gender>
+		<encounter id="fLl73SVjwMVk8O7nD2CyVasZ_vM=">
+			<start>2015-01-17T16:03</start>
+		</encounter>
+	</patient>
+ -->
+</eav-data>

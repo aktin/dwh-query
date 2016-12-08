@@ -34,8 +34,13 @@ import de.sekmi.histream.impl.SimpleVisitExtension;
 import de.sekmi.histream.io.GroupedXMLReader;
 import de.sekmi.histream.io.GroupedXMLWriter;
 import de.sekmi.histream.io.Streams;
+import org.junit.Assert;
 
 public class TestExport implements DataExtractor{
+	private static final String SMALL_DATASET_RES = "/demo-eav-data-small.xml";
+	private static final String LARGE_DATASET_RES = "/demo-eav-data-large.xml";
+	private static final String EMPTY_DATASET_RES = "/demo-eav-data-empty.xml";
+	
 	// TODO validate CDA to export
 	
 	private String resourceData;
@@ -44,7 +49,11 @@ public class TestExport implements DataExtractor{
 	 * Use a small data set. Same as {@link #small()}.
 	 */
 	public TestExport(){
-		resourceData = "/demo-eav-data.xml";
+		this(SMALL_DATASET_RES);
+	}
+	
+	private TestExport(String resourceData){
+		this.resourceData = resourceData;
 	}
 
 	/**
@@ -52,17 +61,17 @@ public class TestExport implements DataExtractor{
 	 * @return extractor
 	 */
 	public static TestExport large(){
-		TestExport e = new TestExport();
-		e.resourceData = "/demo-eav-data.xml";
-		return e;
+		return new TestExport(LARGE_DATASET_RES);
 	}
 	/**
 	 * Use a small test data set
 	 * @return extractor
 	 */
 	public static TestExport small(){
-		TestExport e = new TestExport();
-		return e;
+		return new TestExport(SMALL_DATASET_RES);
+	}
+	public static TestExport empty(){
+		return new TestExport(EMPTY_DATASET_RES);
 	}
 	/**
 	 * Read demo-eav-data.xml from src/test/resources and export all data to in-memory tables.
@@ -80,7 +89,7 @@ public class TestExport implements DataExtractor{
 		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));
 		MemoryExportWriter ew = new MemoryExportWriter();
 		ExportSummary summary = ed.newExport().export(reader, ew);
-		
+		Assert.assertEquals(1, summary.getPatientCount());
 		reader.close();
 		ew.close();
 		//ew.dump();

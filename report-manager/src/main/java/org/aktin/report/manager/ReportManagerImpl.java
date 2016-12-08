@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -141,6 +142,9 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	 */
 	@Override
 	public CompletableFuture<ReportExecution> generateReport(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination) throws IOException{
+		Objects.requireNonNull(extractor, "DataExtractor not defined");
+		Objects.requireNonNull(getExecutor(), "Executor not defined");
+		Objects.requireNonNull(preferenceManager, "PreferenceManager not defined");
 		// TODO find a way to pass report specific configuration. e.g. Map<String,Object>
 		ReportExecution re = new ReportExecution(report, fromTimestamp, endTimestamp, reportDestination);
 		re.createTempDirectory();

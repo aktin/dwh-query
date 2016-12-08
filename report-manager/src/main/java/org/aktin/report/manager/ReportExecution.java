@@ -127,6 +127,7 @@ class ReportExecution implements GeneratedReport, URIResolver{
 		return reportDestination;
 	}
 	void createTempDirectory() throws IOException{
+		// TODO use a different main temp directory from preferences, other from the system temp directory
 		temp = Files.createTempDirectory("report-"+report.getId());
 		log.info("Using temporary directory: "+temp);
 	}

@@ -37,8 +37,7 @@
 			</fo:declarations>
 			<fo:page-sequence master-reference="page-layout" language="de">
                 <fo:static-content flow-name="header-normal">
-					<!-- <fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht D07 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'monat']/text()"/>&#160;<xsl:value-of select="document('report-data.xml')/report-data/text[@id = 'jahr']/text()"/></fo:block> -->
-                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht D09 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template></fo:block>
+                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht V01 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template></fo:block>
 				</fo:static-content>
 				<fo:static-content flow-name="footer-normal">
 					<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/> von

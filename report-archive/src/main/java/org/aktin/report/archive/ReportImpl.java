@@ -1,9 +1,12 @@
 package org.aktin.report.archive;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +14,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +23,7 @@ import java.util.Properties;
 
 import org.aktin.report.ArchivedReport;
 import org.aktin.report.GeneratedReport;
+import org.aktin.report.ReportInfo;
 
 public class ReportImpl implements ArchivedReport{
 	private ReportArchiveImpl archive;
@@ -28,14 +34,18 @@ public class ReportImpl implements ArchivedReport{
 	private Instant dataStart;
 	private Instant dataEnd;
 	private Instant dataTimestamp;
+	private Instant createdTimestamp;
 	private String mediaType;
 	private String userId;
 	/** report preferences. loaded on demand from the database */
 	private Map<String,String> prefs;
 
-	static final String selectReports = "SELECT id, template_id, template_version, data_start, data_end, data_timestamp, media_type, user_name, path FROM generated_reports";
+	private static final String MEDIATYPE_FAILURE_STACKTRACE = "text/vnd.error.stacktrace";
+	static final String selectReports = "SELECT id, template_id, template_version, data_start, data_end, created_timestamp, created_by, data_timestamp, media_type, path FROM generated_reports ORDER BY id";
 	static final String selectNextReportId = "SELECT NEXTVAL('generated_reports_id')";
-	static final String insertReport = "INSERT INTO generated_reports(id, template_id, template_version, data_start, data_end, data_timestamp, media_type, user_name, path) VALUES(?,?,?,?,?,?,?,?,?)";
+	static final String selectNextReportIdHsql = "CALL NEXT VALUE FOR generated_reports_id";
+	static final String insertReport = "INSERT INTO generated_reports(id, template_id, template_version, data_start, data_end, created_timestamp, created_by, preferences) VALUES(?,?,?,?,?,?,?,?)";
+	static final String updateReport = "UPDATE generated_reports SET media_type=?, path=?, data_timestamp=?, preferences=? WHERE id=?";
 	static final String deleteReport = "DELETE FROM generated_reports WHERE id=?";
 	private static final String SELECT_REPORT_PREFS = "SELECT preferences FROM generated_reports WHERE id=?";
 	
@@ -50,16 +60,23 @@ public class ReportImpl implements ArchivedReport{
 		r.templateVersion = rs.getString(3);
 		r.dataStart = rs.getTimestamp(4).toInstant();
 		r.dataEnd = rs.getTimestamp(5).toInstant();
-		r.dataTimestamp = rs.getTimestamp(6).toInstant();
-		r.mediaType = rs.getString(7);
-		r.userId = rs.getString(8);
-		r.location = archive.getDataDir().resolve(rs.getString(9));
+		r.createdTimestamp = rs.getTimestamp(6).toInstant();
+		r.userId = rs.getString(7);
+		Timestamp ts = rs.getTimestamp(8);
+		if( ts != null ){
+			r.dataTimestamp = ts.toInstant();			
+		}
+		r.mediaType = rs.getString(9);
+		String path = rs.getString(10);
+		if( path != null ){
+			r.location = archive.getDataDir().resolve(path);			
+		}
 		return r;
 	}
 	static int nextResultId(Connection dbc) throws SQLException{
 		int id;
 		Statement stmt = dbc.createStatement();
-		ResultSet rs = stmt.executeQuery(ReportImpl.selectNextReportId);
+		ResultSet rs = stmt.executeQuery(ReportImpl.selectNextReportIdHsql);
 		rs.next();
 		id = rs.getInt(1);
 		rs.close();
@@ -67,17 +84,19 @@ public class ReportImpl implements ArchivedReport{
 		return id;
 	}
 
-	static ReportImpl insertReport(Connection dbc, GeneratedReport report, String userId, ReportArchiveImpl archive) throws SQLException, IOException{
+	static ReportImpl insertReport(Connection dbc, ReportInfo report, String userId, ReportArchiveImpl archive) throws SQLException, IOException{
 		ReportImpl ri = new ReportImpl(archive);
 		ri.id = nextResultId(dbc);
 		ri.templateId = report.getTemplateId();
 		ri.templateVersion = report.getTemplateVersion();
 		ri.dataStart = report.getStartTimestamp();
 		ri.dataEnd = report.getEndTimestamp();
-		ri.dataTimestamp = report.getDataTimestamp();
-		ri.mediaType = report.getMediaType();
+//		ri.dataTimestamp = report.getDataTimestamp();
+//		ri.mediaType = report.getMediaType();
+		ri.createdTimestamp = Instant.now();
 		ri.userId = userId;
-		ri.moveGeneratedReportFiles(report.getLocation());
+		ri.prefs = new HashMap<>(report.getPreferences());
+//		ri.moveGeneratedReportFiles(report.getLocation());
 		ri.insertIntoTable(dbc);
 		return ri;
 	}
@@ -88,10 +107,14 @@ public class ReportImpl implements ArchivedReport{
 			s.setString(3, getTemplateVersion());
 			s.setTimestamp(4, Timestamp.from(getStartTimestamp()));
 			s.setTimestamp(5, Timestamp.from(getEndTimestamp()));
-			s.setTimestamp(6, Timestamp.from(getDataTimestamp()));
-			s.setString(7, getMediaType());
-			s.setString(8, getUserId());
-			s.setString(9, archive.getDataDir().relativize(getLocation()).toString());
+			s.setTimestamp(6, Timestamp.from(createdTimestamp));
+			s.setString(7, getUserId());
+			if( this.prefs != null && this.prefs.size() > 0 ){
+				s.setString(8, getPreferencesClob());
+			}else{
+				s.setString(8, null);
+			}
+//			s.setString(7, getMediaType());
 			s.executeUpdate();
 		}
 	}
@@ -104,8 +127,6 @@ public class ReportImpl implements ArchivedReport{
 	 * @throws IOException
 	 */
 	private void moveGeneratedReportFiles(Path oldLocation) throws IOException{
-		// group reports by year of creation/extraction
-		int group = getDataTimestamp().get(ChronoField.YEAR);
 		String suffix;
 		if( getMediaType().equals("application/pdf") && Files.isRegularFile(oldLocation) ){
 			suffix = ".pdf";
@@ -114,7 +135,8 @@ public class ReportImpl implements ArchivedReport{
 		}else{
 			throw new IOException("Unable to determine file suffix for report with type "+getMediaType());
 		}
-		Path dest = archive.getDataDir().resolve(group + "/" + getId()+suffix);
+		// group reports by year of creation/extraction
+		Path dest = createGroupedPath(archive.getDataDir(), getDataTimestamp(),getId()+suffix);
 		Files.move(oldLocation, dest);
 		this.location = dest;
 	}
@@ -162,6 +184,16 @@ public class ReportImpl implements ArchivedReport{
 			prefs.put(key, props.getProperty(key));
 		}		
 	}
+	private String getPreferencesClob(){
+		Properties props = new Properties();
+		StringWriter writer = new StringWriter();
+		try {
+			props.store(writer, null);
+		} catch (IOException e) {
+			throw new AssertionError(); // should not happen
+		}
+		return writer.toString();
+	}
 	@Override
 	public Map<String, String> getPreferences() {
 		// lazy load
@@ -198,4 +230,67 @@ public class ReportImpl implements ArchivedReport{
 		return userId;
 	}
 
+	@Override
+	public Instant getCreatedTimestamp() {
+		return this.createdTimestamp;
+	}
+
+	@Override
+	public Status getStatus() {
+		if( this.mediaType == null ){
+			return Status.Waiting;
+		}else if( this.mediaType.equals(MEDIATYPE_FAILURE_STACKTRACE) ){
+			return Status.Failed;
+		}else{
+			return Status.Completed;
+		}
+	}
+	private static LocalDateTime getLocalTime(Instant instant){
+		return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+	}
+
+	private void updateReportData(Connection dbc) throws SQLException{
+		try( PreparedStatement ps = dbc.prepareStatement(updateReport) ){
+			ps.setString(1, getMediaType());
+			ps.setString(2, archive.getDataDir().relativize(getLocation()).toString());
+			if( this.dataTimestamp == null ){
+				ps.setTimestamp(3, null);
+			}else{
+				ps.setTimestamp(3, Timestamp.from(this.dataTimestamp));
+			}
+			if( this.prefs != null && this.prefs.size() > 0 ){
+				ps.setString(4, getPreferencesClob());
+			}else{
+				ps.setString(4, null);
+			}
+			ps.setString(2, archive.getDataDir().relativize(getLocation()).toString());
+			ps.setInt(5, this.id);
+		}
+	}
+	private Path createGroupedPath(Path base, Instant timestamp, String file) throws IOException{
+		int group = getLocalTime(timestamp).getYear();
+		Path subdir = base.resolve(Integer.toString(group));
+		Files.createDirectories(subdir); // make sure directory exists
+		return subdir.resolve(file);
+		
+	}
+	public void setFailed(Connection dbc, Throwable cause) throws IOException, SQLException{
+		this.mediaType = MEDIATYPE_FAILURE_STACKTRACE;
+		// we don't have a data timestamp, use the created timestamp for path
+		this.location = createGroupedPath(archive.getDataDir(), getCreatedTimestamp(),getId()+".txt");
+		// TODO maybe write additional error output or warnings after the stack trace
+		try( PrintWriter w = new PrintWriter(Files.newBufferedWriter(this.location, StandardOpenOption.CREATE_NEW)) ){
+			cause.printStackTrace(w);			
+		}
+		updateReportData(dbc);
+	}
+
+	public void setData(Connection dbc, GeneratedReport report) throws IOException, SQLException {
+		this.dataTimestamp = report.getDataTimestamp();
+		// update preferences
+		this.prefs = new HashMap<>(report.getPreferences());
+		this.mediaType = report.getMediaType();
+		moveGeneratedReportFiles(report.getLocation());
+		updateReportData(dbc);
+	}
 }

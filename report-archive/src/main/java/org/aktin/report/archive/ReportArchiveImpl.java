@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +25,7 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.GeneratedReport;
 import org.aktin.report.ReportArchive;
+import org.aktin.report.ReportInfo;
 
 @Singleton
 public class ReportArchiveImpl implements ReportArchive{
@@ -34,8 +36,15 @@ public class ReportArchiveImpl implements ReportArchive{
 	private Path archiveDir;
 	private DataSource ds;
 	private List<ReportImpl> reports;
-	
 
+	public ReportArchiveImpl(){
+	}
+
+	public ReportArchiveImpl(DataSource ds, Path dataDir, Path archiveDir){
+		this.ds = ds;
+		this.dataDir = dataDir;
+		this.archiveDir = archiveDir;
+	}
 	@Inject
 	public void setPreferences(Preferences prefs){
 //		this.prefs = prefs;
@@ -68,12 +77,16 @@ public class ReportArchiveImpl implements ReportArchive{
 	}
 
 	@Override
-	public ReportImpl addReport(GeneratedReport report) throws IOException {
+	public ReportImpl addReport(ReportInfo report, String userId) throws IOException {
+		ReportImpl r;
 		try( Connection dbc = ds.getConnection() ){
-			return ReportImpl.insertReport(dbc, report, "USER??", this);
+			r = ReportImpl.insertReport(dbc, report, userId, this);
 		} catch (SQLException e) {
 			throw new IOException("Unable to write report info to database", e);
 		}
+		// add to reports
+		reports.add(r);
+		return r;
 	}
 
 	private int getReportIndex(int id){
@@ -163,6 +176,29 @@ public class ReportArchiveImpl implements ReportArchive{
 	@Override
 	public Iterable<ReportImpl> reports() {
 		return reports;
+	}
+
+	@Override
+	public void setReportFailure(int id, Throwable cause) throws IOException {
+		ReportImpl report = get(id);
+		Objects.requireNonNull(report);
+		try( Connection dbc = ds.getConnection() ){
+			report.setFailed(dbc, cause);
+		} catch (SQLException e) {
+			throw new IOException(e);
+		}
+	}
+
+	@Override
+	public ReportImpl setReportResult(int id, GeneratedReport report) throws IOException {
+		ReportImpl my = get(id);
+		Objects.requireNonNull(my);
+		try( Connection dbc = ds.getConnection() ){
+			my.setData(dbc, report);
+		} catch (SQLException e) {
+			throw new IOException(e);
+		}
+		return my;
 	}
 
 }

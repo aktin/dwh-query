@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -51,7 +50,7 @@ public class TestReportManager {
 
 	@Test
 	public void expectSimpleReportAvailable(){
-		ReportManagerImpl manager = new ReportManagerImpl("asf", new SimpleReport());
+		ReportManagerImpl manager = new ReportManagerImpl("asf", TestReportGeneration.getReportTempDir(), new SimpleReport());
 		// check by id
 		Assert.assertNotNull(manager.getReport(SimpleReport.class.getName()));
 		// check in list

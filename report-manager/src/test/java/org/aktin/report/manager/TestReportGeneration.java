@@ -1,6 +1,7 @@
 package org.aktin.report.manager;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,9 +49,18 @@ public class TestReportGeneration {
 		Assert.fail("Path to Rscript not found. Please edit TestReportGeneration.java or define a (local) system property: "+PreferenceKey.rScriptBinary.key());
 	}
 
+	public static Path getReportTempDir(){
+		Path tempDir = Paths.get("target/report-temp");
+		try {
+			Files.createDirectories(tempDir);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		return tempDir;
+	}
 	public static void generatePDF(Report report, Instant start, Instant end, Path pdf, TestExport dataset, boolean keepIntermediateFiles) throws IOException{
 		Objects.requireNonNull(rScript, "Please call TestReportGenerator.locateR() to locate Rscript");
-		ReportManagerImpl manager = new ReportManagerImpl(rScript.toString(), report);
+		ReportManagerImpl manager = new ReportManagerImpl(rScript.toString(), getReportTempDir(), report);
 		manager.setExecutor(ForkJoinPool.commonPool());
 		manager.setKeepIntermediateFiles(keepIntermediateFiles);
 		manager.setPreferenceManager(TestPreferences.getTestPreferences());

@@ -1,6 +1,8 @@
 package org.aktin.report.manager;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -24,7 +26,9 @@ import org.aktin.Preference;
 import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
+import org.aktin.report.GeneratedReport;
 import org.aktin.report.Report;
+import org.aktin.report.ReportInfo;
 import org.aktin.report.ReportManager;
 
 /**
@@ -61,7 +65,8 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	
 	private Executor executor;
 	private boolean keepIntermediateFiles;
-	
+
+	private Path tempDir;
 
 	/**
 	 * Will be injected via {@link #setDataExtractor(DataExtractor)}
@@ -80,13 +85,28 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	}
 
 	/**
-	 * Manually construction of report manager. Don't forget to call {@link #setDataExtractor(DataExtractor)}
+	 * Manually construction of report manager.
+	 * <p>
+	 * This will override the rScript and tempDirectory preferences, which would be otherwise loaded from
+	 * the preference manager (see {@link #setPreferenceManager(Preferences)}).
+	 * </p>
+	 * <p>
+	 * You still need to call {@link #setDataExtractor(DataExtractor)}, {@link #setPreferenceManager(Preferences)}
+	 * and {@link #setExecutor(Executor)} in order to generate reports.
+	 * </p>
 	 * and {@link #setPreferenceManager(Preferences)}
 	 * @param rScript
 	 * @param reports
 	 */
-	public ReportManagerImpl(String rScript, Report...reports){
+	public ReportManagerImpl(String rScript, Path tempDir, Report...reports){
 		this.rScript = rScript;
+		this.tempDir = tempDir;
+		// make sure the temp dir exists, create if necessary
+		try {
+			Files.createDirectories(tempDir);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 		this.staticReports = reports;
 		this.keepIntermediateFiles = false;
 	}
@@ -98,6 +118,13 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	@Inject
 	public void setPreferenceManager(Preferences prefs){
 		this.preferenceManager = prefs;
+		// load rScript and tempDir from preferences, if not overridden by manual constructor
+		if( rScript == null ){
+			rScript = prefs.get(PreferenceKey.rScriptBinary);
+		}
+		if( this.tempDir == null ){
+			this.tempDir = Paths.get(prefs.get(PreferenceKey.reportTempPath));
+		}
 	}
 
 	@Resource
@@ -147,14 +174,43 @@ public class ReportManagerImpl extends Module implements ReportManager{
 		Objects.requireNonNull(preferenceManager, "PreferenceManager not defined");
 		// TODO find a way to pass report specific configuration. e.g. Map<String,Object>
 		ReportExecution re = new ReportExecution(report, fromTimestamp, endTimestamp, reportDestination);
-		re.createTempDirectory();
+		re.createTempDirectory(tempDir);
 
 		// to keep all generated files, use #setKeepIntermediateFiles
 		re.setKeepIntermediateFiles(keepIntermediateFiles);
 
 		return re.extractData(extractor).thenApplyAsync( Void ->  {
 			try {
-				re.writePreferences(preferenceManager);
+				re.writePreferences(preferenceManager, Collections.emptyMap());
+				re.runR(Paths.get(ReportManagerImpl.this.rScript));
+				re.runFOP();
+				re.cleanup();
+			} catch (IOException e) {
+				throw new CompletionException(e);
+			}
+			return re;
+		}, getExecutor() );
+	}
+	@Override
+	public CompletableFuture<? extends GeneratedReport> generateReport(ReportInfo reportInfo, Path reportDestination) throws IOException {
+		Report report = getReport(reportInfo.getTemplateId());
+		if( report == null ){
+			throw new IllegalArgumentException("Report template not found: "+reportInfo.getTemplateId());
+		}
+
+		Objects.requireNonNull(extractor, "DataExtractor not defined");
+		Objects.requireNonNull(getExecutor(), "Executor not defined");
+		Objects.requireNonNull(preferenceManager, "PreferenceManager not defined");
+		// TODO find a way to pass report specific configuration. e.g. Map<String,Object>
+		ReportExecution re = new ReportExecution(report, reportInfo.getStartTimestamp(), reportInfo.getEndTimestamp(), reportDestination);
+		re.createTempDirectory(tempDir);
+
+		// to keep all generated files, use #setKeepIntermediateFiles
+		re.setKeepIntermediateFiles(keepIntermediateFiles);
+
+		return re.extractData(extractor).thenApplyAsync( Void ->  {
+			try {
+				re.writePreferences(preferenceManager, reportInfo.getPreferences());
 				re.runR(Paths.get(ReportManagerImpl.this.rScript));
 				re.runFOP();
 				re.cleanup();
@@ -179,7 +235,7 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	@Deprecated
 	public void generateReportNow(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination) throws IOException{
 		ReportExecution re = new ReportExecution(report, fromTimestamp, endTimestamp, reportDestination);
-		re.createTempDirectory();
+		re.createTempDirectory(tempDir);
 
 		try {
 			re.extractData(extractor).get();
@@ -189,7 +245,7 @@ public class ReportManagerImpl extends Module implements ReportManager{
 			throw new IOException(e.getCause());
 		}
 
-		re.writePreferences(preferenceManager);
+		re.writePreferences(preferenceManager, Collections.emptyMap());
 
 		re.runR(Paths.get(this.rScript));
 		re.runFOP();
@@ -197,5 +253,6 @@ public class ReportManagerImpl extends Module implements ReportManager{
 		
 		re.cleanup();
 	}
+
 
 }

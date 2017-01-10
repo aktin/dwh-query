@@ -126,14 +126,19 @@ class ReportExecution implements GeneratedReport, URIResolver{
 	public Path getLocation(){
 		return reportDestination;
 	}
-	void createTempDirectory() throws IOException{
+	void createTempDirectory(Path base) throws IOException{
 		// TODO use a different main temp directory from preferences, other from the system temp directory
-		temp = Files.createTempDirectory("report-"+report.getId());
+		if( base == null ){
+			temp = Files.createTempDirectory("report-"+report.getId());
+			// use system temp dir
+		}else{
+			temp = Files.createTempDirectory(base, "report-"+report.getId());
+		}
 		log.info("Using temporary directory: "+temp);
 	}
-	private Map<String,String> selectPreferences(Preferences preferenceManager){
+	private Map<String,String> selectPreferences(Preferences preferenceManager, Map<String,String> preset){
 		// write report options and preferences to xml
-		Map<String, String> prefs = new HashMap<>();
+		Map<String, String> prefs = new HashMap<>(preset);
 		// TODO rename to report.data.start, report.data.end
 		prefs.put("report.data.start", fromTimestamp.toString());
 		prefs.put("report.data.end", endTimestamp.toString());
@@ -160,8 +165,8 @@ class ReportExecution implements GeneratedReport, URIResolver{
 				.thenAccept( a -> dataFiles = a );
 	}
 
-	void writePreferences(Preferences preferenceManager) throws IOException{
-		this.prefs = selectPreferences(preferenceManager);
+	void writePreferences(Preferences preferenceManager, Map<String,String> reportConfiguration) throws IOException{
+		this.prefs = selectPreferences(preferenceManager, reportConfiguration);
 		prefFiles = writePreferences(temp);
 	}
 

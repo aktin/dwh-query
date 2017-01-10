@@ -14,6 +14,7 @@ public class ReportInfoImpl implements ReportInfo, GeneratedReport{
 	public String templateId;
 	public String templateVersion;
 	public Map<String,String> prefs;
+	public Path location;
 
 	public String mediaType;
 	public Instant dataTimestamp;
@@ -53,8 +54,7 @@ public class ReportInfoImpl implements ReportInfo, GeneratedReport{
 	}
 	@Override
 	public Path getLocation() {
-		// TODO Auto-generated method stub
-		return null;
+		return location;
 	}
 	@Override
 	public Instant getDataTimestamp() {

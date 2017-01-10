@@ -34,7 +34,7 @@ public class ReportArchiveImpl implements ReportArchive{
 	private Path dataDir;
 	/** directory to store deleted reports (offline storage) */
 	private Path archiveDir;
-	private DataSource ds;
+	DataSource ds;
 	private List<ReportImpl> reports;
 
 	public ReportArchiveImpl(){
@@ -179,11 +179,11 @@ public class ReportArchiveImpl implements ReportArchive{
 	}
 
 	@Override
-	public void setReportFailure(int id, Throwable cause) throws IOException {
+	public void setReportFailure(int id, String description, Throwable cause) throws IOException {
 		ReportImpl report = get(id);
 		Objects.requireNonNull(report);
 		try( Connection dbc = ds.getConnection() ){
-			report.setFailed(dbc, cause);
+			report.setFailed(dbc, description, cause);
 		} catch (SQLException e) {
 			throw new IOException(e);
 		}

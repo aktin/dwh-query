@@ -1,7 +1,7 @@
 package org.aktin.report.archive;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -12,9 +12,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.EnumSet;
-import java.util.stream.Stream;
-
-import javax.sql.DataSource;
 
 import org.aktin.dwh.db.TestDataSource;
 import org.aktin.report.ArchivedReport;
@@ -22,7 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import junit.extensions.TestDecorator;
 import liquibase.exception.LiquibaseException;
 
 public class TestReportArchive {
@@ -102,11 +98,18 @@ public class TestReportArchive {
 		r.prefs.put("prop1", "val1");
 		// failed report
 		ArchivedReport ar = me.addReport(r, "User1");
-		me.setReportFailure(ar.getId(), new AssertionError());
-		// TODO succeeded report
+		me.setReportFailure(ar.getId(), null, new AssertionError());
+		
+		// succeeded report
 		ar = me.addReport(r, "User3");
 		r.mediaType = "text/vnd.aktin.test";
-//		me.setReportResult(ar.getId(), r);
+		r.location = Files.createTempFile("report-test",".txt");
+		r.dataTimestamp = Instant.now();
+		// write something to the file
+		try( BufferedWriter w = Files.newBufferedWriter(r.location) ){
+			w.write("test-content");
+		}
+		me.setReportResult(ar.getId(), r);
 		
 		// waiting report
 		ar = me.addReport(r, "User3");

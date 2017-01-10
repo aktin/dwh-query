@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -16,7 +17,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -130,6 +130,8 @@ public class ReportImpl implements ArchivedReport{
 		String suffix;
 		if( getMediaType().equals("application/pdf") && Files.isRegularFile(oldLocation) ){
 			suffix = ".pdf";
+		}else if( getMediaType().startsWith("text/") && Files.isRegularFile(oldLocation) ){
+			suffix = ".txt";
 		}else if( Files.isDirectory(oldLocation) ){
 			suffix = ""; // no suffix for directory
 		}else{
@@ -198,8 +200,8 @@ public class ReportImpl implements ArchivedReport{
 	public Map<String, String> getPreferences() {
 		// lazy load
 		if( this.prefs == null ){
-			// TODO get datasource from archive
-			try( Connection dbc = null ){
+			// get datasource from archive
+			try( Connection dbc = archive.ds.getConnection() ){
 				PreparedStatement ps = dbc.prepareStatement(SELECT_REPORT_PREFS);
 				ps.setInt(1, getId());
 				ResultSet rs = ps.executeQuery();
@@ -210,11 +212,9 @@ public class ReportImpl implements ArchivedReport{
 				rs.close();
 				ps.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new UncheckedIOException(new IOException(e));
 			} catch( IOException e ){
-				// TODO
-				e.printStackTrace();
+				throw new UncheckedIOException(e);
 			}
 		}
 		return prefs;
@@ -274,13 +274,24 @@ public class ReportImpl implements ArchivedReport{
 		return subdir.resolve(file);
 		
 	}
-	public void setFailed(Connection dbc, Throwable cause) throws IOException, SQLException{
+	public void setFailed(Connection dbc, String description, Throwable cause) throws IOException, SQLException{
 		this.mediaType = MEDIATYPE_FAILURE_STACKTRACE;
 		// we don't have a data timestamp, use the created timestamp for path
 		this.location = createGroupedPath(archive.getDataDir(), getCreatedTimestamp(),getId()+".txt");
 		// TODO maybe write additional error output or warnings after the stack trace
 		try( PrintWriter w = new PrintWriter(Files.newBufferedWriter(this.location, StandardOpenOption.CREATE_NEW)) ){
-			cause.printStackTrace(w);			
+			// print description
+			if( description != null ){
+				w.println(description);
+			}
+			if( cause != null ){
+				// empty line to separate the description
+				if( description != null ){
+					w.println();
+				}
+				// print stack trace
+				cause.printStackTrace(w);
+			}
 		}
 		updateReportData(dbc);
 	}

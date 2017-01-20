@@ -1,6 +1,7 @@
 package org.aktin.report.manager;
 
 import org.apache.fop.events.Event;
+import org.apache.fop.events.EventFormatter;
 import org.apache.fop.events.EventListener;
 import org.apache.fop.events.model.EventSeverity;
 
@@ -12,6 +13,7 @@ import org.apache.fop.events.model.EventSeverity;
  */
 class FOEventListener implements EventListener{
 	StringBuilder sb;
+	int eventCount;
 
 	public FOEventListener() {
 		sb = new StringBuilder();
@@ -23,8 +25,13 @@ class FOEventListener implements EventListener{
 			// ignore info messages and warnings
 			return;
 		}
-		sb.append(event);
+//		if( event.getSource() instanceof ExternalGraphic ){
+//			String url = ((ExternalGraphic)event.getSource()).getURL();
+//		}else{
+//		}
+		sb.append(EventFormatter.format(event));
 		sb.append('\n');
+		eventCount ++;
 //		if( event.getSeverity() == EventSeverity.ERROR ){
 //		}else if( event.getSeverity() == EventSeverity.FATAL ){
 //			

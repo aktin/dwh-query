@@ -17,7 +17,7 @@
 		
 	<modules>
 		<module>aktin-monthly</module>
-		<module>cda-field-stats</module>
+		<!--<module>cda-field-stats</module>-->
 	</modules>
 	<dependencies>
 		<!-- -->
@@ -39,13 +39,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.aktin</groupId>
-			<artifactId>report-manager</artifactId>
-			<version>0.1-SNAPSHOT</version>
-			<type>test-jar</type>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>

@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
@@ -36,6 +37,7 @@ public class ReportArchiveImpl implements ReportArchive{
 	private Path archiveDir;
 	DataSource ds;
 	private List<ReportImpl> reports;
+	boolean useHsql;
 
 	public ReportArchiveImpl(){
 	}
@@ -44,6 +46,7 @@ public class ReportArchiveImpl implements ReportArchive{
 		this.ds = ds;
 		this.dataDir = dataDir;
 		this.archiveDir = archiveDir;
+		this.useHsql = true;
 	}
 	@Inject
 	public void setPreferences(Preferences prefs){
@@ -52,7 +55,7 @@ public class ReportArchiveImpl implements ReportArchive{
 		this.archiveDir = Paths.get(prefs.get(PreferenceKey.reportArchivePath));
 	}
 
-	// TODO inject
+	@Resource(lookup="java:jboss/datasources/AktinDS")
 	public void setDataSource(DataSource ds){
 		this.ds = ds;
 	}
@@ -61,7 +64,7 @@ public class ReportArchiveImpl implements ReportArchive{
 		return dataDir;
 	}
 	@PostConstruct
-	public void loadArchive() throws IOException{
+	public void loadArchive(){
 		reports = new ArrayList<>();
 		try( Connection dbc = ds.getConnection() ){
 			Statement st = dbc.createStatement();
@@ -72,7 +75,7 @@ public class ReportArchiveImpl implements ReportArchive{
 			rs.close();
 			st.close();
 		} catch (SQLException e) {
-			throw new IOException(e);
+			throw new java.lang.IllegalStateException("Failed to load generated report metadata from database", e);
 		}
 	}
 

@@ -20,10 +20,14 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.aktin.report.ArchivedReport;
 import org.aktin.report.GeneratedReport;
 import org.aktin.report.ReportInfo;
+import org.aktin.report.ReportManager;
 
 public class ReportImpl implements ArchivedReport{
 	private ReportArchiveImpl archive;
@@ -40,6 +44,7 @@ public class ReportImpl implements ArchivedReport{
 	/** report preferences. loaded on demand from the database */
 	private Map<String,String> prefs;
 
+	private static final Logger log = Logger.getLogger(ReportImpl.class.getName());	
 	private static final String MEDIATYPE_FAILURE_STACKTRACE = "text/vnd.error.stacktrace";
 	static final String selectReports = "SELECT id, template_id, template_version, data_start, data_end, created_timestamp, created_by, data_timestamp, media_type, path FROM generated_reports ORDER BY id";
 	static final String selectNextReportId = "SELECT NEXTVAL('generated_reports_id')";
@@ -76,7 +81,12 @@ public class ReportImpl implements ArchivedReport{
 	static int nextResultId(Connection dbc) throws SQLException{
 		int id;
 		Statement stmt = dbc.createStatement();
-		ResultSet rs = stmt.executeQuery(ReportImpl.selectNextReportIdHsql);
+		// TODO only use this during unit testing
+		String query = ReportImpl.selectNextReportId;
+		if( dbc.getClass().getName().startsWith("org.hsqldb") ){
+			query = ReportImpl.selectNextReportIdHsql;
+		}
+		ResultSet rs = stmt.executeQuery(query);
 		rs.next();
 		id = rs.getInt(1);
 		rs.close();
@@ -265,6 +275,7 @@ public class ReportImpl implements ArchivedReport{
 			}
 			ps.setString(2, archive.getDataDir().relativize(getLocation()).toString());
 			ps.setInt(5, this.id);
+			ps.execute();
 		}
 	}
 	private Path createGroupedPath(Path base, Instant timestamp, String file) throws IOException{
@@ -296,6 +307,25 @@ public class ReportImpl implements ArchivedReport{
 		updateReportData(dbc);
 	}
 
+	public CompletableFuture<Void> createAsync(ReportManager manager) throws IOException{
+		// generate report
+		CompletableFuture<? extends GeneratedReport> f = manager.generateReport(this, null);
+		return f.handle( (r,t) -> {
+			if( r != null )try {
+				archive.setReportResult(this.id, r);
+			} catch (IOException e) {
+				t = e;
+			}
+			if( t != null )try {
+				log.log(Level.WARNING, "Report failed", t);
+				archive.setReportFailure(this.id, null, t);
+			} catch (IOException e1) {
+				t.addSuppressed(e1);
+				throw new IllegalStateException("Unable to write report error",t);
+			}			
+			return null;
+		});
+	}
 	public void setData(Connection dbc, GeneratedReport report) throws IOException, SQLException {
 		this.dataTimestamp = report.getDataTimestamp();
 		// update preferences

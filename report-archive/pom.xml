@@ -61,6 +61,19 @@
 			<version>2.3.3</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- somehow required for liquibase during testing -->
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.7.22</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-jdk14</artifactId>
+		    <version>1.7.22</version>
+		    <scope>test</scope>
+		</dependency>
 
 	</dependencies>
 </project>

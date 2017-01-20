@@ -6,10 +6,10 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -72,15 +72,21 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	 */
 	public DataExtractorImpl(DataSource crc_ds, PostgresPatientStore patientStore, PostgresVisitStore visitStore, ObservationFactory factory) throws IOException, SQLException{
 		extractor = new I2b2ExtractorFactory(crc_ds, factory);
-		extractor.setPatientLookup(patientStore::lookupPatientNum);
-		extractor.setVisitLookup(visitStore::lookupEncounterNum);
+//		extractor.setPatientLookup(patientStore::lookupPatientNum);
+//		extractor.setVisitLookup(visitStore::lookupEncounterNum);
 	}
 
 	@Inject
-	public DataExtractorImpl(Preferences prefs, PostgresPatientStore patientStore, PostgresVisitStore visitStore, ObservationFactory factory) throws NamingException, SQLException{
-		InitialContext ctx = new InitialContext();
-		DataSource crcDS = (DataSource)ctx.lookup(prefs.get(PreferenceKey.i2b2DatasourceCRC));
-		extractor = new I2b2ExtractorFactory(crcDS, factory);
+	public DataExtractorImpl(Preferences prefs, ObservationFactory factory, PostgresPatientStore patientStore, PostgresVisitStore visitStore){
+		
+		try {
+			InitialContext ctx = new InitialContext();
+			DataSource crcDS = (DataSource)ctx.lookup(prefs.get(PreferenceKey.i2b2DatasourceCRC));
+			extractor = new I2b2ExtractorFactory(crcDS, factory);
+		} catch (SQLException | NamingException e) {
+			throw new IllegalStateException("Unable to load extractor factory", e);
+		}
+//		extractor = new I2b2ExtractorFactory(crcDS, factory);
 		extractor.setPatientLookup(patientStore::lookupPatientNum);
 		extractor.setVisitLookup(visitStore::lookupEncounterNum);		
 	}
@@ -97,7 +103,8 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	 * Collect concept notations and checks whether the wildcard notations
 	 * are used. Also makes sure, no IRI is used (not supported yet).
 	 * 
-	 * @param concepts concept iterator
+	 * @param concepts iterator to read concepts from
+	 * @param notations collection to store the notations. Use a {@link Set} to ensure distinct notations.
 	 * @throws UnsupportedOperationException if concepts are specified via IRI, which is not supported currently
 	 */
 	private boolean collectNotations(Iterable<Concept> concepts, Collection<String> notations) throws UnsupportedOperationException{
@@ -123,7 +130,8 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 
 		// load concept notations
 		Iterable<Concept> concepts = ed.allConcepts();
-		List<String> notations = new ArrayList<>();
+		// iterable may contain duplicates
+		Set<String> notations = new HashSet<>(); // use set to guarantee distinct concepts
 		boolean hasWildcards = collectNotations(concepts, notations);
 		extractor.setFeature(I2b2ExtractorFactory.ALLOW_WILDCARD_CONCEPT_CODES, hasWildcards);
 
@@ -163,11 +171,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	 */
 	@PreDestroy
 	@Override
-	public void close() throws IOException {
-		try {
-			extractor.close();
-		} catch (SQLException e) {
-			throw new IOException(e);
-		}		
+	public void close() {
+		extractor.close();	
 	}
 }

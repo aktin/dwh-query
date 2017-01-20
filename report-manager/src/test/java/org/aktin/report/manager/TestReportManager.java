@@ -75,8 +75,9 @@ public class TestReportManager {
 		visits.open(ds.getConnection(), projectId);
 		ObservationFactory of = new ObservationFactoryImpl(patients, visits);
 		GroupedXMLWriter w = new GroupedXMLWriter(System.out);
+		
 		try( I2b2ExtractorFactory extractor = new I2b2ExtractorFactory(ds, of);
-				I2b2Extractor ext = extractor.extract(Timestamp.valueOf("2000-01-01 00:00:00"), Timestamp.valueOf("2020-01-01 00:00:00"), null) ){
+				I2b2Extractor ext = extractor.extract(Timestamp.valueOf("2016-12-01 00:00:00"), Timestamp.valueOf("2017-01-01 00:00:00"), null) ){
 			ext.stream().forEach(w);
 		}
 		w.close();

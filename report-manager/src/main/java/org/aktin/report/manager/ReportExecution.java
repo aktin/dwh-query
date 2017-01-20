@@ -165,6 +165,14 @@ class ReportExecution implements GeneratedReport, URIResolver{
 				.thenAccept( a -> dataFiles = a );
 	}
 
+	int getPatientCount(){
+		if( dataFiles != null ){
+			return dataFiles.getPatientCount();
+		}else{
+			return 0;
+		}
+	}
+
 	void writePreferences(Preferences preferenceManager, Map<String,String> reportConfiguration) throws IOException{
 		this.prefs = selectPreferences(preferenceManager, reportConfiguration);
 		prefFiles = writePreferences(temp);
@@ -227,7 +235,12 @@ class ReportExecution implements GeneratedReport, URIResolver{
 		XMLReader r;
 		try {
 			SAXParser parser = parserFactory.newSAXParser();
-			parser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+// do we need this?
+//			try{
+//				parser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+//			}catch( SAXNotRecognizedException f ){
+//				log.warning("SAXParser does not support ACCESS_EXTERNAL_DTD property");
+//			}
 			r = parser.getXMLReader();
 		} catch (SAXException | ParserConfigurationException e) {
 			throw new IOException("Unable to create SAX XML reader", e);
@@ -291,7 +304,7 @@ class ReportExecution implements GeneratedReport, URIResolver{
 			throw new IOException("FOP transformation failed",e);
 		}
 		if( !events.isEmpty() ){
-			log.warning("FOP errors: "+events.getSummary());
+			log.warning("FOP errors ("+events.eventCount+"): "+events.getSummary());
 			//throw new IOException("Errors during FOP processing"); //do not throw until FOP-"unstable"-Errors are solved
 		}
 		// preference files no longer needed
@@ -390,7 +403,7 @@ class ReportExecution implements GeneratedReport, URIResolver{
 
 	@Override
 	public Source resolve(String href, String base) throws TransformerException {
-		log.info("Resolving '"+href+"' / base="+base);
+//		log.info("Resolving '"+href+"' / base="+base);
 		try {
 			return createSource(temp.resolve(href));
 		} catch (IOException e) {

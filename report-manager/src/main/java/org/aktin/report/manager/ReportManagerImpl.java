@@ -1,5 +1,6 @@
 package org.aktin.report.manager;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -22,7 +23,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.aktin.Module;
-import org.aktin.Preference;
 import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
@@ -60,7 +60,7 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	Instance<Report> cdiReports;
 	private Report[] staticReports;
 	
-	@Inject @Preference(key=PreferenceKey.rScriptBinary)
+//	@Inject @Preference(key=PreferenceKey.rScriptBinary)
 	String rScript;
 	
 	private Executor executor;
@@ -101,16 +101,19 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	public ReportManagerImpl(String rScript, Path tempDir, Report...reports){
 		this.rScript = rScript;
 		this.tempDir = tempDir;
+		verifyTempDir();
+		this.staticReports = reports;
+		this.keepIntermediateFiles = false;
+	}
+
+	private void verifyTempDir(){
 		// make sure the temp dir exists, create if necessary
 		try {
 			Files.createDirectories(tempDir);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-		this.staticReports = reports;
-		this.keepIntermediateFiles = false;
 	}
-
 	@Inject
 	public void setDataExtractor(DataExtractor extractor){
 		this.extractor = extractor;
@@ -124,10 +127,11 @@ public class ReportManagerImpl extends Module implements ReportManager{
 		}
 		if( this.tempDir == null ){
 			this.tempDir = Paths.get(prefs.get(PreferenceKey.reportTempPath));
+			verifyTempDir();
 		}
 	}
 
-	@Resource
+	@Resource(lookup="java:comp/DefaultManagedExecutorService")
 	public void setExecutor(Executor executor){
 		this.executor = executor;
 	}
@@ -198,6 +202,11 @@ public class ReportManagerImpl extends Module implements ReportManager{
 			throw new IllegalArgumentException("Report template not found: "+reportInfo.getTemplateId());
 		}
 
+		if( reportDestination == null ){
+			// TODO infer file extension from media type. read media type from report template
+			reportDestination = Files.createTempFile(tempDir, "report", ".pdf");
+		}
+
 		Objects.requireNonNull(extractor, "DataExtractor not defined");
 		Objects.requireNonNull(getExecutor(), "Executor not defined");
 		Objects.requireNonNull(preferenceManager, "PreferenceManager not defined");
@@ -210,6 +219,10 @@ public class ReportManagerImpl extends Module implements ReportManager{
 
 		return re.extractData(extractor).thenApplyAsync( Void ->  {
 			try {
+				if( re.getPatientCount() == 0 ){
+					// fail early if there is no data to process
+					throw new FileNotFoundException("No patients for report");
+				}
 				re.writePreferences(preferenceManager, reportInfo.getPreferences());
 				re.runR(Paths.get(ReportManagerImpl.this.rScript));
 				re.runFOP();

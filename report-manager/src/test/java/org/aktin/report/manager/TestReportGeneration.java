@@ -29,24 +29,28 @@ public class TestReportGeneration {
 
 	@BeforeClass
 	public static void locateR(){
+		rScript = findR();
+	}
+	public static Path findR(){
 		// try system property 'rscript.binary'
+		Path p;
 		String path = System.getProperty(PreferenceKey.rScriptBinary.key());
 		if( path != null ){
-			rScript = Paths.get(path);
+			p = Paths.get(path);
 			if( !Files.isExecutable(rScript) ){
 				Assert.fail("System property '"+PreferenceKey.rScriptBinary.key()+"' defined, but target not found/executable.");
 			}
-			return;
+			return p;
 		}
 		// try windows path
 		for( String binary : rPathSearch ){
-			Path p = Paths.get(binary);
+			p = Paths.get(binary);
 			if( Files.isExecutable(p) ){
-				rScript = p;
-				return;
+				return p;
 			}
 		}
 		Assert.fail("Path to Rscript not found. Please edit TestReportGeneration.java or define a (local) system property: "+PreferenceKey.rScriptBinary.key());
+		return null;
 	}
 
 	public static Path getReportTempDir(){

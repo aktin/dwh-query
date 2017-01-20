@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -29,11 +28,11 @@ import javax.ejb.TimerService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeMessage.RecipientType;
-import javax.naming.NamingException;
 
 import org.aktin.Module;
 import org.aktin.Preferences;
@@ -79,9 +78,10 @@ public class ReportSchedule extends Module {
 	private ZoneId timeZone;
 	private Path tempPath;
 	private String emailRecipients;
+	private Session emailSession;
 
 	@Inject
-	public ReportSchedule(ReportManager reports, ReportArchive archive, Preferences prefs) throws SQLException, NamingException{
+	public ReportSchedule(ReportManager reports, ReportArchive archive, Preferences prefs) {
 		this.reports = reports;
 		this.archive = archive;
 		this.reports.getClass(); // prevent unused warning for now
@@ -89,10 +89,14 @@ public class ReportSchedule extends Module {
 		timeZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 		tempPath = Paths.get(prefs.get(PreferenceKey.reportTempPath));
 		emailRecipients = "rmajeed@gmx.de"; // TODO load from preferences
+		// TODO load email session
+		String jndiMail = prefs.get(PreferenceKey.emailSession);
+		log.info("Using mail session "+jndiMail);
+		emailSession = null; // TODO use jndi
 	}
 
 	@PostConstruct
-	public void loadSchedule() throws SQLException, NamingException {
+	public void loadSchedule() {
 		schedule = new HashMap<Timer, Report>();
 		// find report
 		Report report = reports.getReport(MONTHLY_REPORT_ID);
@@ -129,10 +133,10 @@ public class ReportSchedule extends Module {
 		// generate report
 		try {
 			Path temp = Files.createTempFile(tempPath, "scheduled", ".pdf");
-			CompletableFuture<? extends GeneratedReport> f = reports.generateReport(report, info.getStartTimestamp(), info.getEndTimestamp(), temp);
+			CompletableFuture<? extends GeneratedReport> f = reports.generateReport(info, temp);
 			f.thenAccept(r -> reportCompleted(archiveId, r));
 		} catch (IOException e) {
-			reportFailure(archiveId, e);
+			reportFailure(archiveId, null, e);
 		}		
 	}
 	@Timeout
@@ -143,9 +147,9 @@ public class ReportSchedule extends Module {
 		log.info("Next scheduled report at "+timer.getNextTimeout());
 	}
 
-	private void reportFailure(int archiveId, Exception e) {
+	private void reportFailure(int archiveId, String description, Exception e) {
 		try {
-			archive.setReportFailure(archiveId, e);
+			archive.setReportFailure(archiveId, description, e);
 			// log warning. the error was also stored in the report archive
 			log.log(Level.WARNING, "Scheduled report failed: " + archiveId, e);
 		} catch (IOException e1) {

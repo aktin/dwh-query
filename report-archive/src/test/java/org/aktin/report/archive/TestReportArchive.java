@@ -19,7 +19,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import liquibase.exception.LiquibaseException;
 
 public class TestReportArchive {
 
@@ -87,7 +86,7 @@ public class TestReportArchive {
 		deleteDirWithFiles(archiveDir);
 	}
 	@After
-	public void dropDatabase() throws LiquibaseException, SQLException{
+	public void dropDatabase() throws Exception{
 		ds.dropAll();
 	}
 	@Test

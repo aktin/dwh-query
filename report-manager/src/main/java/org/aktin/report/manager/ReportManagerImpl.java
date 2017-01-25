@@ -1,6 +1,5 @@
 package org.aktin.report.manager;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -27,6 +26,7 @@ import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.GeneratedReport;
+import org.aktin.report.InsufficientDataException;
 import org.aktin.report.Report;
 import org.aktin.report.ReportInfo;
 import org.aktin.report.ReportManager;
@@ -221,7 +221,7 @@ public class ReportManagerImpl extends Module implements ReportManager{
 			try {
 				if( re.getPatientCount() == 0 ){
 					// fail early if there is no data to process
-					throw new FileNotFoundException("No patients for report");
+					throw new InsufficientDataException();
 				}
 				re.writePreferences(preferenceManager, reportInfo.getPreferences());
 				re.runR(Paths.get(ReportManagerImpl.this.rScript));

@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import org.aktin.report.ArchivedReport;
 import org.aktin.report.GeneratedReport;
+import org.aktin.report.InsufficientDataException;
 import org.aktin.report.ReportInfo;
 import org.aktin.report.ReportManager;
 
@@ -45,6 +46,7 @@ public class ReportImpl implements ArchivedReport{
 	private Map<String,String> prefs;
 
 	private static final Logger log = Logger.getLogger(ReportImpl.class.getName());	
+	private static final String MEDIATYPE_INSUFFICIENT_DATA = "text/vnd.error.insufficientdata";
 	private static final String MEDIATYPE_FAILURE_STACKTRACE = "text/vnd.error.stacktrace";
 	static final String selectReports = "SELECT id, template_id, template_version, data_start, data_end, created_timestamp, created_by, data_timestamp, media_type, path FROM generated_reports ORDER BY id";
 	static final String selectNextReportId = "SELECT NEXTVAL('generated_reports_id')";
@@ -252,6 +254,8 @@ public class ReportImpl implements ArchivedReport{
 			return Status.Waiting;
 		}else if( this.mediaType.equals(MEDIATYPE_FAILURE_STACKTRACE) ){
 			return Status.Failed;
+		}else if( this.mediaType.equals(MEDIATYPE_INSUFFICIENT_DATA) ){
+			return Status.InsufficientData;
 		}else{
 			return Status.Completed;
 		}
@@ -287,7 +291,11 @@ public class ReportImpl implements ArchivedReport{
 		
 	}
 	public void setFailed(Connection dbc, String description, Throwable cause) throws IOException, SQLException{
-		this.mediaType = MEDIATYPE_FAILURE_STACKTRACE;
+		if( cause instanceof InsufficientDataException ){
+			this.mediaType = MEDIATYPE_INSUFFICIENT_DATA;
+		}else{
+			this.mediaType = MEDIATYPE_FAILURE_STACKTRACE;
+		}
 		// we don't have a data timestamp, use the created timestamp for path
 		this.location = createGroupedPath(archive.getDataDir(), getCreatedTimestamp(),getId()+".txt");
 		log.info("Writing report failure stacktrace to "+this.location);

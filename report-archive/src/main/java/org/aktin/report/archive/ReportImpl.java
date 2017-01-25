@@ -149,6 +149,7 @@ public class ReportImpl implements ArchivedReport{
 		}
 		// group reports by year of creation/extraction
 		Path dest = createGroupedPath(archive.getDataDir(), getDataTimestamp(),getId()+suffix);
+		log.info("Moving report data to "+dest);
 		Files.move(oldLocation, dest);
 		this.location = dest;
 	}
@@ -289,6 +290,7 @@ public class ReportImpl implements ArchivedReport{
 		this.mediaType = MEDIATYPE_FAILURE_STACKTRACE;
 		// we don't have a data timestamp, use the created timestamp for path
 		this.location = createGroupedPath(archive.getDataDir(), getCreatedTimestamp(),getId()+".txt");
+		log.info("Writing report failure stacktrace to "+this.location);
 		// TODO maybe write additional error output or warnings after the stack trace
 		try( PrintWriter w = new PrintWriter(Files.newBufferedWriter(this.location, StandardOpenOption.CREATE_NEW)) ){
 			// print description
@@ -303,6 +305,7 @@ public class ReportImpl implements ArchivedReport{
 				// print stack trace
 				cause.printStackTrace(w);
 			}
+			w.flush();
 		}
 		updateReportData(dbc);
 	}

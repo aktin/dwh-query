@@ -169,6 +169,7 @@ public class ReportArchiveImpl implements ReportArchive{
 
 	private void deleteReportFromDatabase(int reportId) throws IOException{
 		try( Connection dbc = ds.getConnection() ){
+			dbc.setAutoCommit(true);
 			PreparedStatement s = dbc.prepareStatement(ReportImpl.deleteReport);
 			s.setInt(1, reportId);
 			s.executeUpdate();
@@ -186,6 +187,7 @@ public class ReportArchiveImpl implements ReportArchive{
 		ReportImpl report = get(id);
 		Objects.requireNonNull(report);
 		try( Connection dbc = ds.getConnection() ){
+			dbc.setAutoCommit(true);
 			report.setFailed(dbc, description, cause);
 		} catch (SQLException e) {
 			throw new IOException(e);
@@ -197,6 +199,7 @@ public class ReportArchiveImpl implements ReportArchive{
 		ReportImpl my = get(id);
 		Objects.requireNonNull(my);
 		try( Connection dbc = ds.getConnection() ){
+			dbc.setAutoCommit(true);
 			my.setData(dbc, report);
 		} catch (SQLException e) {
 			throw new IOException(e);

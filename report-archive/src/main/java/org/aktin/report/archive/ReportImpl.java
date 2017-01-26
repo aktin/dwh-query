@@ -328,12 +328,12 @@ public class ReportImpl implements ArchivedReport{
 				t = e;
 			}
 			if( t != null )try {
-				log.log(Level.WARNING, "Report failed", t);
+				log.log(Level.WARNING, "Report generation failed", t);
 				archive.setReportFailure(this.id, null, t);
 			} catch (IOException e1) {
 				t.addSuppressed(e1);
 				throw new IllegalStateException("Unable to write report error",t);
-			}			
+			}
 			return null;
 		});
 	}

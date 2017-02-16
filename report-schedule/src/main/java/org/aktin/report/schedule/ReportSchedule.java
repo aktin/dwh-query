@@ -1,9 +1,6 @@
 package org.aktin.report.schedule;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -13,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,24 +17,26 @@ import javax.activation.FileDataSource;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.ScheduleExpression;
-import javax.ejb.Startup;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerService;
 import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeMessage.RecipientType;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.aktin.Module;
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.ArchivedReport;
-import org.aktin.report.GeneratedReport;
 import org.aktin.report.Report;
 import org.aktin.report.ReportArchive;
 import org.aktin.report.ReportInfo;
@@ -61,42 +59,55 @@ import org.aktin.report.ReportManager;
  * @author R.W.Majeed
  *
  */
-@Singleton
-@Startup
+@javax.ejb.Singleton
+@javax.ejb.Startup
 public class ReportSchedule extends Module {
 	private static final Logger log = Logger.getLogger(ReportSchedule.class.getName());
 	private static final String SCHEDULE_USER = "REPORT_SCHEDULE";
 	private static final String MONTHLY_REPORT_ID = "org.aktin.report.aktin.AktinMonthly";
 
-	@Resource
-	private TimerService timer;
-
+	@Inject
 	private ReportManager reports;
+	@Inject
 	private ReportArchive archive;
+	@Inject
+	private Preferences prefs;
+	@Resource
+    private TimerService timer;
 
 	private Map<Timer, Report> schedule;
 	private ZoneId timeZone;
-	private Path tempPath;
-	private String emailRecipients;
-	private Session emailSession;
+	private Address[] emailRecipients;
 
-	@Inject
-	public ReportSchedule(ReportManager reports, ReportArchive archive, Preferences prefs) {
-		this.reports = reports;
-		this.archive = archive;
-		this.reports.getClass(); // prevent unused warning for now
+	private Session mailSession;
+
+	public ReportSchedule() {
 		// load preferences
-		timeZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
-		tempPath = Paths.get(prefs.get(PreferenceKey.reportTempPath));
-		emailRecipients = "rmajeed@gmx.de"; // TODO load from preferences
-		// TODO load email session
-		String jndiMail = prefs.get(PreferenceKey.emailSession);
-		log.info("Using mail session "+jndiMail);
-		emailSession = null; // TODO use jndi
+	}
+
+	private void lookupJndiMailSession() throws NamingException{
+		String jndiName = prefs.get(PreferenceKey.emailSession);
+		log.info("Using mail session "+jndiName);
+		InitialContext ctx = new InitialContext();
+		mailSession = (Session)ctx.lookup(jndiName);
 	}
 
 	@PostConstruct
-	public void loadSchedule() {
+	public void initialize(){
+		try {
+			loadConfiguration();
+		} catch (AddressException | NamingException e) {
+			throw new IllegalStateException(e);
+		}
+		loadSchedule();
+	}
+	private void loadConfiguration() throws AddressException, NamingException{
+		timeZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
+		emailRecipients = InternetAddress.parse(prefs.get(PreferenceKey.email));
+		// TODO load email session
+		lookupJndiMailSession();
+	}
+	private void loadSchedule() {
 		schedule = new HashMap<Timer, Report>();
 		// find report
 		Report report = reports.getReport(MONTHLY_REPORT_ID);
@@ -110,6 +121,8 @@ public class ReportSchedule extends Module {
 		schedule.put(t, report);
 		log.info("Monthly report scheduled for " + expr.toString());
 		log.info("Time until report generation: " + Duration.ofMillis(t.getTimeRemaining()).toString());
+
+		// verify email session
 	}
 
 	public void createAndSendMonthlyReport(Report report){
@@ -123,23 +136,28 @@ public class ReportSchedule extends Module {
 
 		ReportInfo info = report.createReportInfo(start.atZone(timeZone).toInstant(), end.atZone(timeZone).toInstant());
 		// create in archive
-		final int archiveId;
+		final ArchivedReport ar;
 		try {
-			archiveId = archive.addReport(info, SCHEDULE_USER).getId();
+			ar = archive.addReport(info, SCHEDULE_USER);
+			ar.createAsync(reports).whenComplete( (v,t) -> reportFinished(ar,t) );
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Failed to create report archive entry", e);
 			return;
 		}
-		// generate report
-		try {
-			Path temp = Files.createTempFile(tempPath, "scheduled", ".pdf");
-			CompletableFuture<? extends GeneratedReport> f = reports.generateReport(info, temp);
-			f.thenAccept(r -> reportCompleted(archiveId, r));
-		} catch (IOException e) {
-			reportFailure(archiveId, null, e);
-		}		
 	}
+
+	private void reportFinished(ArchivedReport report, Throwable exception){
+		// TODO send email
+		if( exception != null ){
+			// failed
+			log.log(Level.WARNING, "TODO send email with failure for report "+report.getId(), exception);
+		}else{
+			log.info("TODO send email with generated report "+report.getId());
+		}
+	}
+
 	@Timeout
+//	@Schedule(dayOfMonth="3")
 	private void timerCallback(Timer timer){
 		Report report = schedule.get(timer);
 		log.info("Scheduled report timer triggered: "+report.getId());
@@ -147,44 +165,20 @@ public class ReportSchedule extends Module {
 		log.info("Next scheduled report at "+timer.getNextTimeout());
 	}
 
-	private void reportFailure(int archiveId, String description, Exception e) {
-		try {
-			archive.setReportFailure(archiveId, description, e);
-			// log warning. the error was also stored in the report archive
-			log.log(Level.WARNING, "Scheduled report failed: " + archiveId, e);
-		} catch (IOException e1) {
-			e.addSuppressed(e1);
-			log.log(Level.SEVERE, "Unable to store report failure", e);
-		}
-	}
+	private void emailReport(ArchivedReport report) throws AddressException, MessagingException{
+		MimeMessage msg = new MimeMessage(mailSession);
+		
+		// sender address
+		Address[] replyTo = InternetAddress.parse(prefs.get(PreferenceKey.emailReplyTo));
+		msg.setReplyTo(replyTo);
 
-	private void reportCompleted(int archiveId, GeneratedReport report) {
-		ArchivedReport archived;
-		try {
-			archived = archive.setReportResult(archiveId, report);
-			log.info("Scheduled report completed: " + archiveId);
-		} catch (IOException e) {
-			log.log(Level.SEVERE, "Unable to store report result", e);
-			return;
-		}
-		emailReport(archived);
-	}
-
-	private void emailReport(ArchivedReport report){
-		javax.mail.Session session = null;
-		// TODO get from JNDI java:comp/env/mail/aktin
-		MimeMessage msg = new MimeMessage(session);
-		try{
-			msg.setRecipients(RecipientType.TO, emailRecipients);
-			msg.setSubject("AKTIN Monatsbericht");
-			msg.setSentDate(new Date());
-			msg.setText("Sehr geehrte Damen und Herren,\nanbei finden Sie den aktuellen AKTIN Monatsbericht.\nDiese Nachricht wurde automatisch erzeugt von Ihrem AKTIN Server");
-			MimeMultipart mp = new MimeMultipart(new FileDataSource(report.getLocation().toFile()));
-			msg.setContent(mp);
-			Transport.send(msg);
-		}catch( MessagingException e ){
-			log.log(Level.SEVERE, "Failed to send report via email", e);
-		}
+		msg.setRecipients(RecipientType.TO, emailRecipients);
+		msg.setSubject("AKTIN Monatsbericht");
+		msg.setSentDate(new Date());
+		msg.setText("Sehr geehrte Damen und Herren,\nanbei finden Sie den aktuellen AKTIN Monatsbericht.\nDiese Nachricht wurde automatisch erzeugt von Ihrem AKTIN Server");
+		MimeMultipart mp = new MimeMultipart(new FileDataSource(report.getLocation().toFile()));
+		msg.setContent(mp);
+		Transport.send(msg);
 	}
 
 	// TODO methods to add/remove schedule entries

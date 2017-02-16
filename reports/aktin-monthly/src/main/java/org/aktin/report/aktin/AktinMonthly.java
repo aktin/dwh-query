@@ -1,7 +1,6 @@
 package org.aktin.report.aktin;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 //import java.util.logging.Logger;
 

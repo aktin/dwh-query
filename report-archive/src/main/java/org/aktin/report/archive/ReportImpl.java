@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -322,17 +323,29 @@ public class ReportImpl implements ArchivedReport{
 		// generate report
 		CompletableFuture<? extends GeneratedReport> f = manager.generateReport(this, null);
 		return f.handle( (r,t) -> {
+			// exceptions thrown in this lambda are stored in the CompletableFuture
+			// therefore, they are not shown by default and may not be retrieved at all.
+			// To retrieve the exceptions, CompletableFuture must be used
+			
+			// --> thus, for debugging, make sure that errors are logged!
 			if( r != null )try {
 				archive.setReportResult(this.id, r);
 			} catch (IOException e) {
 				t = e;
 			}
-			if( t != null )try {
+			if( t != null ){
+				if( t instanceof CompletionException ){
+					// unwrap
+					t = ((CompletionException)t).getCause();
+				}
 				log.log(Level.WARNING, "Report generation failed", t);
-				archive.setReportFailure(this.id, null, t);
-			} catch (IOException e1) {
-				t.addSuppressed(e1);
-				throw new IllegalStateException("Unable to write report error",t);
+				try{
+					archive.setReportFailure(this.id, null, t);
+				} catch (IOException e) {
+					log.log(Level.SEVERE, "Unable to write report error", e);
+					t.addSuppressed(e);
+					throw new IllegalStateException("Unable to write report error",t);
+				}
 			}
 			return null;
 		});

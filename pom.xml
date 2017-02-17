@@ -38,6 +38,7 @@
 		<module>report-archive</module>
 		<module>report-schedule</module>
 		<module>reports</module>
+		<module>request-manager</module>
 	</modules>
 
 </project>

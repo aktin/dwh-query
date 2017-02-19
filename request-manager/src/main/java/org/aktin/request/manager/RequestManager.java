@@ -3,8 +3,11 @@ package org.aktin.request.manager;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +25,7 @@ import org.aktin.broker.client.BrokerClient;
 import org.aktin.broker.client.auth.HttpApiKeyAuth;
 import org.aktin.broker.xml.SoftwareModule;
 import org.aktin.dwh.PreferenceKey;
+import org.aktin.dwh.db.LiquibaseWrapper;
 
 
 @javax.ejb.Singleton
@@ -37,6 +41,7 @@ public class RequestManager extends Module {
 
 	private BrokerClient client;
 	private long startupTimestamp;
+	private List<SoftwareModule> versions;
 
 
 	public RequestManager() {
@@ -58,6 +63,14 @@ public class RequestManager extends Module {
 		log.info("Timer created, first callback in "+Duration.ofMillis(t.getTimeRemaining()));		
 	}
 
+	private void loadSoftwareVersions(){
+		versions = new ArrayList<>();
+		versions.add(new SoftwareModule("dwh-api", PreferenceKey.class.getPackage().getImplementationVersion()));
+		versions.add(new SoftwareModule("dwh-db", LiquibaseWrapper.class.getPackage().getImplementationVersion()));
+		versions.add(new SoftwareModule("java", System.getProperty("java.vendor")+"/"+System.getProperty("java.version")));
+		// TODO find out application server name and version
+	}
+
 	private void initializeBrokerClient(){
 		URI uri = URI.create(prefs.get(PreferenceKey.brokerEndpointURI));
 		client = new BrokerClient(uri);
@@ -69,6 +82,7 @@ public class RequestManager extends Module {
 	public void loadSchedule() {
 		log.info("Initializing request manager");
 		initializeBrokerClient();
+		loadSoftwareVersions();
 		createIntervalTimer();
 		
 	}
@@ -76,9 +90,11 @@ public class RequestManager extends Module {
 	private void reportStatusToBroker(){
 		try {
 			client.getBrokerStatus();
-			client.postMyStatus(startupTimestamp, new SoftwareModule("dwh-api", PreferenceKey.class.getPackage().getImplementationVersion()));
+			client.postMyStatus(startupTimestamp, versions);
 		}catch( ConnectException e ){
 			log.severe("Unable to connect to broker "+prefs.get(PreferenceKey.brokerEndpointURI));
+		}catch( UnknownHostException e ){
+			log.severe("Unable to resolve broker hostname "+prefs.get(PreferenceKey.brokerEndpointURI));			
 		}catch( IOException e) {
 			log.log(Level.SEVERE, "Broker communication failed", e);
 		}

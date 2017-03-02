@@ -1,5 +1,6 @@
 package org.aktin.request.manager;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URI;
@@ -23,7 +24,6 @@ import org.aktin.Module;
 import org.aktin.Preferences;
 import org.aktin.broker.client.BrokerClient;
 import org.aktin.broker.client.auth.HttpApiKeyAuth;
-import org.aktin.dwh.ImportStatistics;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.db.LiquibaseWrapper;
 
@@ -37,7 +37,7 @@ public class RequestManager extends Module {
 	private Preferences prefs;
 
 	@Inject
-	private ImportStatistics stats;
+	private org.aktin.dwh.ImportSummary summ;
 
 	@Resource
     private TimerService timer;
@@ -70,8 +70,9 @@ public class RequestManager extends Module {
 		versions.put("dwh-api", PreferenceKey.class.getPackage().getImplementationVersion());
 		versions.put("dwh-db", LiquibaseWrapper.class.getPackage().getImplementationVersion());
 		versions.put("java", System.getProperty("java.vendor")+"/"+System.getProperty("java.version"));
+		// get application server version from TimerService implementation
 		versions.put("j2ee-impl", timer.getClass().getPackage().getImplementationVersion());
-		// TODO find out application server name and version
+		// TODO find out application server name 
 	}
 
 	private void initializeBrokerClient(){
@@ -87,18 +88,19 @@ public class RequestManager extends Module {
 		initializeBrokerClient();
 		loadSoftwareVersions();
 		createIntervalTimer();
-		
 	}
 
 	private void reportStatusToBroker(){
 		try {
 			client.getBrokerStatus();
 			client.postSoftwareVersions(versions);
-			client.putMyResourceXml("stats", stats);
+			client.putMyResourceXml("stats", summ);
 		}catch( ConnectException e ){
 			log.severe("Unable to connect to broker "+prefs.get(PreferenceKey.brokerEndpointURI));
 		}catch( UnknownHostException e ){
 			log.severe("Unable to resolve broker hostname "+prefs.get(PreferenceKey.brokerEndpointURI));			
+		}catch( FileNotFoundException e ){
+			log.severe("Broker resource not found: "+e.getMessage());
 		}catch( IOException e) {
 			log.log(Level.SEVERE, "Broker communication failed", e);
 		}

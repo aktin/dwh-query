@@ -37,6 +37,7 @@ import org.aktin.Module;
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.ArchivedReport;
+import org.aktin.report.InsufficientDataException;
 import org.aktin.report.Report;
 import org.aktin.report.ReportArchive;
 import org.aktin.report.ReportInfo;
@@ -78,6 +79,7 @@ public class ReportSchedule extends Module {
 	private Map<Timer, Report> schedule;
 	private ZoneId timeZone;
 	private Address[] emailRecipients;
+	private Address[] replyTo;
 
 	private Session mailSession;
 
@@ -104,7 +106,9 @@ public class ReportSchedule extends Module {
 	private void loadConfiguration() throws AddressException, NamingException{
 		timeZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 		emailRecipients = InternetAddress.parse(prefs.get(PreferenceKey.email));
-		// TODO load email session
+		replyTo = InternetAddress.parse(prefs.get(PreferenceKey.emailReplyTo));
+
+		// load email session
 		lookupJndiMailSession();
 	}
 	private void loadSchedule() {
@@ -147,12 +151,44 @@ public class ReportSchedule extends Module {
 	}
 
 	private void reportFinished(ArchivedReport report, Throwable exception){
-		// TODO send email
+		// log error first
+		StringBuilder body = new StringBuilder();
+		body.append("Sehr geehrte Damen und Herren,\n");
 		if( exception != null ){
-			// failed
-			log.log(Level.WARNING, "TODO send email with failure for report "+report.getId(), exception);
+			// log error
+			log.log(Level.WARNING, "Scheduled report generation failed: "+report.getId(), exception);
+			// build email message
+			body.append("der aktuelle Monatsbericht konnte leider nicht erzeugt werden.\n");
+			if( exception instanceof InsufficientDataException ){
+				body.append("Grund dafür ist eine unzureichende Anzahl an Patienten im Berichtszeitraum.\n");				
+			}else{
+				body.append("Nachfolgend finden Sie die Fehlerbeschreibung.\n");
+				body.append("Bitte leiten Sie diesen Fehler an it-support@aktin.org weiter.\n\n");
+				// TODO append stack trace
+			}
 		}else{
-			log.info("TODO send email with generated report "+report.getId());
+			// build email message
+			body.append("anbei erhalten Sie den aktuellen Monatsbericht.\n");
+		}
+		body.append("Mit freundlichen Grüßen,\n");
+		body.append(" Ihr lokaler AKTIN-Server\n");
+		MimeMessage msg = new MimeMessage(mailSession);
+		// use specified time zone
+//		String ts = LocalDateTime.now(timeZone).toString();
+		try {
+			msg.setRecipients(RecipientType.TO, emailRecipients);
+			msg.setReplyTo(replyTo);
+			msg.setSubject("AKTIN Monatsbericht");
+			msg.setSentDate(new Date());
+			msg.setText(body.toString());
+			if( report != null ){
+				// set attachment				
+				MimeMultipart mp = new MimeMultipart(new FileDataSource(report.getLocation().toFile()));
+				msg.setContent(mp);
+			}
+			Transport.send(msg);
+		} catch (MessagingException e) {
+			log.log(Level.SEVERE, "Unable to send monthly report email", e);
 		}
 	}
 
@@ -164,22 +200,22 @@ public class ReportSchedule extends Module {
 		createAndSendMonthlyReport(report);
 		log.info("Next scheduled report at "+timer.getNextTimeout());
 	}
-
-	private void emailReport(ArchivedReport report) throws AddressException, MessagingException{
-		MimeMessage msg = new MimeMessage(mailSession);
-		
-		// sender address
-		Address[] replyTo = InternetAddress.parse(prefs.get(PreferenceKey.emailReplyTo));
-		msg.setReplyTo(replyTo);
-
-		msg.setRecipients(RecipientType.TO, emailRecipients);
-		msg.setSubject("AKTIN Monatsbericht");
-		msg.setSentDate(new Date());
-		msg.setText("Sehr geehrte Damen und Herren,\nanbei finden Sie den aktuellen AKTIN Monatsbericht.\nDiese Nachricht wurde automatisch erzeugt von Ihrem AKTIN Server");
-		MimeMultipart mp = new MimeMultipart(new FileDataSource(report.getLocation().toFile()));
-		msg.setContent(mp);
-		Transport.send(msg);
-	}
+//
+//	private void emailReport(ArchivedReport report) throws AddressException, MessagingException{
+//		MimeMessage msg = new MimeMessage(mailSession);
+//		
+//		// sender address
+//		Address[] replyTo = InternetAddress.parse(prefs.get(PreferenceKey.emailReplyTo));
+//		msg.setReplyTo(replyTo);
+//
+//		msg.setRecipients(RecipientType.TO, emailRecipients);
+//		msg.setSubject("AKTIN Monatsbericht");
+//		msg.setSentDate(new Date());
+//		msg.setText("Sehr geehrte Damen und Herren,\nanbei finden Sie den aktuellen AKTIN Monatsbericht.\nDiese Nachricht wurde automatisch erzeugt von Ihrem AKTIN Server");
+//		MimeMultipart mp = new MimeMultipart(new FileDataSource(report.getLocation().toFile()));
+//		msg.setContent(mp);
+//		Transport.send(msg);
+//	}
 
 	// TODO methods to add/remove schedule entries
 

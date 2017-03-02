@@ -6,8 +6,8 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +23,7 @@ import org.aktin.Module;
 import org.aktin.Preferences;
 import org.aktin.broker.client.BrokerClient;
 import org.aktin.broker.client.auth.HttpApiKeyAuth;
-import org.aktin.broker.xml.SoftwareModule;
+import org.aktin.dwh.ImportStatistics;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.db.LiquibaseWrapper;
 
@@ -36,16 +36,18 @@ public class RequestManager extends Module {
 	@Inject
 	private Preferences prefs;
 
+	@Inject
+	private ImportStatistics stats;
+
 	@Resource
     private TimerService timer;
 
 	private BrokerClient client;
-	private long startupTimestamp;
-	private List<SoftwareModule> versions;
+	private Map<String,String> versions;
 
 
 	public RequestManager() {
-		startupTimestamp = System.currentTimeMillis();
+
 	}
 
 	private void createIntervalTimer(){
@@ -64,10 +66,11 @@ public class RequestManager extends Module {
 	}
 
 	private void loadSoftwareVersions(){
-		versions = new ArrayList<>();
-		versions.add(new SoftwareModule("dwh-api", PreferenceKey.class.getPackage().getImplementationVersion()));
-		versions.add(new SoftwareModule("dwh-db", LiquibaseWrapper.class.getPackage().getImplementationVersion()));
-		versions.add(new SoftwareModule("java", System.getProperty("java.vendor")+"/"+System.getProperty("java.version")));
+		versions = new Hashtable<>();
+		versions.put("dwh-api", PreferenceKey.class.getPackage().getImplementationVersion());
+		versions.put("dwh-db", LiquibaseWrapper.class.getPackage().getImplementationVersion());
+		versions.put("java", System.getProperty("java.vendor")+"/"+System.getProperty("java.version"));
+		versions.put("j2ee-impl", timer.getClass().getPackage().getImplementationVersion());
 		// TODO find out application server name and version
 	}
 
@@ -90,7 +93,8 @@ public class RequestManager extends Module {
 	private void reportStatusToBroker(){
 		try {
 			client.getBrokerStatus();
-			client.postMyStatus(startupTimestamp, versions);
+			client.postSoftwareVersions(versions);
+			client.putMyResourceXml("stats", stats);
 		}catch( ConnectException e ){
 			log.severe("Unable to connect to broker "+prefs.get(PreferenceKey.brokerEndpointURI));
 		}catch( UnknownHostException e ){

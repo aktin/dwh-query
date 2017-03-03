@@ -19,6 +19,8 @@ import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.aktin.Module;
 import org.aktin.Preferences;
@@ -72,6 +74,12 @@ public class RequestManager extends Module {
 		versions.put("java", System.getProperty("java.vendor")+"/"+System.getProperty("java.version"));
 		// get application server version from TimerService implementation
 		versions.put("j2ee-impl", timer.getClass().getPackage().getImplementationVersion());
+		// get EAR version
+		try {
+			versions.put("ear", (String) (new InitialContext().lookup( "java:app/AppName")));
+		} catch (NamingException e) {
+			log.warning("Unable to get ear version via java:app/AppName");
+		}
 		// TODO find out application server name 
 	}
 

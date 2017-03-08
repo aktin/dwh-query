@@ -95,8 +95,9 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	 * and {@link #setExecutor(Executor)} in order to generate reports.
 	 * </p>
 	 * and {@link #setPreferenceManager(Preferences)}
-	 * @param rScript
-	 * @param reports
+	 * @param rScript Rscript executable file
+	 * @param tempDir temporary directory
+	 * @param reports reports to use
 	 */
 	public ReportManagerImpl(String rScript, Path tempDir, Report...reports){
 		this.rScript = rScript;

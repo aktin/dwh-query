@@ -56,15 +56,15 @@ import org.xml.sax.XMLReader;
  * Generation of reports separated into distinct execution steps,
  * which need to be performed in the following sequence:
  * <ol>
- *  <li>{@link #createTempDirectory()}</li>
+ *  <li>{@link #createTempDirectory(Path)}</li>
  *  <li>{@link #extractData(DataExtractor)}</li>
- *  <li>{@link #writePreferences(Preferences)}</li>
+ *  <li>{@link #writePreferences(Preferences, Map)}</li>
  *  <li>{@link #runR(Path)}</li>
  *  <li>{@link #runFOP()}</li>
  *  <li>{@link #cleanup()}</li>
  * </ol>
- * See {@link ReportManagerImpl#generateReport(Report, Instant, Instant, Path)}
- * @author marap1
+ * See {@link ReportManagerImpl#generateReport(org.aktin.report.ReportInfo, Path)}
+ * @author R.W.Majeed
  *
  */
 class ReportExecution implements GeneratedReport, URIResolver{
@@ -269,7 +269,7 @@ class ReportExecution implements GeneratedReport, URIResolver{
 	}
 	private static class NullEntityResolver implements EntityResolver {
 		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-			log.info("Entity resolved to empty resource: "+ publicId + " / " + systemId);
+			log.finest("Entity resolved to empty resource: "+ publicId + " / " + systemId);
 			return new InputSource(new ByteArrayInputStream(new byte[0]));
 		}
 	}

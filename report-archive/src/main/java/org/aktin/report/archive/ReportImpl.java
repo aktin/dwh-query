@@ -336,7 +336,7 @@ public class ReportImpl implements ArchivedReport{
 			if( t != null ){
 				if( t instanceof CompletionException ){
 					// unwrap
-					t = ((CompletionException)t).getCause();
+					t = t.getCause();
 				}
 				log.log(Level.WARNING, "Report generation failed", t);
 				try{
@@ -346,6 +346,10 @@ public class ReportImpl implements ArchivedReport{
 					t.addSuppressed(e);
 					throw new IllegalStateException("Unable to write report error",t);
 				}
+				// handle will return a new completion stage without the error
+				// therefore we rethrow the failure to preserve the error.
+				// this will pass the error on to the next completion stage
+				throw new CompletionException(t);
 			}
 			return null;
 		});

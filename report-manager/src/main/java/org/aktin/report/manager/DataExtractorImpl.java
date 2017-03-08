@@ -63,13 +63,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	private I2b2ExtractorFactory extractor;
 	private Executor executor; // will be filled via resource injection or setter method
 
-	/**
-	 * Opens database connections to i2b2 and prepares
-	 * SQL statements for execution.
-	 * 
-	 * @throws IOException io error
-	 * @throws SQLException sql error
-	 */
+
 	public DataExtractorImpl(DataSource crc_ds, PostgresPatientStore patientStore, PostgresVisitStore visitStore, ObservationFactory factory) throws IOException, SQLException{
 		extractor = new I2b2ExtractorFactory(crc_ds, factory);
 //		extractor.setPatientLookup(patientStore::lookupPatientNum);

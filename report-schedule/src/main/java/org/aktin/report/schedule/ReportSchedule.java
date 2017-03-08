@@ -1,6 +1,8 @@
 package org.aktin.report.schedule;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -10,16 +12,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.activation.FileDataSource;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.ScheduleExpression;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerService;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.mail.Address;
 import javax.mail.MessagingException;
@@ -27,6 +32,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeMessage.RecipientType;
@@ -35,8 +41,10 @@ import javax.naming.NamingException;
 
 import org.aktin.Module;
 import org.aktin.Preferences;
+import org.aktin.dwh.EMail;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.ArchivedReport;
+import org.aktin.report.ArchivedReport.Status;
 import org.aktin.report.InsufficientDataException;
 import org.aktin.report.Report;
 import org.aktin.report.ReportArchive;
@@ -120,7 +128,8 @@ public class ReportSchedule extends Module {
 		// create schedule
 		ScheduleExpression expr = new ScheduleExpression();
 		// run third of month
-		expr.dayOfMonth(3);
+//		expr.dayOfMonth(3);
+		expr.dayOfMonth(8).hour(13).minute(46);
 		Timer t = timer.createCalendarTimer(expr);
 		schedule.put(t, report);
 		log.info("Monthly report scheduled for " + expr.toString());
@@ -129,7 +138,7 @@ public class ReportSchedule extends Module {
 		// verify email session
 	}
 
-	public void createAndSendMonthlyReport(Report report){
+	private ReportInfo reportForPreviousMonth(Report report){
 		// calculate timestamps for previous month
 		// get current local date
 		LocalDate today = Instant.now().atZone(timeZone).toLocalDate();
@@ -138,66 +147,114 @@ public class ReportSchedule extends Module {
 		// end with start of first day in current month
 		LocalDateTime end = today.withDayOfMonth(1).atStartOfDay();
 
-		ReportInfo info = report.createReportInfo(start.atZone(timeZone).toInstant(), end.atZone(timeZone).toInstant());
-		// create in archive
-		final ArchivedReport ar;
-		try {
-			ar = archive.addReport(info, SCHEDULE_USER);
-			ar.createAsync(reports).whenComplete( (v,t) -> reportFinished(ar,t) );
-		} catch (IOException e) {
-			log.log(Level.SEVERE, "Failed to create report archive entry", e);
-			return;
-		}
+		return report.createReportInfo(start.atZone(timeZone).toInstant(), end.atZone(timeZone).toInstant());
 	}
 
-	private void reportFinished(ArchivedReport report, Throwable exception){
-		// log error first
-		StringBuilder body = new StringBuilder();
-		body.append("Sehr geehrte Damen und Herren,\n");
-		if( exception != null ){
-			// log error
-			log.log(Level.WARNING, "Scheduled report generation failed: "+report.getId(), exception);
-			// build email message
-			body.append("der aktuelle Monatsbericht konnte leider nicht erzeugt werden.\n");
-			if( exception instanceof InsufficientDataException ){
-				body.append("Grund daf¸r ist eine unzureichende Anzahl an Patienten im Berichtszeitraum.\n");				
-			}else{
-				body.append("Nachfolgend finden Sie die Fehlerbeschreibung.\n");
-				body.append("Bitte leiten Sie diesen Fehler an it-support@aktin.org weiter.\n\n");
-				// TODO append stack trace
-			}
+	/**
+	 * J2EE event observer method which submits reports via email.
+	 * The report is generated (and archived) if necessary.
+	 *
+	 * @param info report to send.
+	 */
+	public void sendReportViaEmail(@Observes @EMail ReportInfo info){
+		if( info instanceof ArchivedReport ){
+			// already generated, just send the email
+			reportFinished((ArchivedReport)info, null);
 		}else{
-			// build email message
-			body.append("anbei erhalten Sie den aktuellen Monatsbericht.\n");
-		}
-		body.append("Mit freundlichen Gr¸ﬂen,\n");
-		body.append(" Ihr lokaler AKTIN-Server\n");
-		MimeMessage msg = new MimeMessage(mailSession);
-		// use specified time zone
-//		String ts = LocalDateTime.now(timeZone).toString();
-		try {
-			msg.setRecipients(RecipientType.TO, emailRecipients);
-			msg.setReplyTo(replyTo);
-			msg.setSubject("AKTIN Monatsbericht");
-			msg.setSentDate(new Date());
-			msg.setText(body.toString());
-			if( report != null ){
-				// set attachment				
-				MimeMultipart mp = new MimeMultipart(new FileDataSource(report.getLocation().toFile()));
-				msg.setContent(mp);
+			// need to generate the report first
+			final ArchivedReport ar;
+			try {
+				ar = archive.addReport(info, SCHEDULE_USER);
+				ar.createAsync(reports).whenComplete( (v,t) -> reportFinished(ar,t) );
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Failed to create report archive entry", e);
 			}
-			Transport.send(msg);
+		}
+	}
+	private void reportFinished(ArchivedReport report, Throwable exception){
+		try {
+			sendReport(report, exception);
 		} catch (MessagingException e) {
 			log.log(Level.SEVERE, "Unable to send monthly report email", e);
 		}
 	}
 
+	private static void appendStacktrace(StringBuilder body, Throwable exception){
+		StringWriter w = new StringWriter(2048);
+		try( PrintWriter p = new PrintWriter(w) ){
+			exception.printStackTrace(p);
+		}
+		body.append(w.getBuffer());
+	}
+
+	private void sendReport(ArchivedReport report, Throwable exception) throws MessagingException{
+		// log error first
+		StringBuilder body = new StringBuilder();
+		body.append("Sehr geehrte Damen und Herren,\n\n");
+		if( exception != null ){
+			// unwrap
+			if( exception instanceof CompletionException ){
+				exception = exception.getCause();
+			}
+			// log error
+			log.log(Level.WARNING, "Scheduled report generation failed: "+report.getId(), exception);
+			// build email message
+			body.append("der aktuelle Monatsbericht konnte leider nicht erzeugt werden.\n");
+			if( exception instanceof InsufficientDataException ){
+				body.append("Grund daf√ºr ist eine unzureichende Anzahl an Patienten im Berichtszeitraum.\n");				
+			}else{
+				body.append("Nachfolgend finden Sie die Fehlerbeschreibung.\n");
+				body.append("Bitte leiten Sie diesen Fehler an it-support@aktin.org weiter.\n\n");
+				// append stack trace
+				appendStacktrace(body, exception);
+				body.append('\n');
+			}
+		}else{
+			// build email message
+			body.append("anbei erhalten Sie den aktuellen Monatsbericht.\n");
+			body.append("Der Berichtszeitraum erstreckt sich von ");
+			body.append(report.getStartTimestamp().atZone(timeZone).toLocalDateTime().toString());
+			body.append(" bis ");
+			body.append(report.getEndTimestamp().atZone(timeZone).toLocalDateTime().toString());
+			body.append(".\n");
+			Instant ts = report.getDataTimestamp();
+			if( ts != null ){
+				body.append("Datenstand des Berichts ist "+ts.atZone(timeZone).toLocalDateTime().toString());
+				body.append(".\n");
+			}
+		}
+		body.append("\nMit freundlichen Gr√º√üen,\n");
+		body.append("Ihr lokaler AKTIN-Server\n");
+		MimeMessage msg = new MimeMessage(mailSession);
+		msg.setRecipients(RecipientType.TO, emailRecipients);
+		msg.setReplyTo(replyTo);
+		msg.setSubject("AKTIN Monatsbericht");
+		msg.setSentDate(new Date());
+		MimeMultipart mp = new MimeMultipart();
+		// add text body part
+		MimeBodyPart bp = new MimeBodyPart();
+		bp.setText(body.toString(), "UTF-8");
+		mp.addBodyPart(bp);
+		if( report != null && report.getStatus() == Status.Completed ){
+			// set attachment
+			bp = new MimeBodyPart();
+			DataSource ds = new ArchivedReportDataSource(report);
+			bp.setFileName(ds.getName());
+			bp.setDataHandler(new DataHandler(ds));
+			mp.addBodyPart(bp);
+		}
+		msg.setContent(mp);
+		Transport.send(msg);
+	}
+
 	@Timeout
-//	@Schedule(dayOfMonth="3")
 	private void timerCallback(Timer timer){
 		Report report = schedule.get(timer);
 		log.info("Scheduled report timer triggered: "+report.getId());
-		createAndSendMonthlyReport(report);
+
+		ReportInfo info = reportForPreviousMonth(report);
+		sendReportViaEmail(info);
+
 		log.info("Next scheduled report at "+timer.getNextTimeout());
 	}
 //

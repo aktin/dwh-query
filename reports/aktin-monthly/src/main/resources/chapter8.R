@@ -108,7 +108,7 @@ try({
   a <- a [1:20]
   codes <- names(a)
   #names(a) <- factor(names(a),t(icd[1]),labels=strtrim(t(icd[2]),60))
-  names(a) <- factor(names(a),t(icd[1]),labels=t(icd[2]),60)
+  names(a) <- factor(names(a),t(icd[1]),labels=t(icd[2]),61)
   a <- a[complete.cases(a)]
   if (! is.null(codes)) {
     codes <-  codes[complete.cases(codes)]

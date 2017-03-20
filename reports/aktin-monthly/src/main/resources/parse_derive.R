@@ -58,9 +58,12 @@ df_diag$zusatz = diag$diagnose_zusatz
 
 # Generate derived information
 
-# Week day of admission
+
 weekday.levels <- c('Mo','Di','Mi','Do','Fr','Sa','So')
-df$admit.wd <- factor(x=strftime(df$admit.ts,format="%a"), levels=weekday.levels, ordered=TRUE)
+# Weekday Index
+admit.wdi <- as.integer(strftime(df$admit.ts,"%u"))
+# Weekday of admission
+df$admit.wd <- factor(x=weekday.levels[admit.wdi], levels=weekday.levels, ordered=TRUE)
 
 # Day of admission
 df$admit.day <- factor(x=strftime(df$admit.ts,format="%F"), ordered=TRUE)

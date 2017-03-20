@@ -36,7 +36,7 @@ Homepage: www.aktin.org
   </intro>
   <section>
     <header>Beschreibung der Patienten</header>
-    <paragraph>Im Zeitraum <pref ref="zeitraum"/> wurden in der Notaufnahme insgesamt <pref ref="encounters"/> Fälle (von <pref ref="patients"/> verschiedenen Personen behandelt). Die Geschlechts- und Altersverteilung der Fälle wird in den folgenden Tabellen und Grafiken dargestellt.</paragraph>
+    <paragraph>Im Zeitraum <pref ref="zeitraum"/> wurden in der Notaufnahme insgesamt <pref ref="encounters"/> Fälle (von <pref ref="patients"/> verschiedenen Personen) behandelt. Die Geschlechts- und Altersverteilung der Fälle wird in den folgenden Tabellen und Grafiken dargestellt.</paragraph>
     <section>
       <header>Geschlechtsverteilung</header>
       <table ref="t1.1">Tabelle 1.1: Geschlechtsverteilung</table>
@@ -122,7 +122,7 @@ Homepage: www.aktin.org
     <table ref="t7.1">Tabelle 7.1: Aufenthaltsdauer in Minuten</table>
   </section>
   <section>
-    <header>Vorstellungsgrund und und führende Diagnose</header>
+    <header>Vorstellungsgrund und führende Diagnose</header>
     <paragraph>Die kodierten Diagnosen nach ICD-10-GM werden hier als sogenannte 3-Steller berichtet, sofern sie in dem primären Dokumentationssystem als „führende Diagnose“ definiert sind. Weitere Diagnosen werden nicht berücksichtigt.</paragraph>
     <section>
       <header>Top 20 führende Diagnosen</header>

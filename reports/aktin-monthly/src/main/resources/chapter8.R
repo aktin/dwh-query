@@ -116,8 +116,8 @@ try({
   #kat <- paste(codes,": ",names(a),sep = '')
   #b <- data.frame(Kategorie=kat, Anzahl=gformat(a), Anteil=gformat((a / sum(t))*100,digits = 1))
   b <- data.frame(Code=codes,Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(t))*100,digits = 1))
-  b <- rbind(b, data.frame(Code='',Kategorie="Nicht dokumentiert",Anzahl=gformat(length(df$encounter)-length(f_diag)), Anteil=gformat((sum(is.na(f_diag)) / length(f_diag))*100,digits = 1)))  #f_diag is 1 or 0 per encounter, df$enc is the number of enc. Counting NA is not enough since there may be multiple or no diagnoses per encounter
-  ges <- sum(is.na(f_diag))+sum(a)
+  b <- rbind(b, data.frame(Code='',Kategorie="Nicht dokumentiert",Anzahl=gformat(length(df$encounter)-length(f_diag)), Anteil=gformat(((length(df$encounter)-length(f_diag)) / length(f_diag))*100,digits = 1)))  #f_diag is 1 or 0 per encounter, df$enc is the number of enc. Counting NA is not enough since there may be multiple or no diagnoses per encounter
+  ges <- sum(a)+(length(df$encounter)-length(f_diag))
   c <- rbind(b, data.frame(Code='',Kategorie="Summe",Anzahl=gformat(ges),Anteil=gformat((ges / length(f_diag)*100),digits = 1)))
   #c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,4] <- paste(c[,4],'%')

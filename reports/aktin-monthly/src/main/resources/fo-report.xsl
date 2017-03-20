@@ -302,9 +302,11 @@
 			<xsl:attribute name="text-align">
 				<xsl:value-of select="../../../xhtml:col[$p]/@align"/>
 			</xsl:attribute>
-			<fo:block xsl:use-attribute-sets="celltext">
-				<xsl:value-of select="./text()"/>
-			</fo:block>
+			<fo:block-container overflow="hidden">
+                <fo:block xsl:use-attribute-sets="celltext">
+                    <xsl:value-of select="./text()"/>
+                </fo:block>
+            </fo:block-container>
 		</fo:table-cell>
 	</xsl:template>
 
@@ -340,6 +342,8 @@
 					<xsl:when test="$start_month= '12'"><xsl:value-of select="concat('Dezember', ' ', $start_year)"/> </xsl:when>
 				</xsl:choose>
 			</xsl:when>			
+			<!--<xsl:when test="">
+			</xsl:when>	-->
 			<xsl:otherwise>
 				<xsl:value-of select="concat($start_day, '.', $start_month, '.', $start_year,' - ',$end_day, '.', $end_month, '.', $end_year)"/> <!-- default output -->
 			</xsl:otherwise>

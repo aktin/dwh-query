@@ -86,7 +86,10 @@ try({
 #Admit Day
 try({
   Datum <- names(table(format(as.Date(df$admit.day), '%d.%m.%Y')))
-  Wochentag <- weekdays(as.Date(names(table(df$admit.day))))
+  #Wochentag <- weekdays(as.Date(names(table(df$admit.day))))
+  Wochentag <- format(as.Date(names(table(df$admit.day))), '%u')
+  Wochentag <- factor(Wochentag)
+  levels(Wochentag) <- list("Montag"="1","Dienstag"="2","Mittwoch"="3","Donnerstag"="4","Freitag"="5","Samstag"="6", "Sonntag"=7)
   Anzahl <- as.vector(table(df$admit.day))
   b <- data.frame(Datum,Wochentag,Anzahl)
   report.table(b,name='admit.d.xml',align=c('left','right','right'),widths=c(25,15,13))

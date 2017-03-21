@@ -33,6 +33,12 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>org.aktin</groupId>
+			<artifactId>dwh-api</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<!--
+		<dependency>
 			<groupId>org.aktin.dwh</groupId>
 			<artifactId>dwh-db</artifactId>
 			<version>0.2-SNAPSHOT</version>
@@ -42,7 +48,7 @@
 			<artifactId>report-manager</artifactId>
 			<version>0.2-SNAPSHOT</version>
 		</dependency>
-
+		-->
 		<!-- j2ee annotations -->
 		<dependency>
 			<groupId>javax</groupId>

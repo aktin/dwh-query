@@ -65,6 +65,15 @@ public class TestReportManager {
 		//i = Instant.parse("2016-10-01T00:00:00Z");
 		dt.plus(p);
 	}
+
+	@Test
+	public void timestampStringWithLocalOffset(){
+		Instant i = Instant.now();
+		String s = ReportExecution.formatIsoTimestamp(i, ZoneId.of("Europe/Berlin"));
+		// may be daylight saving time
+		Assert.assertTrue(s.endsWith("+01:00") || s.endsWith("+02:00"));
+	}
+
 	public static void main(String[] args) throws SQLException, XMLStreamException, ClassNotFoundException, IOException{
 		Class.forName("org.postgresql.Driver");
 		LocalI2b2DataSource ds = new LocalI2b2DataSource();

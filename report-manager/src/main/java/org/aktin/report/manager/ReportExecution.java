@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +40,7 @@ import javax.xml.transform.sax.SAXSource;
 import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.ExtractedData;
+import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.GeneratedReport;
 import org.aktin.report.Report;
 import org.apache.fop.apps.FOPException;
@@ -136,13 +139,18 @@ class ReportExecution implements GeneratedReport, URIResolver{
 		}
 		log.info("Using temporary directory: "+temp);
 	}
+
+	protected static final String formatIsoTimestamp(Instant timestamp, ZoneId tz){
+		return timestamp.atZone(tz).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+	}
 	private Map<String,String> selectPreferences(Preferences preferenceManager, Map<String,String> preset){
 		// write report options and preferences to xml
 		Map<String, String> prefs = new HashMap<>(preset);
-		// TODO rename to report.data.start, report.data.end
-		prefs.put("report.data.start", fromTimestamp.toString());
-		prefs.put("report.data.end", endTimestamp.toString());
-		prefs.put("report.data.timestamp", getDataTimestamp().toString());
+		// write timestamps with local timezone
+		ZoneId tz = ZoneId.of(preferenceManager.get(PreferenceKey.timeZoneId));
+		prefs.put("report.data.start", formatIsoTimestamp(fromTimestamp,tz));
+		prefs.put("report.data.end", formatIsoTimestamp(endTimestamp,tz));
+		prefs.put("report.data.timestamp", formatIsoTimestamp(getDataTimestamp(),tz));
 		// report.data.patients
 		// report.data.encounters
 		prefs.put("report.template.id", getTemplateId());

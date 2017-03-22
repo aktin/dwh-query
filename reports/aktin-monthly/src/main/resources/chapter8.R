@@ -34,14 +34,11 @@ try({
   y <- x
   y$label <- as.character(factor(y$Var1, levels=cedis[[1]], labels=cedis[[3]]))
   y$label[is.na(y$label)] <- "Vorstellungsgrund nicht dokumentiert"
-  #kat <- paste(y$Var1,y$label, sep = ': ')
-  #b <- data.frame(Kategorie=kat, Anzahl=gformat(y$Freq), Anteil=gformat((y$Freq / sum(t))*100,digits = 1))
-  b <- data.frame(Code=y$Var1, Kategorie=y$label, Anzahl=gformat(y$Freq), Anteil=gformat((y$Freq / sum(t))*100,digits = 1))
-  #b <- rbind(b, data.frame(Kategorie="Vorstellungsgrund nicht dokumentiert",Anzahl=gformat(sum(is.na(df$cedis))), Anteil=gformat((sum(is.na(df$cedis)) / length(df$cedis))*100,digits = 1)))
-  c <- rbind(b, data.frame(Code='',Kategorie="Summe",Anzahl=gformat(sum(y$Freq)),Anteil=gformat(sum(y$Freq) / length(df$cedis)*100,digits=1)))
-  #c[,3] <- sprintf(fmt="%.1f",c[,3])
-  c[,4] <- paste(c[,4],'%')
-  report.table(c,name='cedis.xml',align=c('left','left','right','right'),widths=c(8,60,15,15))
+  b <- data.frame(Code=y$Var1[1:20], Kategorie=y$label[1:20], Anzahl=gformat(y$Freq[1:20]), Anteil=gformat((y$Freq[1:20] / sum(t))*100,digits = 1))
+  c <- rbind(b, data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=gformat(sum(y$Freq[1:20])),Anteil=gformat(sum(y$Freq[1:20]) / length(df$cedis)*100,digits=1)))
+  d <- rbind(c,data.frame(Code=y$Var1[21:22], Kategorie=y$label[21:22], Anzahl=gformat(y$Freq[21:22]), Anteil=gformat((y$Freq[21:22] / sum(t))*100,digits = 1)))
+  d[,4] <- paste(d[,4],'%')
+  report.table(d,name='cedis.xml',align=c('left','left','right','right'),widths=c(8,60,15,15))
 }, silent=FALSE)
 
 #CEDIS Groups
@@ -116,11 +113,10 @@ try({
   #kat <- paste(codes,": ",names(a),sep = '')
   #b <- data.frame(Kategorie=kat, Anzahl=gformat(a), Anteil=gformat((a / sum(t))*100,digits = 1))
   b <- data.frame(Code=codes,Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / sum(t))*100,digits = 1))
-  b <- rbind(b, data.frame(Code='',Kategorie="Nicht dokumentiert",Anzahl=gformat(length(df$encounter)-length(f_diag)), Anteil=gformat(((length(df$encounter)-length(f_diag)) / length(f_diag))*100,digits = 1)))  #f_diag is 1 or 0 per encounter, df$enc is the number of enc. Counting NA is not enough since there may be multiple or no diagnoses per encounter
-  ges <- sum(a)+(length(df$encounter)-length(f_diag))
-  c <- rbind(b, data.frame(Code='',Kategorie="Summe",Anzahl=gformat(ges),Anteil=gformat((ges / length(f_diag)*100),digits = 1)))
-  #c[,3] <- sprintf(fmt="%.1f",c[,3])
-  c[,4] <- paste(c[,4],'%')
-  report.table(c,name='icd.xml',align=c('left','left','right','right'),widths=c(8,62,15,15))
+  ges <- sum(a)
+  c <- rbind(b, data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=gformat(ges),Anteil=gformat((ges / length(f_diag)*100),digits = 1)))
+  d <- rbind(c, data.frame(Code='',Kategorie="Nicht dokumentiert",Anzahl=gformat(length(df$encounter)-length(f_diag)), Anteil=gformat(((length(df$encounter)-length(f_diag)) / length(f_diag))*100,digits = 1)))  #f_diag is 1 or 0 per encounter, df$enc is the number of enc. Counting NA is not enough since there may be multiple or no diagnoses per encounter
+  d[,4] <- paste(d[,4],'%')
+  report.table(d,name='icd.xml',align=c('left','left','right','right'),widths=c(8,62,15,15))
   
 }, silent=FALSE)

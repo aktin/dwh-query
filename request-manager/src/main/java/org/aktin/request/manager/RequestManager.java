@@ -7,7 +7,7 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +45,7 @@ public class RequestManager extends Module {
     private TimerService timer;
 
 	private BrokerClient client;
-	private Map<String,String> versions;
+	private boolean handshakeCompleted;
 
 
 	public RequestManager() {
@@ -67,8 +67,8 @@ public class RequestManager extends Module {
 		log.info("Timer created, first callback in "+Duration.ofMillis(t.getTimeRemaining()));		
 	}
 
-	private void loadSoftwareVersions(){
-		versions = new Hashtable<>();
+	private Map<String,String> loadSoftwareVersions(){
+		Map<String, String> versions = new HashMap<>();
 		versions.put("dwh-api", PreferenceKey.class.getPackage().getImplementationVersion());
 		versions.put("dwh-db", LiquibaseWrapper.class.getPackage().getImplementationVersion());
 		versions.put("java", System.getProperty("java.vendor")+"/"+System.getProperty("java.version"));
@@ -80,7 +80,18 @@ public class RequestManager extends Module {
 		} catch (NamingException e) {
 			log.warning("Unable to get ear version via java:app/AppName");
 		}
+		return versions;
 		// TODO find out application server name 
+	}
+
+	/**
+	 * Handshake requests broker status and posts version information
+	 * to the broker. Handshake is only required once after startup.
+	 * @throws IOException communications error
+	 */
+	private void performBrokerHandshake() throws IOException{
+		client.getBrokerStatus();
+		client.postSoftwareVersions(loadSoftwareVersions());
 	}
 
 	private void initializeBrokerClient(){
@@ -94,14 +105,16 @@ public class RequestManager extends Module {
 	public void loadSchedule() {
 		log.info("Initializing request manager");
 		initializeBrokerClient();
-		loadSoftwareVersions();
 		createIntervalTimer();
 	}
 
 	private void reportStatusToBroker(){
 		try {
-			client.getBrokerStatus();
-			client.postSoftwareVersions(versions);
+			if( false == handshakeCompleted ){
+				// need to perform broker handshake only once after startup
+				performBrokerHandshake();
+				handshakeCompleted = true;
+			}
 			client.putMyResourceXml("stats", summ);
 		}catch( ConnectException e ){
 			log.severe("Unable to connect to broker "+prefs.get(PreferenceKey.brokerEndpointURI));

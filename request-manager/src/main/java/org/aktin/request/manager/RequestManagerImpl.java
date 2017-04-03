@@ -32,8 +32,8 @@ import org.aktin.dwh.db.LiquibaseWrapper;
 
 @javax.ejb.Singleton
 @javax.ejb.Startup
-public class RequestManager extends Module {
-	private static final Logger log = Logger.getLogger(RequestManager.class.getName());
+public class RequestManagerImpl extends Module {
+	private static final Logger log = Logger.getLogger(RequestManagerImpl.class.getName());
 	private static final long INITIAL_DELAY_MILLIS = 20*1000; // first execution after 20 seconds
 	@Inject
 	private Preferences prefs;
@@ -48,7 +48,7 @@ public class RequestManager extends Module {
 	private boolean handshakeCompleted;
 
 
-	public RequestManager() {
+	public RequestManagerImpl() {
 
 	}
 
@@ -95,27 +95,45 @@ public class RequestManager extends Module {
 	}
 
 	private void initializeBrokerClient(){
-		URI uri = URI.create(prefs.get(PreferenceKey.brokerEndpointURI));
-		client = new BrokerClient(uri);
+		String broker = prefs.get(PreferenceKey.brokerEndpointURI);
+		if( broker == null || broker.trim().length() == 0 ){
+			// no or empty broker URL, disable broker communication
+			client = null;
+			// there will be not timer callbacks
+			return;
+		}
+		client = new BrokerClient(URI.create(broker));
 		String apiKey = prefs.get(PreferenceKey.brokerEndpointKeys);
 		client.setClientAuthenticator(HttpApiKeyAuth.newBearer(apiKey));
+		// create timer to fetch requests
+		createIntervalTimer();
 	}
 
 	@PostConstruct
 	public void loadSchedule() {
 		log.info("Initializing request manager");
 		initializeBrokerClient();
-		createIntervalTimer();
 	}
 
-	private void reportStatusToBroker(){
+	private void reportStatusToBroker() throws IOException{
+		if( false == handshakeCompleted ){
+			// need to perform broker handshake only once after startup
+			performBrokerHandshake();
+			handshakeCompleted = true;
+		}
+		client.putMyResourceXml("stats", summ);
+	}
+
+	private void fetchNewRequests() throws IOException{
+		// TODO fetch requests, post events		
+	}
+	// timer will not be called if broker communication is disabled
+	@Timeout
+	private void timerCallback(Timer timer){
+		log.info("Broker timer triggered. Next at "+timer.getNextTimeout());
 		try {
-			if( false == handshakeCompleted ){
-				// need to perform broker handshake only once after startup
-				performBrokerHandshake();
-				handshakeCompleted = true;
-			}
-			client.putMyResourceXml("stats", summ);
+			reportStatusToBroker();
+			fetchNewRequests();
 		}catch( ConnectException e ){
 			log.severe("Unable to connect to broker "+prefs.get(PreferenceKey.brokerEndpointURI));
 		}catch( UnknownHostException e ){
@@ -125,13 +143,7 @@ public class RequestManager extends Module {
 		}catch( IOException e) {
 			log.log(Level.SEVERE, "Broker communication failed", e);
 		}
-	}
-
-	@Timeout
-	private void timerCallback(Timer timer){
-		log.info("Broker timer triggered.");
-		log.info("Next scheduled timer at "+timer.getNextTimeout());
-		reportStatusToBroker();
+		// TODO go through requests and perform pending actions
 	}
 
 

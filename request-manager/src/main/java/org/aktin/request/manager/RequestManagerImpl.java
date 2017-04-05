@@ -22,17 +22,15 @@ import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.aktin.Module;
 import org.aktin.Preferences;
 import org.aktin.broker.client.BrokerClient;
 import org.aktin.broker.client.auth.HttpApiKeyAuth;
 import org.aktin.dwh.PreferenceKey;
-import org.aktin.dwh.db.LiquibaseWrapper;
 
 
 @javax.ejb.Singleton
 @javax.ejb.Startup
-public class RequestManagerImpl extends Module {
+public class RequestManagerImpl {
 	private static final Logger log = Logger.getLogger(RequestManagerImpl.class.getName());
 	private static final long INITIAL_DELAY_MILLIS = 20*1000; // first execution after 20 seconds
 	@Inject
@@ -70,7 +68,7 @@ public class RequestManagerImpl extends Module {
 	private Map<String,String> loadSoftwareVersions(){
 		Map<String, String> versions = new HashMap<>();
 		versions.put("dwh-api", PreferenceKey.class.getPackage().getImplementationVersion());
-		versions.put("dwh-db", LiquibaseWrapper.class.getPackage().getImplementationVersion());
+//		versions.put("dwh-db", LiquibaseWrapper.class.getPackage().getImplementationVersion());
 		versions.put("java", System.getProperty("java.vendor")+"/"+System.getProperty("java.version"));
 		// get application server version from TimerService implementation
 		versions.put("j2ee-impl", timer.getClass().getPackage().getImplementationVersion());

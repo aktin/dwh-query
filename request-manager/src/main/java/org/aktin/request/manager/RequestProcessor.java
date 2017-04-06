@@ -3,11 +3,13 @@ package org.aktin.request.manager;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,18 +19,23 @@ import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
 import org.w3c.dom.Element;
 
-public class RequestProcessor {
+public class RequestProcessor implements Consumer<RetrievedRequest>{
 	private static final Logger log = Logger.getLogger(RequestProcessor.class.getName());
 
 	private Executor executor;
-	private QueryHandlerFactory[] handlers;
+	private List<QueryHandlerFactory> handlers;
+
+	public RequestProcessor(){
+		handlers = new ArrayList<>();
+	}
 
 	//@Resource(lookup="java:comp/DefaultManagedExecutorService")
-	protected void setExecutor(Executor executor){
+	public void setExecutor(Executor executor){
 		this.executor = executor;
 	}
 
-	protected void startExecution(RetrievedRequest request){
+	@Override
+	public void accept(RetrievedRequest request){
 		// start execution
 		executor.execute(new Execution(request));
 	}
@@ -52,6 +59,7 @@ public class RequestProcessor {
 		m.put("data.start", a.toString());
 		m.put("data.end", b.toString());
 		m.put("data.timestamp", Instant.now().toString());
+		// TODO add handler factory class name
 		return m;
 	}
 	private class Execution implements Runnable{
@@ -107,10 +115,10 @@ public class RequestProcessor {
 		private void findHandlerFactory(){
 			List<Element> ext = request.getRequest().getQuery().extensions;
 			for( Element el : ext ){
-				for( int i=0; i<handlers.length; i++ ){
-					if( Objects.equals(handlers[i].getNamespace(), el.getNamespaceURI())
-							&& handlers[i].getElementName().equals(el.getNodeName()) ){
-						factory = handlers[i];
+				for( QueryHandlerFactory fac : handlers ){
+					if( Objects.equals(fac.getNamespace(), el.getNamespaceURI())
+							&& fac.getElementName().equals(el.getNodeName()) ){
+						factory = fac;
 						source = el;
 						break;
 					}

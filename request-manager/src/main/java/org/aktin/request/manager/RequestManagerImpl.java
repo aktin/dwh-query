@@ -46,6 +46,7 @@ import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.broker.request.StatusChanged;
 import org.aktin.broker.xml.RequestInfo;
 import org.aktin.broker.request.Status;
+import org.aktin.dwh.EMail;
 import org.aktin.dwh.PreferenceKey;
 
 
@@ -63,7 +64,11 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	@Inject
 	@StatusChanged
 	private Event<RetrievedRequest> event;
-	
+
+	@Inject
+	@EMail
+	private Event<RetrievedRequest> emailEvent;
+
 	@Resource
     private TimerService timer;
 
@@ -239,6 +244,34 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	}
 
 
+	/**
+	 * Applies rules meant to run after the request was retrieved.
+	 * E.g. Automatically accept some requests or reject all
+	 * @param request request
+	 */
+	protected void applyPostRetrievalRules(RetrievedRequest request){
+		// TODO load and apply rules
+		// XXX for now, queue all requests
+		try {
+			request.changeStatus(null, RequestStatus.Queued, "automatic accept");
+		} catch (IOException e) {
+			log.log(Level.SEVERE, "Unable to change status for request "+request.getRequestId(), e);
+		}
+	}
+
+	private void fireInterationNotification(RetrievedRequest request){
+		log.info("Interaction required for request "+request.getRequestId()+" status "+request.getStatus());
+		emailEvent.fire(request);
+	}
+
+	private void postRequestStatus(int requestId, org.aktin.broker.xml.RequestStatus brokerStatus){
+		try {
+			client.postRequestStatus(requestId, brokerStatus);
+		} catch (IOException e) {
+			// stack trace not needed for status report failures
+			log.warning("Unable to report request status to broker: "+requestId+" -> "+brokerStatus+": "+e.toString());
+		}
+	}
 	// automatically called by CDI event processing
 	protected void reportStatusUpdatesToBroker(@Observes @StatusChanged RetrievedRequest request){
 		log.info("Request "+request.getRequestId()+" status -> "+request.getStatus());
@@ -246,32 +279,49 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		try{
 			switch( request.getStatus() ){
 			case Completed:
-				client.postRequestStatus(id, org.aktin.broker.xml.RequestStatus.processing);
+				// check if interaction is required
+				if( request.hasAutoSubmit() ){
+					// update status to sending
+					log.info("No interaction for completed request "+request.getRequestId());
+					request.changeStatus(null, RequestStatus.Sending, null);
+				}else{
+					// manual interaction required
+					log.info("Interaction required for completed request "+request.getRequestId());
+					fireInterationNotification(request);
+					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction);
+				}
 				break;
 			case Failed:
-				client.postRequestStatus(id, org.aktin.broker.xml.RequestStatus.failed);
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.failed);
 				// TODO report failure message (e.g. from action log)
 				client.deleteMyRequest(id);
 				break;
 			case Processing:
-				client.postRequestStatus(id, org.aktin.broker.xml.RequestStatus.processing);
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.processing);
 				break;
 			case Queued:
-				client.postRequestStatus(id, org.aktin.broker.xml.RequestStatus.queued);
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.queued);
 				break;
 			case Rejected:
-				client.postRequestStatus(id, org.aktin.broker.xml.RequestStatus.rejected);
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.rejected);
 				client.deleteMyRequest(id);
 				break;
 			case Retrieved:
-				// retrieval reporting is done synchronously
+				// retrieval was already reported after fetching
+				// determine whether interaction is required
+				applyPostRetrievalRules(request);
+				if( request.getStatus() == RequestStatus.Retrieved ){
+					// rules didn't change the status. manual interaction required
+					fireInterationNotification(request);
+					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction);
+				}
 				break;
 			case Seen:
 				break;
 			case Sending:
 				break;
 			case Submitted:
-				client.postRequestStatus(id, org.aktin.broker.xml.RequestStatus.completed);
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.completed);
 				client.deleteMyRequest(id);
 				break;
 			default:

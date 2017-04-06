@@ -13,12 +13,15 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Singleton;
+
 import org.aktin.broker.query.QueryHandler;
 import org.aktin.broker.query.QueryHandlerFactory;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
 import org.w3c.dom.Element;
 
+@Singleton
 public class RequestProcessor implements Consumer<RetrievedRequest>{
 	private static final Logger log = Logger.getLogger(RequestProcessor.class.getName());
 

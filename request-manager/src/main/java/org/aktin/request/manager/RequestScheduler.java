@@ -12,12 +12,15 @@ import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.broker.request.Status;
 
+@javax.ejb.Singleton
+@javax.ejb.Startup
 public class RequestScheduler {
 	private static final Logger log = Logger.getLogger(RequestScheduler.class.getName());
 
@@ -29,16 +32,19 @@ public class RequestScheduler {
 	private TimerConfig timerConfig;
 	private Consumer<RetrievedRequest> executor;
 
-	LinkedList<RetrievedRequest> queue;
+	private LinkedList<RetrievedRequest> queue;
 
 	public RequestScheduler(){
 		timerConfig = new TimerConfig();
 		timerConfig.setPersistent(false);
+		this.queue = new LinkedList<>();
 	}
 
-	public void setRequestExecutor(Consumer<RetrievedRequest> executor){
+	@Inject
+	public void setRequestExecutor(RequestProcessor executor){
 		this.executor = executor;
 	}
+
 	private void updateTimer(){
 		// clear previous timer
 		if( nextExecution != null ){

@@ -39,7 +39,13 @@ public class RequestScheduler {
 	public void setRequestExecutor(Consumer<RetrievedRequest> executor){
 		this.executor = executor;
 	}
-	private void setTimer(){
+	private void updateTimer(){
+		// clear previous timer
+		if( nextExecution != null ){
+			// TODO handle exceptions?
+			nextExecution.cancel();
+			nextExecution = null;
+		}
 		Instant next;
 		synchronized( queue ){
 			if( queue.isEmpty() ){
@@ -58,13 +64,6 @@ public class RequestScheduler {
 		executor.accept(request);
 	}
 
-	private void clearTimer(){
-		if( nextExecution != null ){
-			// TODO handle exceptions?
-			nextExecution.cancel();
-			nextExecution = null;
-		}
-	}
 	private void startDueExecutions(){
 		Instant now = Instant.now();
 		synchronized( queue ){
@@ -85,33 +84,31 @@ public class RequestScheduler {
 	}
 	protected void scheduleRequest(@Observes @Status(RequestStatus.Queued) RetrievedRequest request){
 		Instant ts = request.getRequest().getScheduledTimestamp();
+		// queries without timestamp are forwarded immediately
+		if( ts == null ){
+			startExecution(request);
+		}
 		// insert at right place in queue
+		int pos = 0;
 		synchronized( queue ){
-			int pos = 0;
 			for( RetrievedRequest req : queue ){
 				Instant other = req.getRequest().getScheduledTimestamp();
-				if( ts == null ){
-					// if both timestamp are null, add new request after all other null timestamps
-					if( other == null ){
-						// continue search
-					}else{
-						// found our place
-						break;
-					}
-				}else if( other == null ){
-					// leave null timestamps in front and add afterwards
-					// continue search
-				}else if( ts.isBefore(other) ){
+				if( ts.isAfter(other) ){
+					pos ++;
+				}else{
 					// found our place
 					break;
-				}// else continue
-				pos ++;
+				}
 			}
 			queue.add(pos, request);
 		}
-		// timer update only needed, if the new request is scheduled before
-		// the timer expires or if no previous timer is configured
-		// TODO timer management
+		// if there is an existing timer and the new request is not at the first position
+		// then we don't need to change the timer
+		if( nextExecution == null || pos == 0 ){
+			// no previous timer or request scheduled before other requests
+			// update timer
+			updateTimer();
+		}
 	}
 
 	@Timeout
@@ -119,6 +116,6 @@ public class RequestScheduler {
 		// one shot timer is already expired
 		this.nextExecution = null;
 		startDueExecutions();
-		setTimer();
+		updateTimer();
 	}
 }

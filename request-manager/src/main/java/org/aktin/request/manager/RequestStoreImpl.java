@@ -28,8 +28,13 @@ abstract class RequestStoreImpl {
 		this.resultDir = resultDir;
 	}
 
-	// TODO methods setDataSource, setResultDir
+	protected void setDataSource(DataSource ds){
+		this.ds = ds;
+	}
 
+	protected void setResultDirectory(Path resultDir){
+		this.resultDir = resultDir;
+	}
 	protected void reloadRequests() throws SQLException, JAXBException{
 		requests.clear();
 		try( Connection dbc = ds.getConnection() ){

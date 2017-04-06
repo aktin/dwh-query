@@ -13,7 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.function.Consumer;
 
 import javax.activation.DataSource;
@@ -261,4 +263,21 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		return lastActionTime;
 	}
 
+	@Override
+	public void setProcessing(Map<String, String> properties) throws IOException{
+		// store properties in status change description
+		StringWriter w = new StringWriter();
+		Properties props = new Properties();
+		props.putAll(properties);
+		props.store(w, "Processing properties");
+		
+		try( Connection dbc = store.getConnection() ){
+			dbc.setAutoCommit(true);
+			changeStatus(dbc, System.currentTimeMillis(), null, RequestStatus.Processing, w.toString());
+		} catch (SQLException e) {
+			throw new IOException("Unable to write action to database", e);
+		}
+		// fire event
+		store.afterRequestStatusChange(this);
+	}
 }

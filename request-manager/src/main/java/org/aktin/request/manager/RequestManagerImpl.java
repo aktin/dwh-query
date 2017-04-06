@@ -231,7 +231,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				return Status.class;
 			}
 			@Override
-			public RequestStatus status() {
+			public RequestStatus value() {
 				return status;
 			}
 		};

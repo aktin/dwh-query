@@ -26,6 +26,7 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -160,6 +161,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		try {
 			initializeResultDirectory();
 			reloadRequests();
+			fireInterruptedEvents();
 		} catch (IOException | SQLException | JAXBException e) {
 			throw new IllegalStateException(e);
 		}
@@ -177,7 +179,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	}
 
 	private void fetchNewRequests() throws IOException{
-		// TODO fetch requests
+		// TODO what happens if the a request is deleted at the broker and it is still waiting locally? how do we update that info?
+		// fetch requests
 		List<RequestInfo> list = client.listMyRequests();
 		Unmarshaller um;
 		try{
@@ -186,8 +189,10 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		}catch( JAXBException e ){
 			throw new IOException(e);
 		}
+		log.info("Broker lists "+list.size()+" requests");
 		for( RequestInfo info : list ){
-			if( info.nodeStatus.size() == 0 ){
+			if( info.nodeStatus == null || info.nodeStatus.size() == 0 ){
+				log.info("Request "+info.getId()+" is new.");
 				// new request
 				// TODO load content
 				try( Reader reader = client.getMyRequestDefinitionReader(info.getId(), QueryRequest.MEDIA_TYPE) ){
@@ -205,6 +210,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			}else{
 				// already retrieved
 				// nothing to do
+				log.info("Request "+info.getId()+" already retrieved.");
 			}
 		}
 	}
@@ -241,6 +247,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			}
 		};
 		event.select(qualifier).fire(request);
+
+		reportStatusUpdatesToBroker(request);
 	}
 
 
@@ -253,13 +261,14 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		// TODO load and apply rules
 		// XXX for now, queue all requests
 		try {
+			request.setAutoSubmit(true);
 			request.changeStatus(null, RequestStatus.Queued, "automatic accept");
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Unable to change status for request "+request.getRequestId(), e);
 		}
 	}
 
-	private void fireInterationNotification(RetrievedRequest request){
+	private void fireInteraktionNotification(RetrievedRequest request){
 		log.info("Interaction required for request "+request.getRequestId()+" status "+request.getStatus());
 		emailEvent.fire(request);
 	}
@@ -272,8 +281,9 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			log.warning("Unable to report request status to broker: "+requestId+" -> "+brokerStatus+": "+e.toString());
 		}
 	}
-	// automatically called by CDI event processing
-	protected void reportStatusUpdatesToBroker(@Observes @StatusChanged RetrievedRequest request){
+	// automatically called by CDI event processing (somehow not allowed???)
+	public void reportStatusUpdatesToBroker(RetrievedRequest request){
+//	public void reportStatusUpdatesToBroker(@Observes @StatusChanged RetrievedRequest request){
 		log.info("Request "+request.getRequestId()+" status -> "+request.getStatus());
 		int id = request.getRequestId();
 		try{
@@ -287,7 +297,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				}else{
 					// manual interaction required
 					log.info("Interaction required for completed request "+request.getRequestId());
-					fireInterationNotification(request);
+					fireInteraktionNotification(request);
 					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction);
 				}
 				break;
@@ -312,7 +322,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				applyPostRetrievalRules(request);
 				if( request.getStatus() == RequestStatus.Retrieved ){
 					// rules didn't change the status. manual interaction required
-					fireInterationNotification(request);
+					fireInteraktionNotification(request);
 					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction);
 				}
 				break;

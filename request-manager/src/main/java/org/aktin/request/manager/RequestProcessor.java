@@ -13,12 +13,22 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.jms.IllegalStateException;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
+import org.aktin.Preferences;
 import org.aktin.broker.query.QueryHandler;
 import org.aktin.broker.query.QueryHandlerFactory;
+import org.aktin.broker.query.sql.SQLHandlerFactory;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
+import org.aktin.dwh.PreferenceKey;
 import org.w3c.dom.Element;
 
 @Singleton
@@ -28,13 +38,30 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 	private Executor executor;
 	private List<QueryHandlerFactory> handlers;
 
+	@Inject
+	private Preferences prefs;
+
 	public RequestProcessor(){
 		handlers = new ArrayList<>();
 	}
 
-	//@Resource(lookup="java:comp/DefaultManagedExecutorService")
+	@Resource(lookup="java:comp/DefaultManagedExecutorService")
 	public void setExecutor(Executor executor){
 		this.executor = executor;
+	}
+
+	@PostConstruct
+	public void loadQueryHandlers() {
+		// lookup data source
+		String lookup = prefs.get(PreferenceKey.i2b2DatasourceCRC);
+		DataSource crc;
+		try {
+			crc = (DataSource)(new InitialContext().lookup(lookup));
+		} catch (NamingException e) {
+			throw new RuntimeException("Unable to lookup CRC data source", e);
+		}
+		SQLHandlerFactory f = new SQLHandlerFactory(crc);
+		handlers.add(f);
 	}
 
 	@Override

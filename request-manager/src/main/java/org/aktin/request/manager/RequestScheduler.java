@@ -24,6 +24,7 @@ import org.aktin.broker.request.Status;
 public class RequestScheduler {
 	private static final Logger log = Logger.getLogger(RequestScheduler.class.getName());
 
+	@Inject
 	RequestManager manager;
 
 	@Resource
@@ -62,6 +63,9 @@ public class RequestScheduler {
 			next = queue.getFirst().getRequest().getScheduledTimestamp();
 		}
 		long waitMilli = next.toEpochMilli() - System.currentTimeMillis();
+		if( waitMilli < 0 ){
+			// 
+		}
 		nextExecution = timerService.createSingleActionTimer(waitMilli, timerConfig);
 		log.info("Next execution scheduled for "+nextExecution.getNextTimeout());
 	}
@@ -88,11 +92,22 @@ public class RequestScheduler {
 			}
 		}
 	}
-	protected void scheduleRequest(@Observes @Status(RequestStatus.Queued) RetrievedRequest request){
+	public void scheduleRequest(@Observes @Status(RequestStatus.Retrieved) RetrievedRequest request){
+//	public void scheduleRequest(RetrievedRequest request){
+//	public void scheduleRequest(@Observes @Status(RequestStatus.Queued) RetrievedRequest request){
+		if( request.getStatus() == RequestStatus.Retrieved ){ // TODO only execute queued
+			log.info("Scheduling request "+request.getRequestId()+", status="+request.getStatus());
+		}else{
+			log.info("Ignoring request "+request.getRequestId()+", status="+request.getStatus());
+			return;
+		}
 		Instant ts = request.getRequest().getScheduledTimestamp();
+		Instant now = Instant.now();
 		// queries without timestamp are forwarded immediately
-		if( ts == null ){
+		// as well as queries scheduled in the past
+		if( ts == null || ts.isBefore(now) ){
 			startExecution(request);
+			return; // no need to bother queue or timer
 		}
 		// insert at right place in queue
 		int pos = 0;

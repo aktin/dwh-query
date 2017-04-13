@@ -63,6 +63,9 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	private org.aktin.dwh.ImportSummary summ;
 
 	@Inject
+	private ResultUploader uploader;
+
+	@Inject
 	@StatusChanged
 	private Event<RetrievedRequest> event;
 
@@ -329,6 +332,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			case Seen:
 				break;
 			case Sending:
+				uploader.accept(request);
 				break;
 			case Submitted:
 				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.completed);

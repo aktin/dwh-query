@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.aktin.Preferences;
-import org.aktin.broker.client.AggregatorClient;
+import org.aktin.broker.client.BrokerClient;
 import org.aktin.broker.client.BrokerClient.OutputWriter;
 import org.aktin.broker.client.auth.HttpApiKeyAuth;
 import org.aktin.broker.request.RequestStatus;
@@ -27,7 +27,7 @@ import org.aktin.dwh.PreferenceKey;
 public class ResultUploader implements Consumer<RetrievedRequest>{
 	private static final Logger log = Logger.getLogger(ResultUploader.class.getName());
 
-	private AggregatorClient client;
+	private BrokerClient client;
 	private Executor executor;
 	private int uploadBufferSize;
 
@@ -53,9 +53,7 @@ public class ResultUploader implements Consumer<RetrievedRequest>{
 			log.warning("No broker configured, there will be no aggregator uploads");
 			return;
 		}
-		URI ep = URI.create(broker).resolve("../aggregator");
-		log.info("Using aggregator: "+ep);
-		client = new AggregatorClient(ep);
+		client = new BrokerClient(URI.create(broker));
 		String apiKey = prefs.get(PreferenceKey.brokerEndpointKeys);
 		client.setClientAuthenticator(HttpApiKeyAuth.newBearer(apiKey));
 	}

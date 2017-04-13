@@ -280,4 +280,9 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		// fire event
 		store.afterRequestStatusChange(this);
 	}
+
+	@Override
+	public void setAutoSubmit(boolean autoSubmit) {
+		this.autoSubmit = autoSubmit;
+	}
 }

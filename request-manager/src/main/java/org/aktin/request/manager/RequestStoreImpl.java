@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -13,6 +14,7 @@ import org.aktin.broker.query.xml.QueryRequest;
 import org.aktin.broker.request.RequestStatus;
 
 abstract class RequestStoreImpl {
+	private static final Logger log = Logger.getLogger(RequestStoreImpl.class.getName());
 
 	private DataSource ds;
 	private Path resultDir;
@@ -40,6 +42,7 @@ abstract class RequestStoreImpl {
 		try( Connection dbc = ds.getConnection() ){
 			RequestImpl.loadAll(this, dbc, requests::add);
 		}
+		log.info("Loaded "+requests.size()+" requests");
 	}
 
 	public List<RequestImpl> getRequests(){
@@ -86,6 +89,7 @@ abstract class RequestStoreImpl {
 		}
 		// append to list
 		requests.add(r);
+		log.info("Request "+request.getId()+" added. Firing status event..");
 		// fire status change event: null -> Retrieved
 		afterRequestStatusChange(r);
 		return r;

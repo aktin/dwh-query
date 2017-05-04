@@ -140,9 +140,9 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 				changeStatus(RequestStatus.Completed, null);
 			}catch( Throwable e ){
 				// execution failed
-				// TODO add stacktrace to error description
-				log.log(Level.SEVERE, "Query execution failed for request "+request.getRequestId(),e);
-				changeStatus(RequestStatus.Failed, e.toString());
+				// add stacktrace to error description
+				log.log(Level.SEVERE, "Query execution failed for request "+request.getRequestId(), e);
+				changeStatus(RequestStatus.Failed, Util.stringStackTrace(e));
 			}
 		}
 		private void findHandlerFactory(){

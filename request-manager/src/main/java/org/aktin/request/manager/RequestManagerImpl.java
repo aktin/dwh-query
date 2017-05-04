@@ -146,17 +146,17 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		String ix = prefs.get("broker.request.interaction"); // XXX use enum
 		if( ix == null ){
 			// default to user interaction
-			interaction = InteractionPreset.User;
+			interaction = InteractionPreset.USER;
 		}else{
 			switch( ix ){
 			case "user":
-				interaction = InteractionPreset.User;
+				interaction = InteractionPreset.USER;
 				break;
 			case "non-interactive-reject":
-				interaction = InteractionPreset.AutoReject;
+				interaction = InteractionPreset.NON_INTERACTIVE_REJECT;
 				break;
 			case "non-interactive-allow":
-				interaction = InteractionPreset.AutoAllow;
+				interaction = InteractionPreset.NON_INTERACTIVE_ALLOW;
 				break;
 			default:
 				throw new IllegalArgumentException("Unsupported value for preference broker.request.interaction: "+ix);
@@ -287,14 +287,14 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		// check for interaction overrides
 		try {
 			switch( interaction ){
-			case User:
+			case USER:
 				// TODO load and apply user defined rules
 				break;
-			case AutoAllow:
+			case NON_INTERACTIVE_ALLOW:
 				request.setAutoSubmit(true);
 				request.changeStatus(null, RequestStatus.Queued, "automatic accept");
 				break;
-			case AutoReject:
+			case NON_INTERACTIVE_REJECT:
 				request.changeStatus(null, RequestStatus.Rejected, "automatic reject");
 			}
 		} catch (IOException e) {

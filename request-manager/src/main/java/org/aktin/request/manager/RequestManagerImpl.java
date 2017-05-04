@@ -75,9 +75,13 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
     private TimerService timer;
 
 	private BrokerClient client;
+	private BrokerInteraction interaction;
 	private boolean handshakeCompleted;
 
 
+	private static enum BrokerInteraction{
+		User, AutoReject, AutoAllow
+	}
 	public RequestManagerImpl() {
 
 	}
@@ -140,6 +144,27 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		setResultDirectory(path);		
 	}
 
+	private void loadRequestInteractionOverrides(){
+		// determine interaction override
+		String ix = prefs.get("broker.request.interaction"); // XXX use enum
+		if( ix == null ){
+			// default to user interaction
+			interaction = BrokerInteraction.User;
+		}else{
+			switch( ix ){
+			case "user":
+				interaction = BrokerInteraction.User;
+				break;
+			case "auto-reject":
+				interaction = BrokerInteraction.AutoReject;
+				break;
+			case "auto-allow":
+				interaction = BrokerInteraction.AutoAllow;
+				break;
+			}
+		}
+		log.info("Broker request interaction: "+interaction);
+	}
 	private void initializeBrokerClient(){
 		String broker = prefs.get(PreferenceKey.brokerEndpointURI);
 		if( broker == null || broker.trim().length() == 0 ){
@@ -158,6 +183,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	@PostConstruct
 	public void loadSchedule() {
 		log.info("Initializing request manager");
+		loadRequestInteractionOverrides();
 		// load result directory
 		try {
 			initializeResultDirectory();
@@ -259,11 +285,19 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	 * @param request request
 	 */
 	protected void applyPostRetrievalRules(RetrievedRequest request){
-		// TODO load and apply rules
-		// XXX for now, queue all requests
+		// check for interaction overrides
 		try {
-			request.setAutoSubmit(true);
-			request.changeStatus(null, RequestStatus.Queued, "automatic accept");
+			switch( interaction ){
+			case User:
+				// TODO load and apply user defined rules
+				break;
+			case AutoAllow:
+				request.setAutoSubmit(true);
+				request.changeStatus(null, RequestStatus.Queued, "automatic accept");
+				break;
+			case AutoReject:
+				request.changeStatus(null, RequestStatus.Rejected, "automatic reject");
+			}
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Unable to change status for request "+request.getRequestId(), e);
 		}

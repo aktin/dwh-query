@@ -3,6 +3,8 @@ package org.aktin.request.manager;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Instant;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 
 	private Executor executor;
 	private List<QueryHandlerFactory> handlers;
+	private ZoneId localZone;
 
 	@Inject
 	private Preferences prefs;
@@ -61,6 +64,7 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 		}
 		SQLHandlerFactory f = new SQLHandlerFactory(crc);
 		handlers.add(f);
+		localZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 	}
 
 	@Override
@@ -72,11 +76,11 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 	private Map<String,String> compileProperties(RetrievedRequest request){
 		Map<String, String> m = new HashMap<>();
 		Instant a = request.getRequest().getScheduledTimestamp();
-		// TODO calculate period
-		//Period d = request.getRequest().getQuery().schedule.duration;
-		// probably need local time
-		// XXX for testing use a difference of 30 days
-		Instant b = a.minusSeconds(60*60*24*30);
+		// calculate period
+		Period d = request.getRequest().getQuery().schedule.duration;
+		// time periods larger than week and day need time zone information
+		Instant b = a.atZone(localZone).plus(d).toInstant();
+		
 		// order a before b
 		if( a.isAfter(b) ){
 			// swap a and b

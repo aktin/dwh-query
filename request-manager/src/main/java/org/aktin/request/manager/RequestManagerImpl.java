@@ -39,6 +39,7 @@ import org.aktin.Preferences;
 import org.aktin.broker.client.BrokerClient;
 import org.aktin.broker.client.auth.HttpApiKeyAuth;
 import org.aktin.broker.query.xml.QueryRequest;
+import org.aktin.broker.request.InteractionPreset;
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
@@ -75,13 +76,9 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
     private TimerService timer;
 
 	private BrokerClient client;
-	private BrokerInteraction interaction;
+	private InteractionPreset interaction;
 	private boolean handshakeCompleted;
 
-
-	private static enum BrokerInteraction{
-		User, AutoReject, AutoAllow
-	}
 	public RequestManagerImpl() {
 
 	}
@@ -149,17 +146,17 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		String ix = prefs.get("broker.request.interaction"); // XXX use enum
 		if( ix == null ){
 			// default to user interaction
-			interaction = BrokerInteraction.User;
+			interaction = InteractionPreset.User;
 		}else{
 			switch( ix ){
 			case "user":
-				interaction = BrokerInteraction.User;
+				interaction = InteractionPreset.User;
 				break;
 			case "non-interactive-reject":
-				interaction = BrokerInteraction.AutoReject;
+				interaction = InteractionPreset.AutoReject;
 				break;
 			case "non-interactive-allow":
-				interaction = BrokerInteraction.AutoAllow;
+				interaction = InteractionPreset.AutoAllow;
 				break;
 			default:
 				throw new IllegalArgumentException("Unsupported value for preference broker.request.interaction: "+ix);
@@ -385,5 +382,10 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	public List<? extends RetrievedRequest> getQueryRequests(int queryId) {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Not yet implemented");
+	}
+
+	@Override
+	public InteractionPreset getInteractionPreset() {
+		return interaction;
 	}
 }

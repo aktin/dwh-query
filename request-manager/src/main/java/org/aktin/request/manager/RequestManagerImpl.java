@@ -155,12 +155,14 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			case "user":
 				interaction = BrokerInteraction.User;
 				break;
-			case "auto-reject":
+			case "non-interactive-reject":
 				interaction = BrokerInteraction.AutoReject;
 				break;
-			case "auto-allow":
+			case "non-interactive-allow":
 				interaction = BrokerInteraction.AutoAllow;
 				break;
+			default:
+				throw new IllegalArgumentException("Unsupported value for preference broker.request.interaction: "+ix);
 			}
 		}
 		log.info("Broker request interaction: "+interaction);

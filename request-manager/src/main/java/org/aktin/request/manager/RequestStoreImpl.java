@@ -62,7 +62,7 @@ abstract class RequestStoreImpl {
 		for( RequestImpl req : requests ){
 			//
 			if( req.getStatus() == RequestStatus.Queued ){
-				afterRequestStatusChange(req);
+				afterRequestStatusChange(req, null);
 			}
 		}
 	}
@@ -91,12 +91,12 @@ abstract class RequestStoreImpl {
 		requests.add(r);
 		log.info("Request "+request.getId()+" added. Firing status event..");
 		// fire status change event: null -> Retrieved
-		afterRequestStatusChange(r);
+		afterRequestStatusChange(r, null);
 		return r;
 	}
 	/**
 	 * Called after the request status is changed.
 	 * @param request request
 	 */
-	protected abstract void afterRequestStatusChange(RequestImpl request);
+	protected abstract void afterRequestStatusChange(RequestImpl request, String description);
 }

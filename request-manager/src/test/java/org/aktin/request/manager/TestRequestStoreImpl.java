@@ -78,7 +78,7 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 	}
 
 	@Override
-	protected void afterRequestStatusChange(RequestImpl request) {
+	protected void afterRequestStatusChange(RequestImpl request, String description) {
 		System.out.println("Request Status change: "+request.getRequestId()+" to "+request.getStatus());
 	}
 

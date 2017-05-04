@@ -213,7 +213,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 			throw new IOException("Unable to write action to database", e);
 		}
 		// fire event
-		store.afterRequestStatusChange(this);
+		store.afterRequestStatusChange(this, description);
 	}
 	
 
@@ -278,7 +278,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 			throw new IOException("Unable to write action to database", e);
 		}
 		// fire event
-		store.afterRequestStatusChange(this);
+		store.afterRequestStatusChange(this, w.toString());
 	}
 
 	@Override

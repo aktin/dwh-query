@@ -17,7 +17,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.jms.IllegalStateException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;

@@ -26,9 +26,7 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -237,7 +235,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	}
 
 	@Override
-	protected void afterRequestStatusChange(RequestImpl request) {
+	protected void afterRequestStatusChange(RequestImpl request, String description) {
 		final RequestStatus status = request.getStatus();
 		Annotation qualifier = new Status() {
 			@Override
@@ -251,7 +249,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		};
 		event.select(qualifier).fire(request);
 
-		reportStatusUpdatesToBroker(request);
+		reportStatusUpdatesToBroker(request, description);
 	}
 
 
@@ -276,16 +274,16 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		emailEvent.fire(request);
 	}
 
-	private void postRequestStatus(int requestId, org.aktin.broker.xml.RequestStatus brokerStatus){
+	private void postRequestStatus(int requestId, org.aktin.broker.xml.RequestStatus brokerStatus, String description){
 		try {
-			client.postRequestStatus(requestId, brokerStatus);
+			client.postRequestStatus(requestId, brokerStatus, null, description);
 		} catch (IOException e) {
 			// stack trace not needed for status report failures
 			log.warning("Unable to report request status to broker: "+requestId+" -> "+brokerStatus+": "+e.toString());
 		}
 	}
 	// automatically called by CDI event processing (somehow not allowed???)
-	public void reportStatusUpdatesToBroker(RetrievedRequest request){
+	public void reportStatusUpdatesToBroker(RetrievedRequest request, String description){
 //	public void reportStatusUpdatesToBroker(@Observes @StatusChanged RetrievedRequest request){
 		log.info("Request "+request.getRequestId()+" status -> "+request.getStatus());
 		int id = request.getRequestId();
@@ -301,22 +299,22 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 					// manual interaction required
 					log.info("Interaction required for completed request "+request.getRequestId());
 					fireInteraktionNotification(request);
-					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction);
+					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction, description);
 				}
 				break;
 			case Failed:
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.failed);
-				// TODO report failure message (e.g. from action log)
+				// report failure message
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.failed, description);
 				client.deleteMyRequest(id);
 				break;
 			case Processing:
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.processing);
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.processing, description);
 				break;
 			case Queued:
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.queued);
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.queued, description);
 				break;
 			case Rejected:
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.rejected);
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.rejected, description);
 				client.deleteMyRequest(id);
 				break;
 			case Retrieved:
@@ -326,7 +324,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				if( request.getStatus() == RequestStatus.Retrieved ){
 					// rules didn't change the status. manual interaction required
 					fireInteraktionNotification(request);
-					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction);
+					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction, description);
 				}
 				break;
 			case Seen:
@@ -335,7 +333,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				uploader.accept(request);
 				break;
 			case Submitted:
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.completed);
+				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.completed, description);
 				client.deleteMyRequest(id);
 				break;
 			default:

@@ -128,8 +128,7 @@ public class ReportSchedule extends Module {
 		// create schedule
 		ScheduleExpression expr = new ScheduleExpression();
 		// run third of month
-//		expr.dayOfMonth(3);
-		expr.dayOfMonth(8).hour(13).minute(46);
+		expr.dayOfMonth(3).hour(6).minute(13);
 		Timer t = timer.createCalendarTimer(expr);
 		schedule.put(t, report);
 		log.info("Monthly report scheduled for " + expr.toString());

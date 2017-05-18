@@ -23,6 +23,7 @@ import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.dwh.PreferenceKey;
 
+// TODO try to change visibility to package
 @Singleton
 public class ResultUploader implements Consumer<RetrievedRequest>{
 	private static final Logger log = Logger.getLogger(ResultUploader.class.getName());

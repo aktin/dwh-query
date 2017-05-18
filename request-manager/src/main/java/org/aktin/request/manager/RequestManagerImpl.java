@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,8 +62,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	@Inject
 	private org.aktin.dwh.ImportSummary summ;
 
-	@Inject
-	private ResultUploader uploader;
+	private Consumer<RetrievedRequest> uploader;
 
 	@Inject
 	@StatusChanged
@@ -81,6 +81,24 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 
 	public RequestManagerImpl() {
 
+	}
+
+	public RequestManagerImpl(Preferences prefs){
+		this.prefs = prefs;
+	}
+
+	@Inject
+	void setResultUploader(ResultUploader uploader){
+		this.uploader = uploader;
+	}
+	/**
+	 * Set the result uploader. The upload is usually asynchronously.
+	 * Upon completion, {@link RetrievedRequest#changeStatus(String, RequestStatus, String)} should be called
+	 * to set the status to either {@link RequestStatus#Submitted} or {@link RequestStatus#Failed}.
+	 * @param uploader result uploader
+	 */
+	public void setResultUploader(Consumer<RetrievedRequest> uploader){
+		this.uploader = uploader;
 	}
 
 	private void createIntervalTimer(){
@@ -127,7 +145,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 
 	@Override // TODO use preference instead of hard coded JNDI URI
 	@Resource(lookup="java:jboss/datasources/AktinDS")
-	protected void setDataSource(DataSource ds){
+	public void setDataSource(DataSource ds){
 		super.setDataSource(ds);
 	}
 
@@ -201,7 +219,9 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			performBrokerHandshake();
 			handshakeCompleted = true;
 		}
-		client.putMyResourceXml("stats", summ);
+		if( summ != null ){
+			client.putMyResourceXml("stats", summ);			
+		}
 	}
 
 	private void fetchNewRequests() throws IOException{

@@ -26,6 +26,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.aktin.broker.query.xml.QueryRequest;
 import org.aktin.broker.request.ActionLogEntry;
+import org.aktin.broker.request.Marker;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
 
@@ -40,6 +41,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	private String resultType;
 	private QueryRequest request;
 	private long lastActionTime;
+	private Marker marker;
 
 	private RequestImpl(RequestStoreImpl store){
 		this.store = store;
@@ -90,7 +92,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 				ResultSet rs = st.executeQuery(
 						"SELECT broker_request_id, broker_query_id, auto_submit, request_xml,"
 						+ " status, result_type, result_path, display"
-						+ " FROM broker_requests WHERE display != 'H'") ){
+						+ " FROM broker_requests") ){
 			while( rs.next() ){
 				RequestImpl r = new RequestImpl(store);
 				// load other data
@@ -107,9 +109,35 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 				r.status = RequestStatus.valueOf(rs.getString(5));
 				r.resultType = rs.getString(6);
 				r.resultPath = rs.getString(7);
-				// TODO use display type
+				// use display type
+				r.marker = parseMarker(rs.getString(8));
 				action.accept(r);
 			}
+		}
+	}
+	private static Marker parseMarker(String displayChar){
+		if( displayChar == null ){
+			return null;
+		}else if( displayChar.equals("H") ){
+			return Marker.HIDDEN;
+		}else if( displayChar.equals("S") ){
+			return Marker.STARRED;
+		}else{
+			// TODO log warning
+			return null;
+		}
+	}
+	private static String compileMarker(Marker marker){
+		if( marker == null ){
+			return null;
+		}else switch( marker ){
+		case HIDDEN:
+			return "H";
+		case STARRED:
+			return "S";
+		default:
+			// TODO log warning
+			return null;
 		}
 	}
 	@Override
@@ -284,5 +312,29 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	@Override
 	public void setAutoSubmit(boolean autoSubmit) {
 		this.autoSubmit = autoSubmit;
+	}
+
+	@Override
+	public Marker getMarker() {
+		return marker;
+	}
+
+	@Override
+	public void setMarker(Marker newMarker) throws IOException {
+		if( Objects.equals(this.marker, newMarker) ){
+			// nothing to do
+			return;
+		}
+		// save changes
+		try( Connection dbc = store.getConnection();
+				PreparedStatement ps = dbc.prepareStatement("UPDATE broker_requests SET display=? WHERE broker_request_id=?") ){
+			ps.setString(1, compileMarker(newMarker));
+			ps.setInt(2, requestId);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			throw new IOException(e);
+		}
+		this.marker = newMarker;
+		
 	}
 }

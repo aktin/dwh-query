@@ -408,4 +408,10 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	public InteractionPreset getInteractionPreset() {
 		return interaction;
 	}
+	@Override
+	public void forEachRequest(Consumer<RetrievedRequest> action) {
+		getRequests().forEach( action );
+		
+	}
+
 }

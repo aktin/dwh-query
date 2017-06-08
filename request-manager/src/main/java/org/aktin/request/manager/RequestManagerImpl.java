@@ -109,26 +109,46 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			throw new IllegalStateException("Unable to parse preference broker interval");
 		}
 
-		Timer t = timer.createIntervalTimer(INITIAL_DELAY_MILLIS, // start after 20 seconds
-				interval.toMillis(), // repeat after interval
-				new TimerConfig(null, false) // non persistent
-		);
-		log.info("Timer created, first callback in "+Duration.ofMillis(t.getTimeRemaining()));		
+		// some unit tests may not have a timer service available
+		// during production, the TimerService resource is always available
+		if( timer != null ){
+			// use timer service
+			Timer t = timer.createIntervalTimer(INITIAL_DELAY_MILLIS, // start after 20 seconds
+					interval.toMillis(), // repeat after interval
+					new TimerConfig(null, false) // non persistent
+			);
+			log.info("Timer created, first callback in "+Duration.ofMillis(t.getTimeRemaining()));					
+		}else{
+			log.warning("Timer service not available. Running without automatic request updates!");
+		}
 	}
 
 	private Map<String,String> loadSoftwareVersions(){
 		Map<String, String> versions = new HashMap<>();
-		versions.put("dwh-api", PreferenceKey.class.getPackage().getImplementationVersion());
+		versions.put("dwh-api", Objects.toString(PreferenceKey.class.getPackage().getImplementationVersion()));
 //		versions.put("dwh-db", LiquibaseWrapper.class.getPackage().getImplementationVersion());
 		versions.put("java", System.getProperty("java.vendor")+"/"+System.getProperty("java.version"));
 		// get application server version from TimerService implementation
-		versions.put("j2ee-impl", timer.getClass().getPackage().getImplementationVersion());
+		String ver;
+		if( timer != null ){
+			ver =  timer.getClass().getPackage().getImplementationVersion();
+		}else{
+			ver = "undefined";
+		}
+		versions.put("j2ee-impl", ver);
+
 		// get EAR version
 		try {
-			versions.put("ear", (String) (new InitialContext().lookup( "java:app/AppName")));
+			ver = null;
+			ver = (String) (new InitialContext().lookup( "java:app/AppName"));
 		} catch (NamingException e) {
 			log.warning("Unable to get ear version via java:app/AppName");
 		}
+		if( ver == null ){
+			ver = "undefined";
+		}
+		versions.put("ear", ver);
+		System.out.println(versions);
 		return versions;
 		// TODO find out application server name 
 	}
@@ -198,22 +218,25 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	}
 
 	@PostConstruct
-	public void loadSchedule() {
+	public void loadData() {
 		log.info("Initializing request manager");
 		loadRequestInteractionOverrides();
 		// load result directory
 		try {
 			initializeResultDirectory();
 			reloadRequests();
+			initializeBrokerClient();
 			fireInterruptedEvents();
 		} catch (IOException | SQLException | JAXBException e) {
 			throw new IllegalStateException(e);
 		}
-		
-		initializeBrokerClient();
 	}
 
-	private void reportStatusToBroker() throws IOException{
+	/**
+	 * Send status update to broker
+	 * @throws IOException IO error
+	 */
+	public void reportStatusToBroker() throws IOException{
 		if( false == handshakeCompleted ){
 			// need to perform broker handshake only once after startup
 			performBrokerHandshake();
@@ -224,7 +247,11 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		}
 	}
 
-	private void fetchNewRequests() throws IOException{
+	/**
+	 * Fetch new requests from the configured broker endpoint
+	 * @throws IOException IO error
+	 */
+	public void fetchNewRequests() throws IOException{
 		// TODO what happens if the a request is deleted at the broker and it is still waiting locally? how do we update that info?
 		// fetch requests
 		List<RequestInfo> list = client.listMyRequests();
@@ -260,6 +287,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			}
 		}
 	}
+
 	// timer will not be called if broker communication is disabled
 	@Timeout
 	private void timerCallback(Timer timer){
@@ -292,7 +320,11 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				return status;
 			}
 		};
-		event.select(qualifier).fire(request);
+		// in application server, event is guaranteed to be non null
+		// however unit tests don't have 
+		if( event != null ){
+			event.select(qualifier).fire(request);
+		}
 
 		reportStatusUpdatesToBroker(request, description);
 	}

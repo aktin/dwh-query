@@ -312,6 +312,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	@Override
 	public void setAutoSubmit(boolean autoSubmit) {
 		this.autoSubmit = autoSubmit;
+		// TODO store in database
 	}
 
 	@Override

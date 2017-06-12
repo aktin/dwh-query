@@ -23,6 +23,7 @@ import javax.annotation.Resource;
 import javax.ejb.ScheduleExpression;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -129,7 +130,8 @@ public class ReportSchedule extends Module {
 		ScheduleExpression expr = new ScheduleExpression();
 		// run third of month
 		expr.dayOfMonth(3).hour(6).minute(13);
-		Timer t = timer.createCalendarTimer(expr);
+		// create non-persistent timer. we need the timer callback in the same instance
+		Timer t = timer.createCalendarTimer(expr, new TimerConfig(MONTHLY_REPORT_ID, false));
 		schedule.put(t, report);
 		log.info("Monthly report scheduled for " + expr.toString());
 		log.info("Time until report generation: " + Duration.ofMillis(t.getTimeRemaining()).toString());
@@ -248,9 +250,15 @@ public class ReportSchedule extends Module {
 
 	@Timeout
 	private void timerCallback(Timer timer){
+		String templateId = (String)timer.getInfo();
+		
 		Report report = schedule.get(timer);
+		if( report == null ){
+			// timer not found in schedule, something is wrong (persistent timer?)
+			log.warning("Timer callback unable to find report in schedule. Aborting report generation: "+templateId);
+			return;
+		}
 		log.info("Scheduled report timer triggered: "+report.getId());
-
 		ReportInfo info = reportForPreviousMonth(report);
 		sendReportViaEmail(info);
 

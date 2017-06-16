@@ -23,7 +23,9 @@ public class TestReportGeneration {
 	static final String[] rPathSearch = {
 			"C:\\Program Files\\R\\R-3.3.1\\bin\\Rscript.exe",
 			"C:\\Program Files\\R\\R-3.2.2\\bin\\Rscript.exe",
-			"C:\\Program Files\\R\\R-3.2.0\\bin\\Rscript.exe"
+			"C:\\Program Files\\R\\R-3.2.0\\bin\\x64\\Rscript.exe",
+			"C:\\Program Files\\R\\R-3.2.0\\bin\\Rscript.exe",
+			"C:\\Program Files\\R\\R-3.4.0\\bin\\Rscript.exe"
 	};
 	public static Path rScript;
 

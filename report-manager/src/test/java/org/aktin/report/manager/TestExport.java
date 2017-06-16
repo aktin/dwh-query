@@ -76,7 +76,7 @@ public class TestExport implements DataExtractor{
 	/**
 	 * Read demo-eav-data.xml from src/test/resources and export all data to in-memory tables.
 	 * The export descriptor is also located in src/test/resources.
-	 * VT: bitte export descriptor vervollständigen
+	 * VT: bitte export descriptor vervollstaendigen
 	 * 
 	 * Exported data tables are dumped to stdout (for debugging export descriptor)
 	 * @throws Exception test failure

@@ -129,7 +129,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	}
 	private static String compileMarker(Marker marker){
 		if( marker == null ){
-			return null;
+			return "";
 		}else switch( marker ){
 		case HIDDEN:
 			return "H";

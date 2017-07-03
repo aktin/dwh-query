@@ -92,9 +92,9 @@ public class RequestScheduler {
 			}
 		}
 	}
-	public void scheduleRequest(@Observes @Status(RequestStatus.Retrieved) RetrievedRequest request){
+//  public void scheduleRequest(@Observes @Status(RequestStatus.Retrieved) RetrievedRequest request){
 //	public void scheduleRequest(RetrievedRequest request){
-//	public void scheduleRequest(@Observes @Status(RequestStatus.Queued) RetrievedRequest request){
+	public void scheduleRequest(@Observes @Status(RequestStatus.Queued) RetrievedRequest request){
 		if( request.getStatus() == RequestStatus.Retrieved ){ // TODO only execute queued
 			log.info("Scheduling request "+request.getRequestId()+", status="+request.getStatus());
 		}else{

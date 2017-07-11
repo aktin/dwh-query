@@ -73,9 +73,9 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 		executor.execute(new Execution(request));
 	}
 
-	private Map<String,String> compileProperties(RetrievedRequest request){
+	private Map<String,String> compileProperties(RetrievedRequest request, QueryHandlerFactory factory){
 		Map<String, String> m = new HashMap<>();
-		Instant a = request.getRequest().getScheduledTimestamp();
+		Instant a = request.getRequest().getReferenceTimestamp();
 		// calculate period
 		Period d = request.getRequest().getQuery().schedule.duration;
 		// time periods larger than week and day need time zone information
@@ -88,11 +88,12 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 			a = b;
 			b = c;
 		}
-		// TODO use date format as specified by handler/processor
-		m.put("data.start", a.toString());
-		m.put("data.end", b.toString());
-		m.put("data.timestamp", Instant.now().toString());
-		// TODO add handler factory class name
+		// use date format as specified by handler/processor
+		m.put("data.start", factory.formatTimestamp(a));
+		m.put("data.end", factory.formatTimestamp(b));
+		m.put("data.timestamp", factory.formatTimestamp(Instant.now()));
+		// add handler factory class name
+		m.put("query.handler", factory.getClass().getName());
 		return m;
 	}
 	private class Execution implements Runnable{
@@ -125,7 +126,7 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 				return;
 			}
 
-			Map<String,String> props = compileProperties(request);
+			Map<String,String> props = compileProperties(request, factory);
 			
 			
 			try{

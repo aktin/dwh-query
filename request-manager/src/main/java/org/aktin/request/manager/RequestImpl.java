@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -25,6 +26,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.aktin.broker.query.xml.QueryRequest;
+import org.aktin.broker.query.xml.RepeatedExecution;
 import org.aktin.broker.request.ActionLogEntry;
 import org.aktin.broker.request.Marker;
 import org.aktin.broker.request.RequestStatus;
@@ -34,7 +36,6 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 
 	private RequestStoreImpl store;
 	private int requestId;
-	private int queryId;
 	private RequestStatus status;
 	private boolean autoSubmit;
 	private String resultPath;
@@ -64,7 +65,6 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		this(store);
 		this.request = request;
 		requestId = request.getId();
-		queryId = request.getQuery().id;
 		// defaults to empty result
 		resultPath = null;
 		resultType = null;
@@ -72,11 +72,24 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		autoSubmit = false;
 	}
 
+	public Integer getQueryId(){
+		if( request.getQuery().schedule instanceof RepeatedExecution ){
+			return ((RepeatedExecution)request.getQuery().schedule).id;
+		}else{
+			return null;
+		}
+	}
+
 	protected void insertIntoDatabase(Connection dbc) throws SQLException{
 		// TODO insert all fields
 		try( PreparedStatement ps = dbc.prepareStatement("INSERT INTO broker_requests(broker_request_id, broker_query_id, request_xml, auto_submit, status) VALUES (?,?,?,?,?)") ){
 			ps.setInt(1, requestId);
-			ps.setInt(2, queryId);
+			Integer queryId = getQueryId();
+			if( queryId != null ){
+				ps.setInt(2, queryId);
+			}else{
+				ps.setNull(2, Types.INTEGER);
+			}
 			StringWriter w = new StringWriter();
 			JAXB.marshal(request, w);
 			ps.setString(3, w.toString());
@@ -97,7 +110,6 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 				RequestImpl r = new RequestImpl(store);
 				// load other data
 				r.requestId = rs.getInt(1);
-				r.queryId = rs.getInt(2);
 				r.autoSubmit = rs.getBoolean(3);
 				r.request = (QueryRequest)um.unmarshal(new StringReader(rs.getString(4)));
 // somehow, the following does not work with hsqldb
@@ -143,11 +155,6 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	@Override
 	public int getRequestId() {
 		return requestId;
-	}
-
-	@Override
-	public int getQueryId() {
-		return queryId;
 	}
 
 	@Override

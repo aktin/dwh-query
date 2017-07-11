@@ -84,7 +84,7 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 
 	@Test
 	public void expectOneRequestAfterAddingOne() throws SQLException, JAXBException{
-		QueryRequest qr = TestRequest.getSingleRequest(1, 1);
+		QueryRequest qr = TestRequest.getSingleRequest(1);
 		addNewRequest(qr);
 		assertEquals(1, getRequests().size());
 		reloadRequests();
@@ -93,7 +93,7 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 
 	@Test
 	public void deleteResultData() throws SQLException, IOException, JAXBException{
-		QueryRequest qr = TestRequest.getSingleRequest(1, 1);
+		QueryRequest qr = TestRequest.getSingleRequest(1);
 		RequestImpl r = addNewRequest(qr);
 		r.createResultData("test/1");
 		// first delete without writing the data
@@ -116,7 +116,7 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 
 	@Test
 	public void addAndVerifyResult() throws SQLException, IOException, JAXBException{
-		QueryRequest qr = TestRequest.getSingleRequest(1, 1);
+		QueryRequest qr = TestRequest.getSingleRequest(1);
 		RequestImpl r = addNewRequest(qr);
 		r.changeStatus("rm", RequestStatus.Seen, null);
 		r.changeStatus(null, RequestStatus.Processing, null);

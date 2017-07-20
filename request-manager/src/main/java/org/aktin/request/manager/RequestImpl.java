@@ -63,6 +63,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	 */
 	RequestImpl(RequestStoreImpl store, QueryRequest request){
 		this(store);
+		Objects.requireNonNull(request);
 		this.request = request;
 		requestId = request.getId();
 		// defaults to empty result

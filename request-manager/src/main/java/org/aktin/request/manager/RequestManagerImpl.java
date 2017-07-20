@@ -270,6 +270,9 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				// TODO load content
 				try( Reader reader = client.getMyRequestDefinitionReader(info.getId(), QueryRequest.MEDIA_TYPE) ){
 					QueryRequest req = (QueryRequest)um.unmarshal(reader);
+					if( req == null ){
+						throw new JAXBException("XML unmarshalling returned null");
+					}
 					addNewRequest(req);
 				}catch( IOException | JAXBException | SQLException e ){
 					String message = "Failed to parse/store content for broker request "+info.getId();

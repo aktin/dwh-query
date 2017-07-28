@@ -1,20 +1,22 @@
 # parse timestamps and date fields
 # The timestamp values are assumed to belong to the local timezone
 # TODO check timezones 
-df$dob = strptime(merge(enc,pat,by="patient_id")$geburtsdatum_ts,format="%F")
-#df$triage.ts = strptime(enc$triage_ts,format="%F %H:%M")
-#df$admit.ts = strptime(enc$aufnahme_ts,format="%F %H:%M")
-#df$phys.ts = strptime(enc$arztkontakt_ts, format="%F %H:%M")
-#df$therapy.ts = strptime(enc$therapiebeginn_ts, format="%F %H:%M")
-#df$discharge.ts = strptime(enc$entlassung_ts, format="%F %H:%M")
-df$triage.ts = strptime(enc$triage_ts,format="%FT%H:%M")
-df$admit.ts = strptime(enc$aufnahme_ts,format="%FT%H:%M")
-df$phys.ts = strptime(enc$arztkontakt_ts, format="%FT%H:%M")
-df$therapy.ts = strptime(enc$therapiebeginn_ts, format="%FT%H:%M")
-df$discharge.ts = strptime(enc$entlassung_ts, format="%FT%H:%M")
+df$dob = strptime(merge(enc,pat,by="patient_id")$geburtsdatum_ts,tz="GMT",format="%F")
+#df$triage.ts = strptime(enc$triage_ts,tz="GMT",format="%F %H:%M")
+#df$admit.ts = strptime(enc$aufnahme_ts,tz="GMT",format="%F %H:%M")
+#df$phys.ts = strptime(enc$arztkontakt_ts,tz="GMT",format="%F %H:%M")
+#df$therapy.ts = strptime(enc$therapiebeginn_ts,tz="GMT",format="%F %H:%M")
+#df$discharge.ts = strptime(enc$entlassung_ts,tz="GMT",format="%F %H:%M")
+df$triage.ts = strptime(enc$triage_ts,tz="GMT",format="%FT%H:%M")
+#Precision in CDA: day+more -- conversion is only successful if source has precision minute+more! NA-values are handled later
+df$admit.ts = strptime(enc$aufnahme_ts,tz="GMT",format="%FT%H:%M")
+df$admit.day = strptime(enc$aufnahme_ts,tz="GMT",format="%F")
+df$phys.ts = strptime(enc$arztkontakt_ts,tz="GMT",format="%FT%H:%M")
+df$therapy.ts = strptime(enc$therapiebeginn_ts,tz="GMT",format="%FT%H:%M")
+#Precision in CDA: day+more -- conversion is only successful if source has precision minute+more! NA-values are handled later
+df$discharge.ts = strptime(enc$entlassung_ts,tz="GMT",format="%FT%H:%M")
 
-# TODO This is probably not the ideal way to calculate the age
-df$age = floor(as.numeric(difftime(df$admit.ts,df$dob))/365.25)
+df$age = (df$admit.day$year - df$dob$year) - 1 * ((df$admit.day$mon < df$dob$mon) | (df$admit.day$mon == df$dob$mon & df$admit.day$mday < df$dob$mday))
 df$sex = factor(merge(enc,pat,by="patient_id")$geschlecht)
 levels(df$sex) <- list("male"="male","female"="female","unbestimmt"="indeterminate")
 
@@ -66,23 +68,24 @@ admit.wdi <- as.integer(strftime(df$admit.ts,"%u"))
 df$admit.wd <- factor(x=weekday.levels[admit.wdi], levels=weekday.levels, ordered=TRUE)
 
 # Day of admission
-df$admit.day <- factor(x=strftime(df$admit.ts,format="%F"), ordered=TRUE)
+# (Extract Admit.ts again with lower precision)
+df$admit.day <- factor(x=strftime(strptime(enc$aufnahme_ts,tz="GMT",format="%F"),tz="GMT",format="%F"), ordered=TRUE)
 
 # Day of discharge
-df$discharge.day <- factor(x=strftime(df$discharge.ts,format="%F"), ordered=TRUE)
+df$discharge.day <- factor(x=strftime(df$discharge.ts,tz="GMT",format="%F"), ordered=TRUE)
 
 # Hour of admission
 hour.levels = sprintf('%02i',0:23)
-df$admit.h <- factor(x=strftime(df$admit.ts,format="%H"), levels=hour.levels, ordered=TRUE)
+df$admit.h <- factor(x=strftime(df$admit.ts,tz="GMT",format="%H"), levels=hour.levels, ordered=TRUE)
 
 #Hour of admission per weekday
 admit.hwd <- matrix(NA,7,24)
 for(i in 1:length(weekday.levels)) {
-  admit.hwd[i,] <- as.vector(table(factor(x=strftime(df$admit.ts[df$admit.wd == weekday.levels[i]],format="%H"), levels=hour.levels, ordered=TRUE)))
+  admit.hwd[i,] <- as.vector(table(factor(x=strftime(df$admit.ts[df$admit.wd == weekday.levels[i]],tz="GMT",format="%H"), levels=hour.levels, ordered=TRUE)))
 }
 
 # Hour of discharge
-df$discharge.h <- factor(x=strftime(df$discharge.ts,format="%H"), levels=hour.levels, ordered=TRUE)
+df$discharge.h <- factor(x=strftime(df$discharge.ts,tz="GMT",format="%H"), levels=hour.levels, ordered=TRUE)
 
 # Time to triage
 df$triage.d <- df$triage.ts - df$admit.ts

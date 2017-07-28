@@ -7,8 +7,8 @@
 		<birthdate>1934-05-27</birthdate>
 		<source timestamp="2016-10-10T09:59:40.438Z"/>
 		<encounter id="1">
-			<start>2015-11-01T00:01:00</start>
-			<end>2015-11-01T01:19:00</end>
+			<start>2015-11-01</start>
+			<end>2015-11-01</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
 			<fact concept="AKTIN:REFERRAL:KVNPIK"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>

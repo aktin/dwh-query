@@ -1,6 +1,6 @@
 # Counts per Hour
 try({
-  graph <- barchart(table(df$admit.h)/length(levels(df$admit.day)), horizontal=FALSE, xlab="Uhrzeit [Stunde]", ylab="Durchschnittliche Anzahl Patienten",col=std_cols1,origin=0)
+  graph <- barchart(table(df$admit.h)/length(levels(df$admit.day)), horizontal=FALSE, xlab=paste('Uhrzeit [Stunde]; n =',sum(!is.na(df$admit.h))), ylab="Durchschnittliche Anzahl Patienten",col=std_cols1,origin=0)
   report.svg(graph, 'admit.h')
 }, silent=FALSE)
 # Write table
@@ -46,7 +46,7 @@ if (length(df$admit.wd) > 0) {
 
 # Counts per Weekday
 try({
-  plottable <- round(table(df$admit.wd)/weekdaycounts,digits = 0)
+  plottable <- round(table(df$admit.wd)/weekdaycounts,digits = 1)
   plottable[is.na(plottable)] <- 0
   graph <- barchart(plottable, horizontal=FALSE, xlab="Wochentag", ylab="Durchschnittliche Anzahl Patienten",col=std_cols1,origin=0)
   report.svg(graph, 'admit.wd')
@@ -73,7 +73,7 @@ try({
     weekend[i] <- admit.hwd[6,i]+admit.hwd[7,i]
   }
   svg(paste0(gfx.dir,'admit.hwd.weekend','.svg'))
-  plot(weekend/2, type='n', xlab="Uhrzeit [Stunde]", ylab="Anzahl Patienten",ylim=c(0,max(weekday/5,weekend/2)),xaxp=c(0,24,12))
+  plot(weekend/2, type='n', xlab=paste('Uhrzeit [Stunde]; n =',(sum(weekday)+sum(weekend))), ylab="Anzahl Patienten",ylim=c(0,max(weekday/5,weekend/2)),xaxp=c(0,24,12))
   
   lines(weekday/5,type="b",col=std_cols3[2],pch=15)
   lines(weekend/2,type="b",col=std_cols3[1],pch=17)

@@ -22,6 +22,6 @@ try({
   x[x>110] <- 110
   x[x<0] <- NA
   x<-x[!is.na(x)]
-  graph <- histogram(x,xlab="Alter [Jahre]",ylab="Anzahl Patienten",type='count',breaks=seq(0,110,length=12),sub=paste('n=',length(df$age),', Werte größer 110 werden als 110 gewertet'),col=std_cols1)
+  graph <- histogram(x,xlab="Alter [Jahre]",ylab="Anzahl Patienten",type='count',breaks=seq(0,110,length=12),sub=paste('n =',length(df$age),', Werte größer 110 werden als 110 gewertet'),col=std_cols1)
   report.svg(graph, 'age')
 }, silent=FALSE)

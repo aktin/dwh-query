@@ -29,15 +29,15 @@
 							<dc:description>Notaufnahmebericht</dc:description>
 							<pdf:Keywords>AKTIN</pdf:Keywords>
 							<xmp:CreatorTool>erstellt mit Apache FOP</xmp:CreatorTool>
-							<xmp:CreationDate>2015-12-05T08:15:30-05:00</xmp:CreationDate> <!-- macht wohl nichts, Datum wird automatisch auf die aktuelle Zeit gesetzt -->
-							<xmp:ModifyDate>2015-12-08T08:15:30-05:00</xmp:ModifyDate>
+							<xmp:CreationDate>2015-12-05T08:15:30-02:00</xmp:CreationDate> <!-- macht wohl nichts, Datum wird automatisch auf die aktuelle Zeit gesetzt -->
+							<xmp:ModifyDate>2017-07-28T18:25:30-02:00</xmp:ModifyDate>
 						</rdf:Description>
 					</rdf:RDF>
 				</x:xmpmeta>
 			</fo:declarations>
 			<fo:page-sequence master-reference="page-layout" language="de">
                 <fo:static-content flow-name="header-normal">
-                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht V01.1 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template></fo:block>
+                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht V01.2 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template></fo:block>
 				</fo:static-content>
 				<fo:static-content flow-name="footer-normal">
 					<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/> von

@@ -130,7 +130,7 @@ Homepage: www.aktin.org
       <table ref="t8.1">Tabelle 8.1: Top 20 Diagnosen (Angaben zu Zusatzkennzeichen für die Diagnosesicherheit siehe Grafik 8.1)</table>
     </section>
     <section>
-      <header>Top 20 Vorstellungsgründe (CEDIS)</header>
+      <header break-before="manual">Top 20 Vorstellungsgründe (CEDIS)</header>
       <plot ref="p8.2">Grafik 8.2: Top 20 Vorstellungsgründe</plot>
       <table ref="t8.2">Tabelle 8.2: Top 20 Vorstellungsgründe</table>
     </section>

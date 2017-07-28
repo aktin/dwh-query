@@ -11,11 +11,21 @@ import javax.sql.DataSource;
 
 public class LocalI2b2DataSource implements DataSource{
 
-	PrintWriter pw;
+	private PrintWriter pw;
+	private String defaultUser;
+	private String defaultPassword;
+	private String jdbcUri;
 	
-	public LocalI2b2DataSource() {
+	public LocalI2b2DataSource(String jdbcUri, String defaultUser, String defaultPassword) {
+		this.jdbcUri = jdbcUri;
 		pw = new PrintWriter(System.out);
+		this.defaultPassword = defaultPassword;
+		this.defaultUser = defaultUser;
 	}
+	public LocalI2b2DataSource() {
+		this("jdbc:postgresql://localhost:15432/i2b2", "i2b2crcdata", "");
+	}
+
 	@Override
 	public PrintWriter getLogWriter() throws SQLException {
 		return pw;
@@ -55,12 +65,12 @@ public class LocalI2b2DataSource implements DataSource{
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		return DriverManager.getConnection("jdbc:postgresql://localhost:15432/i2b2", "i2b2crcdata", "");
+		return DriverManager.getConnection(jdbcUri, defaultUser, defaultPassword);
 	}
 
 	@Override
 	public Connection getConnection(String username, String password) throws SQLException {
-		return DriverManager.getConnection("jdbc:postgresql://localhost:15432/i2b2",username, password);
+		return DriverManager.getConnection(jdbcUri,username, password);
 	}
 
 }

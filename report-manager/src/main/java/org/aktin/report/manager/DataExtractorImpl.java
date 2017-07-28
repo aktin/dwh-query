@@ -64,10 +64,10 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	private Executor executor; // will be filled via resource injection or setter method
 
 
-	public DataExtractorImpl(DataSource crc_ds, PostgresPatientStore patientStore, PostgresVisitStore visitStore, ObservationFactory factory) throws IOException, SQLException{
+	DataExtractorImpl(DataSource crc_ds, PostgresPatientStore patientStore, PostgresVisitStore visitStore, ObservationFactory factory) throws IOException, SQLException{
 		extractor = new I2b2ExtractorFactory(crc_ds, factory);
-//		extractor.setPatientLookup(patientStore::lookupPatientNum);
-//		extractor.setVisitLookup(visitStore::lookupEncounterNum);
+		extractor.setPatientLookup(patientStore::lookupPatientNum);
+		extractor.setVisitLookup(visitStore::lookupEncounterNum);
 	}
 
 	@Inject
@@ -80,7 +80,6 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		} catch (SQLException | NamingException e) {
 			throw new IllegalStateException("Unable to load extractor factory", e);
 		}
-//		extractor = new I2b2ExtractorFactory(crcDS, factory);
 		extractor.setPatientLookup(patientStore::lookupPatientNum);
 		extractor.setVisitLookup(visitStore::lookupEncounterNum);		
 	}

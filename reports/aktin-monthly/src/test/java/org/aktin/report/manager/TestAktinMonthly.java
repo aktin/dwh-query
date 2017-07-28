@@ -18,7 +18,6 @@ import org.aktin.report.aktin.AktinMonthly;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.sekmi.histream.export.config.ExportDescriptor;
 import de.sekmi.histream.i2b2.PostgresPatientStore;
 import de.sekmi.histream.i2b2.PostgresVisitStore;
 import de.sekmi.histream.impl.ObservationFactoryImpl;
@@ -74,15 +73,16 @@ public class TestAktinMonthly {
 	public static void main(String[] args) throws SQLException, IOException, InterruptedException, ExecutionException{
 		AktinMonthly m = new AktinMonthly();
 		Preferences prefs = TestPreferences.getTestPreferences();
-		ExportDescriptor ed = ExportDescriptor.parse(m.getExportDescriptor());
+		//ExportDescriptor ed = ExportDescriptor.parse(m.getExportDescriptor());
 		Path rScript = TestReportGeneration.findR();
 		Path tempdir = Paths.get("target/report-temp");
-		LocalI2b2DataSource ds = new LocalI2b2DataSource();
+		LocalI2b2DataSource ds = new LocalI2b2DataSource("jdbc:postgresql://134.106.36.86:15437/i2b2", "i2b2crcdata","");
+		//LocalI2b2DataSource ds = new LocalI2b2DataSource();
 		ReportManagerImpl manager = new ReportManagerImpl(rScript.toString(), tempdir, m);
 		PostgresPatientStore pas = new PostgresPatientStore();
-		pas.open(ds.getConnection(), "AKTIN");
+		pas.open(ds.getConnection(), "Demo");
 		PostgresVisitStore vis = new PostgresVisitStore();
-		vis.open(ds.getConnection(), "AKTIN");
+		vis.open(ds.getConnection(), "Demo");
 		ObservationFactoryImpl fac = new ObservationFactoryImpl(pas,vis);
 		DataExtractorImpl de = new DataExtractorImpl(ds, pas, vis, fac);
 		de.setExecutor(ForkJoinPool.commonPool());
@@ -90,7 +90,7 @@ public class TestAktinMonthly {
 		manager.setKeepIntermediateFiles(true);
 		manager.setPreferenceManager(prefs);
 		manager.setDataExtractor(de);
-		CompletableFuture<?> cf = manager.generateReport(m.createReportInfo( Instant.parse("2016-12-01T00:00:00Z"), Instant.parse("2017-01-01T00:00:00Z")), Files.createTempFile(tempdir, "monthly", ".pdf"));
+		CompletableFuture<?> cf = manager.generateReport(m.createReportInfo( Instant.parse("2015-01-01T00:00:00Z"), Instant.parse("2017-12-31T00:00:00Z")), Files.createTempFile(tempdir, "monthly", ".pdf"));
 		cf.get();
 		
 	}

@@ -31,7 +31,7 @@
 		<birthdate>1981-07-24</birthdate>
 		<source timestamp="2016-10-10T09:59:40.438Z"/>
 		<encounter id="2">
-			<start>2015-11-01T01:04:00</start>
+			<start>2015-11-01T01</start>
 			<end>2015-11-01T03:07:00</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -54,8 +54,8 @@
 		<birthdate>1929-04-29</birthdate>
 		<source timestamp="2016-10-10T09:59:40.438Z"/>
 		<encounter id="3">
-			<start>2015-11-01T01:46:00</start>
-			<end>2015-11-01T03:26:00</end>
+			<start>2015-11-01T01:46</start>
+			<end>2015-11-01T03:26</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
 			<fact concept="AKTIN:REFERRAL:KVNDAK"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -79,7 +79,7 @@
 		<source timestamp="2016-10-10T09:59:40.438Z"/>
 		<encounter id="4">
 			<start>2015-11-01T02:09:00</start>
-			<end>2015-11-01T04:10:00</end>
+			<end>2015-11-01T04</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -167,7 +167,7 @@
 		<given-name>8</given-name>
 		<surname>8</surname>
 		<gender>female</gender>
-		<birthdate>1967-08-20</birthdate>
+		<birthdate>1967</birthdate>
 		<source timestamp="2016-10-10T09:59:40.438Z"/>
 		<encounter id="8">
 			<start>2015-11-01T04:06:00</start>
@@ -190,7 +190,7 @@
 		<given-name>9</given-name>
 		<surname>9</surname>
 		<gender>male</gender>
-		<birthdate>1942-07-26</birthdate>
+		<birthdate>1942-07</birthdate>
 		<source timestamp="2016-10-10T09:59:40.438Z"/>
 		<encounter id="9">
 			<start>2015-11-01T04:31:00</start>

@@ -12,23 +12,14 @@ try({
 }, silent=FALSE)
 
 #calculate number of weekdays in the current period (month)
-#limitation: days without patients at the end or start will be excluded
+#limitation/feature: days without patients will be excluded
 weekdaycounts=rep(0,7) #Mo-So
 if (length(df$admit.wd) > 0) {
   wbindex <- 0
+  lastwd <- 0
   for (i in 1:length(df$admit.wd)){
     if (! is.na(df$admit.wd[i])) {
-      if (i == 1) {
-        wbindex <- as.numeric(sapply(as.character(df$admit.wd[i]), switch, 
-                                     Mo = 1, 
-                                     Di = 2, 
-                                     Mi = 3, 
-                                     Do = 4, 
-                                     Fr = 5, 
-                                     Sa = 6, 
-                                     So = 7))
-        weekdaycounts[wbindex] <- weekdaycounts[wbindex]+1
-      } else if (df$admit.wd[i] != df$admit.wd[i-1]) {
+     if (df$admit.wd[i] != lastwd) {
           wbindex <- as.numeric(sapply(as.character(df$admit.wd[i]), switch, 
                                        Mo = 1, 
                                        Di = 2, 
@@ -38,7 +29,7 @@ if (length(df$admit.wd) > 0) {
                                        Sa = 6, 
                                        So = 7))
           weekdaycounts[wbindex] <- weekdaycounts[wbindex]+1
-        
+          lastwd <- df$admit.wd[i]
         }
     }
   }

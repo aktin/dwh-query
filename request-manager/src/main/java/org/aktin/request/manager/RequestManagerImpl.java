@@ -29,6 +29,7 @@ import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.mail.Session;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -69,6 +70,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 
 	@Resource
     private TimerService timer;
+
+	private Session mailSession;
 
 	private BrokerClient client;
 	private InteractionPreset interaction;
@@ -212,10 +215,25 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		createIntervalTimer();
 	}
 
+	private void lookupJndiMailSession() throws NamingException{
+		mailSession = null;
+		String jndiName = prefs.get(PreferenceKey.emailSession);
+		log.info("Using mail session "+jndiName);
+		InitialContext ctx = new InitialContext();
+		mailSession = (Session)ctx.lookup(jndiName);
+	}
+
 	@PostConstruct
 	public void loadData() {
 		log.info("Initializing request manager");
 		loadRequestInteractionOverrides();
+		try{
+			lookupJndiMailSession();
+		}catch( NamingException e ){
+			log.log(Level.SEVERE, "Unable to inject JNDI mail session", e);
+			log.warning("E-mail notifications are disabled");
+			// we can still process requests, but no email notifications will be sent
+		}
 		// load result directory
 		try {
 			initializeResultDirectory();
@@ -302,7 +320,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		}catch( IOException e) {
 			log.log(Level.SEVERE, "Broker communication failed", e);
 		}
-		// TODO go through requests and perform pending actions
+		// request processing is done via status change callbacks
 	}
 
 	@Override
@@ -371,6 +389,10 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		if( brokerStatus == org.aktin.broker.xml.RequestStatus.interaction ){
 			// interaction required
 			log.info("Interaction required for completed request "+request.getRequestId());
+		}
+		// TODO use mail session
+		if( mailSession != null ){
+			// XXX send email
 		}
 		 
 	}

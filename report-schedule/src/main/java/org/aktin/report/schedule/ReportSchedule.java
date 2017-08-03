@@ -8,8 +8,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.TextStyle;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletionException;
@@ -91,6 +93,7 @@ public class ReportSchedule extends Module {
 	private Address[] replyTo;
 
 	private Session mailSession;
+	private Locale locale;
 
 	public ReportSchedule() {
 		// load preferences
@@ -116,6 +119,12 @@ public class ReportSchedule extends Module {
 		timeZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 		emailRecipients = InternetAddress.parse(prefs.get(PreferenceKey.email));
 		replyTo = InternetAddress.parse(prefs.get(PreferenceKey.emailReplyTo));
+		// determine language
+		String langTag = prefs.get(PreferenceKey.languageTag);
+		if( langTag == null ){
+			langTag = "de-DE"; // default to German
+		}
+		locale = Locale.forLanguageTag(langTag);
 
 		// load email session
 		lookupJndiMailSession();
@@ -188,9 +197,14 @@ public class ReportSchedule extends Module {
 		body.append(w.getBuffer());
 	}
 
+	// TODO use string templating engine and move email code to separate bean
+	// TODO use locale for different languages
 	private void sendReport(ArchivedReport report, Throwable exception) throws MessagingException{
+		// use default locale
+
 		// log error first
 		StringBuilder body = new StringBuilder();
+		String friendlyFileName;
 		body.append("Sehr geehrte Damen und Herren,\n\n");
 		if( exception != null ){
 			// unwrap
@@ -210,11 +224,13 @@ public class ReportSchedule extends Module {
 				appendStacktrace(body, exception);
 				body.append('\n');
 			}
+			friendlyFileName = null;
 		}else{
 			// build email message
 			body.append("anbei erhalten Sie den aktuellen Monatsbericht.\n");
 			body.append("Der Berichtszeitraum erstreckt sich von ");
-			body.append(report.getStartTimestamp().atZone(timeZone).toLocalDateTime().toString());
+			LocalDateTime localStart = report.getStartTimestamp().atZone(timeZone).toLocalDateTime();
+			body.append(localStart.toString());
 			body.append(" bis ");
 			body.append(report.getEndTimestamp().atZone(timeZone).toLocalDateTime().toString());
 			body.append(".\n");
@@ -223,6 +239,10 @@ public class ReportSchedule extends Module {
 				body.append("Datenstand des Berichts ist "+ts.atZone(timeZone).toLocalDateTime().toString());
 				body.append(".\n");
 			}
+			// use start timestamp to generate human readable name
+			String monthName = localStart.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, locale);
+			friendlyFileName = "AKTIN Monatsbericht "+monthName+" ("+report.getId()+")";
+			
 		}
 		body.append("\nMit freundlichen Grüßen,\n");
 		body.append("Ihr lokaler AKTIN-Server\n");
@@ -239,7 +259,7 @@ public class ReportSchedule extends Module {
 		if( report != null && report.getStatus() == Status.Completed ){
 			// set attachment
 			bp = new MimeBodyPart();
-			DataSource ds = new ArchivedReportDataSource(report);
+			DataSource ds = new MonthlyReportDataSource(report, friendlyFileName);
 			bp.setFileName(ds.getName());
 			bp.setDataHandler(new DataHandler(ds));
 			mp.addBodyPart(bp);

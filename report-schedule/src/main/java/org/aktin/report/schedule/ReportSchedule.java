@@ -8,16 +8,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -28,22 +25,11 @@ import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.mail.Address;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeMessage.RecipientType;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import org.aktin.Module;
 import org.aktin.Preferences;
 import org.aktin.dwh.EMail;
+import org.aktin.dwh.EmailService;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.ArchivedReport;
 import org.aktin.report.ArchivedReport.Status;
@@ -83,52 +69,27 @@ public class ReportSchedule extends Module {
 	private ReportArchive archive;
 	@Inject
 	private Preferences prefs;
+	
+	@Inject
+	private EmailService email;
+	
 	@Resource
     private TimerService timer;
 
 	private Map<Timer, Report> schedule;
 	private ZoneId timeZone;
-	private Address[] emailRecipients;
-	private Address[] replyTo;
-
-	private Session mailSession;
-	private Locale locale;
 
 	public ReportSchedule() {
 		// load preferences
 	}
 
-	private void lookupJndiMailSession() throws NamingException{
-		String jndiName = prefs.get(PreferenceKey.emailSession);
-		log.info("Using mail session "+jndiName);
-		InitialContext ctx = new InitialContext();
-		mailSession = (Session)ctx.lookup(jndiName);
-	}
 
 	@PostConstruct
 	public void initialize(){
-		try {
-			loadConfiguration();
-		} catch (AddressException | NamingException e) {
-			throw new IllegalStateException(e);
-		}
+		timeZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 		loadSchedule();
 	}
-	private void loadConfiguration() throws AddressException, NamingException{
-		timeZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
-		emailRecipients = InternetAddress.parse(prefs.get(PreferenceKey.email));
-		replyTo = InternetAddress.parse(prefs.get(PreferenceKey.emailReplyTo));
-		// determine language
-		String langTag = prefs.get(PreferenceKey.languageTag);
-		if( langTag == null ){
-			langTag = "de-DE"; // default to German
-		}
-		locale = Locale.forLanguageTag(langTag);
-		log.info("Using locale "+locale);
-		
-		// load email session
-		lookupJndiMailSession();
-	}
+
 	private void loadSchedule() {
 		schedule = new HashMap<Timer, Report>();
 		// find report
@@ -184,7 +145,7 @@ public class ReportSchedule extends Module {
 	private void reportFinished(ArchivedReport report, Throwable exception){
 		try {
 			sendReport(report, exception);
-		} catch (MessagingException e) {
+		} catch (IOException e) {
 			log.log(Level.SEVERE, "Unable to send monthly report email", e);
 		}
 	}
@@ -199,7 +160,7 @@ public class ReportSchedule extends Module {
 
 	// TODO use string templating engine and move email code to separate bean
 	// TODO use locale for different languages
-	private void sendReport(ArchivedReport report, Throwable exception) throws MessagingException{
+	private void sendReport(ArchivedReport report, Throwable exception) throws IOException{
 		// use default locale
 
 		// log error first
@@ -240,30 +201,19 @@ public class ReportSchedule extends Module {
 				body.append(".\n");
 			}
 			// use start timestamp to generate human readable name
-			friendlyFileName = MonthlyReportDataSource.createFriendlyFileName(localStart.getMonth(), report.getId(), locale);
+			friendlyFileName = MonthlyReportDataSource.createFriendlyFileName(localStart.getMonth(), report.getId(), email.getLocale());
 		}
 		body.append("\nMit freundlichen Grüßen,\n");
 		body.append("Ihr lokaler AKTIN-Server\n");
-		MimeMessage msg = new MimeMessage(mailSession);
-		msg.setRecipients(RecipientType.TO, emailRecipients);
-		msg.setReplyTo(replyTo);
-		msg.setSubject("AKTIN Monatsbericht");
-		msg.setSentDate(new Date());
-		MimeMultipart mp = new MimeMultipart();
-		// add text body part
-		MimeBodyPart bp = new MimeBodyPart();
-		bp.setText(body.toString(), "UTF-8");
-		mp.addBodyPart(bp);
 		if( report != null && report.getStatus() == Status.Completed ){
 			// set attachment
-			bp = new MimeBodyPart();
 			DataSource ds = new MonthlyReportDataSource(report, friendlyFileName);
-			bp.setFileName(ds.getName());
-			bp.setDataHandler(new DataHandler(ds));
-			mp.addBodyPart(bp);
+			email.sendEmail("AKTIN Monatsbericht", body.toString(), ds);
+		}else{
+			// no attachment available
+			// send without attachment
+			email.sendEmail("AKTIN Monatsbericht", body.toString());
 		}
-		msg.setContent(mp);
-		Transport.send(msg);
 	}
 
 	@Timeout

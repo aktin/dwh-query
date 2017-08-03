@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.net.ConnectException;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
@@ -29,7 +30,6 @@ import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.mail.Session;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -48,6 +48,7 @@ import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.broker.request.StatusChanged;
 import org.aktin.broker.xml.RequestInfo;
 import org.aktin.broker.request.Status;
+import org.aktin.dwh.EmailService;
 import org.aktin.dwh.PreferenceKey;
 
 
@@ -71,7 +72,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	@Resource
     private TimerService timer;
 
-	private Session mailSession;
+	@Inject
+	private EmailService email;
 
 	private BrokerClient client;
 	private InteractionPreset interaction;
@@ -215,25 +217,10 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		createIntervalTimer();
 	}
 
-	private void lookupJndiMailSession() throws NamingException{
-		mailSession = null;
-		String jndiName = prefs.get(PreferenceKey.emailSession);
-		log.info("Using mail session "+jndiName);
-		InitialContext ctx = new InitialContext();
-		mailSession = (Session)ctx.lookup(jndiName);
-	}
-
 	@PostConstruct
 	public void loadData() {
 		log.info("Initializing request manager");
 		loadRequestInteractionOverrides();
-		try{
-			lookupJndiMailSession();
-		}catch( NamingException e ){
-			log.log(Level.SEVERE, "Unable to inject JNDI mail session", e);
-			log.warning("E-mail notifications are disabled");
-			// we can still process requests, but no email notifications will be sent
-		}
 		// load result directory
 		try {
 			initializeResultDirectory();
@@ -389,13 +376,51 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		if( brokerStatus == org.aktin.broker.xml.RequestStatus.interaction ){
 			// interaction required
 			log.info("Interaction required for completed request "+request.getRequestId());
+			StringBuilder body = new StringBuilder();
+			body.append("Sehr geehrte Damen und Herren,\n\n");
+			body.append("eine Datenanfrage in Ihrem AKTIN Data Warehouse erfordert Ihre Aufmerksamkeit.\n");
+			switch( request.getStatus() ){
+			case Retrieved:
+			case Seen:
+				body.append("Die folgende Anfrage ist neu eingegangen und wartet\n");
+				body.append("auf Ihre Freigabe um die Auswertung durchzuführen:\n");
+				break;
+			case Completed:
+				body.append("Die folgende Anfrage wurde erfolgreich ausgeführt\n");
+				body.append("und wartet auf Ihre Freigabe zur Übermittlung der Ergebnisse:\n");
+				break;
+			default:
+				break;
+			}
+			body.append("Titel: "+request.getRequest().getQuery().title);
+			String desc = request.getRequest().getQuery().description;
+			if( desc != null && desc.length() > 0 ){
+				body.append("Beschreibung:\n");
+				body.append(desc);
+				body.append('\n');
+			}
+			// TODO more info for query
+	
+			body.append("Bitte loggen Sie sich in Ihrem AKTIN Data Warehouse ein,\n");
+			body.append("um diese Anfrage zu bearbeiten.\n");
+			try {
+				String url = "http://"+InetAddress.getLocalHost().getHostAddress()+"/aktin/admin/#/request/"+request.getRequestId();
+				body.append("Link: "+url);
+			} catch (UnknownHostException e) {
+				log.log(Level.WARNING, "Unable to determine host address for link to admin gui",e);
+			}
+			
+			body.append("\nMit freundlichen Grüßen,\n");
+			body.append("Ihr lokaler AKTIN-Server\n");
+			
+			try{
+				email.sendEmail("[AKTIN] Aktion erforderlich für Datenanfrage "+request.getRequestId(), body.toString());
+			}catch( IOException e ){
+				log.log(Level.SEVERE, "Unable to send email", e);
+			}
 		}
-		// TODO use mail session
-		if( mailSession != null ){
-			// XXX send email
-		}
-		 
 	}
+
 	// automatically called by CDI event processing (somehow not allowed???)
 	public void reportStatusUpdatesToBroker(RetrievedRequest request, String description){
 //	public void reportStatusUpdatesToBroker(@Observes @StatusChanged RetrievedRequest request){

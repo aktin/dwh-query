@@ -1,6 +1,11 @@
 package org.aktin.report.schedule;
 
 
+import java.text.Normalizer;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.Locale;
+
 import org.aktin.report.ArchivedReport;
 
 /**
@@ -23,6 +28,22 @@ public class MonthlyReportDataSource extends ArchivedReportDataSource {
 		}else{
 			return super.getName();
 		}
+	}
+
+	public static String normalizedMonthName(Month month, Locale locale){
+		String name = month.getDisplayName(TextStyle.FULL, locale);
+		// make sure we don't have non-ASCII characters for file names
+		// TODO this may fail for other languages, testing required
+		if( locale.toLanguageTag().equals("de-DE") && month == Month.MARCH ){
+			name = "Maerz";
+		}else{
+			name = Normalizer.normalize(name, Normalizer.Form.NFKC);
+		}
+		return name;
+	}
+	public static String createFriendlyFileName(Month month, int reportId, Locale locale){
+		String monthName = normalizedMonthName(month, locale);
+		return "AKTIN Monatsbericht "+monthName+" ("+reportId+")";
 	}
 
 }

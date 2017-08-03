@@ -8,7 +8,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.TextStyle;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -125,7 +124,8 @@ public class ReportSchedule extends Module {
 			langTag = "de-DE"; // default to German
 		}
 		locale = Locale.forLanguageTag(langTag);
-
+		log.info("Using locale "+locale);
+		
 		// load email session
 		lookupJndiMailSession();
 	}
@@ -240,9 +240,7 @@ public class ReportSchedule extends Module {
 				body.append(".\n");
 			}
 			// use start timestamp to generate human readable name
-			String monthName = localStart.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, locale);
-			friendlyFileName = "AKTIN Monatsbericht "+monthName+" ("+report.getId()+")";
-			
+			friendlyFileName = MonthlyReportDataSource.createFriendlyFileName(localStart.getMonth(), report.getId(), locale);
 		}
 		body.append("\nMit freundlichen Grüßen,\n");
 		body.append("Ihr lokaler AKTIN-Server\n");

@@ -383,38 +383,35 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			case Retrieved:
 			case Seen:
 				body.append("Die folgende Anfrage ist neu eingegangen und wartet\n");
-				body.append("auf Ihre Freigabe um die Auswertung durchzuführen:\n");
+				body.append("auf Ihre Freigabe um die Auswertung durchzufÃ¼hren:\n");
 				break;
 			case Completed:
-				body.append("Die folgende Anfrage wurde erfolgreich ausgeführt\n");
-				body.append("und wartet auf Ihre Freigabe zur Übermittlung der Ergebnisse:\n");
+				body.append("Die folgende Anfrage wurde erfolgreich ausgefÃ¼hrt\n");
+				body.append("und wartet auf Ihre Freigabe zur Ãœbermittlung der Ergebnisse:\n");
 				break;
 			default:
 				break;
 			}
-			body.append("Titel: "+request.getRequest().getQuery().title);
+			body.append('\n');
+			body.append("Titel: ").append(request.getRequest().getQuery().title).append('\n');
 			String desc = request.getRequest().getQuery().description;
 			if( desc != null && desc.length() > 0 ){
 				body.append("Beschreibung:\n");
 				body.append(desc);
-				body.append('\n');
+				body.append("\n\n");
 			}
 			// TODO more info for query
 	
 			body.append("Bitte loggen Sie sich in Ihrem AKTIN Data Warehouse ein,\n");
 			body.append("um diese Anfrage zu bearbeiten.\n");
-			try {
-				String url = "http://"+InetAddress.getLocalHost().getHostAddress()+"/aktin/admin/#/request/"+request.getRequestId();
-				body.append("Link: "+url);
-			} catch (UnknownHostException e) {
-				log.log(Level.WARNING, "Unable to determine host address for link to admin gui",e);
-			}
+			String url = prefs.get(PreferenceKey.serverUrl)+"aktin/admin/#/request/"+request.getRequestId();
+			body.append("Link: ").append(url).append('\n');
 			
-			body.append("\nMit freundlichen Grüßen,\n");
+			body.append("\nMit freundlichen GrÃ¼ÃŸen,\n");
 			body.append("Ihr lokaler AKTIN-Server\n");
 			
 			try{
-				email.sendEmail("[AKTIN] Aktion erforderlich für Datenanfrage "+request.getRequestId(), body.toString());
+				email.sendEmail("[AKTIN] Aktion erforderlich fÃ¼r Datenanfrage "+request.getRequestId(), body.toString());
 			}catch( IOException e ){
 				log.log(Level.SEVERE, "Unable to send email", e);
 			}

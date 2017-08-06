@@ -208,11 +208,11 @@ public class ReportSchedule extends Module {
 		if( report != null && report.getStatus() == Status.Completed ){
 			// set attachment
 			DataSource ds = new MonthlyReportDataSource(report, friendlyFileName);
-			email.sendEmail("AKTIN Monatsbericht", body.toString(), ds);
+			email.sendEmail("[AKTIN] Monatsbericht", body.toString(), ds);
 		}else{
 			// no attachment available
 			// send without attachment
-			email.sendEmail("AKTIN Monatsbericht", body.toString());
+			email.sendEmail("[AKTIN] Monatsbericht", body.toString());
 		}
 	}
 

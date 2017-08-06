@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.net.ConnectException;
-import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.file.Files;

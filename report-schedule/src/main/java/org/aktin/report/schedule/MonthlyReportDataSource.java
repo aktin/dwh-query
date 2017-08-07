@@ -43,7 +43,7 @@ public class MonthlyReportDataSource extends ArchivedReportDataSource {
 	}
 	public static String createFriendlyFileName(Month month, int reportId, Locale locale){
 		String monthName = normalizedMonthName(month, locale);
-		return "AKTIN Monatsbericht "+monthName+" ("+reportId+")";
+		return "AKTIN Monatsbericht "+monthName+" ("+reportId+").pdf";
 	}
 
 }

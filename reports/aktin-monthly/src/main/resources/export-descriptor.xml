@@ -189,15 +189,19 @@
 		<column header="patient_id" xpath="../@id"/>
 		<column header="encounter_id" xpath="@id"/>
 		
+		<!--
         <column header="postleitzahl" xpath="eav:fact[@concept='AKTIN:ZIPCODE']/eav:value"/>
         <column header="versicherung_txt" xpath="eav:fact[@concept='AKTIN:KKNAME']/eav:value"/>
-        <column header="versicherung_iknr" xpath="eav:fact[@concept='AKTIN:IKNR']/eav:value"/>
+        <column header="versicherung_iknr" xpath="eav:fact[@concept='AKTIN:IKNR']/eav:value"/> -->
 		<column header="transportmittel" xpath="substring(eav:fact[@class='transportmittel']/@concept, 17)"/>
 		<column header="zuweisung" xpath="substring(eav:fact[@class='zuweisung']/@concept, 16)"/>
 		<column header="cedis" xpath="substring(eav:fact[@class='cedis']/@concept, 9)"/>
+		<!--
 		<column header="beschwerden_txt" xpath="eav:fact[@concept='AKTIN:COMPLAINT']/eav:value"/>
         <column header="symptomdauer" xpath="eav:fact[@concept='AKTIN:SYMPTOMDURATION']/eav:value"/>
+        -->
         <column header="triage" xpath="concat(substring(eav:fact[@class='MTS']/@concept, 5), substring(eav:fact[@class='ESI']/@concept, 5))"/>
+		<!--
 		<column header="triage_system" xpath="concat(substring(eav:fact[@class='MTS']/@concept, 1, 3), substring(eav:fact[@class='ESI']/@concept, 1, 3), substring(eav:fact[@concept='AKTIN:ASSESSMENT']/@concept, 7))"/>
         <column header="atemfrequenz" xpath="eav:fact[@concept='LOINC:9279-1']/eav:value"/>
         <column header="saettigung" xpath="eav:fact[@concept='LOINC:20564-1']/eav:value"/>
@@ -221,7 +225,8 @@
         <column header="allergie_antibiotika" xpath="substring(eav:fact[@class='allergie_antibiotika']/@concept, 15)"/>
         <column header="allergie_sonstige" xpath="substring(eav:fact[@class='allergie_sonstige']/@concept, 15)"/>
         <column header="allergie_txt" xpath="eav:fact[@concept='AKTIN:ALLERGY:TXT']/eav:value"/>
-        <column header="isolation" xpath="substring(eav:fact[@class='isolation']/@concept, 17)"/>
+        -->
+        <column header="isolation" xpath="substring(eav:fact[@class='isolation']/@concept, 17)"/> 
         <column header="isolation_grund" xpath="substring(eav:fact[@class='isolation_grund']/@concept, 17)"/>
 		<column header="keime" xpath="substring(eav:fact[@concept='AKTIN:PATHOGENE:AMRO:NEG']/@concept, 17)"/>
 		<column header="keime_mrsa" xpath="substring(eav:fact[@class='keime_mrsa']/@concept, 17)"/>
@@ -229,6 +234,7 @@
 		<column header="keime_4mrgn" xpath="substring(eav:fact[@class='keime_4mrgn']/@concept, 17)"/>
 		<column header="keime_vre" xpath="substring(eav:fact[@class='keime_vre']/@concept, 17)"/>
 		<column header="keime_andere" xpath="substring(eav:fact[@class='keime_andere']/@concept, 17)"/>
+		<!--
 		<column header="diagnostik_labor" xpath="substring(eav:fact[@class='d_labor']/@concept, 7)"/>
 		<column header="diagnostik_labor_ts" xpath="eav:fact[@class='d_labor']/@start"/>
 		<column header="diagnostik_labor_ergebnis" xpath="substring(eav:fact[@class='d_labor']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>	
@@ -274,17 +280,20 @@
         <column header="diagnostik_mrt" xpath="substring(eav:fact[@class='d_mrt']/@concept, 7)"/>
 		<column header="diagnostik_mrt_ts" xpath="eav:fact[@class='d_mrt']/@start"/>
 		<column header="diagnostik_mrt_ergebnis" xpath="substring(eav:fact[@class='d_mrt']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
+		-->
         <column header="entlassung" xpath="concat(substring(eav:fact[@class='transfer']/@concept, 7),substring(eav:fact[@class='discharge']/@concept, 7))"/> 
         <column header="aufnahme_ts" xpath="eav:start"/>
         <column header="triage_ts" xpath="concat(eav:fact[@class='MTS']/@start, eav:fact[@class='ESI']/@start, eav:fact[@concept='AKTIN:ASSESSMENT']/@start)"/> 
         <column header="arztkontakt_ts" xpath="eav:fact[@concept='AKTIN:PHYSENCOUNTER']/@start"/>
         <column header="therapiebeginn_ts" xpath="eav:fact[@concept='AKTIN:STARTTHERAPY']/@start"/>
         <column header="entlassung_ts" xpath="eav:end"/>
+        <!--
         <column header="modul_ueberwachung" xpath="substring(eav:fact[@concept='LOINC:53576-5']/@concept, 7)"/>
         <column header="modul_trauma" xpath="substring(eav:fact[@concept='LOINC:74198-3']/@concept, 7)"/>
         <column header="modul_neurologie" xpath="substring(eav:fact[@concept='LOINC:34905-0']/@concept, 7)"/>
         <column header="modul_konsil" xpath="substring(eav:fact[@concept='LOINC:11488-4']/@concept, 7)"/>
         <column header="modul_anaesthesie" xpath="substring(eav:fact[@concept='LOINC:34750-0']/@concept, 7)"/>	
+        -->
 	</visit-table>
 	
 	<!-- export separate table for repeating elements -->
@@ -295,7 +304,9 @@
 		<column header="diagnose_code" xpath="substring(@concept,9)"/>
 		<column header="diagnose_fuehrend" xpath="substring(eav:modifier[@code='AKTIN:DIAG:F']/@code, 12)"/>
 		<column header="diagnose_zusatz" xpath="substring(eav:modifier[@code='AKTIN:DIAG:V' or @code='AKTIN:DIAG:Z' or @code='AKTIN:DIAG:A' or @code='AKTIN:DIAG:G']/@code, 12)"/>
+		<!--
 		<column header="diagnose_txt" xpath="eav:modifier[@code='originalText']/@value"/>
+		-->
 	</eav-table>
 	
 </export>

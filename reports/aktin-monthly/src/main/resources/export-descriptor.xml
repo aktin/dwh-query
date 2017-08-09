@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <export xmlns="http://sekmi.de/ns/histream/export-v1">
 	<concepts>	
-		<!-- ACHTUNG: Eigentlich sollten concepts/concept und concepts/group nicht
-		durcheinander benutzt werden. Zuerst sollten alle concepts/group kommen
-		und anschließend alle concepts/concept. Irgendwie funktioniert das aber
-		auch trotzdem wenn man es durcheinander macht ;) wäre interessant warum..  -->
-        <concept notation="AKTIN:ZIPCODE"/>
-        <concept notation="AKTIN:KKNAME"/>
-        <concept notation="AKTIN:IKNR"/>	
 		<group class="transportmittel">
 			<concept wildcard-notation="AKTIN:TRANSPORT:*" />
 		</group>
@@ -17,32 +10,12 @@
         <group class="cedis">
 			<concept wildcard-notation="CEDIS30:*" />			
 		</group>
-		<concept notation="AKTIN:COMPLAINT"/>	
-		<concept notation="AKTIN:SYMPTOMDURATION"/>	
-		<concept notation="AKTIN:ASSESSMENT"/>
-		<!--
-        <group class="triage">
-			<concept wildcard-notation="MTS:*" />
-			<concept wildcard-notation="ESI:*" />			
-		</group>
-		Triage Group Combination does not work with start (see example below)
-		-->
         <group class="MTS">
 			<concept wildcard-notation="MTS:*" />			
 		</group>
         <group class="ESI">
 			<concept wildcard-notation="ESI:*" />			
 		</group>
-		<concept notation="LOINC:9279-1"/>	
-		<concept notation="LOINC:20564-1"/>	
-		<concept notation="LOINC:8480-6"/>	
-		<concept notation="LOINC:8867-4"/>	
-		<concept notation="LOINC:8329-5"/>	
-        <concept notation="LOINC:72514-3"/>	
-        <concept notation="LOINC:9269-2"/>	
-        <concept notation="LOINC:9267-6"/>	
-        <concept notation="LOINC:9270-0"/>	
-        <concept notation="LOINC:9268-4"/>	
         <group class="SPPL">
 			<concept notation="AKTIN:SPPL:D" />
 			<concept notation="AKTIN:SPPL:M" />
@@ -53,7 +26,6 @@
 			<concept notation="AKTIN:RPPL:D" />
 			<concept notation="AKTIN:RPPL:A" />
 		</group>
-		<concept notation="LOINC:75859-9"/>	
         <group class="schwangerschaft">
 			<concept notation="AKTIN:PREGNANCY:1" />
 			<concept notation="AKTIN:PREGNANCY:0" />
@@ -80,7 +52,6 @@
 			<concept notation="AKTIN:ALLERGY:OTH" />
 			<concept notation="AKTIN:ALLERGY:OTH:NEG" />
 		</group>
-		<concept notation="AKTIN:ALLERGY:TXT"/>	
         <group class="isolation">
 			<concept notation="AKTIN:ISOLATION:ISO" />      <!--yes--> 
 			<concept notation="AKTIN:ISOLATION:RISO" />     <!--yes-->
@@ -90,7 +61,6 @@
         <group class="isolation_grund">
 			<concept wildcard-notation="AKTIN:ISOREASON:*" />			
 		</group>
-		<concept notation="AKTIN:PATHOGENE:AMRO:NEG"/>	
         <group class="keime_mrsa">
 			<concept notation="AKTIN:PATHOGENE:MRSA" />
 			<concept notation="AKTIN:PATHOGENE:MRSA:SUSP" />
@@ -129,7 +99,7 @@
 		</group>
 		<group class="d_sonographie">
 			<concept notation="LOINC:25061-3" />
-			<concept notation="LOINC:25061-3" />
+			<concept notation="LOINC:25061-3:NEG" />
 		</group>
 		<group class="d_echokardiographie">
 			<concept notation="LOINC:42148-7" />
@@ -171,17 +141,34 @@
 			<concept notation="LOINC:25056-3" />
 			<concept notation="LOINC:25056-3:NEG" />
 		</group>
-		<!-- does not work well this way 
-        <group class="entlassung">
-			<concept wildcard-notation="AKTIN:TRANSFER:*" />
-			<concept wildcard-notation="AKTIN:DISCHARGE:*" />
-		</group> -->
         <group class="transfer">
 			<concept wildcard-notation="AKTIN:TRANSFER:*"/>
 		</group>
         <group class="discharge">
 			<concept wildcard-notation="AKTIN:DISCHARGE:*"/>
 		</group>
+        <group class="diagnose">
+			<concept wildcard-notation="ICD10GM:*"/>
+		</group>
+        <concept notation="AKTIN:ZIPCODE"/>
+        <concept notation="AKTIN:KKNAME"/>
+        <concept notation="AKTIN:IKNR"/>	
+        <concept notation="AKTIN:COMPLAINT"/>	
+		<concept notation="AKTIN:SYMPTOMDURATION"/>	
+		<concept notation="AKTIN:ASSESSMENT"/>
+		<concept notation="AKTIN:PATHOGENE:AMRO:NEG"/>	
+        <concept notation="LOINC:9279-1"/>	
+		<concept notation="LOINC:20564-1"/>	
+		<concept notation="LOINC:8480-6"/>	
+		<concept notation="LOINC:8867-4"/>	
+		<concept notation="LOINC:8329-5"/>	
+        <concept notation="LOINC:72514-3"/>	
+        <concept notation="LOINC:9269-2"/>	
+        <concept notation="LOINC:9267-6"/>	
+        <concept notation="LOINC:9270-0"/>	
+        <concept notation="LOINC:9268-4"/>	
+        <concept notation="LOINC:75859-9"/>	
+        <concept notation="AKTIN:ALLERGY:TXT"/>	
         <concept notation="AKTIN:PHYSENCOUNTER"/>	
         <concept notation="AKTIN:STARTTHERAPY"/>	
         <concept notation="LOINC:53576-5"/>	
@@ -189,22 +176,16 @@
         <concept notation="LOINC:34905-0"/>	
         <concept notation="LOINC:11488-4"/>	
         <concept notation="LOINC:34750-0"/>	
-        
-        <group class="diagnose">
-			<concept wildcard-notation="ICD10GM:*"/>
-		</group>
 	</concepts>
 
 	<patient-table>
 		<column header="patient_id" xpath="@id"/>
+		
 		<column header="geburtsdatum_ts" xpath="eav:birthdate"/>
 		<column header="geschlecht" xpath="eav:gender"/>
 	</patient-table>
 	
 	<visit-table>
-		<!-- context for XPath expressions is each visit node -->
-		<!-- XMLNS for XPath is assumed to be  http://sekmi.de/histream/ns/eav-data -->
-        <!-- concepts for the visit table must occur only once per visit and may not repeat -->
 		<column header="patient_id" xpath="../@id"/>
 		<column header="encounter_id" xpath="@id"/>
 		
@@ -216,10 +197,6 @@
 		<column header="cedis" xpath="substring(eav:fact[@class='cedis']/@concept, 9)"/>
 		<column header="beschwerden_txt" xpath="eav:fact[@concept='AKTIN:COMPLAINT']/eav:value"/>
         <column header="symptomdauer" xpath="eav:fact[@concept='AKTIN:SYMPTOMDURATION']/eav:value"/>
-        <!--
-		<column header="triage" xpath="substring(eav:fact[@class='triage']/@concept, 5)"/>
-		<column header="triage_system" xpath="concat(substring(eav:fact[@class='triage']/@concept, 1, 3),substring(eav:fact[@concept='AKTIN:ASSESSMENT']/@concept, 7))"/>
-		-->
         <column header="triage" xpath="concat(substring(eav:fact[@class='MTS']/@concept, 5), substring(eav:fact[@class='ESI']/@concept, 5))"/>
 		<column header="triage_system" xpath="concat(substring(eav:fact[@class='MTS']/@concept, 1, 3), substring(eav:fact[@class='ESI']/@concept, 1, 3), substring(eav:fact[@concept='AKTIN:ASSESSMENT']/@concept, 7))"/>
         <column header="atemfrequenz" xpath="eav:fact[@concept='LOINC:9279-1']/eav:value"/>
@@ -232,7 +209,6 @@
         <column header="gcs_augen" xpath="eav:fact[@concept='LOINC:9267-6']/eav:value"/>
         <column header="gcs_verbal" xpath="eav:fact[@concept='LOINC:9270-0']/eav:value"/>
         <column header="gcs_motorisch" xpath="eav:fact[@concept='LOINC:9268-4']/eav:value"/>   
-        <!-- ToDo: ERROR in Pupil* - xpath should be correct, but does not work-->
         <column header="pupillenweite_rechts" xpath="substring(eav:fact[@class='SPPL'][/eav:modifier/@code='AKTIN:TSITE:R']/@concept, 12)"/>
         <column header="pupillenweite_links" xpath="substring(eav:fact[@class='SPPL'][/eav:modifier/@code='AKTIN:TSITE:L']/@concept, 12)"/>
         <column header="pupillenreaktion_rechts" xpath="substring(eav:fact[@class='RPPL'][/eav:modifier/@code='AKTIN:TSITE:R']/@concept, 12)"/>
@@ -298,19 +274,12 @@
         <column header="diagnostik_mrt" xpath="substring(eav:fact[@class='d_mrt']/@concept, 7)"/>
 		<column header="diagnostik_mrt_ts" xpath="eav:fact[@class='d_mrt']/@start"/>
 		<column header="diagnostik_mrt_ergebnis" xpath="substring(eav:fact[@class='d_mrt']/eav:modifier[@code='AKTIN:RESULT:OPB' or @code='AKTIN:RESULT:PB' or @code='AKTIN:RESULT:UNK']/@code, 14)"/>
-	
-        <!-- <column header="entlassung" xpath="eav:fact[@class='entlassung']"/>  this does not work well with xpath selection of the value-->
         <column header="entlassung" xpath="concat(substring(eav:fact[@class='transfer']/@concept, 7),substring(eav:fact[@class='discharge']/@concept, 7))"/> 
         <column header="aufnahme_ts" xpath="eav:start"/>
-        <!-- ToDo: ERROR - for some reason the concat for triage@start does not work this way
-        <column header="triage_ts" xpath="concat(eav:fact[@class='triage']/@start, eav:fact[@concept='AKTIN:ASSESSMENT']/@start)"/> 
-        <column header="triage_ts" xpath="eav:fact[@class='triage']/@start"/> -->
         <column header="triage_ts" xpath="concat(eav:fact[@class='MTS']/@start, eav:fact[@class='ESI']/@start, eav:fact[@concept='AKTIN:ASSESSMENT']/@start)"/> 
-          
         <column header="arztkontakt_ts" xpath="eav:fact[@concept='AKTIN:PHYSENCOUNTER']/@start"/>
         <column header="therapiebeginn_ts" xpath="eav:fact[@concept='AKTIN:STARTTHERAPY']/@start"/>
         <column header="entlassung_ts" xpath="eav:end"/>
-        
         <column header="modul_ueberwachung" xpath="substring(eav:fact[@concept='LOINC:53576-5']/@concept, 7)"/>
         <column header="modul_trauma" xpath="substring(eav:fact[@concept='LOINC:74198-3']/@concept, 7)"/>
         <column header="modul_neurologie" xpath="substring(eav:fact[@concept='LOINC:34905-0']/@concept, 7)"/>
@@ -320,9 +289,9 @@
 	
 	<!-- export separate table for repeating elements -->
 	<eav-table id="diagnoses" xpath="eav:fact[@class='diagnose']">
-		<!-- context for XPath expressions is each fact node -->
 		<column header="patient_id" xpath="../../@id"/>
 		<column header="encounter_id" xpath="../@id"/>
+		
 		<column header="diagnose_code" xpath="substring(@concept,9)"/>
 		<column header="diagnose_fuehrend" xpath="substring(eav:modifier[@code='AKTIN:DIAG:F']/@code, 12)"/>
 		<column header="diagnose_zusatz" xpath="substring(eav:modifier[@code='AKTIN:DIAG:V' or @code='AKTIN:DIAG:Z' or @code='AKTIN:DIAG:A' or @code='AKTIN:DIAG:G']/@code, 12)"/>

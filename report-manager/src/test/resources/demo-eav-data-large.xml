@@ -51397,7 +51397,11 @@
          </fact>
          <!--Freitext für anamnestisch bestehende Unverträglichkeiten / Allergien-->
          <fact concept="AKTIN:ALLERGY:TXT" start="2015-01-17">
-            <value xsi:type="string">Allergien: neinUnverträglichkeiten: nein</value>
+            <!-- Test Zeilenumbruch etc. -->
+            <value xsi:type="string">1
+2
+3
+4	5</value>
          </fact>
          <!--31/32/33/34 Allergien-->
          <fact concept="AKTIN:ALLERGY:ALGN:NEG">

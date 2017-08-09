@@ -38,7 +38,6 @@ class ArchivedReportDataSource implements DataSource{
 	}
 
 	public static String getReportAttachmentFileName(ArchivedReport report){
-		// TODO pretty name
 		return report.getLocation().getFileName().toString();
 	}
 

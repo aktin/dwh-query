@@ -64,7 +64,12 @@ public class RequestScheduler {
 		}
 		long waitMilli = next.toEpochMilli() - System.currentTimeMillis();
 		if( waitMilli < 0 ){
-			// 
+			// wait time negative. execute immediately
+			// usually this should not happen, since we always
+			// execute due executions before calling updateTimer.
+			// Yet, due to slow CPU or pauses in virtualized enviromnents
+			// this cannot be outruled.
+			waitMilli = 0;
 		}
 		nextExecution = timerService.createSingleActionTimer(waitMilli, timerConfig);
 		log.info("Next execution scheduled for "+nextExecution.getNextTimeout());
@@ -74,6 +79,10 @@ public class RequestScheduler {
 		executor.accept(request);
 	}
 
+	/**
+	 * Start all executions which have a scheduled timestamp
+	 * of {@code now} or earlier.
+	 */
 	private void startDueExecutions(){
 		Instant now = Instant.now();
 		synchronized( queue ){
@@ -92,10 +101,13 @@ public class RequestScheduler {
 			}
 		}
 	}
-//  public void scheduleRequest(@Observes @Status(RequestStatus.Retrieved) RetrievedRequest request){
-//	public void scheduleRequest(RetrievedRequest request){
+
+	/**
+	 * Schedule a request for execution. Will only accept requests with {@link RequestStatus#Queued}.
+	 * Requests with other status values will be ignored. TODO throw illegal argument exception.
+	 * @param request request to schedule
+	 */
 	public void scheduleRequest(@Observes @Status(RequestStatus.Queued) RetrievedRequest request){
-	//	if( request.getStatus() == RequestStatus.Retrieved ){ // TODO only execute queued
 		if( request.getStatus() == RequestStatus.Queued ){ 
 			log.info("Scheduling request "+request.getRequestId()+", status="+request.getStatus());
 		}else{

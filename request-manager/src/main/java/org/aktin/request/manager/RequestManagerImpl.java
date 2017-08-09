@@ -47,7 +47,7 @@ import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.broker.request.StatusChanged;
 import org.aktin.broker.xml.RequestInfo;
 import org.aktin.broker.request.Status;
-import org.aktin.dwh.EMail;
+import org.aktin.dwh.EmailService;
 import org.aktin.dwh.PreferenceKey;
 
 
@@ -68,12 +68,11 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	@StatusChanged
 	private Event<RetrievedRequest> event;
 
-	@Inject
-	@EMail
-	private Event<RetrievedRequest> emailEvent;
-
 	@Resource
     private TimerService timer;
+
+	@Inject
+	private EmailService email;
 
 	private BrokerClient client;
 	private InteractionPreset interaction;
@@ -307,7 +306,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		}catch( IOException e) {
 			log.log(Level.SEVERE, "Broker communication failed", e);
 		}
-		// TODO go through requests and perform pending actions
+		// request processing is done via status change callbacks
 	}
 
 	@Override
@@ -357,24 +356,71 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		}
 	}
 
-	private void fireInteraktionNotification(RetrievedRequest request){
-		log.info("Interaction required for request "+request.getRequestId()+" status "+request.getStatus());
-		emailEvent.fire(request);
-	}
-
-	private void postRequestStatus(int requestId, org.aktin.broker.xml.RequestStatus brokerStatus, String description){
+	/**
+	 * Report a change of status to the broker and optionally via email to user
+	 * @param request request after the status change
+	 * @param brokerStatus matching broker status. E.g. {@code interaction} if interaction is required
+	 * @param description description
+	 */
+	private void reportRequestStatusChanged(RetrievedRequest request, org.aktin.broker.xml.RequestStatus brokerStatus, String description){
+		int requestId = request.getRequestId();
 		try {
 			client.postRequestStatus(requestId, brokerStatus, null, description);
 		} catch (IOException e) {
 			// stack trace not needed for status report failures
 			log.warning("Unable to report request status to broker: "+requestId+" -> "+brokerStatus+": "+e.toString());
 		}
+		// send notifications
+		// TODO load email notification settings (how often / on what status changes to send emails)
+		if( brokerStatus == org.aktin.broker.xml.RequestStatus.interaction ){
+			// interaction required
+			log.info("Interaction required for completed request "+request.getRequestId());
+			StringBuilder body = new StringBuilder();
+			body.append("Sehr geehrte Damen und Herren,\n\n");
+			body.append("eine Datenanfrage in Ihrem AKTIN Data Warehouse erfordert Ihre Aufmerksamkeit.\n");
+			switch( request.getStatus() ){
+			case Retrieved:
+			case Seen:
+				body.append("Die folgende Anfrage ist neu eingegangen und wartet\n");
+				body.append("auf Ihre Freigabe um die Auswertung durchzuführen:\n");
+				break;
+			case Completed:
+				body.append("Die folgende Anfrage wurde erfolgreich ausgeführt\n");
+				body.append("und wartet auf Ihre Freigabe zur Übermittlung der Ergebnisse:\n");
+				break;
+			default:
+				break;
+			}
+			body.append('\n');
+			body.append("Titel: ").append(request.getRequest().getQuery().title).append('\n');
+			String desc = request.getRequest().getQuery().description;
+			if( desc != null && desc.length() > 0 ){
+				body.append("Beschreibung:\n");
+				body.append(desc);
+				body.append("\n\n");
+			}
+			// TODO more info for query
+	
+			body.append("Bitte loggen Sie sich in Ihrem AKTIN Data Warehouse ein,\n");
+			body.append("um diese Anfrage zu bearbeiten.\n");
+			String url = prefs.get(PreferenceKey.serverUrl)+"aktin/admin/#/request/"+request.getRequestId();
+			body.append("Link: ").append(url).append('\n');
+			
+			body.append("\nMit freundlichen Grüßen,\n");
+			body.append("Ihr lokaler AKTIN-Server\n");
+			
+			try{
+				email.sendEmail("[AKTIN] Aktion erforderlich für Datenanfrage "+request.getRequestId(), body.toString());
+			}catch( IOException e ){
+				log.log(Level.SEVERE, "Unable to send email", e);
+			}
+		}
 	}
+
 	// automatically called by CDI event processing (somehow not allowed???)
 	public void reportStatusUpdatesToBroker(RetrievedRequest request, String description){
 //	public void reportStatusUpdatesToBroker(@Observes @StatusChanged RetrievedRequest request){
 		log.info("Request "+request.getRequestId()+" status -> "+request.getStatus());
-		int id = request.getRequestId();
 		try{
 			switch( request.getStatus() ){
 			case Completed:
@@ -385,34 +431,33 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 					request.changeStatus(null, RequestStatus.Sending, null);
 				}else{
 					// manual interaction required
-					log.info("Interaction required for completed request "+request.getRequestId());
-					fireInteraktionNotification(request);
-					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction, description);
+					reportRequestStatusChanged(request, org.aktin.broker.xml.RequestStatus.interaction, description);
 				}
 				break;
 			case Failed:
 				// report failure message
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.failed, description);
-				client.deleteMyRequest(id);
+				reportRequestStatusChanged(request, org.aktin.broker.xml.RequestStatus.failed, description);
+				client.deleteMyRequest(request.getRequestId());
 				break;
 			case Processing:
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.processing, description);
+				reportRequestStatusChanged(request, org.aktin.broker.xml.RequestStatus.processing, description);
 				break;
 			case Queued:
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.queued, description);
+				reportRequestStatusChanged(request, org.aktin.broker.xml.RequestStatus.queued, description);
 				break;
 			case Rejected:
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.rejected, description);
-				client.deleteMyRequest(id);
+				reportRequestStatusChanged(request, org.aktin.broker.xml.RequestStatus.rejected, description);
+				client.deleteMyRequest(request.getRequestId());
 				break;
 			case Retrieved:
-				// retrieval was already reported after fetching
+				// retrieval status was already reported after fetching
 				// determine whether interaction is required
 				applyPostRetrievalRules(request);
 				if( request.getStatus() == RequestStatus.Retrieved ){
 					// rules didn't change the status. manual interaction required
-					fireInteraktionNotification(request);
-					postRequestStatus(id, org.aktin.broker.xml.RequestStatus.interaction, description);
+					reportRequestStatusChanged(request, org.aktin.broker.xml.RequestStatus.interaction, description);
+				}else{
+					log.info("Post retrieval rules changed status for request "+request.getRequestId()+" to "+request.getStatus());
 				}
 				break;
 			case Seen:
@@ -421,8 +466,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				uploader.accept(request);
 				break;
 			case Submitted:
-				postRequestStatus(id, org.aktin.broker.xml.RequestStatus.completed, description);
-				client.deleteMyRequest(id);
+				reportRequestStatusChanged(request, org.aktin.broker.xml.RequestStatus.completed, description);
+				client.deleteMyRequest(request.getRequestId());
 				break;
 			default:
 				break;

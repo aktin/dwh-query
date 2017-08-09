@@ -179,34 +179,6 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		return autoSubmit;
 	}
 
-	@Override // DataSource
-	public InputStream getInputStream() throws IOException {
-		if( resultPath == null ){
-			return null;
-		}
-		return Files.newInputStream(store.getResultDir().resolve(resultPath));
-	}
-
-	@Override // DataSource
-	public OutputStream getOutputStream() throws IOException {
-		if( resultPath == null ){
-			return null;
-		}
-		return Files.newOutputStream(store.getResultDir().resolve(resultPath), StandardOpenOption.CREATE_NEW);
-	}
-
-	@Override // DataSource
-	public String getContentType() {
-		return resultType;
-	}
-
-	@Override // DataSource
-	public String getName() {
-		if( resultPath == null ){
-			return null;
-		}
-		return store.getResultDir().resolve(resultPath).getFileName().toString();
-	}
 
 	@Override
 	public DataSource getResultData() throws IOException {
@@ -346,4 +318,34 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		this.marker = newMarker;
 		
 	}
+
+	@Override // DataSource
+	public InputStream getInputStream() throws IOException {
+		if( resultPath == null ){
+			return null;
+		}
+		return Files.newInputStream(store.getResultDir().resolve(resultPath));
+	}
+
+	@Override // DataSource
+	public OutputStream getOutputStream() throws IOException {
+		if( resultPath == null ){
+			return null;
+		}
+		return Files.newOutputStream(store.getResultDir().resolve(resultPath), StandardOpenOption.CREATE_NEW);
+	}
+
+	@Override // DataSource
+	public String getContentType() {
+		return resultType;
+	}
+
+	@Override // DataSource
+	public String getName() {
+		if( resultPath == null ){
+			return null;
+		}
+		return store.getResultDir().resolve(resultPath).getFileName().toString();
+	}
+
 }

@@ -80,9 +80,12 @@ class RScript {
 			// Rscript did not terminate successfully
 			// something went wrong
 			if (error.available() > 0) {
-				log.warning("Rscript stderr: "+convertStreamToString(error));
+				String stderr = convertStreamToString(error);
+				log.warning("Rscript stderr: "+stderr);
+				throw new IOException("R execution failed w/ exit code "+exitCode+": "+stderr);
+			}else{
+				throw new IOException("R execution failed w/ exit code "+exitCode+", no stderr");
 			}
-			throw new IOException("R execution failed with exit code "+exitCode);
 		}
 		error.close();
 

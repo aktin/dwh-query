@@ -82,6 +82,11 @@ class RScript {
 			if (error.available() > 0) {
 				String stderr = convertStreamToString(error);
 				log.warning("Rscript stderr: "+stderr);
+				// use first line of output for exception
+				int nl = stderr.indexOf('\n'); // find first newline
+				if( nl != -1 ){ // if there, reduce to first line
+					stderr = stderr.substring(0, nl).trim();
+				}
 				throw new IOException("R execution failed w/ exit code "+exitCode+": "+stderr);
 			}else{
 				throw new IOException("R execution failed w/ exit code "+exitCode+", no stderr");

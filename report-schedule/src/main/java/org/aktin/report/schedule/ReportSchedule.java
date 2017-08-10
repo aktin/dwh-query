@@ -99,7 +99,7 @@ public class ReportSchedule extends Module {
 		// create schedule
 		ScheduleExpression expr = new ScheduleExpression();
 		// run third of month
-		expr.dayOfMonth(3).hour(6).minute(13);
+		expr.dayOfMonth(8).hour(6).minute(0);
 		// create non-persistent timer. we need the timer callback in the same instance
 		Timer t = timer.createCalendarTimer(expr, new TimerConfig(MONTHLY_REPORT_ID, false));
 		schedule.put(t, report);

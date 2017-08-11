@@ -5,7 +5,7 @@
 
 	<groupId>org.aktin</groupId>
 	<artifactId>report-schedule</artifactId>
-	<version>0.3-SNAPSHOT</version>
+	<version>0.3rc1</version>
 
 	<description>
 		Schedule report generation and transmit the report 
@@ -16,7 +16,7 @@
 	<parent>
 		<groupId>org.aktin</groupId>
 		<artifactId>dwh-query</artifactId>
-		<version>0.3-SNAPSHOT</version>
+		<version>0.3rc1</version>
 	</parent>
 
 	<build>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0.2</version>
 		</dependency>
 		<!-- j2ee annotations -->
 		<dependency>

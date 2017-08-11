@@ -12,8 +12,8 @@ import org.aktin.report.AnnotatedReport;
 import java.util.logging.Logger;
 
 @AnnotatedReport.Report(
-		displayName="AKTIN Daten-Qualit‰tsbericht", 
-		description="Standardisierter Qualit‰tsbericht des AKTIN Projekts",
+		displayName="AKTIN Daten-Qualit√§tsbericht", 
+		description="Standardisierter Qualit√§tsbericht des AKTIN Projekts",
 		defaultPeriod="P1M",
 		preferences={"local.o", "local.ou"} // see dwh-api/org.aktin.dwh.PreferenceKey
 		)

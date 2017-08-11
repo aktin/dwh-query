@@ -117,7 +117,7 @@ Homepage: www.aktin.org
   </section>
   <section>
     <header>Aufenthaltsdauer der Patienten</header>
-    <paragraph>Bei der Gesamtaufenthaltsdauer wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Aufenthaltsdauer länger als 24 Stunden sowie negative Zeiten.</paragraph>
+    <paragraph>Bei der Gesamtaufenthaltsdauer wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Aufenthaltsdauer länger als 24 Stunden sowie negative Zeiten. Werte zwischen 10 Stunden und 24 Stunden sind in der Grafik und Kennzahlberechnung ebenfalls als Ausreißer ausgeschlossen und sind deshalb extra ausgewiesen.</paragraph>
     <plot ref="p7.1">Grafik 7.1: Aufenthaltsdauer</plot>
     <table ref="t7.1">Tabelle 7.1: Aufenthaltsdauer in Minuten</table>
   </section>

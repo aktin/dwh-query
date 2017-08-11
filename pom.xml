@@ -19,19 +19,6 @@
 		<developerConnection>scm:git:git@gitlab.uni-oldenburg.de:AKTIN/dwh-query.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
-	<distributionManagement>
-		<!-- publish releases to aktin.org -->
-		<repository>
-			<id>www.aktin.org</id>
-			<name>AKTIN.org</name>
-			<url>sftp://aktin.org/httpdocs/software/repo/</url>
-		</repository>
-		<!-- publish site to aktin.org -->
-		<site>
-			<id>www.aktin.org</id>
-			<url>scp://aktin.org/httpdocs/software/dwh-query/${project.version}/</url>
-		</site>
-	</distributionManagement>
 	
 	<modules>
 		<module>report-manager</module>

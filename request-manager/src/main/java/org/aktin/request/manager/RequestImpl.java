@@ -57,9 +57,8 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	 * the status via {@link #changeStatus(Connection, long, String, RequestStatus, String)}, 
 	 * write to data base and fire an event.
 	 * </p>
-	 * @param store
-	 * @param request
-	 * @return
+	 * @param store request store
+	 * @param request query data
 	 */
 	RequestImpl(RequestStoreImpl store, QueryRequest request){
 		this(store);

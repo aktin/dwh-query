@@ -97,6 +97,7 @@ abstract class RequestStoreImpl {
 	/**
 	 * Called after the request status is changed.
 	 * @param request request
+	 * @param description description
 	 */
 	protected abstract void afterRequestStatusChange(RequestImpl request, String description);
 }

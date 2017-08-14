@@ -39,7 +39,7 @@ if (length(df$admit.wd) > 0) {
 try({
   plottable <- round(table(df$admit.wd)/weekdaycounts,digits = 1)
   plottable[is.na(plottable)] <- 0
-  graph <- barchart(plottable, horizontal=FALSE, xlab="Wochentag", ylab="Durchschnittliche Anzahl Patienten",col=std_cols1,origin=0)
+  graph <- barchart(plottable, horizontal=FALSE, xlab=paste('Wochentag; n =',sum(!is.na(df$admit.h))), ylab="Durchschnittliche Anzahl Patienten",col=std_cols1,origin=0)
   report.svg(graph, 'admit.wd')
 }, silent=FALSE)
 

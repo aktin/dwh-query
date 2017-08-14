@@ -3,12 +3,12 @@ Intern: Normalstation;Weiblich;Rot;Anzahl Zeiten berücksichtigt;Anzahl Zeiten b
 Intern: Funktion;Männlich;Orange;Anzahl fehlende Zeiten;Anzahl fehlende Zeiten;Anzahl fehlende Zeiten
 Intern: Überwachung;Unbestimmt;Gelb;Anzahl ungültige Werte (<0h);Anzahl ungültige Werte (>180min);Anzahl ungültige Werte (>60min)
 Extern: Normalstation;;Grün;Anzahl ungültige Werte (>24h);Mittelwert;Mittelwert
-Extern: Funktion;;Blau;Anzahl zwischen 10h und 24h;Median;Median
-Extern: Überwachung;;Ohne;Mittelwert;Standardabweichung;Standardabweichung
-Nach Hause;;;Median;Minimum;Minimum
-Zu weiterbehandl. Arzt;;;Standardabweichung;Maximum;Maximum
-Kein Arztkontakt;;;Minimum
-Abbruch durch Pat.;;;Maximum
+Extern: Funktion;;Blau;Mittelwert;Median;Median
+Extern: Überwachung;;Ohne;Median;Standardabweichung;Standardabweichung
+Nach Hause;;;Standardabweichung;Minimum;Minimum
+Zu weiterbehandl. Arzt;;;Minimum;Maximum;Maximum
+Kein Arztkontakt;;;Maximum
+Abbruch durch Pat.
 Gegen ärztl. Rat
 Tod
 Sonstiges

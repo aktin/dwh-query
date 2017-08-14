@@ -4,7 +4,7 @@ try({
   lt_zero <- length(df$los[df$los < 0]) - length(df$los[is.na(df$los)])
   gt_day <- length(df$los[df$los > 24*60]) - length(df$los[is.na(df$los)])
   los_NA <- sum(is.na(df$los))
-  los <- df$los[df$los<=10*60]
+  los <- df$los[df$los<=24*60]
   los <- los[!is.na(los)]
   los <- los[los>0]
   los_invalid <- sum(is.na(df$discharge.d)) - sum(is.na(df$los))
@@ -15,7 +15,7 @@ try({
   Zeit <- c(round(mean(na.omit(los)),1),median(na.omit(los)),round(stdabw(na.omit(los)),1),min(na.omit(los)),max(na.omit(los)))
   Zeit <- sprintf(fmt="%.0f",Zeit)
   Zeit <- paste(Zeit, 'Min')
-  Zeit <- c(los_erfasst,los_NA,lt_zero,gt_day,los_removed,Zeit)
+  Zeit <- c(los_erfasst,los_NA,lt_zero,gt_day,Zeit)
  
   b <- data.frame(Kennzahl,Zeit)
   report.table(b,name='los.xml',align=c('left','right'),widths=c(45,15))

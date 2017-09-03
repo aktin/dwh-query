@@ -374,7 +374,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		// TODO load email notification settings (how often / on what status changes to send emails)
 		if( brokerStatus == org.aktin.broker.xml.RequestStatus.interaction ){
 			// interaction required
-			log.info("Interaction required for completed request "+request.getRequestId());
+			log.info("Interaction required for request "+request.getRequestId()+" w/ status="+request.getStatus());
 			StringBuilder body = new StringBuilder();
 			body.append("Sehr geehrte Damen und Herren,\n\n");
 			body.append("eine Datenanfrage in Ihrem AKTIN Data Warehouse erfordert Ihre Aufmerksamkeit.\n");

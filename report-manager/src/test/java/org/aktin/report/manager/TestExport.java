@@ -2,7 +2,6 @@ package org.aktin.report.manager;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -20,10 +19,12 @@ import org.junit.Test;
 import de.sekmi.histream.ObservationFactory;
 import de.sekmi.histream.export.ExportSummary;
 import de.sekmi.histream.export.MemoryExportWriter;
+import de.sekmi.histream.export.TableExport;
 import de.sekmi.histream.export.config.EavTable;
 import de.sekmi.histream.export.config.ExportDescriptor;
 import de.sekmi.histream.export.config.ExportException;
 import de.sekmi.histream.export.csv.CSVWriter;
+import de.sekmi.histream.i2b2.DataDialect;
 import de.sekmi.histream.i2b2.I2b2Extractor;
 import de.sekmi.histream.i2b2.I2b2ExtractorFactory;
 import de.sekmi.histream.i2b2.PostgresPatientStore;
@@ -88,12 +89,14 @@ public class TestExport implements DataExtractor{
 		GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData));
 		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));
 		MemoryExportWriter ew = new MemoryExportWriter();
-		ExportSummary summary = ed.newExport().export(reader, ew);
+		TableExport te = ed.newExport();
+		//te.setZoneId(ZoneId.of("Europe/Berlin"));
+		ExportSummary summary = te.export(reader, ew);
 		Assert.assertEquals(1, summary.getPatientCount());
 		Assert.assertEquals(1, summary.getVisitCount());
 		reader.close();
 		ew.close();
-		//ew.dump();
+		ew.dump();
 		
 	}
 	
@@ -102,16 +105,17 @@ public class TestExport implements DataExtractor{
 		DataSource t = new LocalI2b2DataSource();
 		String projectId = "AKTIN";
 		PostgresPatientStore ps = new PostgresPatientStore();
-		ps.open(t.getConnection(), projectId);
+		DataDialect dialect = new DataDialect();
+		ps.open(t.getConnection(), projectId, dialect);
 		PostgresVisitStore vs = new PostgresVisitStore();
-		ps.open(t.getConnection(), projectId);
+		vs.open(t.getConnection(), projectId, dialect);
 		ObservationFactory of = new ObservationFactoryImpl(ps, vs);
 //		ExportDescriptor ed = JAXB.unmarshal(TestExport.class.getResourceAsStream("/export-descriptor.xml"), ExportDescriptor.class);
 //		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));
 		try( I2b2ExtractorFactory ef = new I2b2ExtractorFactory(t, of) ){
 			ef.setPatientLookup(ps::lookupPatientNum);
 			ef.setVisitLookup(vs::lookupEncounterNum);
-			try( I2b2Extractor e = ef.extract(Timestamp.valueOf("2010-01-01 00:00:00"), Timestamp.valueOf("2020-01-17 00:00:00"), null) ){
+			try( I2b2Extractor e = ef.extract(Instant.parse("2010-01-01T00:00:00"), Instant.parse("2020-01-17T00:00:00"), null) ){
 				GroupedXMLWriter w = new GroupedXMLWriter(System.out);
 				//MemoryExportWriter w = new MemoryExportWriter();
 				//ed.newExport().export(e, w);

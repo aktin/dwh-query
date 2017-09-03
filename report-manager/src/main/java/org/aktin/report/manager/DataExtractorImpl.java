@@ -4,8 +4,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -62,6 +62,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	//private static final Logger log = Logger.getLogger(DataExtractor.class.getName());
 	private I2b2ExtractorFactory extractor;
 	private Executor executor; // will be filled via resource injection or setter method
+	private ZoneId zoneId;
 
 
 	DataExtractorImpl(DataSource crc_ds, PostgresPatientStore patientStore, PostgresVisitStore visitStore, ObservationFactory factory) throws IOException, SQLException{
@@ -69,6 +70,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		// XXX uncommenting the following lines may write all patients again with a different patient id from the lookup table (when used by TestAktinMonthly.main)
 //		extractor.setPatientLookup(patientStore::lookupPatientNum);
 //		extractor.setVisitLookup(visitStore::lookupEncounterNum);
+		zoneId = ZoneId.of("Europe/Berlin");
 	}
 
 	@Inject
@@ -82,7 +84,8 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 			throw new IllegalStateException("Unable to load extractor factory", e);
 		}
 		extractor.setPatientLookup(patientStore::lookupPatientNum);
-		extractor.setVisitLookup(visitStore::lookupEncounterNum);		
+		extractor.setVisitLookup(visitStore::lookupEncounterNum);
+		zoneId = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 	}
 
 	@Resource
@@ -121,7 +124,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		Objects.requireNonNull(this.executor, "Executor not provided/injected");
 		ExportDescriptor ed = ExportDescriptor.parse(exportDescriptor);
 		TableExport fac = new TableExport(ed);
-
+		fac.setZoneId(zoneId);
 		// load concept notations
 		Iterable<Concept> concepts = ed.allConcepts();
 		// iterable may contain duplicates
@@ -137,10 +140,10 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		return CompletableFuture.supplyAsync(() -> {
 			ExtractedDataImpl edi;
 			// perform the export operation
-			try( I2b2Extractor ext = extractor.extract(Timestamp.from(fromTimestamp), Timestamp.from(endTimestamp), notations) ){
+			try( I2b2Extractor ext = extractor.extract(fromTimestamp, endTimestamp, notations) ){
 				ExportSummary sum = fac.export(ext, csv);
 				edi = new ExtractedDataImpl(sum);
-			} catch (ExportException | SQLException | IOException e) {
+			} catch (ExportException | IOException e) {
 				// wrap for completable
 				throw new CompletionException(e);
 			}

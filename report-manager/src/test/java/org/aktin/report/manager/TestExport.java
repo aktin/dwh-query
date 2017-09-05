@@ -3,6 +3,7 @@ package org.aktin.report.manager;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -45,6 +46,7 @@ public class TestExport implements DataExtractor{
 	// TODO validate CDA to export
 	
 	private String resourceData;
+	private ZoneId zoneId;
 
 	/**
 	 * Use a small data set. Same as {@link #small()}.
@@ -55,6 +57,7 @@ public class TestExport implements DataExtractor{
 	
 	private TestExport(String resourceData){
 		this.resourceData = resourceData;
+		this.zoneId = ZoneId.of("Europe/Berlin");
 	}
 
 	/**
@@ -90,7 +93,7 @@ public class TestExport implements DataExtractor{
 		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));
 		MemoryExportWriter ew = new MemoryExportWriter();
 		TableExport te = ed.newExport();
-		//te.setZoneId(ZoneId.of("Europe/Berlin"));
+		te.setZoneId(ZoneId.of("Europe/Berlin"));
 		ExportSummary summary = te.export(reader, ew);
 		Assert.assertEquals(1, summary.getPatientCount());
 		Assert.assertEquals(1, summary.getVisitCount());
@@ -149,7 +152,9 @@ public class TestExport implements DataExtractor{
 		ew.setVisitTableName("encounters");
 		ExtractedDataImpl edi;
 		try {
-			ExportSummary summary = ed.newExport().export(reader, ew);
+			TableExport ex =  ed.newExport();
+			ex.setZoneId(this.zoneId);
+			ExportSummary summary = ex.export(reader, ew);
 			edi = new ExtractedDataImpl(summary);
 			reader.close();
 		} catch (ExportException | XMLStreamException | IOException e) {

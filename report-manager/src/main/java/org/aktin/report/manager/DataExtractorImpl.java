@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -22,12 +23,16 @@ import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMResult;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.ExtractedData;
 import org.aktin.dwh.PreferenceKey;
+import org.w3c.dom.Document;
 
 import de.sekmi.histream.ObservationFactory;
 import de.sekmi.histream.export.ExportSummary;
@@ -39,8 +44,12 @@ import de.sekmi.histream.export.config.ExportException;
 import de.sekmi.histream.export.csv.CSVWriter;
 import de.sekmi.histream.i2b2.I2b2Extractor;
 import de.sekmi.histream.i2b2.I2b2ExtractorFactory;
+import de.sekmi.histream.i2b2.I2b2Visit;
 import de.sekmi.histream.i2b2.PostgresPatientStore;
 import de.sekmi.histream.i2b2.PostgresVisitStore;
+import de.sekmi.histream.io.GroupedXMLReader;
+import de.sekmi.histream.io.GroupedXMLWriter;
+import de.sekmi.histream.io.Streams;
 
 /**
  * Takes a time interval and concept list and extracts all
@@ -62,6 +71,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	//private static final Logger log = Logger.getLogger(DataExtractor.class.getName());
 	private I2b2ExtractorFactory extractor;
 	private Executor executor; // will be filled via resource injection or setter method
+	private PostgresVisitStore visitStore;
 	private ZoneId zoneId;
 
 
@@ -70,6 +80,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		// XXX uncommenting the following lines may write all patients again with a different patient id from the lookup table (when used by TestAktinMonthly.main)
 //		extractor.setPatientLookup(patientStore::lookupPatientNum);
 //		extractor.setVisitLookup(visitStore::lookupEncounterNum);
+		this.visitStore = visitStore;
 		zoneId = ZoneId.of("Europe/Berlin");
 	}
 
@@ -85,6 +96,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		}
 		extractor.setPatientLookup(patientStore::lookupPatientNum);
 		extractor.setVisitLookup(visitStore::lookupEncounterNum);
+		this.visitStore = visitStore;
 		zoneId = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 	}
 
@@ -170,5 +182,25 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	@Override
 	public void close() {
 		extractor.close();	
+	}
+	// TODO test
+	@Override
+	public CompletableFuture<Document> extractEncounterXML(String encounterId, QName rootElement, String cdaTemplateId) {
+		Objects.requireNonNull(rootElement);
+		I2b2Visit visit = visitStore.findVisit(encounterId);
+		return CompletableFuture.supplyAsync(() -> {
+			Document eav = null;
+			try( I2b2Extractor ex = extractor.extract(Collections.singletonList(visit), null) ){
+				// create DOM
+				DOMResult dr = new DOMResult();
+				GroupedXMLWriter w = new GroupedXMLWriter(dr);
+				Streams.transfer(ex, w);
+				w.close();
+				eav = (Document)dr.getNode();
+			} catch (IOException | XMLStreamException e) {
+				throw new CompletionException(e);
+			}
+			return eav;
+		},executor);
 	}
 }

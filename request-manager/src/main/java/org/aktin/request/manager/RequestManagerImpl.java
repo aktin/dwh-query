@@ -207,6 +207,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			// no or empty broker URL, disable broker communication
 			client = null;
 			// there will be not timer callbacks
+			log.warning("No broker endpoint URI defined, running without without broker.");
 			return;
 		}
 		client = new BrokerClient(URI.create(broker));
@@ -268,12 +269,16 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				// new request
 				// TODO load content
 				try( Reader reader = client.getMyRequestDefinitionReader(info.getId(), QueryRequest.MEDIA_TYPE) ){
+					// handle null reader
+					if( reader == null ){
+						throw new IOException("No request definition found for "+info.getId()+", "+QueryRequest.MEDIA_TYPE);
+					}
 					QueryRequest req = (QueryRequest)um.unmarshal(reader);
 					if( req == null ){
 						throw new JAXBException("XML unmarshalling returned null");
 					}
 					addNewRequest(req);
-				}catch( IOException | JAXBException | SQLException e ){
+				}catch( IOException | JAXBException | SQLException e ){ // catch throwable here?
 					String message = "Failed to parse/store content for broker request "+info.getId();
 					log.log(Level.SEVERE,message, e);
 					client.postRequestFailed(info.getId(), message, e);

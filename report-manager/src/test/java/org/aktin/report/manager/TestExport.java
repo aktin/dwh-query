@@ -4,19 +4,30 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
-
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.xpath.XPathExpressionException;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.ExtractedData;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
+import de.sekmi.histream.Observation;
 import de.sekmi.histream.ObservationFactory;
 import de.sekmi.histream.export.ExportSummary;
 import de.sekmi.histream.export.MemoryExportWriter;
@@ -31,6 +42,7 @@ import de.sekmi.histream.i2b2.I2b2ExtractorFactory;
 import de.sekmi.histream.i2b2.PostgresPatientStore;
 import de.sekmi.histream.i2b2.PostgresVisitStore;
 import de.sekmi.histream.impl.ObservationFactoryImpl;
+import de.sekmi.histream.impl.ObservationImpl;
 import de.sekmi.histream.impl.SimplePatientExtension;
 import de.sekmi.histream.impl.SimpleVisitExtension;
 import de.sekmi.histream.io.GroupedXMLReader;
@@ -88,8 +100,7 @@ public class TestExport implements DataExtractor{
 	@Test
 	public void verifyEavToExport() throws Exception{
 		ObservationFactory of = new ObservationFactoryImpl(new SimplePatientExtension(), new SimpleVisitExtension());
-		
-		GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData));
+		GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData), ZoneOffset.UTC.normalized());
 		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));
 		MemoryExportWriter ew = new MemoryExportWriter();
 		TableExport te = ed.newExport();
@@ -143,7 +154,7 @@ public class TestExport implements DataExtractor{
 		// TODO filter eav data with timestamps
 		GroupedXMLReader reader;
 		try {
-			reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData));
+			reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData), ZoneOffset.UTC.normalized());
 		} catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
 			throw new CompletionException(e);
 		}
@@ -175,4 +186,44 @@ public class TestExport implements DataExtractor{
 		} );
 	}
 
+	@Override
+	public CompletableFuture<Document> extractEncounterXML(String encounterId, QName rootElement) {
+		Objects.requireNonNull(rootElement);
+		if( rootElement.equals(GroupedXMLReader.ROOT_ELEMENT) == false ){
+			throw new IllegalArgumentException();
+		}
+		DocumentBuilderFactory df = DataExtractorImpl.createDocumentBuilderFactory();
+		return CompletableFuture.supplyAsync( () -> {
+			ObservationFactory of = new ObservationFactoryImpl(new SimplePatientExtension(), new SimpleVisitExtension());
+			try( GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData), ZoneOffset.UTC.normalized()) ){
+				Document dom = df.newDocumentBuilder().newDocument();
+				DOMResult dr = new DOMResult(dom);
+				GroupedXMLWriter w = new GroupedXMLWriter(dr);
+				Observation o;
+				while( (o = reader.get()) != null ){
+					if( !o.getEncounterId().equals(encounterId) ){
+						continue; // skip facts not matching the desired encounter id
+					}
+					w.accept(o);
+				}
+				w.close();
+				return dom;
+			} catch (JAXBException | XMLStreamException | FactoryConfigurationError | ParserConfigurationException e) {
+				throw new CompletionException(e);
+			}
+
+		});
+	}
+
+	@Test
+	public void verifyExtractDOM() throws InterruptedException, ExecutionException, XPathExpressionException{
+		final String ENCID = "2";
+		CompletableFuture<Document> future = TestExport.large().extractEncounterXML(ENCID, GroupedXMLReader.ROOT_ELEMENT);
+		Document dom = future.get();
+		Assert.assertNotNull(dom);
+		// verify that the correct encounter is returned
+		NodeList nl = dom.getElementsByTagNameNS(ObservationImpl.XML_NAMESPACE, "encounter");
+		Assert.assertEquals(1, nl.getLength());
+		Assert.assertEquals(ENCID,((Element)nl.item(0)).getAttribute("id"));
+	}
 }

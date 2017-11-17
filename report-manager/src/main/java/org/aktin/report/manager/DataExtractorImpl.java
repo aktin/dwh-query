@@ -1,6 +1,7 @@
 package org.aktin.report.manager;
 
 import java.io.Closeable;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -201,12 +202,16 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 	}
 	// TODO test
 	@Override
-	public CompletableFuture<Document> extractEncounterXML(String encounterId, QName rootElement) {
+	public CompletableFuture<Document> extractEncounterXML(String encounterId, QName rootElement) throws FileNotFoundException {
 		Objects.requireNonNull(rootElement);
 		if( rootElement.equals(GroupedXMLReader.ROOT_ELEMENT) == false ){
 			throw new IllegalArgumentException("Unsupported QName for XML extration: "+rootElement);
 		}
 		I2b2Visit visit = visitStore.findVisit(encounterId);
+		if( visit == null ){
+			// no visit found for the given id
+			throw new FileNotFoundException("No encounter with ID="+encounterId);
+		}
 		return CompletableFuture.supplyAsync(() -> {
 			Document eav = null;
 			try( I2b2Extractor ex = extractor.extract(Collections.singletonList(visit), null) ){

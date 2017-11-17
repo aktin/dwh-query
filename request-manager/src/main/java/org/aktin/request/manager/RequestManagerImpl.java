@@ -383,6 +383,12 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			StringBuilder body = new StringBuilder();
 			body.append("Sehr geehrte Damen und Herren,\n\n");
 			body.append("eine Datenanfrage in Ihrem AKTIN Data Warehouse erfordert Ihre Aufmerksamkeit.\n");
+
+			body.append("Bitte loggen Sie sich in Ihrem AKTIN Data Warehouse ein,\n");
+			body.append("um diese Anfrage zu bearbeiten.\n");
+			String url = prefs.get(PreferenceKey.serverUrl)+"aktin/admin/#/request/"+request.getRequestId();
+			body.append("Link: ").append(url).append("\n\n");
+
 			switch( request.getStatus() ){
 			case Retrieved:
 			case Seen:
@@ -405,11 +411,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				body.append("\n\n");
 			}
 			// TODO more info for query
+			body.append("Link: ").append(url).append("\n");
 	
-			body.append("Bitte loggen Sie sich in Ihrem AKTIN Data Warehouse ein,\n");
-			body.append("um diese Anfrage zu bearbeiten.\n");
-			String url = prefs.get(PreferenceKey.serverUrl)+"aktin/admin/#/request/"+request.getRequestId();
-			body.append("Link: ").append(url).append('\n');
 			
 			body.append("\nMit freundlichen Grüßen,\n");
 			body.append("Ihr lokaler AKTIN-Server\n");

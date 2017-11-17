@@ -224,6 +224,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 			} catch (IOException | XMLStreamException | ParserConfigurationException e) {
 				throw new CompletionException(e);
 			}
+			eav.normalizeDocument();
 			return eav;
 		},executor);
 	}

@@ -81,6 +81,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 
 	DataExtractorImpl(DataSource crc_ds, PostgresPatientStore patientStore, PostgresVisitStore visitStore, ObservationFactory factory) throws IOException, SQLException{
 		extractor = new I2b2ExtractorFactory(crc_ds, factory);
+		extractor.setFeature(I2b2ExtractorFactory.USE_ENCOUNTER_TIMESTAMPS, Boolean.TRUE);
 		// XXX uncommenting the following lines may write all patients again with a different patient id from the lookup table (when used by TestAktinMonthly.main)
 //		extractor.setPatientLookup(patientStore::lookupPatientNum);
 //		extractor.setVisitLookup(visitStore::lookupEncounterNum);

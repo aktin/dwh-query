@@ -102,6 +102,7 @@ class DataExtractorImpl implements DataExtractor, Closeable{
 		}
 		extractor.setPatientLookup(patientStore::lookupPatientNum);
 		extractor.setVisitLookup(visitStore::lookupEncounterNum);
+		extractor.setFeature(I2b2ExtractorFactory.USE_ENCOUNTER_TIMESTAMPS, Boolean.TRUE);
 		this.visitStore = visitStore;
 		zoneId = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 		domFactory = createDocumentBuilderFactory();

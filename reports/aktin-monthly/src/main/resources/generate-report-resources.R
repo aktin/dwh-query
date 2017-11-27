@@ -45,9 +45,9 @@ stdabw <- function(x) {n=length(x) ; sqrt(var(x) * (n-1) / n)}
 # load data into data frame and keep all data as strings
 # this will prevent R from creating factors out of dates and prefixed values
 #tmp = read.csv2(file='Daten_ZNA_Entenhausen.csv', as.is=TRUE, na.strings='')
-pat <- read.table(file='patients.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='', colClasses = "character", encoding = "UTF-8")
-enc <- read.table(file='encounters.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='', colClasses = "character", encoding = "UTF-8")
-diag <- read.table(file='diagnoses.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='',stringsAsFactors=FALSE, colClasses = "character", encoding = "UTF-8")
+pat <- read.table(file='patients.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='', colClasses = "character", encoding = "UTF-8",comment.char="")
+enc <- read.table(file='encounters.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='', colClasses = "character", encoding = "UTF-8",comment.char="")
+diag <- read.table(file='diagnoses.txt',header=TRUE, sep='\t', as.is=TRUE, na.strings='',stringsAsFactors=FALSE, colClasses = "character", encoding = "UTF-8",comment.char="")
 
 # create new data frame for encounter data to contain clean values
 df = data.frame(patient=enc$patient_id, encounter=enc$encounter_id)

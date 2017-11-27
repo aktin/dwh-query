@@ -2,33 +2,47 @@ package org.aktin.report.manager;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.Source;
-
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.xpath.XPathExpressionException;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.ExtractedData;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
+import de.sekmi.histream.Observation;
 import de.sekmi.histream.ObservationFactory;
 import de.sekmi.histream.export.ExportSummary;
 import de.sekmi.histream.export.MemoryExportWriter;
+import de.sekmi.histream.export.TableExport;
 import de.sekmi.histream.export.config.EavTable;
 import de.sekmi.histream.export.config.ExportDescriptor;
 import de.sekmi.histream.export.config.ExportException;
 import de.sekmi.histream.export.csv.CSVWriter;
+import de.sekmi.histream.i2b2.DataDialect;
 import de.sekmi.histream.i2b2.I2b2Extractor;
 import de.sekmi.histream.i2b2.I2b2ExtractorFactory;
 import de.sekmi.histream.i2b2.PostgresPatientStore;
 import de.sekmi.histream.i2b2.PostgresVisitStore;
 import de.sekmi.histream.impl.ObservationFactoryImpl;
+import de.sekmi.histream.impl.ObservationImpl;
 import de.sekmi.histream.impl.SimplePatientExtension;
 import de.sekmi.histream.impl.SimpleVisitExtension;
 import de.sekmi.histream.io.GroupedXMLReader;
@@ -44,6 +58,7 @@ public class TestExport implements DataExtractor{
 	// TODO validate CDA to export
 	
 	private String resourceData;
+	private ZoneId zoneId;
 
 	/**
 	 * Use a small data set. Same as {@link #small()}.
@@ -54,6 +69,7 @@ public class TestExport implements DataExtractor{
 	
 	private TestExport(String resourceData){
 		this.resourceData = resourceData;
+		this.zoneId = ZoneId.of("Europe/Berlin");
 	}
 
 	/**
@@ -84,16 +100,17 @@ public class TestExport implements DataExtractor{
 	@Test
 	public void verifyEavToExport() throws Exception{
 		ObservationFactory of = new ObservationFactoryImpl(new SimplePatientExtension(), new SimpleVisitExtension());
-		
-		GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData));
+		GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData), ZoneOffset.UTC.normalized());
 		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));
 		MemoryExportWriter ew = new MemoryExportWriter();
-		ExportSummary summary = ed.newExport().export(reader, ew);
+		TableExport te = ed.newExport();
+		te.setZoneId(ZoneId.of("Europe/Berlin"));
+		ExportSummary summary = te.export(reader, ew);
 		Assert.assertEquals(1, summary.getPatientCount());
 		Assert.assertEquals(1, summary.getVisitCount());
 		reader.close();
 		ew.close();
-		//ew.dump();
+		ew.dump();
 		
 	}
 	
@@ -102,16 +119,17 @@ public class TestExport implements DataExtractor{
 		DataSource t = new LocalI2b2DataSource();
 		String projectId = "AKTIN";
 		PostgresPatientStore ps = new PostgresPatientStore();
-		ps.open(t.getConnection(), projectId);
+		DataDialect dialect = new DataDialect();
+		ps.open(t.getConnection(), projectId, dialect);
 		PostgresVisitStore vs = new PostgresVisitStore();
-		ps.open(t.getConnection(), projectId);
+		vs.open(t.getConnection(), projectId, dialect);
 		ObservationFactory of = new ObservationFactoryImpl(ps, vs);
 //		ExportDescriptor ed = JAXB.unmarshal(TestExport.class.getResourceAsStream("/export-descriptor.xml"), ExportDescriptor.class);
 //		ExportDescriptor ed = ExportDescriptor.parse(TestExport.class.getResourceAsStream("/export-descriptor.xml"));
 		try( I2b2ExtractorFactory ef = new I2b2ExtractorFactory(t, of) ){
 			ef.setPatientLookup(ps::lookupPatientNum);
 			ef.setVisitLookup(vs::lookupEncounterNum);
-			try( I2b2Extractor e = ef.extract(Timestamp.valueOf("2010-01-01 00:00:00"), Timestamp.valueOf("2020-01-17 00:00:00"), null) ){
+			try( I2b2Extractor e = ef.extract(Instant.parse("2010-01-01T00:00:00"), Instant.parse("2020-01-17T00:00:00"), null) ){
 				GroupedXMLWriter w = new GroupedXMLWriter(System.out);
 				//MemoryExportWriter w = new MemoryExportWriter();
 				//ed.newExport().export(e, w);
@@ -136,7 +154,7 @@ public class TestExport implements DataExtractor{
 		// TODO filter eav data with timestamps
 		GroupedXMLReader reader;
 		try {
-			reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData));
+			reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData), ZoneOffset.UTC.normalized());
 		} catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
 			throw new CompletionException(e);
 		}
@@ -145,7 +163,9 @@ public class TestExport implements DataExtractor{
 		ew.setVisitTableName("encounters");
 		ExtractedDataImpl edi;
 		try {
-			ExportSummary summary = ed.newExport().export(reader, ew);
+			TableExport ex =  ed.newExport();
+			ex.setZoneId(this.zoneId);
+			ExportSummary summary = ex.export(reader, ew);
 			edi = new ExtractedDataImpl(summary);
 			reader.close();
 		} catch (ExportException | XMLStreamException | IOException e) {
@@ -166,4 +186,44 @@ public class TestExport implements DataExtractor{
 		} );
 	}
 
+	@Override
+	public CompletableFuture<Document> extractEncounterXML(String encounterId, QName rootElement) {
+		Objects.requireNonNull(rootElement);
+		if( rootElement.equals(GroupedXMLReader.ROOT_ELEMENT) == false ){
+			throw new IllegalArgumentException();
+		}
+		DocumentBuilderFactory df = DataExtractorImpl.createDocumentBuilderFactory();
+		return CompletableFuture.supplyAsync( () -> {
+			ObservationFactory of = new ObservationFactoryImpl(new SimplePatientExtension(), new SimpleVisitExtension());
+			try( GroupedXMLReader reader = new GroupedXMLReader(of, getClass().getResourceAsStream(resourceData), ZoneOffset.UTC.normalized()) ){
+				Document dom = df.newDocumentBuilder().newDocument();
+				DOMResult dr = new DOMResult(dom);
+				GroupedXMLWriter w = new GroupedXMLWriter(dr);
+				Observation o;
+				while( (o = reader.get()) != null ){
+					if( !o.getEncounterId().equals(encounterId) ){
+						continue; // skip facts not matching the desired encounter id
+					}
+					w.accept(o);
+				}
+				w.close();
+				return dom;
+			} catch (JAXBException | XMLStreamException | FactoryConfigurationError | ParserConfigurationException e) {
+				throw new CompletionException(e);
+			}
+
+		});
+	}
+
+	@Test
+	public void verifyExtractDOM() throws InterruptedException, ExecutionException, XPathExpressionException{
+		final String ENCID = "2";
+		CompletableFuture<Document> future = TestExport.large().extractEncounterXML(ENCID, GroupedXMLReader.ROOT_ELEMENT);
+		Document dom = future.get();
+		Assert.assertNotNull(dom);
+		// verify that the correct encounter is returned
+		NodeList nl = dom.getElementsByTagNameNS(ObservationImpl.XML_NAMESPACE, "encounter");
+		Assert.assertEquals(1, nl.getLength());
+		Assert.assertEquals(ENCID,((Element)nl.item(0)).getAttribute("id"));
+	}
 }

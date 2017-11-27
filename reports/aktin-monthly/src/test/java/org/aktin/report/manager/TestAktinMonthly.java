@@ -18,6 +18,7 @@ import org.aktin.report.aktin.AktinMonthly;
 import org.junit.Assert;
 import org.junit.Test;
 
+import de.sekmi.histream.i2b2.DataDialect;
 import de.sekmi.histream.i2b2.PostgresPatientStore;
 import de.sekmi.histream.i2b2.PostgresVisitStore;
 import de.sekmi.histream.impl.ObservationFactoryImpl;
@@ -80,9 +81,10 @@ public class TestAktinMonthly {
 		//LocalI2b2DataSource ds = new LocalI2b2DataSource();
 		ReportManagerImpl manager = new ReportManagerImpl(rScript.toString(), tempdir, m);
 		PostgresPatientStore pas = new PostgresPatientStore();
-		pas.open(ds.getConnection(), "Demo");
+		DataDialect dialect = new DataDialect();
+		pas.open(ds.getConnection(), "Demo", dialect);
 		PostgresVisitStore vis = new PostgresVisitStore();
-		vis.open(ds.getConnection(), "Demo");
+		vis.open(ds.getConnection(), "Demo", dialect);
 		ObservationFactoryImpl fac = new ObservationFactoryImpl(pas,vis);
 		DataExtractorImpl de = new DataExtractorImpl(ds, pas, vis, fac);
 		de.setExecutor(ForkJoinPool.commonPool());

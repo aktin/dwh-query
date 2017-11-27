@@ -207,6 +207,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			// no or empty broker URL, disable broker communication
 			client = null;
 			// there will be not timer callbacks
+			log.warning("No broker endpoint URI defined, running without without broker.");
 			return;
 		}
 		client = new BrokerClient(URI.create(broker));
@@ -268,12 +269,16 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				// new request
 				// TODO load content
 				try( Reader reader = client.getMyRequestDefinitionReader(info.getId(), QueryRequest.MEDIA_TYPE) ){
+					// handle null reader
+					if( reader == null ){
+						throw new IOException("No request definition found for "+info.getId()+", "+QueryRequest.MEDIA_TYPE);
+					}
 					QueryRequest req = (QueryRequest)um.unmarshal(reader);
 					if( req == null ){
 						throw new JAXBException("XML unmarshalling returned null");
 					}
 					addNewRequest(req);
-				}catch( IOException | JAXBException | SQLException e ){
+				}catch( IOException | JAXBException | SQLException e ){ // catch throwable here?
 					String message = "Failed to parse/store content for broker request "+info.getId();
 					log.log(Level.SEVERE,message, e);
 					client.postRequestFailed(info.getId(), message, e);
@@ -374,10 +379,16 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		// TODO load email notification settings (how often / on what status changes to send emails)
 		if( brokerStatus == org.aktin.broker.xml.RequestStatus.interaction ){
 			// interaction required
-			log.info("Interaction required for completed request "+request.getRequestId());
+			log.info("Interaction required for request "+request.getRequestId()+" w/ status="+request.getStatus());
 			StringBuilder body = new StringBuilder();
 			body.append("Sehr geehrte Damen und Herren,\n\n");
 			body.append("eine Datenanfrage in Ihrem AKTIN Data Warehouse erfordert Ihre Aufmerksamkeit.\n");
+
+			body.append("Bitte loggen Sie sich in Ihrem AKTIN Data Warehouse ein,\n");
+			body.append("um diese Anfrage zu bearbeiten.\n");
+			String url = prefs.get(PreferenceKey.serverUrl)+"aktin/admin/#/request/"+request.getRequestId();
+			body.append("Link: ").append(url).append("\n\n");
+
 			switch( request.getStatus() ){
 			case Retrieved:
 			case Seen:
@@ -400,11 +411,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				body.append("\n\n");
 			}
 			// TODO more info for query
+			body.append("Link: ").append(url).append("\n");
 	
-			body.append("Bitte loggen Sie sich in Ihrem AKTIN Data Warehouse ein,\n");
-			body.append("um diese Anfrage zu bearbeiten.\n");
-			String url = prefs.get(PreferenceKey.serverUrl)+"aktin/admin/#/request/"+request.getRequestId();
-			body.append("Link: ").append(url).append('\n');
 			
 			body.append("\nMit freundlichen Grüßen,\n");
 			body.append("Ihr lokaler AKTIN-Server\n");

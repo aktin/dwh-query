@@ -2,7 +2,6 @@ package org.aktin.report.manager;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -16,6 +15,7 @@ import javax.xml.stream.XMLStreamException;
 import org.junit.Test;
 
 import de.sekmi.histream.ObservationFactory;
+import de.sekmi.histream.i2b2.DataDialect;
 import de.sekmi.histream.i2b2.I2b2Extractor;
 import de.sekmi.histream.i2b2.I2b2ExtractorFactory;
 import de.sekmi.histream.i2b2.PostgresPatientStore;
@@ -79,14 +79,15 @@ public class TestReportManager {
 		LocalI2b2DataSource ds = new LocalI2b2DataSource();
 		String projectId="AKTIN";
 		PostgresPatientStore patients = new PostgresPatientStore();
-		patients.open(ds.getConnection(), projectId);
+		DataDialect dialect = new DataDialect();
+		patients.open(ds.getConnection(), projectId, dialect);
 		PostgresVisitStore visits = new PostgresVisitStore();
-		visits.open(ds.getConnection(), projectId);
+		visits.open(ds.getConnection(), projectId, dialect);
 		ObservationFactory of = new ObservationFactoryImpl(patients, visits);
 		GroupedXMLWriter w = new GroupedXMLWriter(System.out);
 		
 		try( I2b2ExtractorFactory extractor = new I2b2ExtractorFactory(ds, of);
-				I2b2Extractor ext = extractor.extract(Timestamp.valueOf("2016-12-01 00:00:00"), Timestamp.valueOf("2017-01-01 00:00:00"), null) ){
+				I2b2Extractor ext = extractor.extract(Instant.parse("2016-12-01T00:00:00"), Instant.parse("2017-01-01 00:00:00"), null) ){
 			ext.stream().forEach(w);
 		}
 		w.close();

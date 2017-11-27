@@ -57,17 +57,18 @@ try({
 
 # Counts per Hour/Weekday vs. Weekend
 try({
-  weekday <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-  weekend <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+  # c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+  weekday <- rep(0,24)
+  weekend <- rep(0,24)
   for (i in 1:24) {
     weekday[i] <- admit.hwd[1,i]+admit.hwd[2,i]+admit.hwd[3,i]+admit.hwd[4,i]+admit.hwd[5,i]
     weekend[i] <- admit.hwd[6,i]+admit.hwd[7,i]
   }
   svg(paste0(gfx.dir,'admit.hwd.weekend','.svg'))
-  plot(weekend/2, type='n', xlab=paste('Uhrzeit [Stunde]; n =',(sum(weekday)+sum(weekend))), ylab="Anzahl Patienten",ylim=c(0,max(weekday/5,weekend/2)),xaxp=c(0,24,12))
+  plot(y=weekend/2, x=seq(0,23), type='n', xlab=paste('Uhrzeit [Stunde]; n =',(sum(weekday)+sum(weekend))), ylab="Anzahl Patienten",ylim=c(0,max(weekday/5,weekend/2)),xaxp=c(0,24,12))
   
-  lines(weekday/5,type="b",col=std_cols3[2],pch=15)
-  lines(weekend/2,type="b",col=std_cols3[1],pch=17)
+  lines(y=weekday/5, x=seq(0,23), type="b",col=std_cols3[2],pch=15)
+  lines(y=weekend/2, x=seq(0,23), type="b",col=std_cols3[1],pch=17)
 
   #legend('topleft',1:length(weekday.levels), legend=weekday.levels, cex=0.8, col=colors, title="Tage")
   no_output <- dev.off() #silent

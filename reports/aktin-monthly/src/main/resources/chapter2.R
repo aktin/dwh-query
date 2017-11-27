@@ -13,14 +13,17 @@ try({
 
 #calculate number of weekdays in the current period (month)
 #limitation/feature: days without patients will be excluded
+#df$admit is not ordered, but for this loop it needs to be ordered by date
+tempdf <- df[c("admit.day","admit.wd")]
+orderdf <- tempdf[order(tempdf$admit.day),]
 weekdaycounts=rep(0,7) #Mo-So
-if (length(df$admit.wd) > 0) {
+if (length(orderdf$admit.wd) > 0) {
   wbindex <- 0
   lastwd <- 0
-  for (i in 1:length(df$admit.wd)){
-    if (! is.na(df$admit.wd[i])) {
-     if (df$admit.wd[i] != lastwd) {
-          wbindex <- as.numeric(sapply(as.character(df$admit.wd[i]), switch, 
+  for (i in 1:length(orderdf$admit.wd)){
+    if (! is.na(orderdf$admit.wd[i])) {
+     if (orderdf$admit.wd[i] != lastwd) {
+          wbindex <- as.numeric(sapply(as.character(orderdf$admit.wd[i]), switch, 
                                        Mo = 1, 
                                        Di = 2, 
                                        Mi = 3, 
@@ -29,11 +32,12 @@ if (length(df$admit.wd) > 0) {
                                        Sa = 6, 
                                        So = 7))
           weekdaycounts[wbindex] <- weekdaycounts[wbindex]+1
-          lastwd <- df$admit.wd[i]
+          lastwd <- orderdf$admit.wd[i]
         }
     }
   }
 }
+rm(tempdf,orderdf) 
 
 # Counts per Weekday
 try({
@@ -64,11 +68,13 @@ try({
     weekday[i] <- admit.hwd[1,i]+admit.hwd[2,i]+admit.hwd[3,i]+admit.hwd[4,i]+admit.hwd[5,i]
     weekend[i] <- admit.hwd[6,i]+admit.hwd[7,i]
   }
+  days_weekday <- sum(weekdaycounts[1:5])
+  days_weekend <- sum(weekdaycounts[6:7])
   svg(paste0(gfx.dir,'admit.hwd.weekend','.svg'))
-  plot(y=weekend/2, x=seq(0,23), type='n', xlab=paste('Uhrzeit [Stunde]; n =',(sum(weekday)+sum(weekend))), ylab="Anzahl Patienten",ylim=c(0,max(weekday/5,weekend/2)),xaxp=c(0,24,12))
+  plot(y=weekend/days_weekend, x=seq(0,23), type='n', xlab=paste('Uhrzeit [Stunde]; n =',(sum(weekday)+sum(weekend))), ylab="Anzahl Patienten",ylim=c(0,max(weekday/days_weekday,weekend/days_weekend)),xaxp=c(0,24,12))
   
-  lines(y=weekday/5, x=seq(0,23), type="b",col=std_cols3[2],pch=15)
-  lines(y=weekend/2, x=seq(0,23), type="b",col=std_cols3[1],pch=17)
+  lines(y=weekday/days_weekday, x=seq(0,23), type="b",col=std_cols3[2],pch=15)
+  lines(y=weekend/days_weekend, x=seq(0,23), type="b",col=std_cols3[1],pch=17)
 
   #legend('topleft',1:length(weekday.levels), legend=weekday.levels, cex=0.8, col=colors, title="Tage")
   no_output <- dev.off() #silent

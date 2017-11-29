@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
@@ -40,7 +41,9 @@ import org.aktin.Preferences;
 import org.aktin.broker.client.BrokerClient;
 import org.aktin.broker.client.auth.HttpApiKeyAuth;
 import org.aktin.broker.query.xml.QueryRequest;
+import org.aktin.broker.request.BrokerQueryRule;
 import org.aktin.broker.request.InteractionPreset;
+import org.aktin.broker.request.QueryRuleAction;
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
@@ -77,9 +80,10 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	private BrokerClient client;
 	private InteractionPreset interaction;
 	private boolean handshakeCompleted;
+	private Map<Integer,QueryRuleImpl> rules;
 
 	public RequestManagerImpl() {
-
+		rules = new HashMap<>();
 	}
 
 	public RequestManagerImpl(Preferences prefs){
@@ -216,6 +220,12 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		// create timer to fetch requests
 		createIntervalTimer();
 	}
+	private void reloadRules() throws SQLException{
+		try( Connection dbc = getConnection() ){
+			rules.clear();
+			QueryRuleImpl.loadAll(dbc, r -> rules.put(r.getQueryId(), r));
+		}
+	}
 
 	@PostConstruct
 	public void loadData() {
@@ -224,6 +234,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		// load result directory
 		try {
 			initializeResultDirectory();
+			reloadRules();
 			reloadRequests();
 			initializeBrokerClient();
 			fireInterruptedEvents();
@@ -500,6 +511,37 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	public void forEachRequest(Consumer<RetrievedRequest> action) {
 		getRequests().forEach( action );
 		
+	}
+
+	@Override
+	public void forEachRule(Consumer<BrokerQueryRule> action) {
+		rules.forEach( (i,q) -> action.accept(q) );
+	}
+
+	@Override
+	public BrokerQueryRule getQueryRule(int queryId) {
+		return rules.get(queryId);
+	}
+
+	@Override
+	public BrokerQueryRule getDefaultRule() {
+		return rules.get(null);
+	}
+
+	@Override
+	public BrokerQueryRule createQueryRule(Integer queryId, String userId, QueryRuleAction action) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteQueryRule(Integer queryId) throws IOException {
+		try( Connection dbc = getConnection() ){
+			QueryRuleImpl.deleteRule(dbc, queryId);
+		} catch (SQLException e) {
+			throw new IOException(e);
+		}
+		rules.remove(queryId);
 	}
 
 }

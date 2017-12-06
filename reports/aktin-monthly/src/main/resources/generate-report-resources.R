@@ -56,13 +56,13 @@ df = data.frame(patient=enc$patient_id, encounter=enc$encounter_id)
 df_diag <- data.frame(diagnosis=as.factor(substring(diag$diagnose_code, first=1, last=3)))
 
 #load CEDIS mapping table
-cedis = read.csv2(file='CEDIS.csv', as.is=TRUE, na.strings='', header = FALSE, sep=';', colClasses = "character", encoding = "UTF-8")
+cedis = read.csv2(file='CEDIS.csv', as.is=TRUE, na.strings='', header = FALSE, sep=';', colClasses = "character", encoding = "UTF-8",comment.char="")
 
 #load ICD mapping table
-icd = read.csv2(file='ICD-3Steller.csv', as.is=TRUE, na.strings='', header = FALSE, sep=';', colClasses = "character", encoding = "UTF-8")
+icd = read.csv2(file='ICD-3Steller.csv', as.is=TRUE, na.strings='', header = FALSE, sep=';', colClasses = "character", encoding = "UTF-8",comment.char="")
 
 #load special factors (problems with umlauts if umlauts are placed in factor texts directly in R file)
-factors = read.csv2(file='factors.csv', as.is=TRUE, na.strings='', header = TRUE, sep=';', encoding = "UTF-8")
+factors = read.csv2(file='factors.csv', as.is=TRUE, na.strings='', header = TRUE, sep=';', encoding = "UTF-8",comment.char="")
 
 source("parse_derive.R", encoding="UTF-8")
 

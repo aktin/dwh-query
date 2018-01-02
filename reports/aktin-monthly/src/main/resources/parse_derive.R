@@ -88,25 +88,25 @@ for(i in 1:length(weekday.levels)) {
 df$discharge.h <- factor(x=strftime(df$discharge.ts,tz="GMT",format="%H"), levels=hour.levels, ordered=TRUE)
 
 # Time to triage
-df$triage.d <- df$triage.ts - df$admit.ts
+df$triage.d <- difftime(df$triage.ts,df$admit.ts,units="mins")
 # Values out of bounds (<0h or >24h) => NA
 df$triage.d[df$triage.d < 0] <- NA
 df$triage.d[df$triage.d > 24*60] <- NA
 
 # Time to physician
-df$phys.d <- df$phys.ts - df$admit.ts
+df$phys.d <- difftime(df$phys.ts,df$admit.ts,units="mins")
 # Values out of bounds (<0h or >24h) => NA
 df$phys.d[df$phys.d < 0] <- NA
 df$phys.d[df$phys.d > 24*60] <- NA
 
 # Time phys to therapy
-df$therapy.d <- df$therapy.ts - df$phys.ts
+df$therapy.d <- difftime(df$therapy.ts,df$phys.ts,units="mins")
 # Values out of bounds (<0h or >24h) => NA
 df$therapy.d[df$therapy.d < 0] <- NA
 df$therapy.d[df$therapy.d > 24*60] <- NA
 
 # Time to discharge
-df$discharge.d <- df$discharge.ts - df$admit.ts
+df$discharge.d <- difftime(df$discharge.ts,df$admit.ts,units="mins")
 # Values out of bounds (<0h or >24h) => NA
 df$discharge.d[df$discharge.d < 0] <- NA
 df$discharge.d[df$discharge.d > 24*60] <- NA     #could be more than 24 hours!

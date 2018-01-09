@@ -16,7 +16,7 @@ df$therapy.ts = strptime(enc$therapiebeginn_ts,tz="GMT",format="%FT%H:%M")
 #Precision in CDA: day+more -- conversion is only successful if source has precision minute+more! NA-values are handled later
 df$discharge.ts = strptime(enc$entlassung_ts,tz="GMT",format="%FT%H:%M")
 
-df$age = (df$admit.day$year - df$dob$year) - 1 * ((df$admit.day$mon < df$dob$mon) | (df$admit.day$mon == df$dob$mon & df$admit.day$mday < df$dob$mday))
+df$age = (df$admit.day$year - df$dob$year) - 1 * (df$admit.day$yday < df$dob$yday) #compare admit/dob year and substract 1 if the admit-day of the year is earlier than DOB
 df$sex = factor(merge(enc,pat,by="patient_id")$geschlecht)
 levels(df$sex) <- list("male"="male","female"="female","unbestimmt"="indeterminate")
 

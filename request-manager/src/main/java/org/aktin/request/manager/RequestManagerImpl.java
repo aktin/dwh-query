@@ -361,6 +361,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			switch( interaction ){
 			case USER:
 				// TODO load and apply user defined rules
+				applyUserRules(request);
 				break;
 			case NON_INTERACTIVE_ALLOW:
 				request.setAutoSubmit(true);
@@ -371,6 +372,53 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			}
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Unable to change status for request "+request.getRequestId(), e);
+		}
+	}
+
+	private void applyUserRules(RetrievedRequest request)throws IOException{
+		Integer queryId = request.getRequest().getQueryId();
+		BrokerQueryRule rule = null;
+		if( queryId != null ){
+			rule = getQueryRule(queryId);
+		}
+		if( rule == null ){
+			// no rule for the specified query id, try to find default rule
+			rule = getDefaultRule();
+		}
+		// check rules for applicability
+		if( rule != null ){
+			// found rule to apply
+			if( rule.getQueryId() != null ){
+				// verify signature
+				boolean verified = false;
+				try {
+					verified = rule.verifySignature(request.getRequest());
+				} catch (NoSuchAlgorithmException e) {
+					log.log(Level.WARNING, "Query signature validation not possible. No such algorithm: "+rule.getSignatureAlgorithm());
+				} catch( IOException e ){
+					log.log(Level.WARNING, "Query signature validation aborted", e);
+				}
+				if( verified == false ){
+					log.warning("User rule not applied due to signature validation failure for request "+request.getRequestId());
+					return; // no further rule processing
+				}else{
+					log.info("User rule signature validation successful for request "+request.getRequestId());
+				}
+			}
+			switch( rule.getAction() ){
+			case ACCEPT_SUBMIT:
+				request.setAutoSubmit(true);
+				// fall through for status change
+			case ACCEPT_EXECUTE:
+				request.changeStatus(rule.getUserId(), RequestStatus.Queued, "automatic accept by user rule");
+				break;
+			case REJECT:
+				request.changeStatus(rule.getUserId(), RequestStatus.Rejected, "automatic reject by user rule");
+				break;
+			default:
+				throw new IllegalStateException("Unsupported rule action "+rule.getAction());
+			}
+			
 		}
 	}
 

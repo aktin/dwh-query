@@ -126,7 +126,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 				ResultSet rs = st.executeQuery(
 						"SELECT broker_request_id, broker_query_id, auto_submit, request_xml,"
 						+ " status, result_type, result_path, display"
-						+ " FROM broker_requests") ){
+						+ " FROM broker_requests ORDER BY broker_request_id DESC") ){
 			while( rs.next() ){
 				RequestImpl r = new RequestImpl(store);
 				// load other data

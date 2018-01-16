@@ -89,7 +89,7 @@ public class QueryRuleImpl implements BrokerQueryRule {
 	 * @throws NoSuchAlgorithmException signature algorithm not supported
 	 * @throws IOException io error
 	 */
-	static QueryRuleImpl createRule(Connection dbc, QueryRequest req, String userId, QueryRuleAction action) throws SQLException, NoSuchAlgorithmException, IOException{
+	static QueryRuleImpl createRule(Connection dbc, QueryRequest req, String userId, QueryRuleAction action, String signatureAlgorithm) throws SQLException, NoSuchAlgorithmException, IOException{
 		final String sql = "INSERT INTO broker_query_rules(broker_query_id, create_time, create_user, action, signature_algo, signature_data)VALUES(?,CURRENT_TIMESTAMP,?,?,?,?)";
 		QueryRuleImpl rule = new QueryRuleImpl();
 		rule.action = action;
@@ -102,7 +102,7 @@ public class QueryRuleImpl implements BrokerQueryRule {
 			if( rule.queryId == null ){
 				throw new IllegalArgumentException("queryId required for rule");
 			}
-			rule.algorithm = "SHA-1";
+			rule.algorithm = signatureAlgorithm;
 			rule.signature = RequestImpl.calculateQuerySignature(req, rule.algorithm);			
 		}
 		try( PreparedStatement ps = dbc.prepareStatement(sql) ){

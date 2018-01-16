@@ -83,6 +83,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	private InteractionPreset interaction;
 	private boolean handshakeCompleted;
 	private Map<Integer,QueryRuleImpl> rules;
+	private String ruleSignatureAlgorithm;
 
 	public RequestManagerImpl() {
 		rules = new HashMap<>();
@@ -223,6 +224,11 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		createIntervalTimer();
 	}
 	private void reloadRules() throws SQLException{
+		ruleSignatureAlgorithm = prefs.get(PreferenceKey.brokerSignatureAlgorithm);
+		if( ruleSignatureAlgorithm == null ){
+			// default to SHA-1
+			ruleSignatureAlgorithm = "SHA-1";
+		}
 		try( Connection dbc = getConnection() ){
 			rules.clear();
 			QueryRuleImpl.loadAll(dbc, r -> rules.put(r.getQueryId(), r));
@@ -589,7 +595,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	public BrokerQueryRule createDefaultRule(String userId, QueryRuleAction action) throws IOException {
 		QueryRuleImpl rule;
 		try( Connection dbc = getConnection() ){
-			rule = QueryRuleImpl.createRule(dbc, null, userId, action);
+			rule = QueryRuleImpl.createRule(dbc, null, userId, action, ruleSignatureAlgorithm);
 		} catch (SQLException | NoSuchAlgorithmException e) {
 			throw new IOException(e);
 		}
@@ -604,7 +610,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		// and then wrapped in an IOException
 		QueryRuleImpl rule;
 		try( Connection dbc = getConnection() ){
-			rule = QueryRuleImpl.createRule(dbc, request.getRequest(), userId, action);
+			// pass ruleSignatureAlgorithm to create rule
+			rule = QueryRuleImpl.createRule(dbc, request.getRequest(), userId, action, ruleSignatureAlgorithm);
 		} catch (SQLException | NoSuchAlgorithmException e) {
 			throw new IOException(e);
 		}

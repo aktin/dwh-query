@@ -1,14 +1,18 @@
 package org.aktin.request.manager;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.aktin.broker.query.xml.QueryRequest;
 import org.aktin.broker.request.BrokerQueryRule;
 import org.aktin.broker.request.QueryRuleAction;
 
@@ -50,35 +54,94 @@ public class QueryRuleImpl implements BrokerQueryRule {
 		return action;
 	}
 
+	/**
+	 * Parse a database string serialization of the rule action
+	 * into the enum type.
+	 * @param value database string
+	 * @return action enum
+	 */
 	private static QueryRuleAction parseAction(String value){
+		Objects.requireNonNull(value);
 		return QueryRuleAction.valueOf(value);
 	}
 
-	static void createRule(Connection dbc, Integer queryId, String userId, QueryRuleAction action) throws SQLException{
-		final String sql = "INSERT INTO broker_query_rules(broker_query_id, create_time, create_user, action, signature_algo, signature_data)VALUES(?,?,?,?,?,?)";
-		try( PreparedStatement ps = dbc.prepareStatement(sql) ){
-			if( queryId == null ){
-				ps.setNull(1, xxx);
-			}else{
-				ps.setInt(1, queryId);
-			}
-			
-		}
+	/**
+	 * Convert the query rule action to database string
+	 * @param action action
+	 * @return database string serialization
+	 */
+	private static String serializeAction(QueryRuleAction action){
+		
+		String str = action.name();
+		Objects.requireNonNull(str);
+		System.out.println("Writing "+str);
+		return str;
 	}
 
-	static void deleteRule(Connection dbc, Integer queryId) throws SQLException{
+	/**
+	 * Create a new query rule
+	 * @param dbc database connection
+	 * @param req null for default rule, or request with query with non-empty id
+	 * @param userId user
+	 * @param action action
+	 * @return newly created rule
+	 * @throws SQLException sql error
+	 * @throws NoSuchAlgorithmException signature algorithm not supported
+	 * @throws IOException io error
+	 */
+	static QueryRuleImpl createRule(Connection dbc, QueryRequest req, String userId, QueryRuleAction action) throws SQLException, NoSuchAlgorithmException, IOException{
+		final String sql = "INSERT INTO broker_query_rules(broker_query_id, create_time, create_user, action, signature_algo, signature_data)VALUES(?,CURRENT_TIMESTAMP,?,?,?,?)";
+		QueryRuleImpl rule = new QueryRuleImpl();
+		rule.action = action;
+		rule.userId = userId;
+		Objects.requireNonNull(action);
+		if( req == null ){
+			rule.queryId = null;
+		}else{
+			rule.queryId = req.getQueryId();
+			if( rule.queryId == null ){
+				throw new IllegalArgumentException("queryId required for rule");
+			}
+			rule.algorithm = "SHA-1";
+			rule.signature = RequestImpl.calculateQuerySignature(req, rule.algorithm);			
+		}
+		try( PreparedStatement ps = dbc.prepareStatement(sql) ){
+			if( rule.queryId == null ){
+				ps.setNull(1, java.sql.Types.INTEGER);
+			}else{
+				ps.setInt(1, rule.queryId);
+			}
+			ps.setString(2, rule.userId);
+			ps.setString(3, serializeAction(action));
+			ps.setString(4, rule.algorithm);
+			ps.setBytes(5, rule.signature);
+			ps.executeUpdate();
+		}
+		return rule;
+	}
+
+	/**
+	 * Delete a rule with the given query id. Query id can be null, to delete the default rule
+	 * @param dbc database connection
+	 * @param queryId query id or null for default rule
+	 * @return {@code true} if a rule was delteted, {@code false} if no rows were affected
+	 * @throws SQLException sql error
+	 */
+	static boolean deleteRule(Connection dbc, Integer queryId) throws SQLException{
+		int count = 0;
 		try( Statement st = dbc.createStatement() ){
 			if( queryId == null ){
-				st.executeUpdate("DELETE FROM broker_query_rules WHERE broker_query_id IS NULL");
+				count = st.executeUpdate("DELETE FROM broker_query_rules WHERE broker_query_id IS NULL");
 			}else{
-				st.executeUpdate("DELETE FROM broker_query_rules WHERE broker_query_id="+queryId);
+				count = st.executeUpdate("DELETE FROM broker_query_rules WHERE broker_query_id="+queryId);
 			}
 		}
+		return( count != 0 );
 	}
 	static void loadAll(Connection dbc, Consumer<QueryRuleImpl> action) throws SQLException{
 		try( Statement st = dbc.createStatement();
 				ResultSet rs = st.executeQuery(
-						"SELECT broker_query_id, create_time, create_user"
+						"SELECT broker_query_id, create_time, create_user, "
 						+ " action, signature_algo, signature_data, comment"
 						+ " FROM broker_query_rules") ){
 			while( rs.next() ){
@@ -101,6 +164,15 @@ public class QueryRuleImpl implements BrokerQueryRule {
 				action.accept(r);
 			}
 		}
+	}
+
+	@Override
+	public boolean verifySignature(QueryRequest request) throws NoSuchAlgorithmException, IOException {
+		Objects.requireNonNull(request);
+		Objects.requireNonNull(this.algorithm);
+		Objects.requireNonNull(this.signature);
+		byte[] sig = RequestImpl.calculateQuerySignature(request, this.algorithm);
+		return Arrays.equals(sig, signature);
 	}
 
 }

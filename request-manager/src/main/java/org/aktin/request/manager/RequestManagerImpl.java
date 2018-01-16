@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -21,6 +22,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -498,24 +500,18 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	}
 
 	@Override
-	public List<? extends RetrievedRequest> getQueryRequests(int queryId) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
-	@Override
 	public InteractionPreset getInteractionPreset() {
 		return interaction;
-	}
-	@Override
-	public void forEachRequest(Consumer<RetrievedRequest> action) {
-		getRequests().forEach( action );
-		
 	}
 
 	@Override
 	public void forEachRule(Consumer<BrokerQueryRule> action) {
 		rules.forEach( (i,q) -> action.accept(q) );
+	}
+
+	@Override
+	public Stream<? extends RetrievedRequest> requests() {
+		return getRequests().stream();
 	}
 
 	@Override
@@ -528,20 +524,44 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		return rules.get(null);
 	}
 
-	@Override
-	public BrokerQueryRule createQueryRule(Integer queryId, String userId, QueryRuleAction action) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void deleteQueryRule(Integer queryId) throws IOException {
 		try( Connection dbc = getConnection() ){
-			QueryRuleImpl.deleteRule(dbc, queryId);
+			if( QueryRuleImpl.deleteRule(dbc, queryId) == false ){
+				throw new FileNotFoundException("No query rule with queryId="+queryId);
+			}
 		} catch (SQLException e) {
 			throw new IOException(e);
 		}
 		rules.remove(queryId);
+	}
+
+	@Override
+	public BrokerQueryRule createDefaultRule(String userId, QueryRuleAction action) throws IOException {
+		QueryRuleImpl rule;
+		try( Connection dbc = getConnection() ){
+			rule = QueryRuleImpl.createRule(dbc, null, userId, action);
+		} catch (SQLException | NoSuchAlgorithmException e) {
+			throw new IOException(e);
+		}
+		// put in cache
+		rules.put(null, rule);
+		return rule;
+	}
+
+	@Override
+	public BrokerQueryRule createQueryRule(RetrievedRequest request, String userId, QueryRuleAction action) throws IOException {
+		// in case of unique constraint violations, a SQL exception is thrown
+		// and then wrapped in an IOException
+		QueryRuleImpl rule;
+		try( Connection dbc = getConnection() ){
+			rule = QueryRuleImpl.createRule(dbc, request.getRequest(), userId, action);
+		} catch (SQLException | NoSuchAlgorithmException e) {
+			throw new IOException(e);
+		}
+		rules.put(request.getRequest().getQueryId(), rule);
+		return rule;
 	}
 
 }

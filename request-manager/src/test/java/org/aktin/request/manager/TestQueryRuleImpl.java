@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 
 public class TestQueryRuleImpl {
 	TestDataSource ds;
+	private static final String SHA_1 = "SHA-1";
 
 	public TestQueryRuleImpl() throws SQLException{
 		ds = new TestDataSource();
@@ -55,13 +56,13 @@ public class TestQueryRuleImpl {
 		QueryRuleImpl rule;
 		try( Connection dbc = ds.getConnection() ){
 			// default rule
-			rule = QueryRuleImpl.createRule(dbc, null, "U1", QueryRuleAction.ACCEPT_EXECUTE);
-			rule = QueryRuleImpl.createRule(dbc, q, "U2", QueryRuleAction.ACCEPT_EXECUTE);
+			rule = QueryRuleImpl.createRule(dbc, null, "U1", QueryRuleAction.ACCEPT_EXECUTE, SHA_1);
+			rule = QueryRuleImpl.createRule(dbc, q, "U2", QueryRuleAction.ACCEPT_EXECUTE, SHA_1);
 			System.out.println("Sig:"+Base64.getEncoder().encodeToString(rule.signature));
 			q.getQuery().title = "Changed";
 			// should fail, rule with same query id already present
 			try{
-				rule = QueryRuleImpl.createRule(dbc, q, "U3", QueryRuleAction.ACCEPT_EXECUTE);
+				rule = QueryRuleImpl.createRule(dbc, q, "U3", QueryRuleAction.ACCEPT_EXECUTE, SHA_1);
 				fail("Creating rule with duplicate query id should fail!");
 			}catch( SQLException e ){
 				// exception as expected

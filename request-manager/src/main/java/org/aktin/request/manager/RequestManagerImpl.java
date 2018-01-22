@@ -12,7 +12,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -154,7 +156,18 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			ver = "undefined";
 		}
 		versions.put("ear", ver);
-		System.out.println(versions);
+
+		// get postgres version
+		try( Connection dbc = getConnection() ){
+			Statement s = dbc.createStatement();
+			ResultSet rs = s.executeQuery("SELECT version()");
+			if( rs.next() ){
+				versions.put("postgres", rs.getString(1));
+			}
+			rs.close();
+		} catch (SQLException e) {
+			log.log(Level.WARNING,"Unable to determine postgres version",e);
+		}
 		return versions;
 		// TODO find out application server name 
 	}
@@ -366,7 +379,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		try {
 			switch( interaction ){
 			case USER:
-				// TODO load and apply user defined rules
+				// load and apply user defined rules
 				applyUserRules(request);
 				break;
 			case NON_INTERACTIVE_ALLOW:

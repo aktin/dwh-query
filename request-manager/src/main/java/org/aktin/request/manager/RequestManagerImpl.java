@@ -10,8 +10,11 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
@@ -21,6 +24,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -81,6 +85,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	private InteractionPreset interaction;
 	private boolean handshakeCompleted;
 	private Map<Integer,QueryRuleImpl> rules;
+	private String ruleSignatureAlgorithm;
 
 	public RequestManagerImpl() {
 		rules = new HashMap<>();
@@ -151,7 +156,18 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			ver = "undefined";
 		}
 		versions.put("ear", ver);
-		System.out.println(versions);
+
+		// get postgres version
+		try( Connection dbc = getConnection() ){
+			Statement s = dbc.createStatement();
+			ResultSet rs = s.executeQuery("SELECT version()");
+			if( rs.next() ){
+				versions.put("postgres", rs.getString(1));
+			}
+			rs.close();
+		} catch (SQLException e) {
+			log.log(Level.WARNING,"Unable to determine postgres version",e);
+		}
 		return versions;
 		// TODO find out application server name 
 	}
@@ -221,6 +237,11 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		createIntervalTimer();
 	}
 	private void reloadRules() throws SQLException{
+		ruleSignatureAlgorithm = prefs.get(PreferenceKey.brokerSignatureAlgorithm);
+		if( ruleSignatureAlgorithm == null ){
+			// default to SHA-1
+			ruleSignatureAlgorithm = "SHA-1";
+		}
 		try( Connection dbc = getConnection() ){
 			rules.clear();
 			QueryRuleImpl.loadAll(dbc, r -> rules.put(r.getQueryId(), r));
@@ -358,7 +379,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		try {
 			switch( interaction ){
 			case USER:
-				// TODO load and apply user defined rules
+				// load and apply user defined rules
+				applyUserRules(request);
 				break;
 			case NON_INTERACTIVE_ALLOW:
 				request.setAutoSubmit(true);
@@ -369,6 +391,53 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			}
 		} catch (IOException e) {
 			log.log(Level.SEVERE, "Unable to change status for request "+request.getRequestId(), e);
+		}
+	}
+
+	private void applyUserRules(RetrievedRequest request)throws IOException{
+		Integer queryId = request.getRequest().getQueryId();
+		BrokerQueryRule rule = null;
+		if( queryId != null ){
+			rule = getQueryRule(queryId);
+		}
+		if( rule == null ){
+			// no rule for the specified query id, try to find default rule
+			rule = getDefaultRule();
+		}
+		// check rules for applicability
+		if( rule != null ){
+			// found rule to apply
+			if( rule.getQueryId() != null ){
+				// verify signature
+				boolean verified = false;
+				try {
+					verified = rule.verifySignature(request.getRequest());
+				} catch (NoSuchAlgorithmException e) {
+					log.log(Level.WARNING, "Query signature validation not possible. No such algorithm: "+rule.getSignatureAlgorithm());
+				} catch( IOException e ){
+					log.log(Level.WARNING, "Query signature validation aborted", e);
+				}
+				if( verified == false ){
+					log.warning("User rule not applied due to signature validation failure for request "+request.getRequestId());
+					return; // no further rule processing
+				}else{
+					log.info("User rule signature validation successful for request "+request.getRequestId());
+				}
+			}
+			switch( rule.getAction() ){
+			case ACCEPT_SUBMIT:
+				request.setAutoSubmit(true);
+				// fall through for status change
+			case ACCEPT_EXECUTE:
+				request.changeStatus(rule.getUserId(), RequestStatus.Queued, "automatic accept by user rule");
+				break;
+			case REJECT:
+				request.changeStatus(rule.getUserId(), RequestStatus.Rejected, "automatic reject by user rule");
+				break;
+			default:
+				throw new IllegalStateException("Unsupported rule action "+rule.getAction());
+			}
+			
 		}
 	}
 
@@ -498,24 +567,18 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	}
 
 	@Override
-	public List<? extends RetrievedRequest> getQueryRequests(int queryId) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
-
-	@Override
 	public InteractionPreset getInteractionPreset() {
 		return interaction;
-	}
-	@Override
-	public void forEachRequest(Consumer<RetrievedRequest> action) {
-		getRequests().forEach( action );
-		
 	}
 
 	@Override
 	public void forEachRule(Consumer<BrokerQueryRule> action) {
 		rules.forEach( (i,q) -> action.accept(q) );
+	}
+
+	@Override
+	public Stream<? extends RetrievedRequest> requests() {
+		return getRequests().stream();
 	}
 
 	@Override
@@ -528,20 +591,45 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		return rules.get(null);
 	}
 
-	@Override
-	public BrokerQueryRule createQueryRule(Integer queryId, String userId, QueryRuleAction action) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void deleteQueryRule(Integer queryId) throws IOException {
 		try( Connection dbc = getConnection() ){
-			QueryRuleImpl.deleteRule(dbc, queryId);
+			if( QueryRuleImpl.deleteRule(dbc, queryId) == false ){
+				throw new FileNotFoundException("No query rule with queryId="+queryId);
+			}
 		} catch (SQLException e) {
 			throw new IOException(e);
 		}
 		rules.remove(queryId);
+	}
+
+	@Override
+	public BrokerQueryRule createDefaultRule(String userId, QueryRuleAction action) throws IOException {
+		QueryRuleImpl rule;
+		try( Connection dbc = getConnection() ){
+			rule = QueryRuleImpl.createRule(dbc, null, userId, action, ruleSignatureAlgorithm);
+		} catch (SQLException | NoSuchAlgorithmException e) {
+			throw new IOException(e);
+		}
+		// put in cache
+		rules.put(null, rule);
+		return rule;
+	}
+
+	@Override
+	public BrokerQueryRule createQueryRule(RetrievedRequest request, String userId, QueryRuleAction action) throws IOException {
+		// in case of unique constraint violations, a SQL exception is thrown
+		// and then wrapped in an IOException
+		QueryRuleImpl rule;
+		try( Connection dbc = getConnection() ){
+			// pass ruleSignatureAlgorithm to create rule
+			rule = QueryRuleImpl.createRule(dbc, request.getRequest(), userId, action, ruleSignatureAlgorithm);
+		} catch (SQLException | NoSuchAlgorithmException e) {
+			throw new IOException(e);
+		}
+		rules.put(request.getRequest().getQueryId(), rule);
+		return rule;
 	}
 
 }

@@ -37,11 +37,12 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<version>0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>fop</artifactId>
+			<!-- TODO update to 2.2 -->
 			<version>2.1</version>
 		</dependency>
 <!-- try to fix SVG rendering failures -->

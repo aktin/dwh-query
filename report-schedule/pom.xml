@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.2</version>
+			<version>0.3</version>
 		</dependency>
 		<!-- j2ee annotations -->
 		<dependency>

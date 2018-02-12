@@ -7,6 +7,9 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,10 +26,10 @@ import javax.activation.DataSource;
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.aktin.broker.query.xml.QueryRequest;
-import org.aktin.broker.query.xml.RepeatedExecution;
 import org.aktin.broker.request.ActionLogEntry;
 import org.aktin.broker.request.Marker;
 import org.aktin.broker.request.RequestStatus;
@@ -72,19 +75,11 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		autoSubmit = false;
 	}
 
-	public Integer getQueryId(){
-		if( request.getQuery().schedule instanceof RepeatedExecution ){
-			return ((RepeatedExecution)request.getQuery().schedule).id;
-		}else{
-			return null;
-		}
-	}
-
 	protected void insertIntoDatabase(Connection dbc) throws SQLException{
 		// TODO insert all fields
 		try( PreparedStatement ps = dbc.prepareStatement("INSERT INTO broker_requests(broker_request_id, broker_query_id, request_xml, auto_submit, status) VALUES (?,?,?,?,?)") ){
 			ps.setInt(1, requestId);
-			Integer queryId = getQueryId();
+			Integer queryId = getRequest().getQueryId();
 			if( queryId != null ){
 				ps.setInt(2, queryId);
 			}else{
@@ -98,14 +93,40 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 			ps.executeUpdate();
 		}
 	}
+
+	/**
+	 * Used as endpoint for digest calculation filter stream.
+	 */
+	private static final class NullOutputStream extends OutputStream{
+		@Override
+		public void write(int b) throws IOException {}
+	}
+	protected static byte[] calculateQuerySignature(QueryRequest request, String algo) throws NoSuchAlgorithmException, IOException{
+		Marshaller m;
+		try {
+			m = createJAXBContext().createMarshaller();
+		} catch (JAXBException e) {
+			throw new IOException("JAXB error", e);
+		}
+		MessageDigest digest = MessageDigest.getInstance(algo);
+		try( DigestOutputStream ds = new DigestOutputStream(new NullOutputStream(), digest) ){
+			m.marshal(request.getQuery(), ds);			
+		} catch (JAXBException e) {
+			throw new IOException("JAXB error", e);
+		}
+		return digest.digest();
+	}
+	protected static JAXBContext createJAXBContext() throws JAXBException{
+		return JAXBContext.newInstance(QueryRequest.class);
+	}
 	protected static void loadAll(RequestStoreImpl store, Connection dbc, Consumer<RequestImpl> action) throws SQLException, JAXBException{
-		JAXBContext jc = JAXBContext.newInstance(QueryRequest.class);
+		JAXBContext jc = createJAXBContext();
 		Unmarshaller um = jc.createUnmarshaller();
 		try( Statement st = dbc.createStatement();
 				ResultSet rs = st.executeQuery(
 						"SELECT broker_request_id, broker_query_id, auto_submit, request_xml,"
 						+ " status, result_type, result_path, display"
-						+ " FROM broker_requests") ){
+						+ " FROM broker_requests ORDER BY broker_request_id DESC") ){
 			while( rs.next() ){
 				RequestImpl r = new RequestImpl(store);
 				// load other data

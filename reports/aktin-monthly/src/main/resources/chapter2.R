@@ -92,3 +92,48 @@ try({
   b <- data.frame(Datum,Wochentag,Anzahl)
   report.table(b,name='admit.d.xml',align=c('left','right','right'),widths=c(25,15,13))
 }, silent=FALSE)
+
+#calculate number of patients per hour of day (per day) -- Crowding
+try({
+  admit <- as.numeric(df$admit.h)-1  #[0-23] admit is always available, but admit.h may not be available if the precision is only yyyymmdd
+  #admit <- admit[!is.na(df$admit.h)] #no good
+  #admit <- admit[!is.na(df$discharge.h)] #no good
+  discharge <- as.numeric(df$discharge.h)-1 #[0-23] discharge.h might be missing
+  #discharge <- discharge[!is.na(df$admit.h)] #no good
+  #discharge <- discharge[!is.na(df$discharge.h)] #no good
+  num_days <- length(names(table(format(df$admit.day,format='%d.%m.%Y',tz='GMT'))))
+  mcrowding <- matrix(data = 0, nrow = num_days, ncol = 24, byrow = FALSE, dimnames = NULL)
+  for (i in 1:length(admit)){
+    if (!is.na(admit[i]) & !is.na(discharge[i]) & (df$admit.ts[i] <= df$discharge.ts[i])) { #admit & discharge hours available and admit <= discharge
+      j <- admit[i]+1 #admit hour
+      d <- as.numeric(df$admit.day[i]) #index of admission day
+      c_hours <- 0
+      c_days <- 0
+      repeat {
+        mcrowding[d,j] <- mcrowding[d,j] +1
+        c_hours <- c_hours + 1
+        j <- j + 1
+        if (j > 24) {
+          j <- 1
+          d <- d+1
+          c_days <- c_days + 1
+          c_hours <- 0
+        }
+        if (as.numeric(strftime(df$admit.ts[i],tz="GMT",format="%H"))+c_hours > as.numeric(strftime(df$discharge.ts[i],tz="GMT",format="%H"))
+            & (as.Date(df$admit.ts[i])+c_days >= as.Date(df$discharge.ts[i]) )){
+          break
+        }
+      }
+    }
+    if (!is.na(admit[i]) & is.na(discharge[i])) { #admit available but no discharge => only count admit.h (1 hour stay)
+      j <- admit[i]+1 #admit hour
+      d <- as.numeric(df$admit.day[i]) #index of admission day
+      mcrowding[d,j] <- mcrowding[d,j] +1
+    }
+  }
+  
+  #no output yet
+  
+  #bwplot(mcrowding[1:30,19])
+  #bwplot(mcrowding[1:30,1])
+}, silent=FALSE)

@@ -125,17 +125,17 @@ try({
 
   
 
-#calculate number of patients per hour of day
+#calculate number of patients per hour of day (this gives: sum / average)
 try({
-  admit <- as.numeric(df$admit.h)-1  
-  admit <- admit[!is.na(df$admit.h)]
-  admit <- admit[!is.na(df$discharge.h)]
-  discharge <- as.numeric(df$discharge.h)-1 
-  discharge <- discharge[!is.na(df$admit.h)]
-  discharge <- discharge[!is.na(df$discharge.h)]
+  admit <- as.numeric(df$admit.h)-1  #admit is always available, but admit.h may not be available if the precision is only yyyymmdd
+  #admit <- admit[!is.na(df$admit.h)] #no good
+  #admit <- admit[!is.na(df$discharge.h)] #no good
+  discharge <- as.numeric(df$discharge.h)-1 #discharge.h might be missing
+  #discharge <- discharge[!is.na(df$admit.h)] #no good
+  #discharge <- discharge[!is.na(df$discharge.h)] #no good
   crowding <- rep(0,24)
-  for (i in 1:length(admit)){
-    if (!is.na(admit[i]) & !is.na(discharge[i])) {
+  for (i in 1:length(admit)){ #limitation: only for stay of < 24h (should be checked based on timestamps not only h-parts)
+    if (!is.na(admit[i]) & !is.na(discharge[i])) { #admit & discharge available
       if (admit[i] < discharge[i]) {
         for (j in (admit[i]+1):(discharge[i]+1)) {
           crowding[j] <- crowding[j] +1
@@ -150,8 +150,12 @@ try({
         }
       }
     }
+    if (!is.na(admit[i]) & is.na(discharge[i])) { #admit available but no discharge => only count admit.h (1 hour stay)
+      crowding[admit[i]+1] <- crowding[admit[i]+1] +1
+    }
   }
 }, silent=FALSE)
+  
 
 #Alternative Crowding Calc
 reftime <- Sys.time()

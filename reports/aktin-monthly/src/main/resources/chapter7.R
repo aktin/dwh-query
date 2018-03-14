@@ -1,6 +1,7 @@
 try({
   
-  df$los = df$discharge.ts - df$admit.ts
+  #df$los = df$discharge.ts - df$admit.ts
+  df$los = difftime(df$discharge.ts,df$admit.ts,units="mins")
   lt_zero <- length(df$los[df$los < 0]) - length(df$los[is.na(df$los)])
   gt_day <- length(df$los[df$los > 24*60]) - length(df$los[is.na(df$los)])
   los_NA <- sum(is.na(df$los))

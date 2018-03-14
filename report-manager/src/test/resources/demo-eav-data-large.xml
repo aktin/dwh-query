@@ -27486,7 +27486,7 @@
 		<source timestamp="2016-10-10T09:59:40.438Z"/>
 		<encounter id="1196">
 			<start>2015-11-17T10:13:00</start>
-			<end>2015-11-17T12:16:00</end>
+			<end>2015-11-17T12:16:00.99</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -27509,7 +27509,7 @@
 		<source timestamp="2016-10-10T09:59:40.438Z"/>
 		<encounter id="1197">
 			<start>2015-11-17T10:36:00</start>
-			<end>2015-11-17T16:04:00</end>
+			<end>2015-11-17T16:04</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
@@ -51078,8 +51078,8 @@
 		<birthdate>1931-12-26</birthdate>
 		<source timestamp="2016-10-10T09:59:40.438Z"/>
 		<encounter id="2222">
-			<start>2015-11-30T23:18:00</start>
-			<end>2015-12-01T01:26:00</end>
+			<start>2015-11-30T23:18:00+0100</start>
+			<end>2015-12-01T01:26:00+0100</end>
 			<source timestamp="2016-10-12T16:38:09.357Z"/>
 			<fact concept="isolation"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>
 			<fact concept="isolationreason"><source timestamp="2016-10-12T16:38:09.357Z"/></fact>

@@ -18,6 +18,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.sekmi.histream.Observation;
+import de.sekmi.histream.ObservationException;
+
 public class TestReportGeneration {
 
 	static final String[] rPathSearch = {
@@ -25,7 +28,8 @@ public class TestReportGeneration {
 			"C:\\Program Files\\R\\R-3.2.2\\bin\\Rscript.exe",
 			"C:\\Program Files\\R\\R-3.2.0\\bin\\x64\\Rscript.exe",
 			"C:\\Program Files\\R\\R-3.2.0\\bin\\Rscript.exe",
-			"C:\\Program Files\\R\\R-3.4.0\\bin\\Rscript.exe"
+			"C:\\Program Files\\R\\R-3.4.0\\bin\\Rscript.exe",
+			"C:\\Program Files\\R\\R-3.5.1\\bin\\Rscript.exe"
 	};
 	public static Path rScript;
 
@@ -77,9 +81,22 @@ public class TestReportGeneration {
 			// will not happen during testing
 			throw new RuntimeException(e);
 		} catch (ExecutionException e) {
+			if( e.getCause() != null && e.getCause() instanceof ObservationException ){
+				Observation o = ((ObservationException)e.getCause()).getObservation();
+				System.err.println();
+				if( o.getValue() != null ) {
+					System.err.println("Value: "+o.getValue());
+				}
+			}else if( e.getCause() != null && e.getCause().getCause() != null && e.getCause().getCause() instanceof ObservationException ){
+				Observation o = ((ObservationException)e.getCause().getCause()).getObservation();
+				System.err.println(o);
+				if( o.getValue() != null ) {
+					System.err.println("Value: "+o.getValue());
+				}
+			}			
 			if( e.getCause() instanceof IOException ){
 				throw (IOException)e.getCause();
-			}else{
+			}else {
 				throw new IOException(e.getCause());
 			}
 		}

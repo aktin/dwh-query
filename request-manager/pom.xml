@@ -40,17 +40,17 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>broker-client</artifactId>
-			<version>0.4</version>
+			<version>0.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin.broker</groupId>
 			<artifactId>query-model</artifactId>
-			<version>0.5</version>
+			<version>0.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin.broker</groupId>
 			<artifactId>query-i2b2-sql</artifactId>
-			<version>0.5</version>
+			<version>0.7-SNAPSHOT</version>
 		</dependency>
 		<!-- j2ee annotations -->
 		<dependency>

@@ -34,6 +34,7 @@ import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.management.relation.RelationServiceNotRegisteredException;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -56,6 +57,7 @@ import org.aktin.broker.xml.RequestInfo;
 import org.aktin.broker.request.Status;
 import org.aktin.dwh.EmailService;
 import org.aktin.dwh.PreferenceKey;
+import org.aktin.scripting.r.RScript;
 
 
 @javax.ejb.Singleton
@@ -161,12 +163,23 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		try( Connection dbc = getConnection() ){
 			Statement s = dbc.createStatement();
 			ResultSet rs = s.executeQuery("SELECT version()");
-			if( rs.next() ){
-				versions.put("postgres", rs.getString(1));
+			if( !rs.next() ){
+				throw new SQLException("Empty result set returned by version()");
 			}
+			versions.put("postgres", rs.getString(1));
 			rs.close();
 		} catch (SQLException e) {
+			versions.put("postgres", "[error]");
 			log.log(Level.WARNING,"Unable to determine postgres version",e);
+		}
+
+		// get R version
+		RScript rScript = new RScript(Paths.get(prefs.get(PreferenceKey.rScriptBinary)));
+		try {
+			versions.put("r-script", rScript.getVersion());
+		}catch( IOException e ) {
+			versions.put("r-script", "[error]");
+			log.log(Level.WARNING, "Unable to determine r-script version", e);
 		}
 		return versions;
 		// TODO find out application server name 

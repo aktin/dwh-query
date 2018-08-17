@@ -43,6 +43,7 @@ import org.aktin.dwh.ExtractedData;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.GeneratedReport;
 import org.aktin.report.Report;
+import org.aktin.scripting.r.RScript;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;

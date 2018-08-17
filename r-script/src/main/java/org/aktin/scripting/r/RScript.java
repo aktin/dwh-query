@@ -1,4 +1,4 @@
-package org.aktin.report.manager;
+package org.aktin.scripting.r;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,8 +8,10 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.FileSystem;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
@@ -24,7 +26,7 @@ import java.util.logging.Logger;
  * @author R.W.Majeed
  *
  */
-class RScript {
+public class RScript {
 	private static final Logger log = Logger.getLogger(RScript.class.getName());
 
 	/** executable path of the Rscript command */
@@ -54,6 +56,38 @@ class RScript {
 		this.rScriptExecutable = executable;
 	}
 
+	public String getVersion() throws IOException{
+		ProcessBuilder pb = new ProcessBuilder(rScriptExecutable.toString(), "--version");
+		Path temp = Files.createTempDirectory("r-version");
+		pb.directory(temp.toFile());
+		Process process = pb.start();
+		int exitCode;
+		try {
+			if( !process.waitFor(500, TimeUnit.MILLISECONDS) ) {
+				// process did not terminate within the specified time
+				process.destroyForcibly();
+				throw new IOException("R process did not terminate in the specified time");
+			}else {
+				exitCode = process.exitValue();
+			}
+		} catch (InterruptedException e) {
+			throw new IOException("Interrupted during R execution", e);
+		}
+		InputStream output = process.getInputStream();
+		InputStream error = process.getErrorStream();
+		String value = convertStreamToString(error);
+		if( value == null || value.length() == 0 ) {
+			// use stdout
+			value = convertStreamToString(output);
+		}
+		output.close();
+		error.close();
+		if( exitCode != 0 ) {
+			throw new IOException("Non-zero exit code");
+		}
+		return  value;
+	}
+	// TODO configure timeout milliseconds to wait for process to exit
 	public void runRscript(Path workingDir, String mainScript) throws IOException {
 		// log.info("RScript Start");
 		// log.info(mainScript.toString());
@@ -87,6 +121,7 @@ class RScript {
 				if( nl != -1 ){ // if there, reduce to first line
 					stderr = stderr.substring(0, nl).trim();
 				}
+				// TODO use maximum of newline or first 250 characters
 				throw new IOException("R execution failed w/ exit code "+exitCode+": "+stderr);
 			}else{
 				throw new IOException("R execution failed w/ exit code "+exitCode+", no stderr");

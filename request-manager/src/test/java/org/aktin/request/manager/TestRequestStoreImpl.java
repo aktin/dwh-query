@@ -130,6 +130,8 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 			out.write(42);
 		}
 		assertFalse(r.hasAutoSubmit());
+		// set auto submit
+		r.setAutoSubmit(true);
 
 		// should not be able to write again to the data?
 		reloadRequests();
@@ -140,6 +142,7 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 		// verify last action timestamp
 		assertEquals(ts, r.getLastActionTimestamp()); // timestamp should be the same as previously read
 
+		assertTrue(r.hasAutoSubmit());
 		// verify status log
 		int count = 0;
 		for( ActionLogEntry entry : r.getActionLog() ) {

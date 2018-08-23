@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.activation.DataSource;
 import javax.xml.bind.JAXB;
@@ -40,7 +38,7 @@ import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
 
 public class RequestImpl implements RetrievedRequest, DataSource{
-	private static final Logger log = Logger.getLogger(RequestManagerImpl.class.getName());
+//	private static final Logger log = Logger.getLogger(RequestManagerImpl.class.getName());
 
 	private RequestStoreImpl store;
 	private int requestId;
@@ -204,7 +202,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	}
 
 	@Override
-	public Iterable<ActionLogEntry> getActionLog() {
+	public Iterable<ActionLogEntry> getActionLog() throws IOException{
 		if( statusLog == null ) {
 			// load log
 			try( Connection dbc = store.getConnection();
@@ -227,7 +225,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 				rs.close();
 			}catch( SQLException e ) {
 				statusLog = null;
-				log.log(Level.SEVERE, "Unable to load status log entries for request "+requestId, e);
+				throw new IOException("Unable to load status log entries for request "+requestId, e);
 			}
 		}
 		return statusLog;
@@ -355,9 +353,18 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	}
 
 	@Override
-	public void setAutoSubmit(boolean autoSubmit) {
+	public void setAutoSubmit(boolean autoSubmit) throws IOException {
 		this.autoSubmit = autoSubmit;
-		// TODO store in database
+		// write to database
+		try( Connection dbc = store.getConnection() ){
+			dbc.setAutoCommit(true);
+			PreparedStatement ps = dbc.prepareStatement("UPDATE broker_requests SET auto_submit=? WHERE broker_request_id=?");
+			ps.setBoolean(1, autoSubmit);
+			ps.setInt(2, requestId);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			throw new IOException("Unable to write action to database", e);
+		}
 	}
 
 	@Override

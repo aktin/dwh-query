@@ -17,6 +17,7 @@ import javax.xml.bind.JAXBException;
 
 import org.aktin.broker.query.xml.QueryRequest;
 import org.aktin.broker.query.xml.TestRequest;
+import org.aktin.broker.request.ActionLogEntry;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.dwh.db.TestDataSource;
 import org.junit.After;
@@ -128,6 +129,8 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 		try( OutputStream out = r.getResultData().getOutputStream() ){
 			out.write(42);
 		}
+		assertFalse(r.hasAutoSubmit());
+
 		// should not be able to write again to the data?
 		reloadRequests();
 		r = getRequests().get(0);
@@ -137,6 +140,14 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 		// verify last action timestamp
 		assertEquals(ts, r.getLastActionTimestamp()); // timestamp should be the same as previously read
 
+		// verify status log
+		int count = 0;
+		for( ActionLogEntry entry : r.getActionLog() ) {
+			assertNotNull(entry);
+			count ++;
+		}
+		assertEquals(3, count); // retrieved, seen, processing
+		
 		// verify content type
 		assertEquals("application/octet-stream", r.getResultData().getContentType());
 		// verify result content
@@ -145,6 +156,11 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 			// expect EOF
 			assertEquals(-1,in.read());
 		}
+
+		// change status again
+		r.changeStatus(null, RequestStatus.Completed, null);
+		// should be visible in action log
+		assertEquals(4, r.getActionLog().spliterator().getExactSizeIfKnown());
 		
 	}
 

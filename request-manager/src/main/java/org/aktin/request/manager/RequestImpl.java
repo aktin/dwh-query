@@ -17,10 +17,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.activation.DataSource;
 import javax.xml.bind.JAXB;
@@ -36,6 +40,7 @@ import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
 
 public class RequestImpl implements RetrievedRequest, DataSource{
+	private static final Logger log = Logger.getLogger(RequestManagerImpl.class.getName());
 
 	private RequestStoreImpl store;
 	private int requestId;
@@ -46,6 +51,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	private QueryRequest request;
 	private long lastActionTime;
 	private Marker marker;
+	private List<ActionLogEntry> statusLog;
 
 	private RequestImpl(RequestStoreImpl store){
 		this.store = store;
@@ -199,8 +205,32 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 
 	@Override
 	public Iterable<ActionLogEntry> getActionLog() {
-		// TODO lazy load log entries
-		return null;
+		if( statusLog == null ) {
+			// load log
+			try( Connection dbc = store.getConnection();
+					Statement st = dbc.createStatement() ){
+				
+				ResultSet rs = st.executeQuery(
+						"SELECT timestamp, user_id, old_status, new_status, description"
+						+ " FROM request_action_log"
+						+ "  WHERE broker_request_id="+requestId
+						+ " ORDER BY timestamp ASC");
+				this.statusLog = new ArrayList<>();
+				while( rs.next() ){
+					RequestStatus oldStatus = null;
+					if( rs.getString(3) != null ) {
+						oldStatus = RequestStatus.valueOf(rs.getString(3));
+					}
+					statusLog.add(new LogEntryImpl(rs.getString(2), rs.getTimestamp(1).getTime(), oldStatus, RequestStatus.valueOf(rs.getString(4)), rs.getString(5)));
+
+				}
+				rs.close();
+			}catch( SQLException e ) {
+				statusLog = null;
+				log.log(Level.SEVERE, "Unable to load status log entries for request "+requestId, e);
+			}
+		}
+		return statusLog;
 	}
 
 	@Override
@@ -233,6 +263,12 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 			ps.setInt(2, requestId);
 			ps.executeUpdate();
 		}
+		// update log, if loaded previously
+		if( this.statusLog != null ) {
+			// log entries already loaded, add new entry to the end
+			this.statusLog.add(new LogEntryImpl(userId, timestamp, this.status, newStatus, description));
+		}
+
 		this.status = newStatus;
 		this.lastActionTime = timestamp;
 	}

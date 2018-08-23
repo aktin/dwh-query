@@ -124,9 +124,12 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		Unmarshaller um = jc.createUnmarshaller();
 		try( Statement st = dbc.createStatement();
 				ResultSet rs = st.executeQuery(
-						"SELECT broker_request_id, broker_query_id, auto_submit, request_xml,"
-						+ " status, result_type, result_path, display"
-						+ " FROM broker_requests ORDER BY broker_request_id DESC") ){
+						"SELECT r.broker_request_id, r.broker_query_id, r.auto_submit, r.request_xml,"
+						+ " r.status, r.result_type, r.result_path, r.display, MAX(l.timestamp)"
+						+ " FROM broker_requests r"
+						+ "  LEFT OUTER JOIN request_action_log l ON r.broker_request_id=l.broker_request_id"
+						+ " GROUP BY r.broker_request_id, r.broker_query_id, r.auto_submit, r.request_xml, r.status, r.result_type, r.result_path, r.display"
+						+ " ORDER BY r.broker_request_id DESC") ){
 			while( rs.next() ){
 				RequestImpl r = new RequestImpl(store);
 				// load other data
@@ -144,6 +147,12 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 				r.resultPath = rs.getString(7);
 				// use display type
 				r.marker = parseMarker(rs.getString(8));
+				Timestamp ts = rs.getTimestamp(9);
+				if( ts != null ) {
+					r.lastActionTime = ts.getTime();
+				}else {
+					// does not have a valid timestamp, there was no previous action
+				}
 				action.accept(r);
 			}
 		}
@@ -190,7 +199,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 
 	@Override
 	public Iterable<ActionLogEntry> getActionLog() {
-		// TODO Auto-generated method stub
+		// TODO lazy load log entries
 		return null;
 	}
 

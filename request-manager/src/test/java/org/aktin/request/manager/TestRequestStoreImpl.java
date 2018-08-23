@@ -120,6 +120,10 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 		RequestImpl r = addNewRequest(qr);
 		r.changeStatus("rm", RequestStatus.Seen, null);
 		r.changeStatus(null, RequestStatus.Processing, null);
+
+		long ts = r.getLastActionTimestamp();
+		assertNotEquals(0, ts); // timestamp should set by changeStatus and should be non-zero
+
 		r.createResultData("application/octet-stream");
 		try( OutputStream out = r.getResultData().getOutputStream() ){
 			out.write(42);
@@ -127,8 +131,12 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 		// should not be able to write again to the data?
 		reloadRequests();
 		r = getRequests().get(0);
+		
 		// verify status
 		assertEquals(RequestStatus.Processing, r.getStatus());
+		// verify last action timestamp
+		assertEquals(ts, r.getLastActionTimestamp()); // timestamp should be the same as previously read
+
 		// verify content type
 		assertEquals("application/octet-stream", r.getResultData().getContentType());
 		// verify result content

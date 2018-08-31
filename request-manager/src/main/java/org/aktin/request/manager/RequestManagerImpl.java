@@ -331,7 +331,11 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				// set remote status to retrieved
 				client.postRequestStatus(info.getId(), org.aktin.broker.xml.RequestStatus.retrieved);
 				// during the next call, the request will be detected as already retrieved
-			}else{
+			} else if (info.closed != null) {
+				// request was closed by broker, change status of request to expired
+				client.postRequestStatus(info.getId(), org.aktin.broker.xml.RequestStatus.expired);
+				log.info("Request "+info.getId()+" was closed.");
+			} else {
 				// already retrieved
 				// nothing to do
 				log.info("Request "+info.getId()+" already retrieved.");
@@ -537,6 +541,10 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			case Failed:
 				// report failure message
 				reportRequestStatusChanged(request, org.aktin.broker.xml.RequestStatus.failed, description);
+				client.deleteMyRequest(request.getRequestId());
+				break;
+			case Expired:
+				reportRequestStatusChanged(request, org.aktin.broker.xml.RequestStatus.expired, description);
 				client.deleteMyRequest(request.getRequestId());
 				break;
 			case Processing:

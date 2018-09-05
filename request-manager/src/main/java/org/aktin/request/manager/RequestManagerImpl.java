@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
@@ -292,13 +294,28 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	}
 
 	/**
-	 * Fetch new requests from the configured broker endpoint
+	 * Fetch new requests from the configured broker endpoint.
+	 * A light form of synchronisation is done. 
+	 * <ul>
+	 *  <li>New requests from the broker are added to the local list of requests.</li>
+	 *  <li>If there are local requests with a non-final status which are 
+	 *    not available anymore at the broker (e.g. removed by the broker)
+	 *    or closed by the broker, then the local request status is updated
+	 *    to expired.
+	 *  </li>
+	 * </ul>
 	 * @throws IOException IO error
 	 */
 	public void fetchNewRequests() throws IOException{
 		// TODO what happens if the a request is deleted at the broker and it is still waiting locally? how do we update that info?
-		// fetch requests
-		List<RequestInfo> list = client.listMyRequests();
+		
+		// fetch local request which are still unfinished
+		Map<Integer,RetrievedRequest> openRequests = getRequests().stream()
+			.filter(r -> !r.getStatus().isFinal() )
+			.collect(Collectors.toMap(RetrievedRequest::getRequestId, Function.identity()));
+		
+		// fetch remote requests
+		List<RequestInfo> brokerRequests = client.listMyRequests();
 		Unmarshaller um;
 		try{
 			JAXBContext jc = JAXBContext.newInstance(QueryRequest.class);
@@ -306,8 +323,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		}catch( JAXBException e ){
 			throw new IOException(e);
 		}
-		log.info("Broker lists "+list.size()+" requests");
-		for( RequestInfo info : list ){
+		log.info("Broker lists "+brokerRequests.size()+" requests");
+		for( RequestInfo info : brokerRequests ){
 			if( info.nodeStatus == null || info.nodeStatus.size() == 0 ){
 				log.info("Request "+info.getId()+" is new.");
 				// new request
@@ -333,8 +350,30 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 				// during the next call, the request will be detected as already retrieved
 			}else{
 				// already retrieved
-				// nothing to do
 				log.info("Request "+info.getId()+" already retrieved.");
+
+				// remove from list of open requests
+				// in the end, the map can be used to identify expired requests
+				// which have been deleted at the broker
+				RetrievedRequest r = openRequests.remove( info.getId() );
+				if( info.closed != null && r != null ) {
+					// if the request was closed, add it again to the
+					// map, so that it will be updated as expired after
+					// the loop
+					openRequests.put(info.getId(), r);
+				}
+				
+				// nothing else to do
+			}
+			
+		}
+		// check for local requests removed/missing at the broker
+		if( !openRequests.isEmpty() ) {
+			// found open requests which are not anymore at the broker
+			// change status to Expired
+			for( RetrievedRequest r : openRequests.values() ) {
+				log.info("Updating local request status to Expired for #"+r.getRequestId());
+				r.changeStatus(null, RequestStatus.Expired, null);
 			}
 		}
 	}

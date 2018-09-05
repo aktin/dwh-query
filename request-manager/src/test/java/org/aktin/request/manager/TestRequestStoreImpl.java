@@ -11,7 +11,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
@@ -164,6 +168,21 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 		r.changeStatus(null, RequestStatus.Completed, null);
 		// should be visible in action log
 		assertEquals(4, r.getActionLog().spliterator().getExactSizeIfKnown());
+		
+	}
+
+	/**
+	 * Make sure that the Map returned by Collectors.toMap is modifiable.
+	 * This is needed by {@link RequestManagerImpl#fetchNewRequests()}
+	 */
+	@Test
+	public void verifyCollectorMapModifiable() {
+		Map<Integer,Integer> map =
+				Arrays.asList(1,2,3).stream().collect(Collectors.toMap(Function.identity(), Function.identity()));
+		map.remove(1);
+		map.put(1, 1);
+		// if no exception was thrown in the previous lines,
+		// we can be sure that the returned map was modifiable.
 		
 	}
 

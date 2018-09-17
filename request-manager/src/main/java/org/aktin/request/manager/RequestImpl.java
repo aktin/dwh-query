@@ -365,6 +365,9 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		} catch (SQLException e) {
 			throw new IOException("Unable to write action to database", e);
 		}
+		if(this.status == RequestStatus.Completed) {
+			changeStatus(null, RequestStatus.Sending, "Automatic submitted by query rule.");
+		}
 	}
 
 	@Override

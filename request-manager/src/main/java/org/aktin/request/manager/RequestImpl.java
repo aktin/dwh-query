@@ -354,6 +354,9 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 
 	@Override
 	public void setAutoSubmit(boolean autoSubmit) throws IOException {
+		if (this.autoSubmit != autoSubmit) {
+			this.lastActionTime = System.currentTimeMillis();
+		}
 		this.autoSubmit = autoSubmit;
 		// write to database
 		try( Connection dbc = store.getConnection() ){
@@ -362,11 +365,13 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 			ps.setBoolean(1, autoSubmit);
 			ps.setInt(2, requestId);
 			ps.executeUpdate();
+			
+			PreparedStatement psLog = dbc.prepareStatement("UPDATE request_action_log SET timestamp=? WHERE broker_request_id=?");
+			psLog.setTimestamp(1, new Timestamp(this.lastActionTime));
+			psLog.setInt(2, requestId);
+			psLog.executeUpdate();
 		} catch (SQLException e) {
 			throw new IOException("Unable to write action to database", e);
-		}
-		if(this.status == RequestStatus.Completed) {
-			changeStatus(null, RequestStatus.Sending, "Automatic submitted by query rule.");
 		}
 	}
 

@@ -136,7 +136,8 @@ public class TestRequestStoreImpl extends RequestStoreImpl{
 		assertFalse(r.hasAutoSubmit());
 		// set auto submit
 		r.setAutoSubmit(true);
-
+		ts = r.getLastActionTimestamp(); // timestamp should be set when changing autoSubmit
+		
 		// should not be able to write again to the data?
 		reloadRequests();
 		r = getRequests().get(0);

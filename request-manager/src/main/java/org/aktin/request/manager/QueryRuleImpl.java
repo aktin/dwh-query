@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Objects;
@@ -90,8 +91,10 @@ public class QueryRuleImpl implements BrokerQueryRule {
 	 * @throws IOException io error
 	 */
 	static QueryRuleImpl createRule(Connection dbc, QueryRequest req, String userId, QueryRuleAction action, String signatureAlgorithm) throws SQLException, NoSuchAlgorithmException, IOException{
-		final String sql = "INSERT INTO broker_query_rules(broker_query_id, create_time, create_user, action, signature_algo, signature_data)VALUES(?,CURRENT_TIMESTAMP,?,?,?,?)";
+		final Timestamp creationDate = new Timestamp(System.currentTimeMillis());
+		final String sql = "INSERT INTO broker_query_rules(broker_query_id, create_time, create_user, action, signature_algo, signature_data)VALUES(?,?,?,?,?,?)";
 		QueryRuleImpl rule = new QueryRuleImpl();
+		rule.timestamp = creationDate.toInstant();
 		rule.action = action;
 		rule.userId = userId;
 		Objects.requireNonNull(action);
@@ -111,10 +114,11 @@ public class QueryRuleImpl implements BrokerQueryRule {
 			}else{
 				ps.setInt(1, rule.queryId);
 			}
-			ps.setString(2, rule.userId);
-			ps.setString(3, serializeAction(action));
-			ps.setString(4, rule.algorithm);
-			ps.setBytes(5, rule.signature);
+			ps.setTimestamp(2, creationDate);
+			ps.setString(3, rule.userId);
+			ps.setString(4, serializeAction(action));
+			ps.setString(5, rule.algorithm);
+			ps.setBytes(6, rule.signature);
 			ps.executeUpdate();
 		}
 		return rule;
@@ -124,7 +128,7 @@ public class QueryRuleImpl implements BrokerQueryRule {
 	 * Delete a rule with the given query id. Query id can be null, to delete the default rule
 	 * @param dbc database connection
 	 * @param queryId query id or null for default rule
-	 * @return {@code true} if a rule was delteted, {@code false} if no rows were affected
+	 * @return {@code true} if a rule was deleted, {@code false} if no rows were affected
 	 * @throws SQLException sql error
 	 */
 	static boolean deleteRule(Connection dbc, Integer queryId) throws SQLException{

@@ -12,6 +12,7 @@ import java.util.concurrent.ForkJoinPool;
 
 import org.aktin.dwh.prefs.impl.TestPreferences;
 import org.aktin.report.Report;
+import org.aktin.report.ReportInfo;
 import org.aktin.report.test.SimpleReport;
 import org.aktin.scripting.r.TestRScript;
 import org.junit.Assert;
@@ -45,12 +46,13 @@ public class TestReportGeneration {
 	public static void generatePDF(Report report, Instant start, Instant end, Path pdf, TestExport dataset, boolean keepIntermediateFiles) throws IOException{
 		Objects.requireNonNull(rScript, "Please call TestReportGenerator.locateR() to locate Rscript");
 		ReportManagerImpl manager = new ReportManagerImpl(rScript.toString(), getReportTempDir(), report);
+		ReportInfo info = report.createReportInfo(start, end);
 		manager.setExecutor(ForkJoinPool.commonPool());
 		manager.setKeepIntermediateFiles(keepIntermediateFiles);
 		manager.setPreferenceManager(TestPreferences.getTestPreferences());
 		manager.setDataExtractor(dataset);
 		try {
-			manager.generateReport(report, start, end, pdf).get();
+			manager.generateReport(info, pdf).get();
 		} catch (InterruptedException e) {
 			// will not happen during testing
 			throw new RuntimeException(e);

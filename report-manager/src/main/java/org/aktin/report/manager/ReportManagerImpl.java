@@ -169,33 +169,7 @@ public class ReportManagerImpl extends Module implements ReportManager{
 		this.keepIntermediateFiles = keepFiles;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.aktin.report.manager.ReportManager#generateReport(org.aktin.report.Report, java.time.Instant, java.time.Instant, java.nio.file.Path)
-	 */
-	@Override
-	public CompletableFuture<ReportExecution> generateReport(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination) throws IOException{
-		Objects.requireNonNull(extractor, "DataExtractor not defined");
-		Objects.requireNonNull(getExecutor(), "Executor not defined");
-		Objects.requireNonNull(preferenceManager, "PreferenceManager not defined");
-		// TODO find a way to pass report specific configuration. e.g. Map<String,Object>
-		ReportExecution re = new ReportExecution(report, fromTimestamp, endTimestamp, reportDestination);
-		re.createTempDirectory(tempDir);
 
-		// to keep all generated files, use #setKeepIntermediateFiles
-		re.setKeepIntermediateFiles(keepIntermediateFiles);
-
-		return re.extractData(extractor).thenApplyAsync( Void ->  {
-			try {
-				re.writePreferences(preferenceManager, Collections.emptyMap());
-				re.runR(Paths.get(ReportManagerImpl.this.rScript));
-				re.runFOP();
-				re.cleanup();
-			} catch (IOException e) {
-				throw new CompletionException(e);
-			}
-			return re;
-		}, getExecutor() );
-	}
 	@Override
 	public CompletableFuture<? extends GeneratedReport> generateReport(ReportInfo reportInfo, Path reportDestination) throws IOException {
 		Report report = getReport(reportInfo.getTemplateId());

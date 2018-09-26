@@ -204,6 +204,8 @@ public class ReportManagerImpl extends Module implements ReportManager{
 		}
 
 		if( reportDestination == null ){
+			// make sure tempDir exists
+			Files.createDirectories(tempDir);
 			// TODO infer file extension from media type. read media type from report template
 			reportDestination = Files.createTempFile(tempDir, "report", ".pdf");
 		}

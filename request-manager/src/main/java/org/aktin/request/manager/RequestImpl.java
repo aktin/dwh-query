@@ -366,10 +366,8 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 			ps.setInt(2, requestId);
 			ps.executeUpdate();
 			
-			PreparedStatement psLog = dbc.prepareStatement("UPDATE request_action_log SET timestamp=? WHERE broker_request_id=?");
-			psLog.setTimestamp(1, new Timestamp(this.lastActionTime));
-			psLog.setInt(2, requestId);
-			psLog.executeUpdate();
+			// TODO find a way to update last modified timestamp for request if autoSubmit was changed. used for the GUI
+			
 		} catch (SQLException e) {
 			throw new IOException("Unable to write action to database", e);
 		}

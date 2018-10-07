@@ -83,4 +83,11 @@ public class PatientEntryImpl implements PatientEntry{
 	@Override
 	public long getTimestamp() {return timestamp;}
 
+	public boolean equalsId(PatientEntry other) {
+		return this.study.getId().equals(other.getStudy().getId())
+				&& id_ref.equals(other.getReference())
+				&& id_root.equals(other.getIdRoot())
+				&& id_ext.equals(other.getIdExt());
+		
+	}
 }

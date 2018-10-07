@@ -246,7 +246,12 @@ public class StudyImpl implements Study{
 		} catch (SQLException e) {
 			throw new IOException("Unable to add patient to database", e);
 		}
-		return null;
+		PatientEntryImpl pat = new PatientEntryImpl(this, ref, id_root, id_ext, opt);
+		pat.sic = sic;
+		pat.timestamp = now.getTime();
+		pat.comment = comment;
+		pat.user = user;
+		return pat;
 	}
 	
 }

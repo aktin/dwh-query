@@ -26,6 +26,7 @@
 		<module>report-schedule</module>
 		<module>reports</module>
 		<module>request-manager</module>
+		<module>study-manager</module>		
 	</modules>
 
 </project>

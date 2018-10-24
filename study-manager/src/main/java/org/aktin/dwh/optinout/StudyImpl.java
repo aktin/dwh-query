@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,12 @@ public class StudyImpl implements Study{
 	private String id;
 	private String title;
 	private String description;
-	long createdTime;
+	Instant createdTime;
+	/** when the study was closed. {@code null} if still open */
+	Instant closedTime;
+
+	private boolean hasOptIn;
+	private boolean hasOptOut;
 
 	private boolean manualCodes;
 	private CodeGenerator codeGen;
@@ -54,6 +60,10 @@ public class StudyImpl implements Study{
 	}
 	
 	void loadOptions(String db_options) {
+		// options default to false
+		hasOptIn = false;
+		hasOptOut = false;
+
 		String[] opts = db_options.split(",");
 		for( int i=0; i<opts.length; i++ ) {
 			String option = opts[i];
@@ -65,6 +75,12 @@ public class StudyImpl implements Study{
 			switch( option.substring(0, pos) ){
 			case "OPT":
 				// allow opt in or out
+				if( val.contains("I") ) {
+					hasOptIn = true;
+				}
+				if( val.contains("O") ) {
+					hasOptOut = true;
+				}
 				break;
 			}
 		}
@@ -252,6 +268,33 @@ public class StudyImpl implements Study{
 		pat.comment = comment;
 		pat.user = user;
 		return pat;
+	}
+
+	@Override
+	public boolean isParticipationSupported(Participation participation) {
+		switch( participation ) {
+		case OptIn:
+			return hasOptIn;
+		case OptOut:
+			return hasOptOut;
+		default:
+			return false;
+		}
+	}
+
+	@Override
+	public boolean supportsManualSICs() {
+		return manualCodes;
+	}
+
+	@Override
+	public Instant getCreatedTimestamp() {
+		return createdTime;
+	}
+
+	@Override
+	public Instant getClosedTimestamp() {
+		return closedTime;
 	}
 	
 }

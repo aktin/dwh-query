@@ -55,6 +55,9 @@ public class TestStudyManagerImpl {
 	@Test
 	public void addListDeletePatients() throws IOException {
 		StudyImpl s = sm.getStudies().get(1);
+		assertTrue(s.isParticipationSupported(Participation.OptIn));
+		assertFalse(s.isParticipationSupported(Participation.OptOut));
+		
 		s.addPatient(PatientReference.Patient, "0", "0", Participation.OptIn, s.generateSIC(), "First patient", "TestUser1");
 
 		// same patient should throw exception

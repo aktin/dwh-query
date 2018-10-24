@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +61,14 @@ public class StudyManagerImpl implements StudyManager {
 						// use generated codes
 						s.setManualCodes(false);
 						s.setCodeGenerator(codeFactory.createInstance(gen, rs.getString(8)));
+					}
+					// load options
+					s.loadOptions(rs.getString(6));
+					// load timestamps
+					s.createdTime = rs.getTimestamp(4).toInstant();
+					Timestamp closed = rs.getTimestamp(5);
+					if( closed != null ) {
+						s.closedTime = closed.toInstant();
 					}
 					// TODO add validation rules etc.
 					list.add(s);

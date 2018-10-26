@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Resource;
 import javax.inject.Singleton;
@@ -86,6 +87,56 @@ public class StudyManagerImpl implements StudyManager {
 	public void linkPatientEntriesToData() throws IOException {
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException("Not yet implemented");
+	}
+
+
+	/**
+	 * Synchronize a single patient entry with existing data
+	 * @param ref reference type
+	 * @param root id root
+	 * @param ext id extension
+	 * @return completable future
+	 */
+	public CompletableFuture<SyncResult> syncSingle(PatientReference ref, String root, String ext){
+		CompletableFuture<SyncResult> cf = new CompletableFuture<>();
+		
+		// TODO implement
+		switch( ref ) {
+		case Billing:
+			break;
+		case Encounter:
+			break;
+		case Patient:
+			break;
+		case Visit:
+			break;
+		default:
+			break;
+		
+		}
+		
+
+		// TODO insert/replace fact in dwh to say patient member of study
+		
+		cf.completeExceptionally(new UnsupportedOperationException("Not yet implemented"));
+		return cf;
+	}
+	
+	/**
+	 * Synchronize all entries with the specified reference type and study.
+	 * The {@code study} argument can be {@code null} to refer to all studies
+	 * @param ref reference type
+	 * @param study study, can be {@code null}
+	 * @return completable future
+	 */
+	public CompletableFuture<SyncResult> syncBatch(PatientReference ref, Study study){
+		CompletableFuture<SyncResult> cf = new CompletableFuture<>();
+		
+		// TODO implement
+		// TODO insert/replace fact in dwh to say patient member of study
+
+		cf.completeExceptionally(new UnsupportedOperationException("Not yet implemented"));
+		return cf;
 	}
 
 }

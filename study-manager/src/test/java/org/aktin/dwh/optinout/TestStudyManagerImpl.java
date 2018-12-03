@@ -17,12 +17,15 @@ import static org.junit.Assert.*;
 public class TestStudyManagerImpl {
 	TestDataSource ds;
 	StudyManagerImpl sm;
-	
+	public TestStudyManagerImpl() throws SQLException {
+		ds = new TestDataSource();
+	}
 	@Before
 	public void initializeDatabase() throws SQLException, LiquibaseException {
-		TestDataSource.dropAll();
+		ds.dropAll();
 		ds = new TestDataSource();
 		sm = new StudyManagerImpl();
+		sm.setAnonymizer( s -> String.join("/", s) ) ;
 		sm.setDataSource(ds);
 	}
 	@Test

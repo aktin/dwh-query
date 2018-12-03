@@ -9,31 +9,112 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.aktin.Preferences;
+import org.aktin.dwh.Anonymizer;
+import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.optinout.sic.CodeGeneratorFactory;
 
 
 @Singleton
 public class StudyManagerImpl implements StudyManager {
+	private static final Logger log = Logger.getLogger(StudyManagerImpl.class.getName());
 	private List<StudyImpl> studies;
 	private DataSource ds;
 	private CodeGeneratorFactory codeFactory;
+	private Anonymizer anon;
+	private Preferences prefs;
 
+	// TODO memory cache of pat_ref,pat_psn to use for lookup during CDAImport
+	
 	public StudyManagerImpl() {
 		codeFactory = new CodeGeneratorFactory();
 	}
-//	@Inject
-//	private Preferences prefs;
 
+	/**
+	 * Set the preference interface.
+	 * This class reads the following properties: {@link PreferenceKey#i2b2DatasourceCRC}
+	 * @param prefs preferences
+	 */
+	@Inject
+	public void setPreferences(Preferences prefs) {
+		this.prefs = prefs;
+	}
+
+	/**
+	 * Set the datasource to be used for persistence in the study manager.
+	 * If this method is not called or {@code ds} is set to {@code null},
+	 * then the preferences (from {@link #setPreferences(Preferences)}) will
+	 * be used to obtain a connection to the i2b2 CRC database.
+	 * @param ds data source
+	 */
 	@Resource(lookup="java:jboss/datasources/AktinDS")
 	public void setDataSource(DataSource ds){
 		this.ds = ds;
 	}
 
+	private void initializeDatabase() throws NamingException, SQLException {
+		// make sure we have a database to work on
+		if( this.ds == null ) {
+			// not set via setDataSource, use preferences
+			String dsName = prefs.get(PreferenceKey.i2b2DatasourceCRC);//"java:/QueryToolDemoDS";
+			log.info("Using i2b2 database via "+dsName);
+			// following lines can throw NamingException
+			InitialContext ctx = new InitialContext();
+			this.ds = (DataSource)ctx.lookup(dsName);
+		}
+
+		try( Connection dbc = this.ds.getConnection() ){
+			createTables(dbc);
+		}
+	}
+
+	private void createTables(Connection dbc) {
+		// check if tables exist
+		try( Statement s = dbc.createStatement();
+				ResultSet rs = s.executeQuery("SELECT COUNT(*) FROM optinout_studies") ){
+			rs.next();
+			log.info("Tables for study_manager existing");
+			return; // leave this method
+		}catch( SQLException e ) {
+			// tables probably do not exist
+			log.info("Tables for study_manager (probably) missing");
+		}
+
+		// create the required tables
+	}
+	@PostConstruct
+	public void loadData() {
+		log.info("Initializing study manager");
+		try {
+			initializeDatabase();
+		} catch ( SQLException | NamingException e) {
+			throw new IllegalStateException("Unable to inityalize study manager", e);
+		}
+	}
+
+	/**
+	 * Setter method inject an anonymizer implementation.
+	 * The anonymiyer is needed to generate one-way-hashes 
+	 * for the database lookup operations.
+	 * @param anonymizer anonymiyer interface
+	 */
+	@Inject
+	public void setAnonymizer(Anonymizer anonymizer) {
+		this.anon = anonymizer;
+	}
+	Anonymizer getAnonymizer() {
+		return anon;
+	}
 	Connection getConnection() throws SQLException {
 		return ds.getConnection();
 	}
@@ -115,6 +196,36 @@ public class StudyManagerImpl implements StudyManager {
 		
 		}
 		
+		// TODO insert/replace fact in dwh to say patient member of study
+		/*
+		 * UPDATE optinout_patients o SET i2b2_patient_num = pm.patient_num 
+		 *  FROM i2b2demodata.patient_mapping 
+		 *  WHERE o.i2b2_patient_num IS NULL 
+		 *  	AND o.pat_ref='PAT'
+		 * 		AND pm.patient_ide=o.pat_psn
+		 * 		AND pm.patient_ide_source='XXX AKTIN';
+		 */
+		/*
+		 * UPDATE optinout_patients o SET i2b2_patient_num = v.patient_num 
+		 *  FROM i2b2demodata.encounter_mapping 
+		 *  INNER JOIN visit_dimension v USING(encounter_num)
+		 *  WHERE o.i2b2_patient_num IS NULL 
+		 *  	AND o.pat_ref='ENC'
+		 * 		AND pm.encounter_ide=o.pat_psn
+		 * 		AND pm.encounter_ide_source='XXX AKTIN';
+		 */
+		/*
+		 * CREATE TEMPORARY TABLE x AS SELECT DISTINCT f.patient_num, f.xxvalue psn
+		 * FROM i2b2demodata.observation_fact f, optionout_patients o
+		 * WHERE o.i2b2_patient_num IS NULL AND o.pat_ref=BIL AND f.concept_cd=XXX AND f.tval_char=o.pat_psn;
+		 *
+		 * UPDATE optinout_patients o SET i2b2_patient_num = x.patient_num 
+		 * FROM x WHERE o.pat_ref='BIL' AND o.i2b2_patient_num IS NULL AND o.pat_psn=x.psn;
+		 * 
+		 * DELETE TEMPORARY TABLE x;
+		 * 
+		 * XXX TODO assign last visit timestamp, update last sync timestamp 
+		 */
 
 		// TODO insert/replace fact in dwh to say patient member of study
 		
@@ -133,7 +244,6 @@ public class StudyManagerImpl implements StudyManager {
 		CompletableFuture<SyncResult> cf = new CompletableFuture<>();
 		
 		// TODO implement
-		// TODO insert/replace fact in dwh to say patient member of study
 
 		cf.completeExceptionally(new UnsupportedOperationException("Not yet implemented"));
 		return cf;

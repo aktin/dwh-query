@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.aktin.dwh.optinout.sic.CodeGenerator;
 
@@ -228,21 +229,24 @@ public class StudyImpl implements Study{
 	@Override
 	public PatientEntry addPatient(PatientReference ref, String id_root, String id_ext, Participation opt, String sic,
 			String comment, String user) throws IOException {
+		Objects.requireNonNull(manager.getAnonymizer());
 		Timestamp now = new Timestamp(System.currentTimeMillis());
+		String psn = manager.getAnonymizer().calculateAbstractPseudonym(id_root,id_ext);
 		try( Connection dbc = manager.getConnection() )
 		{
 			// write user
-			PreparedStatement ps = dbc.prepareStatement("INSERT INTO optinout_patients(study_id,pat_ref,pat_root,pat_ext,create_user,create_timestamp,optinout,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?)");
+			PreparedStatement ps = dbc.prepareStatement("INSERT INTO optinout_patients(study_id,pat_ref,pat_root,pat_ext,pat_psn,create_user,create_timestamp,optinout,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?,?)");
 			
 			ps.setString(1, getId());
 			ps.setString(2, serializeReferenceType(ref));
 			ps.setString(3, id_root);
 			ps.setString(4, id_ext);
-			ps.setString(5, user);
-			ps.setTimestamp(6, now);
-			ps.setString(7, serializeParticipationType(opt));
-			ps.setString(8, sic);
-			ps.setString(9, comment);
+			ps.setString(5, psn);
+			ps.setString(6, user);
+			ps.setTimestamp(7, now);
+			ps.setString(8, serializeParticipationType(opt));
+			ps.setString(9, sic);
+			ps.setString(10, comment);
 			ps.executeUpdate();
 			ps.close();
 

@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-
-import org.aktin.dwh.db.TestDataSource;
+import org.aktin.dwh.db.TestDataSourcePlain;
+import org.aktin.dwh.db.TestDatabasePlain;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,18 +15,19 @@ import liquibase.exception.LiquibaseException;
 import static org.junit.Assert.*;
 
 public class TestStudyManagerImpl {
-	TestDataSource ds;
+	TestDataSourcePlain ds;
 	StudyManagerImpl sm;
 	public TestStudyManagerImpl() throws SQLException {
-		ds = new TestDataSource();
 	}
 	@Before
-	public void initializeDatabase() throws SQLException, LiquibaseException {
-		ds.dropAll();
-		ds = new TestDataSource();
+	public void initializeDatabase() throws SQLException, LiquibaseException, IOException {
+		ds = new TestDataSourcePlain(new TestDatabasePlain("study_mgr"));
+		
 		sm = new StudyManagerImpl();
 		sm.setAnonymizer( s -> String.join("/", s) ) ;
 		sm.setDataSource(ds);
+		sm.resetDatabaseEmpty();
+		sm.prepareDatabase();
 	}
 	@Test
 	public void verifyLoadStudies() throws IOException {

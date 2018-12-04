@@ -62,7 +62,7 @@ public class StudyManagerImpl implements StudyManager {
 		this.ds = ds;
 	}
 
-	private void initializeDatabase() throws NamingException, SQLException {
+	private void initializeDatabase() throws NamingException, SQLException, IOException {
 		// make sure we have a database to work on
 		if( this.ds == null ) {
 			// not set via setDataSource, use preferences
@@ -74,31 +74,29 @@ public class StudyManagerImpl implements StudyManager {
 		}
 
 		try( Connection dbc = this.ds.getConnection() ){
-			createTables(dbc);
+			DatabaseTableManager dbm = new DatabaseTableManager(dbc);
+			dbm.checkAndCreateTables();
 		}
 	}
 
-	private void createTables(Connection dbc) {
-		// check if tables exist
-		try( Statement s = dbc.createStatement();
-				ResultSet rs = s.executeQuery("SELECT COUNT(*) FROM optinout_studies") ){
-			rs.next();
-			log.info("Tables for study_manager existing");
-			return; // leave this method
-		}catch( SQLException e ) {
-			// tables probably do not exist
-			log.info("Tables for study_manager (probably) missing");
+	/**
+	 * Method for testing. Resets the database to its initial state.
+	 * @throws SQLException  SQL error
+	 * @throws IOException  IO error
+	 */
+	void resetDatabaseEmpty() throws IOException, SQLException {
+		try( Connection dbc = this.ds.getConnection() ){
+			DatabaseTableManager dbm = new DatabaseTableManager(dbc);
+			dbm.dropAllTables();
 		}
-
-		// create the required tables
 	}
 	@PostConstruct
-	public void loadData() {
+	public void prepareDatabase() {
 		log.info("Initializing study manager");
 		try {
 			initializeDatabase();
-		} catch ( SQLException | NamingException e) {
-			throw new IllegalStateException("Unable to inityalize study manager", e);
+		} catch ( IOException | SQLException | NamingException e) {
+			throw new IllegalStateException("Unable to initialize study manager", e);
 		}
 	}
 

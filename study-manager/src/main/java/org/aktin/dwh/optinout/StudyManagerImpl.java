@@ -12,7 +12,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.naming.InitialContext;
@@ -57,7 +56,6 @@ public class StudyManagerImpl implements StudyManager {
 	 * be used to obtain a connection to the i2b2 CRC database.
 	 * @param ds data source
 	 */
-	@Resource(lookup="java:jboss/datasources/AktinDS")
 	public void setDataSource(DataSource ds){
 		this.ds = ds;
 	}

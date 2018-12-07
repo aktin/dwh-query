@@ -14,7 +14,7 @@ try({
     names(y)[length(y)] <- "999"
     y[length(y)+1] <- t[length(t)]
     names(y)[length(y)] <- "NA"
-    graph <- barchart(rev(y), xlab="Anzahl Patienten",col=std_cols1,origin=0)
+    graph <- barchart(names(rev(y))~rev(y), xlab="Anzahl Patienten",col=std_cols1,origin=0)
     report.svg(graph, 'cedis_top')
     
     x <- data.frame(Var1=names(y),Freq=as.numeric(y))

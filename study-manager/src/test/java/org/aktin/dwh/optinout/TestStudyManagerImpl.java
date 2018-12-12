@@ -32,16 +32,17 @@ public class TestStudyManagerImpl {
 	@Test
 	public void verifyLoadStudies() throws IOException {
 		List<StudyImpl> list = sm.getStudies();
-		assertEquals(2, list.size());
+//		assertEquals(2, list.size());
+		assertEquals(1, list.size());
 		StudyImpl s = list.get(0);
-		assertEquals("AKTIN", s.getTitle());
-		s = list.get(1);
+//		assertEquals("AKTIN", s.getTitle());
+//		s = list.get(1);
 		assertEquals("ENQuIRE", s.getTitle());
 	}
 
 	@Test
 	public void verifyGenerateSIC() throws IOException {
-		StudyImpl s = sm.getStudies().get(1);
+		StudyImpl s = sm.getStudies().get(0);
 		String code = s.generateSIC();
 		assertEquals("1000", code);
 		code = s.generateSIC();
@@ -51,14 +52,14 @@ public class TestStudyManagerImpl {
 		sm = null;
 		sm = new StudyManagerImpl();
 		sm.setDataSource(ds);
-		s = sm.getStudies().get(1);
+		s = sm.getStudies().get(0);
 		code = s.generateSIC();
 		assertEquals("1002", code);		
 	}
 
 	@Test
 	public void addListDeletePatients() throws IOException {
-		StudyImpl s = sm.getStudies().get(1);
+		StudyImpl s = sm.getStudies().get(0);
 		assertTrue(s.isParticipationSupported(Participation.OptIn));
 		assertFalse(s.isParticipationSupported(Participation.OptOut));
 		
@@ -95,7 +96,7 @@ public class TestStudyManagerImpl {
 
 	@Test
 	public void findPatientBySIC() throws IOException {
-		StudyImpl s = sm.getStudies().get(1);
+		StudyImpl s = sm.getStudies().get(0);
 		s.addPatient(PatientReference.Patient, "0", "0", Participation.OptIn, "4321", null, "TestUser1");
 		// retrieve patient
 		PatientEntryImpl pat = s.getPatientBySIC("4321");

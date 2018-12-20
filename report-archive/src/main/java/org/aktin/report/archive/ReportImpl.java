@@ -354,7 +354,17 @@ public class ReportImpl implements ArchivedReport{
 			return null;
 		});
 	}
-	public void setData(Connection dbc, GeneratedReport report) throws IOException, SQLException {
+
+	/**
+	 * Update the archived/stored report data with the supplied {@link GeneratedReport}.
+	 * This method is called by {@link ReportArchiveImpl#setReportResult(int, GeneratedReport)}.
+	 * 
+	 * @param dbc database connection
+	 * @param report generated report
+	 * @throws IOException IO error
+	 * @throws SQLException SQL error
+	 */
+	void setData(Connection dbc, GeneratedReport report) throws IOException, SQLException {
 		this.dataTimestamp = report.getDataTimestamp();
 		// update preferences
 		this.prefs = new HashMap<>(report.getPreferences());

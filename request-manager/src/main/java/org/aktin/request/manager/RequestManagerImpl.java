@@ -177,7 +177,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		// get R version
 		RScript rScript = new RScript(Paths.get(prefs.get(PreferenceKey.rScriptBinary)));
 		try {
-			versions.put("r-script", rScript.getVersion());
+			// add detailed information about R package versions
+			rScript.getPackageVersions().forEach( (pkg,v) -> versions.put("r-script."+pkg, v) );
 		}catch( IOException e ) {
 			versions.put("r-script", "[error]");
 			log.log(Level.WARNING, "Unable to determine r-script version", e);

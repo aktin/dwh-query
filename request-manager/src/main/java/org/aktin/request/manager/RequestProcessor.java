@@ -2,6 +2,7 @@ package org.aktin.request.manager;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.Period;
 import java.time.ZoneId;
@@ -26,6 +27,7 @@ import javax.sql.DataSource;
 import org.aktin.Preferences;
 import org.aktin.broker.query.QueryHandler;
 import org.aktin.broker.query.QueryHandlerFactory;
+import org.aktin.broker.query.aggregate.rscript.RHandlerFactory;
 import org.aktin.broker.query.sql.SQLHandlerFactory;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
@@ -62,8 +64,9 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 		} catch (NamingException e) {
 			throw new RuntimeException("Unable to lookup CRC data source", e);
 		}
-		SQLHandlerFactory f = new SQLHandlerFactory(crc);
-		handlers.add(f);
+
+		handlers.add(new SQLHandlerFactory(crc));
+		handlers.add(new RHandlerFactory(Paths.get(prefs.get(PreferenceKey.rScriptBinary))));
 		localZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 	}
 
@@ -115,6 +118,9 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 		@Override
 		public void run() {
 			
+			// TODO multiple handlers
+			// TODO verify inbetween handlers that the remaining files in the directory are exactly the advertised results
+
 			findHandlerFactory();
 			if( factory == null ){
 				// unable to execute query

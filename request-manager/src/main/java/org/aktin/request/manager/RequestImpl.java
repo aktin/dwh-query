@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
@@ -245,7 +246,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		return this;
 	}
 
-	protected void changeStatus(Connection dbc, long timestamp, String userId, RequestStatus newStatus, String description) throws SQLException{		
+	protected void writeStatusChange(Connection dbc, long timestamp, String userId, RequestStatus newStatus, String description) throws SQLException{		
 		Objects.requireNonNull(newStatus);
 		try( PreparedStatement ps = dbc.prepareStatement("INSERT INTO request_action_log(broker_request_id, timestamp, user_id, old_status, new_status, description)VALUES(?,?,?,?,?,?)") ){
 			ps.setInt(1, requestId);
@@ -279,7 +280,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		}
 		try( Connection dbc = store.getConnection() ){
 			dbc.setAutoCommit(true);
-			changeStatus(dbc, System.currentTimeMillis(), userId, newStatus, description);
+			writeStatusChange(dbc, System.currentTimeMillis(), userId, newStatus, description);
 		} catch (SQLException e) {
 			throw new IOException("Unable to write action to database", e);
 		}
@@ -335,7 +336,11 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	}
 
 	@Override
-	public void setProcessing(Map<String, String> properties) throws IOException{
+	public void setProcessing(Map<String, String> properties, String stepName, int stepNo, int numSteps) throws IOException {
+		if( this.status == RequestStatus.Processing ) {
+			return; // only first set of properties is stored
+			// server 
+		}
 		// store properties in status change description
 		StringWriter w = new StringWriter();
 		Properties props = new Properties();
@@ -344,7 +349,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		
 		try( Connection dbc = store.getConnection() ){
 			dbc.setAutoCommit(true);
-			changeStatus(dbc, System.currentTimeMillis(), null, RequestStatus.Processing, w.toString());
+			writeStatusChange(dbc, System.currentTimeMillis(), null, RequestStatus.Processing, w.toString());
 		} catch (SQLException e) {
 			throw new IOException("Unable to write action to database", e);
 		}
@@ -425,5 +430,11 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 		}
 		return store.getResultDir().resolve(resultPath).getFileName().toString();
 	}
+
+	@Override
+	public Path createIntermediateDirectory(int stepNo) throws IOException {
+		return store.createIntermediatePath(this, stepNo);
+	}
+
 
 }

@@ -1,5 +1,7 @@
 package org.aktin.request.manager;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,6 +20,7 @@ abstract class RequestStoreImpl {
 
 	private DataSource ds;
 	private Path resultDir;
+//	private Path intermediateDir;
 	private List<RequestImpl> requests;
 	
 	public RequestStoreImpl(){
@@ -76,6 +79,18 @@ abstract class RequestStoreImpl {
 		// TODO suffix by media type
 		return Integer.toString(impl.getRequestId());
 	}
+	/**
+	 * Create a directory path for storing intermediate
+	 * files. This will be used for executions with multiple processing steps.
+	 * @param impl request implementation
+	 * @param stepNo step number to differentiate between multiple intermediate stages
+	 * @return Path where intermediate files can be stored for the query
+	 * @throws IOException 
+	 */
+	protected Path createIntermediatePath(RequestImpl impl, int stepNo) throws IOException {
+		return Files.createTempDirectory("request-"+impl.getRequestId()+"-"+stepNo);
+	}
+	
 	protected Connection getConnection() throws SQLException{
 		return ds.getConnection();
 	}
@@ -84,7 +99,7 @@ abstract class RequestStoreImpl {
 		long timestamp = System.currentTimeMillis();
 		try( Connection dbc = getConnection() ){
 			dbc.setAutoCommit(true);
-			r.changeStatus(dbc, timestamp, null, RequestStatus.Retrieved, null);
+			r.writeStatusChange(dbc, timestamp, null, RequestStatus.Retrieved, null);
 			r.insertIntoDatabase(dbc);
 		}
 		// append to list

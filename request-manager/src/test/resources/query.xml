@@ -1,0 +1,102 @@
+<queryRequest xmlns="http://aktin.org/ns/exchange"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+	<id>123</id>	
+	<reference>2011-03-01T00:00:00Z</reference>
+	<scheduled>2016-04-28T00:00:00Z</scheduled>
+	<deadline>2016-04-30T00:00:00Z</deadline>
+
+<query xmlns="http://aktin.org/ns/exchange" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xi="http://www.w3.org/2001/XInclude">
+	<title>Grippescreening</title>
+	<description>Es soll untersucht werden, ob sich in den Notaufnahmen
+	Indikatoren für den Ausbruch von Grippewellen finden lassen.</description>
+	<principal>
+		<name>Prince Ipal</name>
+		<organisation>AKTIN</organisation>
+		<email>it-support@aktin.org</email>
+		<phone>+49 (441) 798 - 2772</phone>
+		<!-- optional cryptographic signature at a later release <signature></signature> -->
+	</principal>
+	<schedule xsi:type="singleExecution">
+		<duration>-P1Y</duration>
+	</schedule>
+
+
+	<sql xmlns="http://aktin.org/ns/i2b2/sql">
+		<temporary-table name="temp_patients"/>
+		
+		<source type="application/sql">
+<![CDATA[
+				-- Syntax specific to HSQLDB, which is used for unit testing
+				DECLARE LOCAL TEMPORARY TABLE temp_encounters(id, patient, start) 
+				 AS ( SELECT encounter_num, patient_num, start_date 
+				 FROM  visit_dimension
+				  WHERE start_date >= '${data.start}' AND start_date < '${data.end}'
+				) WITH DATA ON COMMIT PRESERVE ROWS;
+
+				DECLARE LOCAL TEMPORARY TABLE temp_patients(id, sex, age) 
+				 AS ( SELECT patient_num, sex_cd, MONTHS_BETWEEN(e.start, p.birth_date)/12
+				  FROM patient_dimension p, temp_encounters e
+				  WHERE p.patient_num=e.patient
+				) WITH DATA ON COMMIT PRESERVE ROWS;
+				DECLARE LOCAL TEMPORARY TABLE temp_diag(patient, encounter, diag)
+				 AS ( SELECT f.patient_num, f.encounter_num, f.concept_cd 
+				  FROM observation_fact f, temp_encounters e
+				  WHERE f.encounter_num=e.id AND f.concept_cd LIKE 'ICD10GM:%'
+				) WITH DATA ON COMMIT PRESERVE ROWS;
+]]><!-- 
+				Commands must end with ";" at end of line. 
+				Comments must start with two dashes at beginning of line
+				-->
+		</source>
+		<export table="temp_patients" destination="patients" />
+		<export table="temp_encounters" destination="encounters" />
+		<export table="temp_diag" destination="diag" />
+	</sql>
+
+	<r-script xmlns="http://aktin.org/ns/aggregate/r">
+		<source type="application/r-script"  timeout="30s">
+<![CDATA[
+		library(lattice)
+		source('module1.R')
+		pat <- read.delim(file="patients.txt")
+		df <- data.frame(Param="sex", table(pat$SEX))
+		# convert columns to string
+		df$Var1 <- as.character(df$Var1)
+		df$Param <- as.character(df$Param)
+		# add addtional counts
+		# number of patients
+		df <- rbind(df, c("pat",NA,length(pat$ID)))
+
+		# write data table
+		report.table(x=df, file="counts.txt");
+		graph <- histogram(pat$AGE,xlab="Alter [Jahre]",ylab="Anzahl Patienten",type='count',breaks=seq(0,110,length=12),sub=paste('n =',length(df$age),', Werte größer 110 werden als 110 gewertet'))
+		report.svg(graph,'age');
+	
+]]>
+		</source>
+		<!--  additional resource files to be placed in the directory
+		  before execution of the script. e.g. lookup tables, additional script modules, etc. -->
+		<resource file="module1.R" type="text/plain">
+<![CDATA[
+		# write svg graphics
+		gfx.ext <- '.svg'
+		gfx.dev <- 'svg'
+		report.svg <- function(graph, name, width=8, height=4){
+			trellis.device(gfx.dev,file=paste0(name,gfx.ext), width=width,height=height)
+			print(graph)
+			no_output <- dev.off() #silent
+		}
+		report.table <- function(x, file){
+			write.table(x=x, file=file, row.names=FALSE, sep="\t", fileEncoding="UTF-8", quote=FALSE, na="")
+		}
+]]>
+		</resource>
+	
+		<result file="counts.txt" type="text/tab-separated-values"/>
+		<result file="age.svg" type="image/svg"/>
+	</r-script>
+</query>
+
+</queryRequest>

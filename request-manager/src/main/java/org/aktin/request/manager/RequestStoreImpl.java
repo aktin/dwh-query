@@ -94,7 +94,7 @@ abstract class RequestStoreImpl {
 	protected Connection getConnection() throws SQLException{
 		return ds.getConnection();
 	}
-	protected RequestImpl addNewRequest(QueryRequest request) throws SQLException{
+	public RequestImpl addNewRequest(QueryRequest request) throws SQLException{
 		RequestImpl r = new RequestImpl(this, request);
 		long timestamp = System.currentTimeMillis();
 		try( Connection dbc = getConnection() ){

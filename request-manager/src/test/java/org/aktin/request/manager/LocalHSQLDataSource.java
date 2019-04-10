@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+// TODO move to query-i2b2-sql
 public class LocalHSQLDataSource implements DataSource{
 
 	private PrintWriter pw;
@@ -63,6 +65,18 @@ public class LocalHSQLDataSource implements DataSource{
 		}
 	}
 
+	public Integer executeCountQuery(String sql) throws SQLException {
+		Integer ret = null;
+		try( Connection c = getConnection();
+				Statement s = c.createStatement();
+				ResultSet rs = s.executeQuery(sql) )
+		{
+			if( rs.next() ) {
+				ret = rs.getInt(1);
+			}
+		}
+		return ret;
+	}
 	public LocalHSQLDataSource() {
 		pw = new PrintWriter(System.out);
 	}

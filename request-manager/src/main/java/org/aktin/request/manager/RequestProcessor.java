@@ -1,5 +1,6 @@
 package org.aktin.request.manager;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.Period;
@@ -45,8 +46,28 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 		this.executor = executor;
 	}
 
+	/**
+	 * Manual initialization. Main purpose is for unit testing.
+	 * @param dsSQL datasource used for the SQL source
+	 * @param rExecPath executable path for R executions
+	 * @param localZone local timezone
+	 */
+	public void initializeManual(DataSource dsSQL, Path rExecPath, ZoneId localZone) {
+		handlerFactories = new QueryHandlerFactory[] {
+				new SQLHandlerFactory(dsSQL),
+				new RHandlerFactory(rExecPath)
+		};
+		
+		this.localZone = localZone;
+		
+	}
+
+	/**
+	 * Automatic initialization. Method will be called automatically 
+	 * from the J2EE container, due to the annotation {@code javax.annotation.PostConstruct}.
+	 */
 	@PostConstruct
-	public void loadQueryHandlers() {
+	public void initializeAuto() {
 		// lookup data source
 		String lookup = prefs.get(PreferenceKey.i2b2DatasourceCRC);
 		DataSource crc;
@@ -55,15 +76,15 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 		} catch (NamingException e) {
 			throw new RuntimeException("Unable to lookup CRC data source", e);
 		}
-
-		handlerFactories = new QueryHandlerFactory[] {
-				new SQLHandlerFactory(crc),
-				new RHandlerFactory(Paths.get(prefs.get(PreferenceKey.rScriptBinary)))
-		};
 		
-		localZone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
+		initializeManual(crc, 
+				Paths.get(prefs.get(PreferenceKey.rScriptBinary)), 
+				ZoneId.of(prefs.get(PreferenceKey.timeZoneId)));
 	}
 
+	/**
+	 * Supply a request for processing
+	 */
 	@Override
 	public void accept(RetrievedRequest request){
 		// start execution

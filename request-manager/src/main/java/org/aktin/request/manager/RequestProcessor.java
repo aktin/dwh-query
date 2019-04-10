@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +36,9 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 	private QueryHandlerFactory[] handlerFactories;
 	private ZoneId localZone;
 
+	/**
+	 * Preference injection. Only needed for {@link #initializeAuto()} when used by 
+	 */
 	@Inject
 	private Preferences prefs;
 
@@ -52,11 +56,12 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 	 * @param rExecPath executable path for R executions
 	 * @param localZone local timezone
 	 */
-	public void initializeManual(DataSource dsSQL, Path rExecPath, ZoneId localZone) {
-		handlerFactories = new QueryHandlerFactory[] {
-				new SQLHandlerFactory(dsSQL),
-				new RHandlerFactory(rExecPath)
-		};
+	public void initializeManual(DataSource dsSQL, Path rExecPath, ZoneId localZone, DateTimeFormatter sqlFormatter) {
+		SQLHandlerFactory sql = new SQLHandlerFactory(dsSQL);
+		if( sqlFormatter != null ) {
+			sql.setDateTimeFormatter(sqlFormatter);
+		}
+		handlerFactories = new QueryHandlerFactory[] {sql, new RHandlerFactory(rExecPath)};
 		
 		this.localZone = localZone;
 		
@@ -79,7 +84,8 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 		
 		initializeManual(crc, 
 				Paths.get(prefs.get(PreferenceKey.rScriptBinary)), 
-				ZoneId.of(prefs.get(PreferenceKey.timeZoneId)));
+				ZoneId.of(prefs.get(PreferenceKey.timeZoneId)),
+				null);
 	}
 
 	/**
@@ -91,7 +97,7 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 		executor.execute(new RequestExecution(this, request));
 	}
 
-	public QueryHandlerFactory findHandlerFactory(Element element) {
+	protected QueryHandlerFactory findHandlerFactory(Element element) {
 		for( QueryHandlerFactory fac : handlerFactories ){
 			if( Objects.equals(fac.getNamespace(), element.getNamespaceURI())
 					&& fac.getElementName().equals(element.getNodeName()) ){
@@ -109,7 +115,7 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 	 * @param factory factory used to execute the request
 	 * @return properties
 	 */
-	public Map<String,String> compileProperties(RetrievedRequest request, QueryHandlerFactory factory){
+	protected Map<String,String> compileProperties(RetrievedRequest request, QueryHandlerFactory factory){
 		Map<String, String> m = new HashMap<>();
 		Instant a = request.getRequest().getReferenceTimestamp();
 		// calculate period

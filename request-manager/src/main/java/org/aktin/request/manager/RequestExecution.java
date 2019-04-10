@@ -78,6 +78,7 @@ public class RequestExecution implements Runnable{
 				// first step will not receive input - it will produce the data for the next steps
 				executeRequestSource(0, null, dw);
 				// run intermediate parts, except for the final part
+
 				for( int i=1; i<sources.length-1; i++ ) {
 					// create target directory
 					MultipartDirectoryWriter nw = new MultipartDirectoryWriter(request.createIntermediateDirectory(1+i), StandardCharsets.UTF_8);

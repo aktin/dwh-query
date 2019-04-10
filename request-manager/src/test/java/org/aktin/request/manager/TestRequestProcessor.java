@@ -15,6 +15,7 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBException;
 
 import org.aktin.broker.query.xml.QueryRequest;
+import org.aktin.broker.request.RequestStatus;
 import org.aktin.scripting.r.TestRScript;
 import org.junit.After;
 import org.junit.Assert;
@@ -41,7 +42,8 @@ public class TestRequestProcessor {
 		{
 			ds.create(rd);
 			int count = ds.executeCountQuery("SELECT COUNT(*) FROM visit_dimension WHERE start_date >= '2010-03-01 01:00:00' AND start_date < '2011-03-01 01:00:00'");
-			System.out.println("Visits: "+count);
+			// make sure we have data to work with
+			Assert.assertEquals(5, count);
 		}
 	}
 
@@ -75,7 +77,7 @@ public class TestRequestProcessor {
 		
 	}
 	@Test
-	public void dummy() throws IOException, SQLException, JAXBException {
+	public void verifySqlPlusRScriptExecution() throws IOException, SQLException, JAXBException {
 
 		newRequestProcessor();
 		newRequestStore();
@@ -85,6 +87,7 @@ public class TestRequestProcessor {
 			
 			RequestImpl ri = rs.addNewRequest(qr);
 			rp.accept(ri);
+			Assert.assertEquals(RequestStatus.Completed, ri.getStatus());
 		}finally {
 			rs.cleanDirectories();
 		}

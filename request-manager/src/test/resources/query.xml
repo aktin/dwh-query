@@ -36,7 +36,7 @@
 				) WITH DATA ON COMMIT PRESERVE ROWS;
 
 				DECLARE LOCAL TEMPORARY TABLE temp_patients(id, sex, age) 
-				 AS ( SELECT patient_num, sex_cd, MONTHS_BETWEEN(e.start, p.birth_date)/12
+				 AS ( SELECT DISTINCT patient_num, sex_cd, MONTHS_BETWEEN(e.start, p.birth_date)/12
 				  FROM patient_dimension p, temp_encounters e
 				  WHERE p.patient_num=e.patient
 				) WITH DATA ON COMMIT PRESERVE ROWS;

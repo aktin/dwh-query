@@ -57,11 +57,6 @@
 			<artifactId>query-aggregate-rscript</artifactId>
 			<version>0.8-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>org.aktin</groupId>
-			<artifactId>r-script</artifactId>
-			<version>0.7-SNAPSHOT</version>
-		</dependency>
 		<!-- j2ee annotations -->
 		<dependency>
 			<groupId>javax</groupId>
@@ -100,7 +95,7 @@
 		<dependency><!--  locate the R executable path for testing -->
 			<groupId>org.aktin</groupId>
 			<artifactId>r-script</artifactId>
-			<version>1.0</version>
+			<version>1.1</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

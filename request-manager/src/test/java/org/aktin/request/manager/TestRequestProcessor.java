@@ -87,7 +87,10 @@ public class TestRequestProcessor {
 			
 			RequestImpl ri = rs.addNewRequest(qr);
 			rp.accept(ri);
+			// query should have been finished successfully
 			Assert.assertEquals(RequestStatus.Completed, ri.getStatus());
+			// make sure we have a result ZIP archive file
+			Assert.assertEquals("application/zip",ri.getResultData().getContentType());
 		}finally {
 			rs.cleanDirectories();
 		}

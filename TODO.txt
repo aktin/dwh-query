@@ -1,0 +1,6 @@
+
+Lokaler Bericht: Crowding mit Grafiken pro Woche nach Wochentag. 
+Problem: Anzahl Grafiken hängt von Zeitraum ab. 4-5 Wochen pro Monat bzw. mehrere bei längeren Zeiträumen
+
+Untersuchen ob/wie man R-pakete installieren lassen kann.
+Zeiten berechnen: Welche Probleme tauchen auf?

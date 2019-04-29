@@ -21,7 +21,6 @@
 	</scm>
 	
 	<modules>
-	  <module>r-script</module>
 		<module>report-manager</module>
 		<module>report-archive</module>
 		<module>report-schedule</module>

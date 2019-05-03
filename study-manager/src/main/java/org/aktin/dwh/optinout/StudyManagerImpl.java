@@ -29,8 +29,6 @@ import org.aktin.dwh.Anonymizer;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.optinout.sic.CodeGeneratorFactory;
 
-import de.sekmi.histream.ext.Patient;
-
 
 @Singleton
 public class StudyManagerImpl implements StudyManager {

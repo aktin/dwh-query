@@ -5,14 +5,13 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.Resource;
 import javax.enterprise.inject.Any;
@@ -30,6 +29,7 @@ import org.aktin.report.InsufficientDataException;
 import org.aktin.report.Report;
 import org.aktin.report.ReportInfo;
 import org.aktin.report.ReportManager;
+import org.aktin.scripting.r.AbnormalTerminationException;
 
 /**
  * Manage all registered reports. Generate
@@ -204,7 +204,7 @@ public class ReportManagerImpl extends Module implements ReportManager{
 				re.runR(Paths.get(ReportManagerImpl.this.rScript));
 				re.runFOP();
 				re.cleanup();
-			} catch (IOException e) {
+			} catch (IOException | TimeoutException | AbnormalTerminationException e) {
 				throw new CompletionException(e);
 			}
 			return re;
@@ -214,35 +214,5 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	private Executor getExecutor(){
 		return executor;
 	}
-	/**
-	 * Generate a report
-	 * @param report report template
-	 * @param fromTimestamp minimum timestamp for the report data
-	 * @param endTimestamp maximum timestamp for the report data
-	 * @param reportDestination destination file where the report file will be written to
-	 * @throws IOException error
-	 */
-	@Deprecated
-	public void generateReportNow(Report report, Instant fromTimestamp, Instant endTimestamp, Path reportDestination) throws IOException{
-		ReportExecution re = new ReportExecution(report, fromTimestamp, endTimestamp, reportDestination);
-		re.createTempDirectory(tempDir);
-
-		try {
-			re.extractData(extractor).get();
-		} catch (InterruptedException e) {
-			throw new IOException(e);
-		} catch (ExecutionException e) {
-			throw new IOException(e.getCause());
-		}
-
-		re.writePreferences(preferenceManager, Collections.emptyMap());
-
-		re.runR(Paths.get(this.rScript));
-		re.runFOP();
-		// 
-		
-		re.cleanup();
-	}
-
-
+	
 }

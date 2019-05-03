@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -43,6 +45,7 @@ import org.aktin.dwh.ExtractedData;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.GeneratedReport;
 import org.aktin.report.Report;
+import org.aktin.scripting.r.AbnormalTerminationException;
 import org.aktin.scripting.r.RScript;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
@@ -229,15 +232,22 @@ class ReportExecution implements GeneratedReport, URIResolver{
 		}
 	}
 
-	void runR(Path rScriptExecutable) throws IOException{
+	void runR(Path rScriptExecutable) throws IOException, TimeoutException, AbnormalTerminationException{
 		files = report.copyResourcesForR(temp);
 		// run main script
 		RScript rScript = new RScript(rScriptExecutable);
-		rScript.runRscript(temp, files[0]);
-		// delete data files
-		deleteFiles(temp, dataFiles.getDataFileNames());
-		// delete copied R source files
-		deleteFiles(temp, files);
+		try {
+			rScript.runRscript(temp, files[0], null); // TODO specify and use timeout in properties
+		}finally{
+			try {
+				// delete data files
+				deleteFiles(temp, dataFiles.getDataFileNames());
+				// delete copied R source files
+				deleteFiles(temp, files);
+			}catch( IOException e ) {
+				log.log(Level.WARNING, "Unable to delete generated files for R execution", e);
+			}
+		}
 	}
 
 	private XMLReader constructReader() throws IOException{

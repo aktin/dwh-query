@@ -130,6 +130,10 @@ public class ReportManagerImpl extends Module implements ReportManager{
 			this.tempDir = Paths.get(prefs.get(PreferenceKey.reportTempPath));
 			verifyTempDir();
 		}
+		String keepTemp = prefs.get(PreferenceKey.reportDebugKeepTempFiles);
+		if( keepTemp != null ) {
+			setKeepIntermediateFiles(Boolean.parseBoolean(keepTemp));
+		}
 	}
 
 	@Resource(lookup="java:comp/DefaultManagedExecutorService")

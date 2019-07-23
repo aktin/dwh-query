@@ -5,7 +5,7 @@
 
 	<groupId>org.aktin</groupId>
 	<artifactId>request-manager</artifactId>
-	<version>0.7-SNAPSHOT</version>
+	<version>0.7</version>
 
 	<description>
 		Retreives and manages requests from external
@@ -16,7 +16,7 @@
 	<parent>
 		<groupId>org.aktin</groupId>
 		<artifactId>dwh-query</artifactId>
-		<version>0.7-SNAPSHOT</version>
+		<version>0.7</version>
 	</parent>
 
 	<build>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.4</version>
+			<version>0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>
@@ -45,17 +45,17 @@
 		<dependency>
 			<groupId>org.aktin.broker</groupId>
 			<artifactId>query-model</artifactId>
-			<version>0.8-SNAPSHOT</version>
+			<version>0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin.broker</groupId>
 			<artifactId>query-i2b2-sql</artifactId>
-			<version>0.8-SNAPSHOT</version>
+			<version>0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin.broker</groupId>
 			<artifactId>query-aggregate-rscript</artifactId>
-			<version>0.8-SNAPSHOT</version>
+			<version>0.8</version>
 		</dependency>
 		<!-- j2ee annotations -->
 		<dependency>
@@ -69,7 +69,7 @@
 		<dependency>
 			<groupId>org.aktin.broker</groupId>
 			<artifactId>query-model</artifactId>
-			<version>0.7</version>
+			<version>0.8</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -95,7 +95,7 @@
 		<dependency><!--  locate the R executable path for testing -->
 			<groupId>org.aktin</groupId>
 			<artifactId>r-script</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>1.2</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

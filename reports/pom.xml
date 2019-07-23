@@ -4,7 +4,7 @@
 	
 	<groupId>org.aktin.reports</groupId>
 	<artifactId>pom</artifactId>
-	<version>0.7</version>
+	<version>0.8-SNAPSHOT</version>
   
 	<name>AKTIN : DWH Query : Reports</name>
 	<description>AKTIN reports parent pom</description>
@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.aktin</groupId>
 		<artifactId>dwh-query</artifactId>
-		<version>0.7</version>
+		<version>0.8-SNAPSHOT</version>
 	</parent>
 		
 	<modules>
@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.7</version>
+			<version>0.8-SNAPSHOT</version>
 		</dependency>
 		<!-- dependency injection is optional 
 			and provided by the CDI container.
@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.7</version>
+			<version>0.8-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

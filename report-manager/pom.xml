@@ -37,12 +37,12 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.4</version>
+			<version>0.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>fop</artifactId>
-			<!-- TODO update to 2.2 -->
+			<!-- TODO update to 2.3 and try remove xerces below-->
 			<version>2.1</version>
 		</dependency>
 <!-- try to fix SVG rendering failures -->

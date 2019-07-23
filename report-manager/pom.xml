@@ -42,7 +42,10 @@
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>fop</artifactId>
-			<!-- TODO update to 2.3 and try remove xerces below-->
+			<!-- TODO update to 2.3 and try remove xerces below.
+			     Updating will produce errors: 
+			      FOP errors (1): Dem Element "fo:simple-page-master" fehlt ein verlangtes Property "master-name" 
+			 -->
 			<version>2.1</version>
 		</dependency>
 <!-- try to fix SVG rendering failures -->

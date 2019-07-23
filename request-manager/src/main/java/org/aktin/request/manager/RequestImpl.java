@@ -62,7 +62,7 @@ public class RequestImpl implements RetrievedRequest, DataSource{
 	 * the request to the database nor fires any events.
 	 * <p>
 	 * After calling this constructor, make sure to change
-	 * the status via {@link #changeStatus(Connection, long, String, RequestStatus, String)}, 
+	 * the status via {@link #changeStatus(String, RequestStatus, String)}, 
 	 * write to data base and fire an event.
 	 * </p>
 	 * @param store request store

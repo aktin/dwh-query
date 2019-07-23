@@ -85,7 +85,7 @@ abstract class RequestStoreImpl {
 	 * @param impl request implementation
 	 * @param stepNo step number to differentiate between multiple intermediate stages
 	 * @return Path where intermediate files can be stored for the query
-	 * @throws IOException 
+	 * @throws IOException io error
 	 */
 	protected Path createIntermediatePath(RequestImpl impl, int stepNo) throws IOException {
 		return Files.createTempDirectory("request-"+impl.getRequestId()+"-"+stepNo);

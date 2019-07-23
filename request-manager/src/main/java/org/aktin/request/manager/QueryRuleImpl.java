@@ -85,6 +85,7 @@ public class QueryRuleImpl implements BrokerQueryRule {
 	 * @param req null for default rule, or request with query with non-empty id
 	 * @param userId user
 	 * @param action action
+	 * @param signatureAlgorithm signature algorithm to use for signing the query
 	 * @return newly created rule
 	 * @throws SQLException sql error
 	 * @throws NoSuchAlgorithmException signature algorithm not supported

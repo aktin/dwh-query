@@ -55,6 +55,7 @@ public class RequestProcessor implements Consumer<RetrievedRequest>{
 	 * @param dsSQL datasource used for the SQL source
 	 * @param rExecPath executable path for R executions
 	 * @param localZone local timezone
+	 * @param sqlFormatter formatter to produce timestamp strings inserted into SQL
 	 */
 	public void initializeManual(DataSource dsSQL, Path rExecPath, ZoneId localZone, DateTimeFormatter sqlFormatter) {
 		SQLHandlerFactory sql = new SQLHandlerFactory(dsSQL);

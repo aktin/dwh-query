@@ -561,6 +561,10 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	public void reportStatusUpdatesToBroker(RetrievedRequest request, String description){
 //	public void reportStatusUpdatesToBroker(@Observes @StatusChanged RetrievedRequest request){
 		log.info("Request "+request.getRequestId()+" status -> "+request.getStatus());
+		if( client == null ) {
+			log.info("No broker configured. status change not reported to broker.");
+			return;
+		}
 		try{
 			switch( request.getStatus() ){
 			case Completed:

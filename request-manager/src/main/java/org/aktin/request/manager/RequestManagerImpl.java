@@ -395,7 +395,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		}catch( IOException e) {
 			log.log(Level.SEVERE, "Broker communication failed", e);
 		}
-		// request processing is done via status change callbacks
+		// request processing is done via status change callbacks^
+		log.info("Broker timer callback finished.");
 	}
 
 	@Override
@@ -548,11 +549,11 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 			
 			body.append("\nMit freundlichen Grüßen,\n");
 			body.append("Ihr lokaler AKTIN-Server\n");
-			
 			try{
 				email.sendEmail("[AKTIN] Aktion erforderlich für Datenanfrage "+request.getRequestId(), body.toString());
+				log.info("Email notification for pending interaction sent.");
 			}catch( IOException e ){
-				log.log(Level.SEVERE, "Unable to send email", e);
+				log.log(Level.SEVERE, "Unable to send email notification", e);
 			}
 		}
 	}

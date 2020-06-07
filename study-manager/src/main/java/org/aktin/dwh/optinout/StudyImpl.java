@@ -10,12 +10,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import org.aktin.dwh.optinout.sic.CodeGenerator;
 
 
 public class StudyImpl implements Study{
-//	private static final Logger log = Logger.getLogger(StudyImpl.class.getName());
+	private static final Logger log = Logger.getLogger(StudyImpl.class.getName());
 	StudyManagerImpl manager;
 	
 
@@ -127,6 +128,8 @@ public class StudyImpl implements Study{
 	@Override
 	public PatientEntryImpl getPatientByID(PatientReference ref, String id_root, String id_ext) throws IOException {
 		PatientEntryImpl pat;
+		id_root = trimIdPart(id_root);
+		id_ext = trimIdPart(id_ext);
 		try( Connection dbc = manager.getConnection();
 				PreparedStatement ps = dbc.prepareStatement(SELECT_PATIENT_SQL+" AND pat_ref=? AND pat_root=? AND pat_ext=?"))
 		{
@@ -226,10 +229,26 @@ public class StudyImpl implements Study{
 		}
 		throw new IllegalStateException("Enum value not handled: "+par);
 	}
+
+	public static final String trimIdPart(String id) {
+		if( id == null ) {
+			return null;
+		}
+		String trimmed = id.trim();
+		if( !trimmed.contentEquals(id) ) {
+			log.warning("Whitespace removed from ID '"+id+"'");
+			return trimmed;
+		}else {
+			return id;
+		}
+	}
+
 	@Override
 	public PatientEntry addPatient(PatientReference ref, String id_root, String id_ext, Participation opt, String sic,
 			String comment, String user) throws IOException {
 		Objects.requireNonNull(manager.getAnonymizer());
+		id_root = trimIdPart(id_root);
+		id_ext = trimIdPart(id_ext);
 		Timestamp now = new Timestamp(System.currentTimeMillis());
 		String psn = manager.getAnonymizer().calculateAbstractPseudonym(id_root,id_ext);
 		try( Connection dbc = manager.getConnection() )

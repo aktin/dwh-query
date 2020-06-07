@@ -104,7 +104,7 @@ abstract class RequestStoreImpl {
 		}
 		// append to list
 		requests.add(r);
-		log.info("Request "+request.getId()+" added. Firing status event..");
+		log.info("Request "+request.getId()+" added to database.");
 		// fire status change event: null -> Retrieved
 		afterRequestStatusChange(r, null);
 		return r;

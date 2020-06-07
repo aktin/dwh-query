@@ -3,7 +3,6 @@ package org.aktin.request.manager;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.annotation.Annotation;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -34,7 +33,7 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
-import javax.enterprise.event.Event;
+//import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -53,9 +52,9 @@ import org.aktin.broker.request.QueryRuleAction;
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
-import org.aktin.broker.request.StatusChanged;
+//import org.aktin.broker.request.StatusChanged;
 import org.aktin.broker.xml.RequestInfo;
-import org.aktin.broker.request.Status;
+//import org.aktin.broker.request.Status;
 import org.aktin.dwh.EmailService;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.scripting.r.RScript;
@@ -74,9 +73,10 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 
 	private Consumer<RetrievedRequest> uploader;
 
-	@Inject
-	@StatusChanged
-	private Event<RetrievedRequest> event;
+// Don't use JEE Event. Leads to threads not returning from timer callback
+//	@Inject
+//	@StatusChanged
+//	private Event<RetrievedRequest> event;
 
 	@Resource
     private TimerService timer;
@@ -401,22 +401,26 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 
 	@Override
 	protected void afterRequestStatusChange(RequestImpl request, String description) {
-		final RequestStatus status = request.getStatus();
-		Annotation qualifier = new Status() {
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return Status.class;
-			}
-			@Override
-			public RequestStatus value() {
-				return status;
-			}
-		};
-		// in application server, event is guaranteed to be non null
-		// however unit tests don't have 
-		if( event != null ){
-			event.select(qualifier).fire(request);
-		}
+//		disable JEE event processing to prevent timer callback locks
+//		final RequestStatus status = request.getStatus();
+//		Annotation qualifier = new Status() {
+//			@Override
+//			public Class<? extends Annotation> annotationType() {
+//				return Status.class;
+//			}
+//			@Override
+//			public RequestStatus value() {
+//				return status;
+//			}
+//		};
+		
+//		// in application server, event is guaranteed to be non null
+//		if( event != null ){
+//			event.select(qualifier).fire(request);
+//			log.info("Status change event fired for request "+request.getRequestId()+" status="+status);
+//		}else {
+//			log.warning("No request event fired because of missing JEE Event injection");
+//		}
 
 		reportStatusUpdatesToBroker(request, description);
 	}

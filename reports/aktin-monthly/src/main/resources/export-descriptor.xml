@@ -285,6 +285,7 @@
         <column header="aufnahme_ts" xpath="eav:start"/>
         <column header="triage_ts" xpath="concat(eav:fact[@class='MTS']/@start, eav:fact[@class='ESI']/@start, eav:fact[@concept='AKTIN:ASSESSMENT']/@start)"/> 
         <column header="arztkontakt_ts" xpath="eav:fact[@concept='AKTIN:PHYSENCOUNTER']/@start"/>
+        <!-- XXX start attribute will be missing if equal to encounterstart!!!! -->
         <column header="therapiebeginn_ts" xpath="eav:fact[@concept='AKTIN:STARTTHERAPY']/@start"/>
         <column header="entlassung_ts" xpath="eav:end"/>
         <!--

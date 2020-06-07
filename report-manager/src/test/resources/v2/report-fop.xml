@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<fop-transform xmlns="http://aktin.org/ns/fop">
+	<xsl href="fo-report.xsl"/>
+	<xml href="report-content.xml"/>
+	<data-res ../|
+	<resource type="application/xml" href="report-data.xml"/>
+	<resource type="image/svg" href="BMBF.svg"/>
+	<resource type="image/svg" href="AKTIN_Logo_final.svg"/>
+
+</fop-transform>

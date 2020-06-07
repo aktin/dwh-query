@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<report xmlns="http://aktin.org/ns/report">
+	<title>AKTIN Monatsbericht</title>
+	<description>Standardisierter Monatsbericht des AKTIN Projekts</description>
+	<period>
+		<default>P1M</default>
+		<min>P1D</min>
+		<max>P12M</max>
+	</period>
+	<!-- properties are imported from local configuration -->
+	<property>local.o</property>
+	<property>local.ou</property>
+	<!-- for report, always present are the properties data.start and data.end,
+	   which specify the range of the data to use for the report -->
+	
+</report>

@@ -18,7 +18,7 @@ public class PatientEntryImpl implements PatientEntry{
 	String comment;
 	Integer i2b2_patient_num;
 
-	public PatientEntryImpl(StudyImpl study, PatientReference id_ref, String id_root, String id_ext, Participation opt) {
+	PatientEntryImpl(StudyImpl study, PatientReference id_ref, String id_root, String id_ext, Participation opt) {
 		this.study = study;
 		this.id_ref = id_ref;
 		this.id_root = id_root;

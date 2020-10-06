@@ -35,12 +35,13 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.5</version>
+			<version>0.6-SNAPSHOT</version>
 		</dependency>
 		<!-- j2ee annotations -->
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
+			<!-- TODO JEE 8 -->
 			<version>7.0</version>
 			<scope>provided</scope>
 		</dependency>

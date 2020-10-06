@@ -12,11 +12,11 @@
 	<parent>
 		<groupId>org.aktin</groupId>
 		<artifactId>aktin</artifactId>
-		<version>0.9</version>
+		<version>0.10-SNAPSHOT</version>
 	</parent>
 	
 	<scm>
-		<developerConnection>scm:git:git@gitlab.uni-oldenburg.de:AKTIN/dwh-query.git</developerConnection>
+		<developerConnection>scm:git:https://git.rwth-aachen.de/aktin/dwh-query.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 	

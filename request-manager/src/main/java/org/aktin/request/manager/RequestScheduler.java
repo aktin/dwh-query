@@ -11,21 +11,16 @@ import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.RetrievedRequest;
-import org.aktin.broker.request.Status;
 
 @javax.ejb.Singleton
 @javax.ejb.Startup
-public class RequestScheduler {
+public class RequestScheduler implements Consumer<RetrievedRequest>{
 	private static final Logger log = Logger.getLogger(RequestScheduler.class.getName());
 
-	@Inject
-	RequestManager manager;
 
 	@Resource
     private TimerService timerService;
@@ -57,6 +52,7 @@ public class RequestScheduler {
 		synchronized( queue ){
 			if( queue.isEmpty() ){
 				// nothing to do
+				log.info("Request execution queue empty. Execution timer skipped.");
 				return;
 			}
 			// get next scheduled time
@@ -72,7 +68,7 @@ public class RequestScheduler {
 			waitMilli = 0;
 		}
 		nextExecution = timerService.createSingleActionTimer(waitMilli, timerConfig);
-		log.info("Next execution scheduled for "+nextExecution.getNextTimeout());
+		log.info("Request execution queue processed. Next execution scheduled for "+nextExecution.getNextTimeout());
 	}
 
 	private void startExecution(RetrievedRequest request){
@@ -102,12 +98,18 @@ public class RequestScheduler {
 		}
 	}
 
+	@Override
+	public void accept(RetrievedRequest request) {
+		scheduleRequest(request);
+	}
+
 	/**
 	 * Schedule a request for execution. Will only accept requests with {@link RequestStatus#Queued}.
 	 * Requests with other status values will be ignored. TODO throw illegal argument exception.
 	 * @param request request to schedule
 	 */
-	public void scheduleRequest(@Observes @Status(RequestStatus.Queued) RetrievedRequest request){
+	public void scheduleRequest(/*@Observes @Status(RequestStatus.Queued)*/ RetrievedRequest request){
+		// enterprise event processing disabled due to unexplaied hangups/bugs. TODO verify that request handling works befor enabling
 		if( request.getStatus() == RequestStatus.Queued ){ 
 			log.info("Scheduling request "+request.getRequestId()+", status="+request.getStatus());
 		}else{
@@ -152,4 +154,5 @@ public class RequestScheduler {
 		startDueExecutions();
 		updateTimer();
 	}
+
 }

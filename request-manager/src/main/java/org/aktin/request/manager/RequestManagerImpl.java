@@ -71,6 +71,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	@Inject
 	private org.aktin.dwh.ImportSummary summ;
 
+	private Consumer<RetrievedRequest> scheduler;
+
 	private Consumer<RetrievedRequest> uploader;
 
 // Don't use JEE Event. Leads to threads not returning from timer callback
@@ -99,6 +101,21 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	}
 
 	@Inject
+	void setRequestScheduler(RequestScheduler scheduler) {
+		this.scheduler = scheduler;
+	}
+
+	/**
+	 * Set the request scheduler. If the status of a request is changed to {@link RequestStatus#Queued}, then
+	 * it will be supplied to the scheduler. Upon startup, all request which are still in queued state will also be
+	 * supplied to the scheduler. The scheduler will make sure, that the execution is perfomed at the appropriate time. 
+	 * @param scheduler scheduler
+	 */
+	public void setRequestScheduler(Consumer<RetrievedRequest> scheduler) {
+		this.scheduler = scheduler;
+	}
+	
+	@Inject
 	void setResultUploader(ResultUploader uploader){
 		this.uploader = uploader;
 	}
@@ -112,6 +129,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		this.uploader = uploader;
 	}
 
+	
 	private void createIntervalTimer(){
 		Duration interval;
 		try{
@@ -422,9 +440,21 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 //			log.warning("No request event fired because of missing JEE Event injection");
 //		}
 
+		if( request.getStatus() == RequestStatus.Queued ) {
+			// add to queue
+			scheduleRequestForExecution(request);			
+		}
 		reportStatusUpdatesToBroker(request, description);
 	}
 
+
+	private void scheduleRequestForExecution(RetrievedRequest request) {
+		if( scheduler == null ) {
+			log.warning("No scheduler available. Skipping scheduling of request #"+request.getRequestId());
+			return;
+		}
+		scheduler.accept(request);
+	}
 
 	/**
 	 * Applies rules meant to run after the request was retrieved.

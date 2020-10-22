@@ -7,10 +7,7 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
-import javax.ejb.Timeout;
-import javax.ejb.Timer;
-import javax.ejb.TimerConfig;
-import javax.ejb.TimerService;
+import javax.ejb.*;
 import javax.inject.Inject;
 
 import org.aktin.broker.request.RequestStatus;
@@ -18,6 +15,7 @@ import org.aktin.broker.request.RetrievedRequest;
 
 @javax.ejb.Singleton
 @javax.ejb.Startup
+@LocalBean
 public class RequestScheduler implements Consumer<RetrievedRequest>{
 	private static final Logger log = Logger.getLogger(RequestScheduler.class.getName());
 

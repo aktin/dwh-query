@@ -29,10 +29,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.ejb.Timeout;
-import javax.ejb.Timer;
-import javax.ejb.TimerConfig;
-import javax.ejb.TimerService;
+import javax.ejb.*;
 //import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
@@ -100,7 +97,7 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		this.prefs = prefs;
 	}
 
-	@Inject
+	@EJB
 	void setRequestScheduler(RequestScheduler scheduler) {
 		this.scheduler = scheduler;
 	}

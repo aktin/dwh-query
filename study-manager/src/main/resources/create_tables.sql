@@ -11,7 +11,8 @@ CREATE TABLE optinout_studies (
 );
 
 --INSERT INTO optinout_studies (id,title,description,created_ts,options) VALUES ('AKTIN','AKTIN','Notaufnahmeregister','2018-01-01 00:00:00', 'OPT=O');
-INSERT INTO optinout_studies (id,title,description,created_ts,options,sic_generate) VALUES ('ENQUIRE','ENQuIRE','Evaluierung der Qualitätsindikatoren von Notaufnahmen auf Outcome-Relevanz für den Patienten','2019-01-01 00:00:00', 'OPT=I','SEQUENCE(1000,1)');
+--INSERT INTO optinout_studies (id,title,description,created_ts,options,sic_generate) VALUES ('ENQUIRE','ENQuIRE','Evaluierung der Qualitätsindikatoren von Notaufnahmen auf Outcome-Relevanz für den Patienten','2019-01-01 00:00:00', 'OPT=I','SEQUENCE(1000,1)');
+INSERT INTO optinout_studies (id,title,description,created_ts,options,sic_generate) VALUES ('AKTIN','AKTIN','Notaufnahmeregister','2020-01-01 00:00:00', 'OPT=I','SEQUENCE(1000,1)');
 
 CREATE TABLE optinout_patients (
 	study_id VARCHAR(16) NOT NULL,

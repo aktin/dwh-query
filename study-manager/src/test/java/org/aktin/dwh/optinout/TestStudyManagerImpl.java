@@ -37,7 +37,7 @@ public class TestStudyManagerImpl {
 		StudyImpl s = list.get(0);
 //		assertEquals("AKTIN", s.getTitle());
 //		s = list.get(1);
-		assertEquals("ENQuIRE", s.getTitle());
+		assertEquals("AKTIN", s.getTitle());
 	}
 
 	@Test

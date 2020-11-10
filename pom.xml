@@ -4,7 +4,7 @@
 	
 	<groupId>org.aktin</groupId>
 	<artifactId>dwh-query</artifactId>
-	<version>0.9</version>
+	<version>0.10-SNAPSHOT</version>
   
 	<name>AKTIN : DWH Query</name>
 	<description>AKTIN Software</description>
@@ -17,7 +17,7 @@
 	
 	<scm>
 		<developerConnection>scm:git:https://git.rwth-aachen.de/aktin/dwh-query.git</developerConnection>
-		<tag>dwh-query-0.9</tag>
+		<tag>HEAD</tag>
 	</scm>
 	
 	<modules>

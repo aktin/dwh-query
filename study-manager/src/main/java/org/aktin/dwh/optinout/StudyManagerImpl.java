@@ -114,6 +114,11 @@ public class StudyManagerImpl implements StudyManager {
 			throw new IllegalStateException("Unable to initialize study manager", e);
 		}
 	}
+	public void addStudy(String id, String title, String description, String options, String sic_generate) throws SQLException {
+		try( Connection dbc = this.ds.getConnection() ){
+			new DatabaseTableManager(dbc).addStudy(id, title, description, options, sic_generate);
+		}
+	}
 
 	/**
 	 * Setter method inject an anonymizer implementation.

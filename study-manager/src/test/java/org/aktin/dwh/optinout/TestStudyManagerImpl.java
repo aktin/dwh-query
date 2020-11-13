@@ -28,21 +28,22 @@ public class TestStudyManagerImpl {
 		sm.setDataSource(ds);
 		sm.resetDatabaseEmpty();
 		sm.prepareDatabase();
+		sm.addStudy("TEST", "Test", "Test study", "OPT=I", "SEQUENCE(1000,1)");
+		
 	}
 	@Test
 	public void verifyLoadStudies() throws IOException {
 		List<StudyImpl> list = sm.getStudies();
-//		assertEquals(2, list.size());
-		assertEquals(1, list.size());
+		assertEquals(2, list.size());
 		StudyImpl s = list.get(0);
-//		assertEquals("AKTIN", s.getTitle());
-//		s = list.get(1);
 		assertEquals("AKTIN", s.getTitle());
+		s = list.get(1);
+		assertEquals("Test", s.getTitle());
 	}
 
 	@Test
 	public void verifyGenerateSIC() throws IOException {
-		StudyImpl s = sm.getStudies().get(0);
+		StudyImpl s = sm.getStudies().get(1);
 		String code = s.generateSIC();
 		assertEquals("1000", code);
 		code = s.generateSIC();
@@ -52,14 +53,14 @@ public class TestStudyManagerImpl {
 		sm = null;
 		sm = new StudyManagerImpl();
 		sm.setDataSource(ds);
-		s = sm.getStudies().get(0);
+		s = sm.getStudies().get(1);
 		code = s.generateSIC();
 		assertEquals("1002", code);		
 	}
 
 	@Test
 	public void addListDeletePatients() throws IOException {
-		StudyImpl s = sm.getStudies().get(0);
+		StudyImpl s = sm.getStudies().get(1);
 		assertTrue(s.isParticipationSupported(Participation.OptIn));
 		assertFalse(s.isParticipationSupported(Participation.OptOut));
 		

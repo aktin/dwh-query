@@ -13,25 +13,23 @@
 ]>
 
 <template>
-  <intro>Sehr geehrte Projektpartner im AKTIN-Projekt,
-
-hiermit präsentieren wir Ihnen den Monatsbericht aus Ihrer Notaufnahme. Dieser wird automatisch aus den Daten generiert, welche in Ihrem primären Dokumentationssystem elektronisch erhoben und dann in das lokale Datawarehouse des Notaufnahmeregisters importiert werden.
-
+  <intro>Sehr geehrte Damen und Herren,
+ 
+Sie erhalten den AKTIN-Monatsbericht aus Ihrer Notaufnahme. Dieser wird automatisch aus den Daten generiert, die aus Ihrem Dokumentationssystem in Ihr lokales AKTIN-Datawarehouse importiert werden.
+ 
 Neben der Beschreibung Ihrer Patienten nach Alter und Geschlecht werden die Fallzahlen nach Tag und Uhrzeit der administrativen Aufnahme dargestellt. Es werden mehrere Prozesszeiten abgebildet, gegebenenfalls auch geschichtet nach den Kategorien eines von Ihnen verwendeten Ersteinschätzungssystems. Außerdem berichten wir die Vorstellungsgründe und die führenden Diagnosen.
-
-Bitte verstehen Sie diesen Bericht als „work in progress“. Er wurde auf Basis der Daten einer AKTIN-Modellklinik entwickelt. Da in Ihrer Notaufnahme das Patientenkollektiv bzw. die Datenstruktur anders aussehen kann, bleiben möglicherweise einzelne Tabellen oder Grafiken leer. Auch werden eventuell nicht plausible Werte dargestellt. Anhand der nun vorliegenden ersten Berichte können zukünftig sukzessive weitere Plausibilitätskontrollen sowie Datenbereinigungen umgesetzt werden.
-
-Bitte teilen Sie uns Änderungswünsche und Verbesserungsvorschläge für die folgenden Berichte mit und kontaktieren Sie uns auch gerne bei weiteren Rückfragen.
-
-Wir freuen uns auf die weitere Zusammenarbeit mit Ihnen!
-
+ 
+Sollten Ihnen nicht plausible Werte auffallen, bitten wir sie um Rückmeldung. Kontaktieren Sie uns auch gerne bei weiteren Rückfragen.
+ 
+Wir freuen uns über die Zusammenarbeit!
+ 
 Ihr
-
+ 
 AKTIN-Team
 
 ------------------------
 E-Mail: office@aktin.org
-Telefon: 0391 – 61-17186
+Telefon: 0391 – 67-28186
 Homepage: www.aktin.org
   </intro>
   <section>
@@ -66,7 +64,7 @@ Homepage: www.aktin.org
     </section>
     <section>
       <header>Fallzahlen nach Wochentag und Aufnahmezeit</header>
-      <plot ref="p2.3">Grafik 2.3: Durchschnittliche Fallzahlen: Mo-Fr blaue Quadrate; Sa/So rote Dreiecke</plot>
+      <plot ref="p2.3">Grafik 2.3: Durchschnittliche Fallzahlen: Mo-Fr rote Quadrate; Sa/So gelbe Dreiecke</plot>
     </section>
   </section>
   <section>

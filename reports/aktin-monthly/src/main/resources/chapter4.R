@@ -7,6 +7,17 @@ try({
   c[,3] <- paste(c[,3],'%')
   report.table(c,'triage.xml',align=c('left','right','right'),widths=c(20,15,15))
   
-  graph <- barchart( a, horizontal=FALSE, xlab="Ersteinschätzung", ylab='Anzahl Patienten',col=std_cols5 ,origin=0)
+
+  a<-data.frame(a)
+  graph<-ggplot(data=a, aes(x=Var1, y=Freq,fill=Var1)) +
+    geom_bar(stat="identity",position = "dodge", colour = "black",show.legend = FALSE)+
+    labs(x="Ersteinschätzung", y = "Anzahl Patienten")+
+    scale_fill_manual(values = c("red", "orange", "yellow2", "green4", "blue", "grey48"))+
+    theme(plot.caption = element_text(hjust=0.5,size=12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
+          axis.text.x = element_text(face="bold", color="#000000", size=12),
+          axis.text.y = element_text(face="bold", color="#000000", size=12))+
+    scale_y_continuous(expand = c(0, 0.01))
   report.svg(graph, 'triage')
 }, silent=FALSE)

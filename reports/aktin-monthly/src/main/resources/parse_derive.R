@@ -1,22 +1,24 @@
-# parse timestamps and date fields
-# The timestamp values are assumed to belong to the local timezone
-# TODO check timezones 
-df$dob = strptime(merge(enc,pat,by="patient_id")$geburtsdatum_ts,tz="GMT",format="%F")
-#df$triage.ts = strptime(enc$triage_ts,tz="GMT",format="%F %H:%M")
-#df$admit.ts = strptime(enc$aufnahme_ts,tz="GMT",format="%F %H:%M")
-#df$phys.ts = strptime(enc$arztkontakt_ts,tz="GMT",format="%F %H:%M")
-#df$therapy.ts = strptime(enc$therapiebeginn_ts,tz="GMT",format="%F %H:%M")
-#df$discharge.ts = strptime(enc$entlassung_ts,tz="GMT",format="%F %H:%M")
-df$triage.ts = strptime(enc$triage_ts,tz="GMT",format="%FT%H:%M")
-#Precision in CDA: day+more -- conversion is only successful if source has precision minute+more! NA-values are handled later
-df$admit.ts = strptime(enc$aufnahme_ts,tz="GMT",format="%FT%H:%M")
-df$admit.day = strptime(enc$aufnahme_ts,tz="GMT",format="%F")
-df$phys.ts = strptime(enc$arztkontakt_ts,tz="GMT",format="%FT%H:%M")
-df$therapy.ts = strptime(enc$therapiebeginn_ts,tz="GMT",format="%FT%H:%M")
-#Precision in CDA: day+more -- conversion is only successful if source has precision minute+more! NA-values are handled later
-df$discharge.ts = strptime(enc$entlassung_ts,tz="GMT",format="%FT%H:%M")
 
-df$age = (df$admit.day$year - df$dob$year) - 1 * (df$admit.day$yday < df$dob$yday) #compare admit/dob year and substract 1 if the admit-day of the year is earlier than DOB
+# TODO check timezones 
+enc$aufnahme_ts<-strptime(enc$aufnahme_ts, "%FT%T")
+enc$arztkontakt_ts<-strptime(enc$arztkontakt_ts, "%FT%T")
+enc$therapiebeginn_ts<-strptime(enc$therapiebeginn_ts, "%FT%T")
+enc$entlassung_ts<-strptime(enc$entlassung_ts, "%FT%T")
+enc$triage_ts<-strptime(enc$triage_ts, "%FT%T")
+
+
+df$dob = strptime(merge(enc,pat,by="patient_id")$geburtsdatum_ts,tz="GMT",format="%Y-%m-%d")
+
+df$triage.ts = strptime(enc$triage_ts,format="%Y-%m-%d %H:%M",tz="GMT")
+
+df$admit.ts = strptime(enc$aufnahme_ts,format="%Y-%m-%d %H:%M",tz="GMT")
+df$admit.day = strptime(enc$aufnahme_ts,tz="GMT",format="%Y-%m-%d")
+df$phys.ts = strptime(enc$arztkontakt_ts,format="%Y-%m-%d %H:%M",tz="GMT")
+df$therapy.ts = strptime(enc$therapiebeginn_ts,format="%Y-%m-%d %H:%M",tz="GMT")
+
+df$discharge.ts = strptime(enc$entlassung_ts,format="%Y-%m-%d %H:%M",tz="GMT")
+
+df$age = (df$admit.day$year - df$dob$year) - 1 * (df$admit.day$yday < df$dob$yday) 
 df$sex = factor(merge(enc,pat,by="patient_id")$geschlecht)
 levels(df$sex) <- list("male"="male","female"="female","unbestimmt"="indeterminate")
 
@@ -110,3 +112,5 @@ df$discharge.d <- difftime(df$discharge.ts,df$admit.ts,units="mins")
 # Values out of bounds (<0h or >24h) => NA
 df$discharge.d[df$discharge.d < 0] <- NA
 df$discharge.d[df$discharge.d > 24*60] <- NA     #could be more than 24 hours!
+
+

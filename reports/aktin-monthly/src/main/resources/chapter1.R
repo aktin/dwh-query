@@ -22,6 +22,19 @@ try({
   x[x>110] <- 110
   x[x<0] <- NA
   x<-x[!is.na(x)]
-  graph <- histogram(x,xlab="Alter [Jahre]",ylab="Anzahl Patienten",type='count',breaks=seq(0,110,length=12),sub=paste('n =',length(df$age),', Werte größer 110 werden als 110 gewertet'),col=std_cols1)
-  report.svg(graph, 'age')
+  x<-data.frame(x)
+  graph<-ggplot(x, aes(x=x)) + 
+    geom_histogram(color="black", fill="#046C9A",binwidth=5)+
+    labs(x="Alter [Jahre]", y = "Anzahl Patienten",caption = paste('n =',length(df$age),', Werte größer 110 werden als 110 gewertet'))+
+    theme(plot.caption = element_text(hjust=0.5,size=12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
+          axis.text.x = element_text(face="bold", color="#000000", size=12),
+          axis.text.y = element_text(face="bold", color="#000000", size=12))+
+    scale_x_continuous(expand = c(0, 3),breaks = seq(0, 100, 5)) +
+    scale_y_continuous(expand = c(0, 0.3))+
+    geom_vline(aes(xintercept=mean(x)),
+               color="#e3000b", linetype="dashed", size=1)+
+    geom_text(aes(x=mean(x), label="Mittelwert\n", y=50), colour="black", angle=90,size=4)
+    report.svg(graph, 'age')
 }, silent=FALSE)

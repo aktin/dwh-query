@@ -61,7 +61,7 @@
 						Notaufnahmeregisters</fo:block>
 					<fo:block space-before="10mm">
 						<fo:external-graphic>
-							<xsl:attribute name="src">AKTIN_Logo_final.svg</xsl:attribute>
+							<xsl:attribute name="src">Notaufnahmeregister_Logo_2018-07-18_rot.svg</xsl:attribute>
 							<xsl:attribute name="content-height">30mm</xsl:attribute>
 						</fo:external-graphic>
 					</fo:block>

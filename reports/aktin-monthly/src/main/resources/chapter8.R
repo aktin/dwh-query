@@ -1,33 +1,40 @@
 #TOP20 CEDIS
 try({
   t <- table(df$cedis,useNA = "always") #frequencies
-  y <- t
-  #remove it and put it at the bottom - "TOP20+Unknown+NA"
-  y[names(y)=='999'] <- 0
-  y[is.na(names(y))] <- 0
-  if( length(which(y > 0)) > 0 ){ #needs to be re-written to also work correctly if there are less than 20 used codes
+  y<-data.frame(df$cedis)
+  y<-y%>%drop_na()
+  y<-y%>%filter(df.cedis !="999")
+  y<-y%>%count(df.cedis)%>%top_n(20)
+  x<-data.frame(df$cedis)
+  x<-x%>%count(df.cedis)
+  x<-x%>%filter(is.na(df.cedis) | df.cedis==999)
+  x$df.cedis<-ifelse(is.na(x$df.cedis),"NA","999")
+  if( length(which(y$n > 0)) > 0 ){ #needs to be re-written to also work correctly if there are less than 20 used codes
     # at least one CEDIS code available
-    y <- sort(y, decreasing = TRUE)
-    y <- y [1:20]
-    y[y==0] <- NA #remove unused
-    y[length(y)+1] <- t["999"]
-    names(y)[length(y)] <- "999"
-    y[length(y)+1] <- t[length(t)]
-    names(y)[length(y)] <- "NA"
-    graph <- barchart(names(rev(y))~rev(y), xlab="Anzahl Patienten",col=std_cols1,origin=0)
+    y$n[y$n==0] <- NA #remove unused
+    y<-rbind(y,x)
+    graph<-ggplot(data=y, aes(reorder(df.cedis,n),n)) +
+      geom_bar(stat="identity", fill="#046C9A")+
+      labs(y = "Anzahl Patienten",x="CEDIS")+
+      theme(plot.caption = element_text(hjust=0.5,size=12),
+            panel.background = element_rect(fill = "white"),
+            axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
+            axis.text.x = element_text(face="bold", color="#000000", size=12),
+            axis.text.y = element_text(face="bold", color="#000000", size=12))+
+      scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(y$n),30))+
+      coord_flip()
     report.svg(graph, 'cedis_top')
     
-    x <- data.frame(Var1=names(y),Freq=as.numeric(y))
-    #x <- rbind(x, data.frame(Var1='999',Freq=t['999'], row.names=NULL))
-    #x <- rbind(x, data.frame(Var1='NA',Freq=t[is.na(names(t))], row.names=NULL))
-    x <- na.omit(x)
-    
-    y <- x
-    y$label <- as.character(factor(y$Var1, levels=cedis[[1]], labels=cedis[[3]]))
-    y$label[is.na(y$label)] <- "Vorstellungsgrund nicht dokumentiert"
-    b <- data.frame(Code=y$Var1[1:20], Kategorie=y$label[1:20], Anzahl=gformat(y$Freq[1:20]), Anteil=gformat((y$Freq[1:20] / length(df$encounter))*100,digits = 1))
-    c <- rbind(b, data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=gformat(sum(y$Freq[1:20])),Anteil=gformat(sum(y$Freq[1:20]) / length(df$encounter)*100,digits=1)))
-    d <- rbind(c,data.frame(Code=y$Var1[21:22], Kategorie=y$label[21:22], Anzahl=gformat(y$Freq[21:22]), Anteil=gformat((y$Freq[21:22] / length(df$encounter))*100,digits = 1)))
+    y<-y%>%filter(df.cedis !="999" | df.cedis !="NA" )
+    y <- arrange(y, desc(n)) %>%
+      mutate(rank = 1:nrow(y))
+    y<-y[1:20,]
+    y$label <- as.character(factor(y$df.cedis, levels=cedis[[1]], labels=cedis[[3]]))
+    x$label <- as.character(factor(x$df.cedis, levels=cedis[[1]], labels=cedis[[3]]))
+    x$label[is.na(x$label)] <- "Vorstellungsgrund nicht dokumentiert"
+    b <- data.frame(Code=y$df.cedis[1:20], Kategorie=y$label[1:20], Anzahl=gformat(y$n[1:20]), Anteil=gformat((y$n[1:20] / length(df$encounter))*100,digits = 1))
+    c <- rbind(b, data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=gformat(sum(y$n[1:20])),Anteil=gformat(sum(y$n[1:20]) / length(df$encounter)*100,digits=1)))
+    d <- rbind(c,data.frame(Code=x$df.cedis, Kategorie=x$label, Anzahl=gformat(x$n), Anteil=gformat((x$n / length(df$encounter))*100,digits = 1)))
     d[,4] <- paste(d[,4],'%')
     report.table(d,name='cedis.xml',align=c('left','left','right','right'),widths=c(8,60,15,15))
     
@@ -37,18 +44,23 @@ try({
     x <- rbind(x, data.frame(Var1='999',Freq=t['999'], row.names=NULL))
     x <- rbind(x, data.frame(Var1='NA',Freq=t[is.na(names(t))], row.names=NULL))
     x <- na.omit(x)
-    graph <- barchart(data=x, Var1 ~ Freq, xlab="Anzahl Patienten",col=std_cols1,origin=0)
+    graph<-ggplot(data=x, aes(reorder(Var1,Freq),Freq)) +
+      geom_bar(stat="identity", fill="#046C9A")+
+      labs(y = "Anzahl Patienten",x="CEDIS")+
+      theme(plot.caption = element_text(hjust=0.5,size=12),
+            panel.background = element_rect(fill = "white"),
+            axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
+            axis.text.x = element_text(face="bold", color="#000000", size=12),
+            axis.text.y = element_text(face="bold", color="#000000", size=12))+
+      scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(x$Freq),30))+
+      coord_flip()
     report.svg(graph, 'cedis_top')
     
     c <- data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=gformat(0),Anteil=gformat(0,digits=1))
     d <- rbind(c,data.frame(Code='', Kategorie="Vorstellungsgrund nicht dokumentiert", Anzahl=gformat(length(df$encounter)), Anteil=gformat(( 1 )*100,digits = 1)))
     d[,4] <- paste(d[,4],'%')
     report.table(d,name='cedis.xml',align=c('left','left','right','right'),widths=c(8,60,15,15))
-    
-  }
-  
-  
-
+    }
 }, silent=FALSE)
 
 #CEDIS Groups
@@ -56,14 +68,21 @@ try({
 # xxx ToDo: what if there are lots of NAs?
 try({
   cedis_cat_top <- factor(x=enc$cedis,t(cedis[1]),labels=t(cedis[2])) #map Categories
-  #cedis_cat_top <- factor(x=cedis_cat_top,t(cedis[1]),labels=t(cedis[3]))   #map Labels
-  #cedis_cat_top <- droplevels(cedis_cat_top) #not ideal, only showing used categories
-  #cedis_cat_top <- sort(cedis_cat_top, decreasing = FALSE)
   x <- factor(cedis_cat_top)
   levels(x) <- list("Kardiovaskulär"="CV","HNO (Ohren)"="HNE","HNO (Mund, Rachen, Hals)"="HNM","HNO (Nase)"="HNN","Umweltbedingt"="EV","Gastrointestinal"="GI","Urogenital"="GU","Psychische Verfassung"="MH","Neurologisch"="NC","Geburtshilfe/Gynäkologie"="GY","Augenheilkunde"="EC","Orthopädisch/Unfall-chirurgisch"="OC","Respiratorisch"="RC","Haut"="SK","Substanzmissbrauch"="SA","Allgemeine und sonstige Beschwerden"="MC","Patient vor Ersteinschätzung wieder gegangen"="998","Unbekannt"="999")
   x <- table(x,useNA = 'always')
   names(x)[length(x)] <- "Vorstellungsgrund nicht dokumentiert"
-  graph <- barchart(rev(x),xlab="Anzahl Patienten",col=std_cols1,origin=0)
+  x<-data.frame(x)
+  graph<-ggplot(data=x, aes(reorder(Var1,Freq),Freq)) +
+    geom_bar(stat="identity", fill="#046C9A")+
+    labs(y = "Anzahl Patienten",x="")+
+    theme(plot.caption = element_text(hjust=0.5,size=12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
+          axis.text.x = element_text(face="bold", color="#000000", size=12),
+          axis.text.y = element_text(face="bold", color="#000000", size=10))+
+    scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(x$Freq),50))+
+    coord_flip()
   report.svg(graph, 'cedis_groups')
 }, silent=FALSE)
 

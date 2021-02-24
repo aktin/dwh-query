@@ -27,10 +27,16 @@
     <plot id="p5.2" href="phys.d.hist.svg"/>
     <plot id="p5.3" href="triage.phys.d.avg.svg"/>
     <plot id="p6.1" href="discharge.svg"/>
-    <plot id="p7.1" href="discharge.d.hist.svg"/>    
+    <plot id="p7.1" href="discharge.d.hist.svg"/>
+    <plot id="p7.2" href="discharge.d.box.svg"/>
     <plot id="p8.1" href="icd_top.svg"/>
     <plot id="p8.2" href="cedis_top.svg"/>
     <plot id="p8.3" href="cedis_groups.svg"/>
+    <plot id="p9.1" href="stayone.svg"/>
+    <plot id="p9.2" href="staytwo.svg"/>
+    <plot id="p9.3" href="staythree.svg"/>
+    <plot id="p9.4" href="stayfour.svg"/>
+    <plot id="p9.5" href="stayfive.svg"/>
     
     <!-- not used 
     <table id="txx" href="therapy.d.xml"/>

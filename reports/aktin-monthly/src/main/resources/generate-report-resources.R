@@ -74,6 +74,7 @@ source('xhtml-table.R')
 library(lattice)
 library(tidyverse)
 
+
 source("chapter1.R", encoding="UTF-8")
 source("chapter2.R", encoding="UTF-8")
 source("chapter3.R", encoding="UTF-8")
@@ -83,3 +84,4 @@ source("chapter6.R", encoding="UTF-8")
 source("chapter7.R", encoding="UTF-8")
 source("chapter8.R", encoding="UTF-8")
 source("chapter9.R", encoding="UTF-8")
+

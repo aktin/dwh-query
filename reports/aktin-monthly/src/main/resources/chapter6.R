@@ -4,7 +4,7 @@ try({
   names(discharge_table)[1]<-'Keine Daten'
   discharge_table<-data.frame(discharge_table)
   graph<-ggplot(data=discharge_table, aes(x=Var1, y=Freq)) +
-    geom_bar(stat="identity", fill="#046C9A")+
+    geom_bar(stat="identity", fill="#046C9A",width = 0.5)+
     labs(y="Anzahl Patienten", x = "")+
     theme(plot.caption = element_text(hjust=0.5,size=12),
           panel.background = element_rect(fill = "white"),

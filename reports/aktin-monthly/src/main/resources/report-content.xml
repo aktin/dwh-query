@@ -117,6 +117,7 @@ Homepage: www.aktin.org
     <header>Aufenthaltsdauer der Patienten</header>
     <paragraph>Bei der Gesamtaufenthaltsdauer wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Aufenthaltsdauer länger als 24 Stunden sowie negative Zeiten. Werte zwischen 10 Stunden und 24 Stunden werden in der Grafik nicht angezeigt, fließen aber in die Berechnung der Kennzahlen mit ein.</paragraph>
     <plot ref="p7.1">Grafik 7.1: Aufenthaltsdauer</plot>
+    <plot ref="p7.2">Grafik 7.2: Aufenthaltsdauer</plot>
     <table ref="t7.1">Tabelle 7.1: Aufenthaltsdauer in Minuten</table>
   </section>
   <section>
@@ -146,6 +147,30 @@ Homepage: www.aktin.org
     <section>
       <header>Isolierte Patienten</header>
       <table ref="t9.2">Tabelle 9.2: Isolationsgründe</table>
+    </section>
+  </section>
+  <section>
+    <header>Patienten in der Notaufnahme</header>
+    <paragraph>Anzahl der gleichzeitig in Ihrer Notaufnahme anwesenden Patienten pro Tag über einen Zeitraum von 24h.</paragraph>
+    <section>
+      <header>Woche 1</header>
+      <plot ref="p9.1">Grafik 10.1: Patienten in der Notaufnahme Woche 1</plot>
+    </section>
+    <section>
+      <header>Woche 2</header>
+      <plot ref="p9.2">Grafik 10.2: Patienten in der Notaufnahme Woche 2</plot>
+    </section>
+    <section>
+      <header>Woche 3</header>
+      <plot ref="p9.3">Grafik 10.3: Patienten in der Notaufnahme Woche 3</plot>
+    </section>
+    <section>
+      <header>Woche 4</header>
+      <plot ref="p9.4">Grafik 10.4: Patienten in der Notaufnahme Woche 4</plot>
+    </section>
+    <section>
+      <header>Woche 5</header>
+      <plot ref="p9.5">Grafik 10.5: Patienten in der Notaufnahme Woche 5</plot>
     </section>
   </section>
 </template>

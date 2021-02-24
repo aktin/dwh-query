@@ -2,7 +2,7 @@
 try({
   df2<-data.frame(table(df$admit.h)/length(levels(df$admit.day)))
   graph<-ggplot(data=df2, aes(x=Var1, y=Freq)) +
-    geom_bar(stat="identity", fill="#046C9A")+
+    geom_bar(stat="identity", fill="#046C9A",width=0.5)+
     labs(x=paste('Uhrzeit [Stunde]; n =',sum(!is.na(df$admit.h))), y = "Durchschnittliche Anzahl Patienten")+
     theme(plot.caption = element_text(hjust=0.5,size=12),
           panel.background = element_rect(fill = "white"),
@@ -54,7 +54,7 @@ try({
   plottable[is.na(plottable)] <- 0
   plottable<-data.frame(plottable)
   graph<-ggplot(data=plottable, aes(x=Var1, y=Freq)) +
-    geom_bar(stat="identity", fill="#046C9A")+
+    geom_bar(stat="identity", fill="#046C9A",width=0.5)+
     labs(x=paste('Wochentag; n =',sum(!is.na(df$admit.h))), y = "Durchschnittliche Anzahl Patienten")+
     theme(plot.caption = element_text(hjust=0.5,size=12),
           panel.background = element_rect(fill = "white"),

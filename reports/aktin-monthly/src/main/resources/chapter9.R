@@ -26,3 +26,120 @@ try({
   mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Keine Angabe",Bekannt=sum(mrsa_patient<1),Verdacht='-'))
   report.table(mrsa_table,name='multiresistant.xml',align=c('left','right','right'),widths=c(30,15,15))
 }, silent=FALSE)
+
+#Patienten in der NA
+#Überfüllung
+try({
+  a<-data.frame(as.POSIXct(df$admit.ts),as.POSIXct(df$discharge.ts))
+  colnames(a)<-c("admit.ts","discharge.ts")
+  a<-subset(a,!(is.na(admit.ts) | is.na(discharge.ts)))
+  a$in_na <- sapply(a$admit.ts, function(enter){sum(a$admit.ts <= enter & a$discharge.ts > enter)})
+  init_last_month<-a[1,1]
+  init_last_month<-as.Date(init_last_month)
+  end_last_month<-length(a$admit.ts)
+  end_last_month<-a[end_last_month,1]
+  end_last_month<-as.Date(end_last_month)
+  #a$Uhrzeit<-substr(a$admit.ts,12,16)
+  a$Uhrzeit<- strptime(a$admit.ts, "%Y-%m-%d %H:%M:%S")
+  a$Uhrzeit <- as.numeric(format(a$Uhrzeit, "%H")) +as.numeric(format(a$Uhrzeit, "%M"))/60
+  a$Uhrzeit<-a$Uhrzeit*3600
+  # a$Uhrzeit<-as.numeric(lubridate::hm(a$Uhrzeit))
+  a$tag<-as.Date(a$admit.ts)
+  #a$tag_g<-weekdays(a$admit.ts)
+  a$tag_g<-format(a$admit.ts, format = "%a")
+  #a$year<-lubridate::year(a$admit.ts)
+  a$year<-as.numeric(format(a$admit.ts,'%Y'))
+  #a$day<-lubridate::day(a$admit.ts)
+  a$day<-as.numeric(format(a$admit.ts,'%d'))
+  a$woche<-ifelse(a$tag<=init_last_month+6,1,
+                  ifelse(a$tag<=init_last_month+13,2,
+                         ifelse(a$tag<=init_last_month+20,3,
+                                ifelse(a$tag<=init_last_month+27,4,
+                                       ifelse(a$tag>=init_last_month+28,5,6)))))
+  
+  #title Diagramme
+  woche1<-paste('Woche 1',init_last_month,'-',init_last_month+6)
+  woche2<-paste('Woche 2',init_last_month+7,'-',init_last_month+13)
+  woche3<-paste('Woche 3',init_last_month+14,'-',init_last_month+20)
+  woche4<-paste('Woche 4',init_last_month+21,'-',init_last_month+27)
+  woche5<-paste('Woche 5',init_last_month+28,'-',end_last_month)
+  #x-Achse Bezeichung
+  time_labels<-c("00:00","02:00","04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","24:00")
+  
+  #fehlende 0 und 24 Uhr Zeiten zur Vollständigen Linie
+  fehlend<-data.frame(tag=as.Date(init_last_month,origin = "1970-01-01"):as.Date(end_last_month,origin = "1970-01-01"),Uhrzeit=0)
+  fehlend$tag<-as.Date(fehlend$tag,origin = "1970-01-01")
+  a<-full_join(a,fehlend)
+  a <- `row.names<-`(a[with(a,order(tag,Uhrzeit)),], NULL)
+  a<-fill(a, tag_g,day,woche, .direction = 'up')
+  
+  fehlend<-data.frame(tag=as.Date(init_last_month,origin = "1970-01-01"):as.Date(end_last_month,origin = "1970-01-01"),Uhrzeit=86400)
+  fehlend$tag<-as.Date(fehlend$tag,origin = "1970-01-01")
+  a<-full_join(a,fehlend)
+  
+  a <- `row.names<-`(a[with(a,order(tag,Uhrzeit)),], NULL)
+  a<-fill(a, in_na,tag_g,day,woche, .direction = 'down')
+  a <- a[-nrow(a),]
+  a$tag<-format(a$tag, format="%m-%d")
+  
+  a_woche1<-a%>%filter(woche==1)
+  a_woche1<-subset(a_woche1,!(is.na(in_na)))
+  graph<- ggplot(data=a_woche1, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
+    geom_line()+
+    facet_grid(tag+tag_g~.)+
+    theme_bw()+
+    xlab("Uhrzeit")+
+    ylab("Anzahl Patienten")+
+    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
+    coord_cartesian(xlim=c(0,86400))+
+    ggtitle(woche1)
+  report.svg(graph, 'stayone')
+  
+  a_woche2<-a%>%filter(woche==2)
+  graph<- ggplot(data=a_woche2, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
+    geom_line()+
+    facet_grid(tag+tag_g~.)+
+    theme_bw()+
+    xlab("Uhrzeit")+
+    ylab("Anzahl Patienten")+
+    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
+    coord_cartesian(xlim=c(0,86400))+
+    ggtitle(woche2)
+  report.svg(graph, 'staytwo')
+  
+  a_woche3<-a%>%filter(woche==3)
+  graph<- ggplot(data=a_woche3, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
+    geom_line()+
+    facet_grid(tag+tag_g~.)+
+    theme_bw()+
+    xlab("Uhrzeit")+
+    ylab("Anzahl Patienten")+
+    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
+    coord_cartesian(xlim=c(0,86400))+
+    ggtitle(woche3)
+  report.svg(graph, 'staythree')
+  
+  a_woche4<-a%>%filter(woche==4)
+  graph<- ggplot(data=a_woche4, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
+    geom_line()+
+    facet_grid(tag+tag_g~.)+
+    theme_bw()+
+    xlab("Uhrzeit")+
+    ylab("Anzahl Patienten")+
+    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
+    coord_cartesian(xlim=c(0,86400))+
+    ggtitle(woche4)
+  report.svg(graph, 'stayfour')
+  
+  a_woche5<-a%>%filter(woche==5)
+  graph<- ggplot(data=a_woche5, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
+    geom_line()+
+    facet_grid(tag+tag_g~.)+
+    theme_bw()+
+    xlab("Uhrzeit")+
+    ylab("Anzahl Patienten")+
+    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
+    coord_cartesian(xlim=c(0,86400))+
+    ggtitle(woche5)
+  report.svg(graph, 'stayfive')
+}, silent=FALSE)

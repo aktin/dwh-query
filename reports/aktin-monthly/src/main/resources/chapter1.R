@@ -35,6 +35,6 @@ try({
     scale_y_continuous(expand = c(0, 0.3))+
     geom_vline(aes(xintercept=mean(x)),
                color="#e3000b", linetype="dashed", size=1)+
-    geom_text(aes(x=mean(x), label="Mittelwert\n", y=50), colour="black", angle=90,size=4)
+    geom_text(aes(x=mean(x), label="Mittelwert\n", y=50), colour="white", angle=90,size=4)
     report.svg(graph, 'age')
 }, silent=FALSE)

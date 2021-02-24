@@ -37,7 +37,7 @@
 			</fo:declarations>
 			<fo:page-sequence master-reference="page-layout" language="de">
                 <fo:static-content flow-name="header-normal">
-                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht V01.4 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template></fo:block>
+                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht V01.5 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template></fo:block>
 				</fo:static-content>
 				<fo:static-content flow-name="footer-normal">
 					<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/> von
@@ -56,16 +56,16 @@
 					<fo:block>
 						Datenstand: <xsl:call-template name="datenstand"><xsl:with-param name="timestamp" select="document('prefs.xml')/properties/entry[@key = 'report.data.timestamp']/text()"/></xsl:call-template>
 					</fo:block>
-					<fo:block space-before="75mm">Verbesserung der Versorgungsforschung in der
-						Akutmedizin in Deutschland durch den Aufbau eines nationalen
-						Notaufnahmeregisters</fo:block>
+					<fo:block space-before="75mm">Das AKTIN-Notaufnahmeregister – Daten 
+					für die Qualitätssicherung,Public-Health Surveillance und Versorgungsforschung 
+					in der Akutmedizin</fo:block>
 					<fo:block space-before="10mm">
 						<fo:external-graphic>
-							<xsl:attribute name="src">Notaufnahmeregister_Logo_2018-07-18_rot.svg</xsl:attribute>
+							<xsl:attribute name="src">Notaufnahmeregister_Logo.svg</xsl:attribute>
 							<xsl:attribute name="content-height">30mm</xsl:attribute>
 						</fo:external-graphic>
 					</fo:block>
-					<fo:block space-before="25mm">Förderkennzeichen: 01KX1319A-E</fo:block>
+					<fo:block space-before="25mm"></fo:block>
 					<fo:block space-before="5mm">
 						<fo:external-graphic>
 							<xsl:attribute name="src">BMBF.svg</xsl:attribute>

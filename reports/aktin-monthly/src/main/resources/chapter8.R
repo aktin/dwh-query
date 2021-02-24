@@ -2,19 +2,20 @@
 try({
   t <- table(df$cedis,useNA = "always") #frequencies
   y<-data.frame(df$cedis)
-  y<-y%>%drop_na()
+  y[is.na(y)] <- "999"
+  #y<-y%>%drop_na()
   y<-y%>%filter(df.cedis !="999")
   y<-y%>%count(df.cedis)%>%top_n(20)
   x<-data.frame(df$cedis)
+  x[is.na(x)] <- "999"
   x<-x%>%count(df.cedis)
-  x<-x%>%filter(is.na(df.cedis) | df.cedis==999)
-  x$df.cedis<-ifelse(is.na(x$df.cedis),"NA","999")
+  x<-x%>%filter(df.cedis=="999")
   if( length(which(y$n > 0)) > 0 ){ #needs to be re-written to also work correctly if there are less than 20 used codes
     # at least one CEDIS code available
     y$n[y$n==0] <- NA #remove unused
     y<-rbind(y,x)
     graph<-ggplot(data=y, aes(reorder(df.cedis,n),n)) +
-      geom_bar(stat="identity", fill="#046C9A")+
+      geom_bar(stat="identity", fill="#046C9A",width = 0.5)+
       labs(y = "Anzahl Patienten",x="CEDIS")+
       theme(plot.caption = element_text(hjust=0.5,size=12),
             panel.background = element_rect(fill = "white"),
@@ -25,13 +26,13 @@ try({
       coord_flip()
     report.svg(graph, 'cedis_top')
     
-    y<-y%>%filter(df.cedis !="999" | df.cedis !="NA" )
+    y<-y%>%filter(df.cedis !="999")
     y <- arrange(y, desc(n)) %>%
       mutate(rank = 1:nrow(y))
     y<-y[1:20,]
     y$label <- as.character(factor(y$df.cedis, levels=cedis[[1]], labels=cedis[[3]]))
     x$label <- as.character(factor(x$df.cedis, levels=cedis[[1]], labels=cedis[[3]]))
-    x$label[is.na(x$label)] <- "Vorstellungsgrund nicht dokumentiert"
+    #x$label[is.na(x$label)] <- "Vorstellungsgrund nicht dokumentiert"
     b <- data.frame(Code=y$df.cedis[1:20], Kategorie=y$label[1:20], Anzahl=gformat(y$n[1:20]), Anteil=gformat((y$n[1:20] / length(df$encounter))*100,digits = 1))
     c <- rbind(b, data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=gformat(sum(y$n[1:20])),Anteil=gformat(sum(y$n[1:20]) / length(df$encounter)*100,digits=1)))
     d <- rbind(c,data.frame(Code=x$df.cedis, Kategorie=x$label, Anzahl=gformat(x$n), Anteil=gformat((x$n / length(df$encounter))*100,digits = 1)))
@@ -74,7 +75,7 @@ try({
   names(x)[length(x)] <- "Vorstellungsgrund nicht dokumentiert"
   x<-data.frame(x)
   graph<-ggplot(data=x, aes(reorder(Var1,Freq),Freq)) +
-    geom_bar(stat="identity", fill="#046C9A")+
+    geom_bar(stat="identity", fill="#046C9A",width=0.5)+
     labs(y = "Anzahl Patienten",x="")+
     theme(plot.caption = element_text(hjust=0.5,size=12),
           panel.background = element_rect(fill = "white"),

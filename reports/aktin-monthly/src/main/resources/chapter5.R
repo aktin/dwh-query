@@ -75,7 +75,7 @@ try({
           axis.ticks.x=element_blank(),
           axis.text.x=element_blank(),
           legend.position = "bottom",legend.title = element_blank())+
-    coord_cartesian(ylim = c(0, 20))
+    coord_cartesian(ylim = c(0, 60))
     #scale_y_continuous(breaks=seq(0,max(b$b),4))
   report.svg(graph, 'triage.d.hist')
 }, silent=FALSE)
@@ -103,19 +103,18 @@ try({
   outofbounds <- length(df$phys.d) - length(a)
   b <- df$triage.result[df$phys.d<181]
   y <- data.frame(time=a, triage=b)
-  x <- with(y, tapply(time, list(triage), FUN=mean, na.rm=TRUE))
-  x[is.na(x)] <- 0
-  y <- data.frame(avg=as.numeric(x), triage=factor(names(x), levels=factors$Triage[!is.na(factors$Triage)]))
-  graph<-ggplot(data=y, aes(x=triage, y=avg,fill=triage)) +
-    geom_bar(stat="identity",position = "dodge", colour = "black",show.legend = FALSE)+
+  y$time<-as.numeric(y$time)
+  y<-y%>%filter(!is.na(time))
+  graph<-ggplot(data=y, aes(x=triage, y=time,fill=triage)) +
+    geom_boxplot(show.legend = FALSE)+
     labs(x="Triage-Gruppe", y = "Durchschn. Zeit bis Arztkontakt [Min.]",caption =paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds," ; Fehlender Zeitstempel Arztkontakt:",sum(is.na(df$phys.d))) )+
-    scale_fill_manual(values = c("red", "orange", "yellow2", "green4", "blue", "grey48"))+
+    scale_fill_manual(values = c("Rot"="red","Orange"= "orange", "Gelb"="yellow2", "Grün"="green4","Blau"= "blue","Ohne"= "grey48"))+
     theme(plot.caption = element_text(hjust=0.5,size=12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
           axis.text.x = element_text(face="bold", color="#000000", size=12),
           axis.text.y = element_text(face="bold", color="#000000", size=12))+
-    scale_y_continuous(breaks=seq(0,max(y$avg),10),expand =c (0,0.3))
+    scale_y_continuous(breaks=seq(0,max(y$time),10),expand =c (0,0.3))
   report.svg(graph, 'triage.phys.d.avg')
 }, silent=FALSE)
 
@@ -131,7 +130,8 @@ try({
   agg.list$Median <- round(agg.list$Median,0)
   agg.list$Anzahl <- with(y2, tapply(time, list(triage), FUN=length))
   agg.list$Anzahl[is.na(agg.list$Anzahl)] <- 0
-  kat <- as.character((y$triage))
+  kat<-c("Rot","Orange","Gelb","Grün","Blau","Ohne")
+ 
   x <- data.frame(Kategorie=kat,agg.list)
   rm(agg.funs, agg.list)
   report.table(x,'triage.phys.d.xml',align=c('left','right','right','right','right','right'),width=15)

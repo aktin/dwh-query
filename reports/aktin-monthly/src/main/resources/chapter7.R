@@ -47,5 +47,21 @@ try({
           legend.text = element_text(color="#e3000b",size=12,face="bold"))+
     scale_y_continuous(breaks=seq(0,600,40))+
     geom_hline(aes(yintercept=mean(b),color="Mittelwert"),size=0.9)
-    report.svg(graph, 'discharge.d.hist')
+ graph2<- ggplot(b, aes(x = b)) +  
+    geom_histogram(aes(y = 100*(..count..)/sum(..count..)),bins = 11,color="black", fill="#046C9A",boundary=0)+
+    scale_x_continuous(breaks=seq(0,600,length=11))+
+    labs(y = "Relative Häufigkeit [%]")+
+    theme(plot.caption = element_text(hjust=0.5,size=12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
+          axis.text.y = element_text(face="bold", color="#000000", size=12),
+          axis.title.x = element_blank(),
+          #axis.ticks.x=element_blank(),
+          #axis.text.x=element_blank(),
+          legend.title = element_blank(),
+          legend.position = "bottom",
+          legend.text = element_text(color="#e3000b",size=12,face="bold"))
+    
+    report.svg(graph, 'discharge.d.box')
+    report.svg(graph2, 'discharge.d.hist')
 }, silent=FALSE)

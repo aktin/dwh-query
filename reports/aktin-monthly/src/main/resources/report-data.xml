@@ -24,7 +24,9 @@
     <plot id="p2.3" href="admit.hwd.weekend.svg"/> 
     <plot id="p4.1" href="triage.svg"/>
     <plot id="p5.1" href="triage.d.hist.svg"/>
+    <plot id="p5.4" href="triage.d.box.svg"/>
     <plot id="p5.2" href="phys.d.hist.svg"/>
+    <plot id="p5.5" href="phys.d.box.svg"/>
     <plot id="p5.3" href="triage.phys.d.avg.svg"/>
     <plot id="p6.1" href="discharge.svg"/>
     <plot id="p7.1" href="discharge.d.hist.svg"/>

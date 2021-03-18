@@ -20,7 +20,7 @@ try({
     geom_boxplot(fill="#046C9A",width=0.5)+
     #geom_jitter(width = 0.05,alpha=0.2)+
     labs(y = "Zeit von Aufnahme bis Arztkontakt [Minuten]",
-         caption = paste("Fehlende Werte: ", isNA, "; Werte über 180 Minuten: ", positiveoutofbounds,"; Werte unter 0 Minuten: ", negativeoutofbounds))+
+         caption = paste("Fehlende Werte: ", isNA, "; Werte > 180 Minuten: ", positiveoutofbounds,"; Werte < 0 Minuten: ", negativeoutofbounds))+
     theme(plot.caption = element_text(hjust=0.5,size=12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
@@ -29,7 +29,22 @@ try({
           axis.ticks.x=element_blank(),
           axis.text.x=element_blank())+
     scale_y_continuous(breaks=seq(0,200,20))
-    report.svg(graph, 'phys.d.hist')
+  graph2<- ggplot(b, aes(x = b)) +  
+    geom_histogram(aes(y = 100*(..count..)/sum(..count..)),bins = 12,color="black", fill="#046C9A",boundary=0)+
+    scale_x_continuous(breaks=seq(0,180,length=7))+
+    labs(y = "Relative Häufigkeit [%]")+
+    theme(plot.caption = element_text(hjust=0.5,size=12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
+          axis.text.y = element_text(face="bold", color="#000000", size=12),
+          axis.title.x = element_blank(),
+          #axis.ticks.x=element_blank(),
+          #axis.text.x=element_blank(),
+          legend.title = element_blank(),
+          legend.position = "bottom",
+          legend.text = element_text(color="#e3000b",size=12,face="bold"))
+    report.svg(graph, 'phys.d.box')
+    report.svg(graph2, 'phys.d.hist')
 }, silent=FALSE)
 
 try({
@@ -60,13 +75,15 @@ try({
   b$b<-as.numeric(b$b)
   b<-b%>%filter(b>-1 & b<61)
   b$x<-"Zeit"
+  z<-b%>%filter(b<11)
+  z<-length(z$b)
   
   graph<-ggplot(data=b,aes(x=x,y=b))+
     geom_boxplot(fill="#046C9A",width=0.5)+
     #geom_jitter(width = 0.05,alpha=0.2)+
     geom_hline(aes(yintercept = 10, linetype = "Ersteinschätzung innerhalb 10 Minuten"), color = "red", size = 1)+ 
     labs(y = "Zeit von Aufnahme bis Triage [Minuten]",
-         caption = paste("Fehlende Werte: ", isNA, "; Werte über 60 Minuten: ", positiveoutofbounds,"; Werte unter 0 Minuten: ", negativeoutofbounds))+
+         caption = paste("Fehlende Werte: ", isNA, "; Werte > 60 Minuten: ", positiveoutofbounds,"; Werte < 0 Minuten: ", negativeoutofbounds,"; Werte innerhalb 10 min: ",z))+
     theme(plot.caption = element_text(hjust=0.5,size=12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
@@ -77,7 +94,23 @@ try({
           legend.position = "bottom",legend.title = element_blank())+
     coord_cartesian(ylim = c(0, 60))
     #scale_y_continuous(breaks=seq(0,max(b$b),4))
-  report.svg(graph, 'triage.d.hist')
+  graph2<- ggplot(b, aes(x = b)) +  
+    geom_histogram(aes(y = 100*(..count..)/sum(..count..)),bins = 12,color="black", fill="#046C9A",boundary=0)+
+    scale_x_continuous(breaks=seq(0,60,length=7))+
+    labs(y = "Relative Häufigkeit [%]")+
+    theme(plot.caption = element_text(hjust=0.5,size=12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
+          axis.text.y = element_text(face="bold", color="#000000", size=12),
+          axis.title.x = element_blank(),
+          #axis.ticks.x=element_blank(),
+          #axis.text.x=element_blank(),
+          legend.title = element_blank(),
+          legend.position = "bottom",
+          legend.text = element_text(color="#e3000b",size=12,face="bold"))
+  
+  report.svg(graph, 'triage.d.box')
+  report.svg(graph2, 'triage.d.hist')
 }, silent=FALSE)
 
 try({

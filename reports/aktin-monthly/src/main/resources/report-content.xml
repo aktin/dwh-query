@@ -94,11 +94,13 @@ Homepage: www.aktin.org
     <section>
       <header>Ankunft/Aufnahme bis Ersteinschätzung</header>
       <plot ref="p5.1">Grafik 5.1: Ankunft/Aufnahme bis Ersteinschätzung</plot>
+      <plot ref="p5.4">Grafik 5.1.1: Ankunft/Aufnahme bis Ersteinschätzung</plot>
       <table ref="t5.1">Tabelle 5.1: Ankunft/Aufnahme bis Ersteinschätzung</table>
     </section>
     <section>
       <header>Ankunft/Aufnahme bis zum ersten Arztkontakt</header>
       <plot ref="p5.2">Grafik 5.2: Ankunft/Aufnahme bis Arztkontakt</plot>
+      <plot ref="p5.5">Grafik 5.2.1: Ankunft/Aufnahme bis Arztkontakt</plot>
       <table ref="t5.2">Tabelle 5.2: Ankunft/Aufnahme bis Arztkontakt</table>
     </section>
     <section>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
-	xmlns:fo="http://www.w3.org/1999/XSL/Format" 
+	xmlns:fo="http://www.w3.org/1999/XSL/Format"
 	version="1.0">
 	<xsl:template match="/template">
 		<xsl:variable name="colpos" select="count(preceding-sibling::xhtml:col)"/>
@@ -56,12 +56,12 @@
 					<fo:block>
 						Datenstand: <xsl:call-template name="datenstand"><xsl:with-param name="timestamp" select="document('prefs.xml')/properties/entry[@key = 'report.data.timestamp']/text()"/></xsl:call-template>
 					</fo:block>
-					<fo:block space-before="75mm">Das AKTIN-Notaufnahmeregister – Daten 
-					für die Qualitätssicherung,Public-Health Surveillance und Versorgungsforschung 
+					<fo:block space-before="75mm">Das AKTIN-Notaufnahmeregister – Daten
+					für die Qualitätssicherung,Public-Health Surveillance und Versorgungsforschung
 					in der Akutmedizin</fo:block>
 					<fo:block space-before="10mm">
 						<fo:external-graphic>
-							<xsl:attribute name="src">Notaufnahmeregister_Logo.svg</xsl:attribute>
+							<xsl:attribute name="src">Notaufnahmeregister_Logo_2021.svg</xsl:attribute>
 							<xsl:attribute name="content-height">30mm</xsl:attribute>
 						</fo:external-graphic>
 					</fo:block>
@@ -101,7 +101,7 @@
 	</xsl:attribute-set>
 	<xsl:attribute-set name="celltext">
 		<xsl:attribute name="hyphenate">false</xsl:attribute>
-		<!-- <xsl:attribute name="hyphenation-remain-character-count">4</xsl:attribute> 
+		<!-- <xsl:attribute name="hyphenation-remain-character-count">4</xsl:attribute>
 		<xsl:attribute name="xml:lang">de</xsl:attribute> -->
 	</xsl:attribute-set>
 	<xsl:attribute-set name="headerformat">
@@ -117,7 +117,7 @@
 		<xsl:attribute name="font-weight">bold</xsl:attribute>
 		<xsl:attribute name="page-break-before">always</xsl:attribute>
 		<xsl:attribute name="space-after">10pt</xsl:attribute>
-		<xsl:attribute name="keep-with-next">always</xsl:attribute>		
+		<xsl:attribute name="keep-with-next">always</xsl:attribute>
 	</xsl:attribute-set>
 	<xsl:attribute-set name="subheaderformat">
 		<xsl:attribute name="font-size">14pt</xsl:attribute>
@@ -177,7 +177,7 @@
 			</xsl:for-each>
 		</fo:block>
 	</xsl:template>
-	
+
     <xsl:template match="intro">
 		<fo:block padding-top="40mm" linefeed-treatment="preserve" break-before="page" break-after="page">
 			<xsl:apply-templates select="text()"/>
@@ -315,7 +315,7 @@
 			<xsl:apply-templates select="xhtml:td"/>
 		</fo:table-row>
 	</xsl:template>
-	
+
 	<xsl:template name="zeitraum">  <!-- todo: not done this might be interesting: <xsl:value-of select="functx:first-day-of-month($start)"/> -->
         <xsl:param name="start"></xsl:param>
         <xsl:param name="end"></xsl:param>
@@ -341,7 +341,7 @@
 					<xsl:when test="$start_month= '11'"><xsl:value-of select="concat('November', ' ', $start_year)"/> </xsl:when>
 					<xsl:when test="$start_month= '12'"><xsl:value-of select="concat('Dezember', ' ', $start_year)"/> </xsl:when>
 				</xsl:choose>
-			</xsl:when>			
+			</xsl:when>
 			<!--<xsl:when test="">
 			</xsl:when>	-->
 			<xsl:otherwise>
@@ -349,23 +349,23 @@
 			</xsl:otherwise>
 		</xsl:choose>
     </xsl:template>
-	
-	<xsl:template name="datenstand"> 
+
+	<xsl:template name="datenstand">
 		<xsl:param name="timestamp"></xsl:param>
 		<xsl:variable name="year" select="substring-before($timestamp, '-')" />
 		<xsl:variable name="month" select="substring-before(substring-after($timestamp, '-'), '-')" />
 		<xsl:variable name="day" select="substring-before(substring-after(substring-after($timestamp, '-'), '-'),'T')" />
-		<xsl:value-of select="concat($day, '.', $month, '.', $year)"/>	
+		<xsl:value-of select="concat($day, '.', $month, '.', $year)"/>
 	</xsl:template>
-	
+
 	<xsl:template match="pref[@ref='zeitraum']">
 		<xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template>
 	</xsl:template>
-	
+
 	<xsl:template match="pref[@ref='patients']">
 		<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.patients']/text()"/>
 	</xsl:template>
-	
+
     <xsl:template match="pref[@ref='encounters']">
 		<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.encounters']/text()"/>
 	</xsl:template>

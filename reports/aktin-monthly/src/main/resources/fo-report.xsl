@@ -1,19 +1,14 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:xhtml="http://www.w3.org/1999/xhtml"
-	xmlns:fo="http://www.w3.org/1999/XSL/Format"
-	version="1.0">
+	xmlns:fo="http://www.w3.org/1999/XSL/Format" version="1.0">
 	<xsl:template match="/template">
 		<xsl:variable name="colpos" select="count(preceding-sibling::xhtml:col)"/>
 		<xsl:variable name="datapos" select="count(preceding-sibling::xhtml:td)"/>
 		<fo:root font-family="Helvetica">
 			<fo:layout-master-set>
-				<fo:simple-page-master master-name="page-layout" page-height="297mm"
-					page-width="210mm"
-					margin-top="10mm">
-					<fo:region-body region-name="body"
-                    margin-top="10mm" margin-bottom="20mm"
-                    margin-left="25mm" margin-right="25mm"/>
+				<fo:simple-page-master master-name="page-layout" page-height="297mm" page-width="210mm" margin-top="10mm">
+					<fo:region-body region-name="body" margin-top="10mm" margin-bottom="20mm" margin-left="25mm" margin-right="25mm"/>
 					<fo:region-before region-name="header-normal" extent="15mm"/>
 					<fo:region-after region-name="footer-normal" extent="10mm"/>
 				</fo:simple-page-master>
@@ -21,7 +16,8 @@
 			<fo:declarations>
 				<x:xmpmeta xmlns:x="adobe:ns:meta/">
 					<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-						<rdf:Description rdf:about="" xmlns:pdf="http://ns.adobe.com/pdf/1.3/"
+						<rdf:Description rdf:about=""
+							xmlns:pdf="http://ns.adobe.com/pdf/1.3/"
 							xmlns:xmp="http://ns.adobe.com/xap/1.0/"
 							xmlns:dc="http://purl.org/dc/elements/1.1/">
 							<dc:title>fo-report</dc:title>
@@ -29,345 +25,427 @@
 							<dc:description>Notaufnahmebericht</dc:description>
 							<pdf:Keywords>AKTIN</pdf:Keywords>
 							<xmp:CreatorTool>erstellt mit Apache FOP</xmp:CreatorTool>
-							<xmp:CreationDate>2015-12-05T08:15:30-02:00</xmp:CreationDate> <!-- macht wohl nichts, Datum wird automatisch auf die aktuelle Zeit gesetzt -->
+							<xmp:CreationDate>2015-12-05T08:15:30-02:00</xmp:CreationDate>							<!-- macht wohl nichts, Datum wird automatisch auf die aktuelle Zeit gesetzt -->
 							<xmp:ModifyDate>2017-07-28T18:25:30-02:00</xmp:ModifyDate>
 						</rdf:Description>
 					</rdf:RDF>
 				</x:xmpmeta>
 			</fo:declarations>
 			<fo:page-sequence master-reference="page-layout" language="de">
-                <fo:static-content flow-name="header-normal">
-                	<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht V01.5 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/> - <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template></fo:block>
-				</fo:static-content>
-				<fo:static-content flow-name="footer-normal">
-					<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/> von
-							<fo:page-number-citation-last ref-id="end"/></fo:block>
-				</fo:static-content>
-				<fo:flow flow-name="body" id="mybody">
-					<fo:block xsl:use-attribute-sets="headerformat">
-						<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/>
-					</fo:block>
-					<fo:block>
-						<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.ou']/text()"/>
-					</fo:block>
-					<fo:block>
-						Monatsbericht: <xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template>
-					</fo:block>
-					<fo:block>
-						Datenstand: <xsl:call-template name="datenstand"><xsl:with-param name="timestamp" select="document('prefs.xml')/properties/entry[@key = 'report.data.timestamp']/text()"/></xsl:call-template>
-					</fo:block>
-					<fo:block space-before="75mm">Das AKTIN-Notaufnahmeregister – Daten
+				<fo:static-content flow-name="header-normal">
+					<fo:block xsl:use-attribute-sets="headerfooter">AKTIN Monatsbericht V01.5 - <xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/>
+ -					<xsl:call-template name="zeitraum">
+						<xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/>
+						<xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/>
+					</xsl:call-template>
+				</fo:block>
+			</fo:static-content>
+			<fo:static-content flow-name="footer-normal">
+				<fo:block xsl:use-attribute-sets="headerfooter">Seite <fo:page-number/>
+ von
+				<fo:page-number-citation-last ref-id="end"/>
+			</fo:block>
+		</fo:static-content>
+		<fo:flow flow-name="body" id="mybody">
+			<fo:block xsl:use-attribute-sets="headerformat">
+				<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.o']/text()"/>
+			</fo:block>
+			<fo:block>
+				<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'local.ou']/text()"/>
+			</fo:block>
+			<fo:block>
+						Monatsbericht: <xsl:call-template name="zeitraum">
+				<xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/>
+				<xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/>
+			</xsl:call-template>
+		</fo:block>
+		<fo:block>
+						Datenstand: <xsl:call-template name="datenstand">
+			<xsl:with-param name="timestamp" select="document('prefs.xml')/properties/entry[@key = 'report.data.timestamp']/text()"/>
+		</xsl:call-template>
+	</fo:block>
+	<fo:block space-before="75mm">Das AKTIN-Notaufnahmeregister – Daten
 					für die Qualitätssicherung,Public-Health Surveillance und Versorgungsforschung
 					in der Akutmedizin</fo:block>
-					<fo:block space-before="10mm">
-						<fo:external-graphic>
-							<xsl:attribute name="src">Notaufnahmeregister_Logo_2021.svg</xsl:attribute>
-							<xsl:attribute name="content-height">30mm</xsl:attribute>
-						</fo:external-graphic>
-					</fo:block>
-					<fo:block space-before="25mm"></fo:block>
-					<fo:block space-before="5mm">
-						<fo:external-graphic>
-							<xsl:attribute name="src">BMBF.svg</xsl:attribute>
-							<xsl:attribute name="content-height">30mm</xsl:attribute>
-						</fo:external-graphic>
-					</fo:block>
-					<xsl:apply-templates select="./intro"/>
-					<xsl:call-template name="genTOC"/>
-					<xsl:apply-templates select="./section"/>
-					<fo:block id="end"/>
-				</fo:flow>
-			</fo:page-sequence>
-		</fo:root>
-	</xsl:template>
+	<fo:block space-before="10mm">
 
-	<xsl:attribute-set name="table">
-		<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
-		<xsl:attribute name="border-collapse">collapse</xsl:attribute>
-		<xsl:attribute name="space-before">10pt</xsl:attribute>
-		<xsl:attribute name="keep-together">always</xsl:attribute>
-		<xsl:attribute name="table-layout">fixed</xsl:attribute>
-		<xsl:attribute name="width">100%</xsl:attribute>
-	</xsl:attribute-set>
-	<xsl:attribute-set name="tablehead">
-		<xsl:attribute name="font-weight">bold</xsl:attribute>
-		<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
-		<xsl:attribute name="border-top-style">solid</xsl:attribute>
-		<xsl:attribute name="border-collapse">collapse</xsl:attribute>
-		<xsl:attribute name="text-align">center</xsl:attribute>
-	</xsl:attribute-set>
-	<xsl:attribute-set name="cellborder">
-		<!--<xsl:attribute name="border-style">solid</xsl:attribute>-->
-	</xsl:attribute-set>
-	<xsl:attribute-set name="celltext">
-		<xsl:attribute name="hyphenate">false</xsl:attribute>
-		<!-- <xsl:attribute name="hyphenation-remain-character-count">4</xsl:attribute>
+		<fo:instream-foreign-object content-height="30mm">
+			<svg xmlns:dc="http://purl.org/dc/elements/1.1/"
+				xmlns:cc="http://creativecommons.org/ns#"
+				xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+				xmlns:svg="http://www.w3.org/2000/svg"
+				xmlns="http://www.w3.org/2000/svg"
+				xmlns:xlink="http://www.w3.org/1999/xlink"
+				xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+				xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="540.33984pt" height="173.14853pt" viewBox="0 0 540.33984 173.14853" version="1.1" id="svg2" inkscape:version="0.92.3 (2405546, 2018-03-11)" sodipodi:docname="Notaufnahmeregister_Logo_2021-03-15.svg">
+				<metadata id="metadata37">
+					<rdf:RDF>
+						<cc:Work rdf:about="">
+							<dc:format>image/svg+xml</dc:format>
+							<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+							<dc:title></dc:title>
+						</cc:Work>
+					</rdf:RDF>
+				</metadata>
+				<sodipodi:namedview pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1920" inkscape:window-height="986" id="namedview35" showgrid="false" fit-margin-top="0" fit-margin-left="0" fit-margin-right="0" fit-margin-bottom="0" showborder="false" inkscape:zoom="1.3182814" inkscape:cx="75.64327" inkscape:cy="45.805367" inkscape:window-x="-11" inkscape:window-y="-11" inkscape:window-maximized="1" inkscape:current-layer="surface1" />
+				<defs id="defs4">
+					<clipPath id="clip1">
+						<path d="m 0,618.85156 170,0 L 170,792 0,792 Z m 0,0" id="path7" inkscape:connector-curvature="0" />
+					</clipPath>
+					<clipPath id="clip2">
+						<path d="m 461,693 79.33984,0 0,99 L 461,792 Z m 0,0" id="path10" inkscape:connector-curvature="0" />
+					</clipPath>
+					<linearGradient inkscape:collect="always" xlink:href="#linearGradient5537" id="linearGradient5539" x1="150.78709" y1="-650.89301" x2="263.12921" y2="-650.89301" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1.7094716,0,0,1.9128961,-139.98049,1992.0104)" />
+					<linearGradient inkscape:collect="always" id="linearGradient5537">
+						<stop style="stop-color:#000000;stop-opacity:1;" offset="0" id="stop5533" />
+						<stop style="stop-color:#000000;stop-opacity:0;" offset="1" id="stop5535" />
+					</linearGradient>
+				</defs>
+				<g id="surface1" transform="translate(0,-618.85156)">
+					<g clip-path="url(#clip1)" id="g13" style="clip-rule:nonzero">
+						<path style="fill:#890700;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 0.09375,791.72266 c 0,0 -6.746094,-94.85157 94.1875,-162.47266 3.101562,-2.07422 13.38281,-6.94531 19.28125,-7.85156 14.02344,-2.15235 40.04297,-4.90625 55.89844,1.04687 0,0 -84.144534,15.95703 -125.035159,75.22266 0,0 -34.050781,45.1289 -44.332031,94.05469" id="path15" inkscape:connector-curvature="0" />
+					</g>
+					<path style="fill:#e3000b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 43.21875,718.60547 c 0,0 37.566406,-73.5 150.78516,-89.92969 0,0 17.55078,-4.36719 53.7539,18.75 0,0 -124.48437,-11.68359 -204.53906,71.17969" id="path17" inkscape:connector-curvature="0" />
+					<path style="fill:#fa9b06;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 83.234375,699.97266 c 0,0 77.035155,-45.07813 166.773435,-40.77735 0,0 16.24219,5.38281 32.11328,18.21875 0,0 -60.07422,-8.54687 -141.15625,17.35938 0,0 -17.44921,-3.52735 -57.730465,5.19922" id="path19" inkscape:connector-curvature="0" />
+					<path style="fill:none;stroke:#211e1e;stroke-width:57.20000076;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" d="m 1912.2656,488.04687 c 0,0 -190.7812,0.13807 -285.0089,1.61088 -27.6682,0.43246 -33.8285,70.87881 -48.7182,127.15661 -14.8896,56.2778 -17.8988,138.99798 -69.9756,139.69907 -44.1116,0.59386 -55.6048,-76.99296 -62.4368,-116.69332 -6.832,-39.70036 -9.6527,-105.35487 -30.9953,-141.18591 -15.9417,-26.76369 -91.0937,9.93956 -98.44,-33.42104 -27.9645,-165.0567 -75.5456,-619.68047 -83.0189,-462.674098 -10.5528,221.701658 -45.8056,1219.592138 -46.25,1220.703138 l -60.636,-684.33595 c -7.1058,-60.11719 -23.8765,-166.84646 -22.6551,-166.84646 -38.1714,-124.76716 -42.7328,89.85197 -79.037,100.57261 -45.62746,13.47378 -74.41349,-1.68564 -83.54613,36.5123 -18.57906,77.70831 -27.005,104.18469 -70.87076,103.29656 -22.4043,-0.45361 -41.33478,-51.7116 -54.89238,-100.09314 -11.89157,-42.43613 -58.06211,-34.73867 -101.39189,-35.97919 -338.48608,-9.69078 -346.32773,-9.23908 -399.37832,-10.62135" transform="matrix(0.1,0,0,-0.1,0,792)" id="path21" inkscape:connector-curvature="0" sodipodi:nodetypes="cszazssscccsssssc" />
+					<rect style="opacity:1;fill:url(#linearGradient5539);fill-opacity:1;stroke:none;stroke-width:1.47125316;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="rect5529" width="195.23253" height="5.7180352" x="118.24444" y="743.79181" inkscape:export-xdpi="600" inkscape:export-ydpi="600" transform="matrix(1,0,0.09712723,0.99527197,0,0)" />
+					<text xml:space="preserve" style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:26.00000191px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.75" x="169.19849" y="735.07428" id="text5555" inkscape:export-xdpi="600" inkscape:export-ydpi="600">
+						<tspan sodipodi:role="line" id="tspan5553" x="169.19849" y="735.07428" style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:28px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke-width:0.75">Notaufnahme</tspan>
+						<tspan sodipodi:role="line" x="169.19849" y="770.07428" style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:28px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke-width:0.75" id="tspan5557">Register</tspan>
+					</text>
+				</g>
+			</svg>
+		</fo:instream-foreign-object>
+
+	</fo:block>
+	<fo:block space-before="25mm"></fo:block>
+	<fo:block space-before="5mm">
+		<fo:external-graphic>
+			<xsl:attribute name="src">BMBF.svg</xsl:attribute>
+			<xsl:attribute name="content-height">30mm</xsl:attribute>
+		</fo:external-graphic>
+	</fo:block>
+	<xsl:apply-templates select="./intro"/>
+	<xsl:call-template name="genTOC"/>
+	<xsl:apply-templates select="./section"/>
+	<fo:block id="end"/>
+</fo:flow>
+</fo:page-sequence>
+</fo:root>
+</xsl:template>
+
+<xsl:attribute-set name="table">
+<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
+<xsl:attribute name="border-collapse">collapse</xsl:attribute>
+<xsl:attribute name="space-before">10pt</xsl:attribute>
+<xsl:attribute name="keep-together">always</xsl:attribute>
+<xsl:attribute name="table-layout">fixed</xsl:attribute>
+<xsl:attribute name="width">100%</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="tablehead">
+<xsl:attribute name="font-weight">bold</xsl:attribute>
+<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
+<xsl:attribute name="border-top-style">solid</xsl:attribute>
+<xsl:attribute name="border-collapse">collapse</xsl:attribute>
+<xsl:attribute name="text-align">center</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="cellborder">
+<!--<xsl:attribute name="border-style">solid</xsl:attribute>-->
+</xsl:attribute-set>
+<xsl:attribute-set name="celltext">
+<xsl:attribute name="hyphenate">false</xsl:attribute>
+<!-- <xsl:attribute name="hyphenation-remain-character-count">4</xsl:attribute>
 		<xsl:attribute name="xml:lang">de</xsl:attribute> -->
-	</xsl:attribute-set>
-	<xsl:attribute-set name="headerformat">
-		<xsl:attribute name="font-size">20pt</xsl:attribute>
-		<xsl:attribute name="font-weight">bold</xsl:attribute>
-		<!--<xsl:attribute name="font-family">Courier</xsl:attribute>-->
-		<xsl:attribute name="text-align">center</xsl:attribute>
-		<xsl:attribute name="space-before">30pt</xsl:attribute>
-		<xsl:attribute name="space-after">30pt</xsl:attribute>
-	</xsl:attribute-set>
-	<xsl:attribute-set name="textheaderformat"> <!-- Überschriften im Fließtext -->
-		<xsl:attribute name="font-size">15pt</xsl:attribute>
-		<xsl:attribute name="font-weight">bold</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="headerformat">
+<xsl:attribute name="font-size">20pt</xsl:attribute>
+<xsl:attribute name="font-weight">bold</xsl:attribute>
+<!--<xsl:attribute name="font-family">Courier</xsl:attribute>-->
+<xsl:attribute name="text-align">center</xsl:attribute>
+<xsl:attribute name="space-before">30pt</xsl:attribute>
+<xsl:attribute name="space-after">30pt</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="textheaderformat"><!-- Überschriften im Fließtext -->
+<xsl:attribute name="font-size">15pt</xsl:attribute>
+<xsl:attribute name="font-weight">bold</xsl:attribute>
+<xsl:attribute name="page-break-before">always</xsl:attribute>
+<xsl:attribute name="space-after">10pt</xsl:attribute>
+<xsl:attribute name="keep-with-next">always</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="subheaderformat">
+<xsl:attribute name="font-size">14pt</xsl:attribute>
+<xsl:attribute name="space-before">20pt</xsl:attribute>
+<xsl:attribute name="keep-with-next">always</xsl:attribute>
+</xsl:attribute-set>
+<xsl:attribute-set name="plotformat">
+<xsl:attribute name="inline-progression-dimension">100%</xsl:attribute>
+<xsl:attribute name="content-height">scale-to-fit</xsl:attribute>
+<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
+<xsl:attribute name="space-before">0pt</xsl:attribute>
+<xsl:attribute name="space-before.precedence">force</xsl:attribute><!-- Plot haben sonst zu viel Abstand -->
+</xsl:attribute-set>
+<xsl:attribute-set name="headerfooter">
+<xsl:attribute name="text-align">center</xsl:attribute>
+<xsl:attribute name="font-size">9pt</xsl:attribute>
+<xsl:attribute name="font-style">italic</xsl:attribute>
+</xsl:attribute-set>
+
+<xsl:template name="genTOC">
+<fo:block break-before="page" break-after="page">
+<fo:block xsl:use-attribute-sets="headerformat">Inhaltsverzeichnis</fo:block>
+<xsl:for-each select="//section">
+<fo:block text-align-last="justify">
+	<xsl:variable name="anzahl" select="count(ancestor::*)"/>
+	<xsl:choose>
+		<xsl:when test="$anzahl = 1">
+			<xsl:variable name="chapNum">
+				<xsl:number from="CHAPTER" count="section" format="1 " level="multiple"/>
+			</xsl:variable>
+			<fo:block font-weight="bold">
+				<fo:basic-link internal-destination="{generate-id(.)}">
+					<xsl:value-of select="$chapNum"/>
+					<xsl:value-of select="./header/text()"/>
+					<fo:leader leader-pattern="dots"/>
+					<fo:page-number-citation ref-id="{generate-id(.)}"/>
+				</fo:basic-link>
+			</fo:block>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:variable name="chapNum">
+				<xsl:number from="CHAPTER" count="section" format="1 " level="multiple"/>
+			</xsl:variable>
+			<fo:block text-indent="10mm">
+				<fo:basic-link internal-destination="{generate-id(.)}">
+					<xsl:value-of select="$chapNum"/>
+					<xsl:value-of select="./header/text()"/>
+					<fo:leader leader-pattern="dots"/>
+					<fo:page-number-citation ref-id="{generate-id(.)}"/>
+				</fo:basic-link>
+			</fo:block>
+		</xsl:otherwise>
+	</xsl:choose>
+</fo:block>
+</xsl:for-each>
+</fo:block>
+</xsl:template>
+
+<xsl:template match="intro">
+<fo:block padding-top="40mm" linefeed-treatment="preserve" break-before="page" break-after="page">
+<xsl:apply-templates select="text()"/>
+</fo:block>
+</xsl:template>
+
+<xsl:template match="section">
+<fo:block id="{generate-id(.)}">
+<xsl:apply-templates select="./*"/>
+</fo:block>
+</xsl:template>
+
+<xsl:template match="header">
+<xsl:variable name="stufe" select="count(ancestor::*)"/>
+<xsl:choose>
+<xsl:when test="$stufe = 2">
+<xsl:variable name="chapNum">
+	<xsl:number from="CHAPTER" count="section" format="1 " level="multiple"/>
+</xsl:variable>
+<fo:block xsl:use-attribute-sets="textheaderformat">
+	<xsl:value-of select="$chapNum"/>
+	<xsl:value-of select="./text()"/>
+</fo:block>
+</xsl:when>
+<xsl:otherwise>
+<xsl:variable name="chapNum">
+	<xsl:number from="CHAPTER" count="section" format="1 " level="multiple"/>
+</xsl:variable>
+<fo:block xsl:use-attribute-sets="subheaderformat">
+	<xsl:if test="@break-before='manual'">
 		<xsl:attribute name="page-break-before">always</xsl:attribute>
-		<xsl:attribute name="space-after">10pt</xsl:attribute>
-		<xsl:attribute name="keep-with-next">always</xsl:attribute>
-	</xsl:attribute-set>
-	<xsl:attribute-set name="subheaderformat">
-		<xsl:attribute name="font-size">14pt</xsl:attribute>
-		<xsl:attribute name="space-before">20pt</xsl:attribute>
-		<xsl:attribute name="keep-with-next">always</xsl:attribute>
-	</xsl:attribute-set>
-	<xsl:attribute-set name="plotformat">
-		<xsl:attribute name="inline-progression-dimension">100%</xsl:attribute>
-		<xsl:attribute name="content-height">scale-to-fit</xsl:attribute>
-		<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
-		<xsl:attribute name="space-before">0pt</xsl:attribute>
-		<xsl:attribute name="space-before.precedence">force</xsl:attribute> <!-- Plot haben sonst zu viel Abstand -->
-	</xsl:attribute-set>
-    <xsl:attribute-set name="headerfooter">
-		<xsl:attribute name="text-align">center</xsl:attribute>
-		<xsl:attribute name="font-size">9pt</xsl:attribute>
-		<xsl:attribute name="font-style">italic</xsl:attribute>
-	</xsl:attribute-set>
+	</xsl:if>
+	<xsl:value-of select="$chapNum"/>
+	<xsl:value-of select="./text()"/>
+</fo:block>
+</xsl:otherwise>
+</xsl:choose>
+</xsl:template>
 
-	<xsl:template name="genTOC">
-		<fo:block break-before="page" break-after="page">
-			<fo:block xsl:use-attribute-sets="headerformat">Inhaltsverzeichnis</fo:block>
-			<xsl:for-each select="//section">
-				<fo:block text-align-last="justify">
-					<xsl:variable name="anzahl" select="count(ancestor::*)"/>
-					<xsl:choose>
-						<xsl:when test="$anzahl = 1">
-							<xsl:variable name="chapNum">
-								<xsl:number from="CHAPTER" count="section" format="1 "
-									level="multiple"/>
-							</xsl:variable>
-							<fo:block font-weight="bold">
-								<fo:basic-link internal-destination="{generate-id(.)}">
-									<xsl:value-of select="$chapNum"/>
-									<xsl:value-of select="./header/text()"/>
-									<fo:leader leader-pattern="dots"/>
-									<fo:page-number-citation ref-id="{generate-id(.)}"/>
-								</fo:basic-link>
-							</fo:block>
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:variable name="chapNum">
-								<xsl:number from="CHAPTER" count="section" format="1 "
-									level="multiple"/>
-							</xsl:variable>
-							<fo:block text-indent="10mm">
-								<fo:basic-link internal-destination="{generate-id(.)}">
-									<xsl:value-of select="$chapNum"/>
-									<xsl:value-of select="./header/text()"/>
-									<fo:leader leader-pattern="dots"/>
-									<fo:page-number-citation ref-id="{generate-id(.)}"/>
-								</fo:basic-link>
-							</fo:block>
-						</xsl:otherwise>
-					</xsl:choose>
-				</fo:block>
-			</xsl:for-each>
-		</fo:block>
-	</xsl:template>
+<xsl:template match="paragraph">
+<fo:block>
+<xsl:apply-templates select="text() | var | pref"/>
+</fo:block>
+</xsl:template>
 
-    <xsl:template match="intro">
-		<fo:block padding-top="40mm" linefeed-treatment="preserve" break-before="page" break-after="page">
-			<xsl:apply-templates select="text()"/>
-		</fo:block>
-	</xsl:template>
+<xsl:template match="var">
+<xsl:variable name="id" select="@ref"/>
+<xsl:value-of select="document('report-data.xml')/report-data/text[@id = $id]/text()"/>
+</xsl:template>
 
-	<xsl:template match="section">
-		<fo:block id="{generate-id(.)}">
-			<xsl:apply-templates select="./*"/>
-		</fo:block>
-	</xsl:template>
-
-	<xsl:template match="header">
-		<xsl:variable name="stufe" select="count(ancestor::*)"/>
-		<xsl:choose>
-			<xsl:when test="$stufe = 2">
-				<xsl:variable name="chapNum">
-					<xsl:number from="CHAPTER" count="section" format="1 " level="multiple"/>
-				</xsl:variable>
-				<fo:block xsl:use-attribute-sets="textheaderformat">
-					<xsl:value-of select="$chapNum"/>
-					<xsl:value-of select="./text()"/>
-				</fo:block>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:variable name="chapNum">
-					<xsl:number from="CHAPTER" count="section" format="1 " level="multiple"/>
-				</xsl:variable>
-				<fo:block xsl:use-attribute-sets="subheaderformat">
-					<xsl:if test="@break-before='manual'">
-						<xsl:attribute name="page-break-before">always</xsl:attribute>
-					</xsl:if>
-					<xsl:value-of select="$chapNum"/>
-					<xsl:value-of select="./text()"/>
-				</fo:block>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template match="paragraph">
-		<fo:block>
-			<xsl:apply-templates select="text() | var | pref"/>
-		</fo:block>
-	</xsl:template>
-
-	<xsl:template match="var">
-		<xsl:variable name="id" select="@ref"/>
-		<xsl:value-of select="document('report-data.xml')/report-data/text[@id = $id]/text()"/>
-	</xsl:template>
-
-	<xsl:template match="plot">
-        <xsl:variable name="id" select="@ref"/>
-		<xsl:variable name="href" select="document('report-data.xml')/report-data/plot[@id = $id]/@href"/>
-        <!--  should work to avoid errors with missing files, but check on $href always returns false => path problem?
+<xsl:template match="plot">
+<xsl:variable name="id" select="@ref"/>
+<xsl:variable name="href" select="document('report-data.xml')/report-data/plot[@id = $id]/@href"/>
+<!--  should work to avoid errors with missing files, but check on $href always returns false => path problem?
         <xsl:when test="fs:exists(fs:new($href))" xmlns:fs="java.io.File">
         </xsl:when>
         <xsl:otherwise>
          do something here... default image
         </xsl:otherwise>-->
-		<fo:block font-size="0">
-			<fo:external-graphic xsl:use-attribute-sets="plotformat">
-				<xsl:attribute name="src">
-					<xsl:value-of select="$href"/>
-				</xsl:attribute>
-			</fo:external-graphic>
-			<fo:block font-size="9pt" keep-with-previous="always" space-after="10mm">
-				<xsl:value-of select="./text()"/>
-			</fo:block>
-		</fo:block>
-	</xsl:template>
+<fo:block font-size="0">
+<fo:external-graphic xsl:use-attribute-sets="plotformat">
+<xsl:attribute name="src">
+	<xsl:value-of select="$href"/>
+</xsl:attribute>
+</fo:external-graphic>
+<fo:block font-size="9pt" keep-with-previous="always" space-after="10mm">
+<xsl:value-of select="./text()"/>
+</fo:block>
+</fo:block>
+</xsl:template>
 
-	<xsl:template match="table">
-		<xsl:variable name="id" select="@ref"/>
-		<xsl:variable name="href"
-			select="document('report-data.xml')/report-data/table[@id = $id]/@href"/>
-		<xsl:apply-templates select="document($href)"/>
-		<fo:block font-size="9pt" keep-with-previous="always" space-before="3mm" space-after="3mm">
-			<xsl:value-of select="./text()"/>
-		</fo:block>
-	</xsl:template>
+<xsl:template match="table">
+<xsl:variable name="id" select="@ref"/>
+<xsl:variable name="href" select="document('report-data.xml')/report-data/table[@id = $id]/@href"/>
+<xsl:apply-templates select="document($href)"/>
+<fo:block font-size="9pt" keep-with-previous="always" space-before="3mm" space-after="3mm">
+<xsl:value-of select="./text()"/>
+</fo:block>
+</xsl:template>
 
-	<xsl:template match="xhtml:table">
-		<fo:table xsl:use-attribute-sets="table">
-			<xsl:apply-templates select="xhtml:col"/>
-			<fo:table-header>
-				<xsl:apply-templates select="xhtml:thead/xhtml:tr"/>
-			</fo:table-header>
-			<fo:table-body>
-				<xsl:apply-templates select="xhtml:tbody/xhtml:tr"/>
-			</fo:table-body>
-		</fo:table>
-	</xsl:template>
+<xsl:template match="xhtml:table">
+<fo:table xsl:use-attribute-sets="table">
+<xsl:apply-templates select="xhtml:col"/>
+<fo:table-header>
+<xsl:apply-templates select="xhtml:thead/xhtml:tr"/>
+</fo:table-header>
+<fo:table-body>
+<xsl:apply-templates select="xhtml:tbody/xhtml:tr"/>
+</fo:table-body>
+</fo:table>
+</xsl:template>
 
-	<xsl:template match="xhtml:col">
-		<fo:table-column>
-			<xsl:attribute name="column-width">
-				<xsl:value-of select="@width"/>
-			</xsl:attribute>
-			<xsl:attribute name="text-align">
-				<xsl:value-of select="@align"/>
-			</xsl:attribute>
-		</fo:table-column>
-	</xsl:template>
+<xsl:template match="xhtml:col">
+<fo:table-column>
+<xsl:attribute name="column-width">
+<xsl:value-of select="@width"/>
+</xsl:attribute>
+<xsl:attribute name="text-align">
+<xsl:value-of select="@align"/>
+</xsl:attribute>
+</fo:table-column>
+</xsl:template>
 
-	<xsl:template match="xhtml:thead/xhtml:tr">
-		<fo:table-row xsl:use-attribute-sets="cellborder">
-			<xsl:apply-templates select="xhtml:th"/>
-		</fo:table-row>
-	</xsl:template>
+<xsl:template match="xhtml:thead/xhtml:tr">
+<fo:table-row xsl:use-attribute-sets="cellborder">
+<xsl:apply-templates select="xhtml:th"/>
+</fo:table-row>
+</xsl:template>
 
-	<xsl:template match="xhtml:th">
-		<fo:table-cell xsl:use-attribute-sets="tablehead">
-			<fo:block>
-				<xsl:value-of select="./text()"/>
-			</fo:block>
-		</fo:table-cell>
-	</xsl:template>
+<xsl:template match="xhtml:th">
+<fo:table-cell xsl:use-attribute-sets="tablehead">
+<fo:block>
+<xsl:value-of select="./text()"/>
+</fo:block>
+</fo:table-cell>
+</xsl:template>
 
-	<xsl:template match="xhtml:td">
-		<xsl:variable name="p" select="position()"/>
-		<fo:table-cell xsl:use-attribute-sets="cellborder">
-			<xsl:attribute name="text-align">
-				<xsl:value-of select="../../../xhtml:col[$p]/@align"/>
-			</xsl:attribute>
-			<fo:block-container overflow="hidden">
-                <fo:block xsl:use-attribute-sets="celltext">
-                    <xsl:value-of select="./text()"/>
-                </fo:block>
-            </fo:block-container>
-		</fo:table-cell>
-	</xsl:template>
+<xsl:template match="xhtml:td">
+<xsl:variable name="p" select="position()"/>
+<fo:table-cell xsl:use-attribute-sets="cellborder">
+<xsl:attribute name="text-align">
+<xsl:value-of select="../../../xhtml:col[$p]/@align"/>
+</xsl:attribute>
+<fo:block-container overflow="hidden">
+<fo:block xsl:use-attribute-sets="celltext">
+	<xsl:value-of select="./text()"/>
+</fo:block>
+</fo:block-container>
+</fo:table-cell>
+</xsl:template>
 
-	<xsl:template match="xhtml:tr">
-		<fo:table-row>
-			<xsl:apply-templates select="xhtml:td"/>
-		</fo:table-row>
-	</xsl:template>
+<xsl:template match="xhtml:tr">
+<fo:table-row>
+<xsl:apply-templates select="xhtml:td"/>
+</fo:table-row>
+</xsl:template>
 
-	<xsl:template name="zeitraum">  <!-- todo: not done this might be interesting: <xsl:value-of select="functx:first-day-of-month($start)"/> -->
-        <xsl:param name="start"></xsl:param>
-        <xsl:param name="end"></xsl:param>
-		<xsl:variable name="start_year" select="substring-before($start, '-')" />
-		<xsl:variable name="start_month" select="substring-before(substring-after($start, '-'), '-')" />
-		<xsl:variable name="start_day" select="substring-before(substring-after(substring-after($start, '-'), '-'),'T')" />
-		<xsl:variable name="end_year" select="substring-before($end, '-')" />
-		<xsl:variable name="end_month" select="substring-before(substring-after($end, '-'), '-')" />
-		<xsl:variable name="end_day" select="substring-before(substring-after(substring-after($end, '-'), '-'),'T')" />
-		<xsl:choose>
-			<xsl:when test="(number($start_day)=1)and(number($end_day)=1)		and		((number($start_month)=number($end_month)-1) and (number($start_year)=number($end_year))		or		(number($start_month)=12) and (number($end_month=1)) and (number($start_year)=number($end_year)-1))">
-				<xsl:choose>
-					<xsl:when test="$start_month = '1' or $start_month= '01'"><xsl:value-of select="concat('Januar', ' ', $start_year)"/></xsl:when>
-					<xsl:when test="$start_month = '2' or $start_month= '02'"><xsl:value-of select="concat('Februar', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '3' or $start_month= '03'"><xsl:value-of select="concat('März', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '4' or $start_month= '04'"><xsl:value-of select="concat('April', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '5' or $start_month= '05'"><xsl:value-of select="concat('Mai', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '6' or $start_month= '06'"><xsl:value-of select="concat('Juni', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '7' or $start_month= '07'"><xsl:value-of select="concat('Juli', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '8' or $start_month= '08'"><xsl:value-of select="concat('August', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '9' or $start_month= '09'"><xsl:value-of select="concat('September', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '10'"><xsl:value-of select="concat('Oktober', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '11'"><xsl:value-of select="concat('November', ' ', $start_year)"/> </xsl:when>
-					<xsl:when test="$start_month= '12'"><xsl:value-of select="concat('Dezember', ' ', $start_year)"/> </xsl:when>
-				</xsl:choose>
-			</xsl:when>
-			<!--<xsl:when test="">
+<xsl:template name="zeitraum"><!-- todo: not done this might be interesting: <xsl:value-of select="functx:first-day-of-month($start)"/> -->
+<xsl:param name="start"></xsl:param>
+<xsl:param name="end"></xsl:param>
+<xsl:variable name="start_year" select="substring-before($start, '-')" />
+<xsl:variable name="start_month" select="substring-before(substring-after($start, '-'), '-')" />
+<xsl:variable name="start_day" select="substring-before(substring-after(substring-after($start, '-'), '-'),'T')" />
+<xsl:variable name="end_year" select="substring-before($end, '-')" />
+<xsl:variable name="end_month" select="substring-before(substring-after($end, '-'), '-')" />
+<xsl:variable name="end_day" select="substring-before(substring-after(substring-after($end, '-'), '-'),'T')" />
+<xsl:choose>
+<xsl:when test="(number($start_day)=1)and(number($end_day)=1) and ((number($start_month)=number($end_month)-1) and (number($start_year)=number($end_year)) or (number($start_month)=12) and (number($end_month=1)) and (number($start_year)=number($end_year)-1))">
+<xsl:choose>
+	<xsl:when test="$start_month = '1' or $start_month= '01'">
+		<xsl:value-of select="concat('Januar', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month = '2' or $start_month= '02'">
+		<xsl:value-of select="concat('Februar', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '3' or $start_month= '03'">
+		<xsl:value-of select="concat('März', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '4' or $start_month= '04'">
+		<xsl:value-of select="concat('April', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '5' or $start_month= '05'">
+		<xsl:value-of select="concat('Mai', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '6' or $start_month= '06'">
+		<xsl:value-of select="concat('Juni', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '7' or $start_month= '07'">
+		<xsl:value-of select="concat('Juli', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '8' or $start_month= '08'">
+		<xsl:value-of select="concat('August', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '9' or $start_month= '09'">
+		<xsl:value-of select="concat('September', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '10'">
+		<xsl:value-of select="concat('Oktober', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '11'">
+		<xsl:value-of select="concat('November', ' ', $start_year)"/>
+	</xsl:when>
+	<xsl:when test="$start_month= '12'">
+		<xsl:value-of select="concat('Dezember', ' ', $start_year)"/>
+	</xsl:when>
+</xsl:choose>
+</xsl:when>
+<!--<xsl:when test="">
 			</xsl:when>	-->
-			<xsl:otherwise>
-				<xsl:value-of select="concat($start_day, '.', $start_month, '.', $start_year,' - ',$end_day, '.', $end_month, '.', $end_year)"/> <!-- default output -->
-			</xsl:otherwise>
-		</xsl:choose>
-    </xsl:template>
+<xsl:otherwise>
+<xsl:value-of select="concat($start_day, '.', $start_month, '.', $start_year,' - ',$end_day, '.', $end_month, '.', $end_year)"/>
+<!-- default output -->
+</xsl:otherwise>
+</xsl:choose>
+</xsl:template>
 
-	<xsl:template name="datenstand">
-		<xsl:param name="timestamp"></xsl:param>
-		<xsl:variable name="year" select="substring-before($timestamp, '-')" />
-		<xsl:variable name="month" select="substring-before(substring-after($timestamp, '-'), '-')" />
-		<xsl:variable name="day" select="substring-before(substring-after(substring-after($timestamp, '-'), '-'),'T')" />
-		<xsl:value-of select="concat($day, '.', $month, '.', $year)"/>
-	</xsl:template>
+<xsl:template name="datenstand">
+<xsl:param name="timestamp"></xsl:param>
+<xsl:variable name="year" select="substring-before($timestamp, '-')" />
+<xsl:variable name="month" select="substring-before(substring-after($timestamp, '-'), '-')" />
+<xsl:variable name="day" select="substring-before(substring-after(substring-after($timestamp, '-'), '-'),'T')" />
+<xsl:value-of select="concat($day, '.', $month, '.', $year)"/>
+</xsl:template>
 
-	<xsl:template match="pref[@ref='zeitraum']">
-		<xsl:call-template name="zeitraum"><xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/><xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/></xsl:call-template>
-	</xsl:template>
+<xsl:template match="pref[@ref='zeitraum']">
+<xsl:call-template name="zeitraum">
+<xsl:with-param name="start" select="document('prefs.xml')/properties/entry[@key = 'report.data.start']/text()"/>
+<xsl:with-param name="end" select="document('prefs.xml')/properties/entry[@key = 'report.data.end']/text()"/>
+</xsl:call-template>
+</xsl:template>
 
-	<xsl:template match="pref[@ref='patients']">
-		<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.patients']/text()"/>
-	</xsl:template>
+<xsl:template match="pref[@ref='patients']">
+<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.patients']/text()"/>
+</xsl:template>
 
-    <xsl:template match="pref[@ref='encounters']">
-		<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.encounters']/text()"/>
-	</xsl:template>
+<xsl:template match="pref[@ref='encounters']">
+<xsl:value-of select="document('prefs.xml')/properties/entry[@key = 'report.data.encounters']/text()"/>
+</xsl:template>
 
 </xsl:stylesheet>

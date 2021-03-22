@@ -30,7 +30,7 @@ public class AktinMonthly extends AnnotatedReport {
 	@Override
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
 		//log.info("Using configuration option="+dummyOption);
-		String[] resNames = {"report-content.xml","fo-report.xsl","report-data.xml","AKTIN_Logo_final.svg","BMBF.svg"};
+		String[] resNames = {"report-content.xml","fo-report.xsl","report-data.xml","Notaufnahmeregister_Logo_2021.svg","BMBF.svg"};
 		copyClasspathResources(workingDirectory, resNames);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.

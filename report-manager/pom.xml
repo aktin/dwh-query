@@ -1,121 +1,122 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<name>AKTIN : DWH Query : Report Manager</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <name>AKTIN : DWH Query : Report Manager</name>
 
-	<groupId>org.aktin</groupId>
-	<artifactId>report-manager</artifactId>
-	<version>0.10-SNAPSHOT</version>
+    <groupId>org.aktin</groupId>
+    <artifactId>report-manager</artifactId>
+    <version>0.10-SNAPSHOT</version>
 
-	<description>
-		XXX
-	</description>
-	
-	
-	<parent>
-		<groupId>org.aktin</groupId>
-		<artifactId>dwh-query</artifactId>
-		<version>0.10-SNAPSHOT</version>
-	</parent>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-	<dependencies>
-		<!-- TODO separate report-api project -->
-		<dependency>
-			<groupId>org.aktin</groupId>
-			<artifactId>dwh-api</artifactId>
-			<version>0.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>fop</artifactId>
-			<!-- TODO update to 2.3 and try remove xerces below.
-			     Updating will produce errors: 
-			      FOP errors (1): Dem Element "fo:simple-page-master" fehlt ein verlangtes Property "master-name" 
-			 -->
-			<version>2.1</version>
-		</dependency>
-<!-- try to fix SVG rendering failures -->
-<dependency>
-   <groupId>xerces</groupId>
-   <artifactId>xercesImpl</artifactId>
-   <version>2.11.0</version>
-</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
+    <description>
+        XXX
+    </description>
 
 
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<!-- TODO JEE 8 -->
-			<version>7.0</version>
-			<scope>provided</scope>
-		</dependency>
+    <parent>
+        <groupId>org.aktin</groupId>
+        <artifactId>dwh-query</artifactId>
+        <version>0.10-SNAPSHOT</version>
+    </parent>
 
-		<!-- HIStream for ETL process -->
-		<dependency>
-			<groupId>de.sekmi.histream</groupId>
-			<artifactId>histream-i2b2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.sekmi.histream</groupId>
-			<artifactId>histream-export</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.aktin</groupId>
-			<artifactId>r-script</artifactId>
-			<version>1.4-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aktin</groupId>
-			<artifactId>r-script</artifactId>
-			<version>1.4-SNAPSHOT</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.sekmi.histream</groupId>
-			<artifactId>histream-export</artifactId>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.aktin.dwh</groupId>
-			<artifactId>dwh-prefs</artifactId>
-			<version>0.8</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.aktin.dwh</groupId>
-			<artifactId>dwh-prefs</artifactId>
-			<version>0.8</version>
-			<scope>test</scope>
-		</dependency>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <!-- TODO separate report-api project -->
+        <dependency>
+            <groupId>org.aktin</groupId>
+            <artifactId>dwh-api</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlgraphics</groupId>
+            <artifactId>fop</artifactId>
+            <!-- TODO update to 2.3 and try remove xerces below.
+                 Updating will produce errors:
+                  FOP errors (1): Dem Element "fo:simple-page-master" fehlt ein verlangtes Property "master-name"
+             -->
+            <version>2.1</version>
+        </dependency>
+        <!-- try to fix SVG rendering failures -->
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
 
-<!-- XXX only temporary for testing  -->
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.4-1201-jdbc41</version>
-			<scope>test</scope>
-		</dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <!-- TODO JEE 8 -->
+            <version>7.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- HIStream for ETL process -->
+        <dependency>
+            <groupId>de.sekmi.histream</groupId>
+            <artifactId>histream-i2b2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.sekmi.histream</groupId>
+            <artifactId>histream-export</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aktin</groupId>
+            <artifactId>r-script</artifactId>
+            <version>1.4-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aktin</groupId>
+            <artifactId>r-script</artifactId>
+            <version>1.4-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.sekmi.histream</groupId>
+            <artifactId>histream-export</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aktin.dwh</groupId>
+            <artifactId>dwh-prefs</artifactId>
+            <version>0.9-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aktin.dwh</groupId>
+            <artifactId>dwh-prefs</artifactId>
+            <version>0.9-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- XXX only temporary for testing  -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.4-1201-jdbc41</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
 </project>

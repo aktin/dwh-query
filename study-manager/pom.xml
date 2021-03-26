@@ -1,88 +1,89 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<name>AKTIN : DWH Query : Study Manager</name>
-	<packaging>ejb</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <name>AKTIN : DWH Query : Study Manager</name>
+    <packaging>ejb</packaging>
 
-	<groupId>org.aktin</groupId>
-	<artifactId>study-manager</artifactId>
-	<version>0.10-SNAPSHOT</version>
+    <groupId>org.aktin</groupId>
+    <artifactId>study-manager</artifactId>
+    <version>0.10-SNAPSHOT</version>
 
-	<description>
-		Manage patient participation for AKTIN or other studies (opt-in / opt-out)
-	</description>
-	
-	
-	<parent>
-		<groupId>org.aktin</groupId>
-		<artifactId>dwh-query</artifactId>
-		<version>0.10-SNAPSHOT</version>
-	</parent>
+    <description>
+        Manage patient participation for AKTIN or other studies (opt-in / opt-out)
+    </description>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-ejb-plugin</artifactId>
-				<version>2.5.1</version>
-				<configuration>
-					<ejbVersion>3.1</ejbVersion>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-	<dependencies>
-		<dependency>
-			<groupId>org.aktin</groupId>
-			<artifactId>dwh-api</artifactId>
-			<version>0.6</version>
-		</dependency>
-		<!-- j2ee annotations -->
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<!-- TODO JEE 8 -->
-			<version>7.0</version>
-			<scope>provided</scope>
-		</dependency>
 
-		<!-- test -->
-		<dependency>
-			<groupId>org.aktin.dwh</groupId>
-			<artifactId>dwh-db</artifactId>
-			<version>0.8</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.aktin.dwh</groupId>
-			<artifactId>dwh-db</artifactId>
-			<version>0.8</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>2.3.3</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
-		<!-- somehow required for liquibase during testing -->
+    <parent>
+        <groupId>org.aktin</groupId>
+        <artifactId>dwh-query</artifactId>
+        <version>0.10-SNAPSHOT</version>
+    </parent>
 
-		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-api</artifactId>
-		    <version>1.7.22</version>
-		    <scope>test</scope>
-		</dependency>
-		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-jdk14</artifactId>
-		    <version>1.7.22</version>
-		    <scope>test</scope>
-		</dependency>
-		
-	</dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ejb-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <ejbVersion>3.1</ejbVersion>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>org.aktin</groupId>
+            <artifactId>dwh-api</artifactId>
+            <version>0.7-SNAPSHOT</version>
+        </dependency>
+        <!-- j2ee annotations -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <!-- TODO JEE 8 -->
+            <version>7.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- test -->
+        <dependency>
+            <groupId>org.aktin.dwh</groupId>
+            <artifactId>dwh-db</artifactId>
+            <version>0.9-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aktin.dwh</groupId>
+            <artifactId>dwh-db</artifactId>
+            <version>0.9-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>2.3.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <!-- somehow required for liquibase during testing -->
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.22</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.22</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
 </project>

@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
+import org.aktin.report.ArchivedReport;
 import org.aktin.report.GeneratedReport;
 import org.aktin.report.ReportArchive;
 import org.aktin.report.ReportInfo;
@@ -96,7 +97,7 @@ public class ReportArchiveImpl implements ReportArchive{
 		for( int i=0; i<reports.size(); i++ ){
 			ReportImpl report = reports.get(i);
 			if( report.getId() == id ){
-				return i; 
+				return i;
 			}
 		}
 		return -1;
@@ -124,7 +125,7 @@ public class ReportArchiveImpl implements ReportArchive{
 		if( i == -1){
 			throw new FileNotFoundException("Report id not found: "+reportId);
 		}
-		
+
 		// remove from cache list
 		ReportImpl report = reports.remove(i);
 
@@ -134,6 +135,7 @@ public class ReportArchiveImpl implements ReportArchive{
 			throw new IOException("Unable to determine relative report path: "+report.getLocation());
 		}
 		Path targetPath = archiveDir.resolve(relativePath);
+		Files.createDirectories(targetPath.getParent());
 
 		// write metadata
 		Path metaPath = archiveDir.resolve(relativePath.toString()+".properties");
@@ -142,7 +144,7 @@ public class ReportArchiveImpl implements ReportArchive{
 		// the report archive will be in an inconsistent state, if failure occurs below this point
 		// e.g. the report file still exists in the data directory but is not anymore in the cache (fixed after restart)
 		// or report file not anymore in the data folder, but still in the database (cannot be fixed, but should not occur)
-		
+
 		// move to archive path
 		// TODO this may fail if moving directories between different file system partitions
 		Files.move(report.getLocation(), targetPath);
@@ -151,9 +153,10 @@ public class ReportArchiveImpl implements ReportArchive{
 		deleteReportFromDatabase(reportId);
 	}
 
-	private void writeMetadataProperties(ReportImpl report, Path target) throws IOException{
+	private void writeMetadataProperties(ReportImpl report, Path target) throws IOException {
 		Properties props = new Properties();
-		props.putAll(report.getPreferences());
+		if(report.getStatus() == ArchivedReport.Status.Completed)
+			props.putAll(report.getPreferences());
 		props.setProperty("report.data.start", report.getStartTimestamp().toString());
 		props.setProperty("report.data.end", report.getEndTimestamp().toString());
 		props.setProperty("report.data.timestamp", report.getEndTimestamp().toString());
@@ -162,7 +165,7 @@ public class ReportArchiveImpl implements ReportArchive{
 		props.setProperty("report.user", report.getUserId());
 		props.setProperty("report.id", Integer.toString(report.getId()));
 		props.setProperty("report.mediatype", report.getMediaType());
-		try( OutputStream out = Files.newOutputStream(target) ){
+		try( OutputStream out = Files.newOutputStream(target)) {
 			props.store(out, "Report configuration");
 		}
 	}

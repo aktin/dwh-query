@@ -33,6 +33,7 @@ try({
   a<-data.frame(as.POSIXct(df$admit.ts),as.POSIXct(df$discharge.ts))
   colnames(a)<-c("admit.ts","discharge.ts")
   a<-subset(a,!(is.na(admit.ts) | is.na(discharge.ts)))
+  a <- a[(order(as.Date(a$admit.ts))),]
   a$in_na <- sapply(a$admit.ts, function(enter){sum(a$admit.ts <= enter & a$discharge.ts > enter)})
   init_last_month<-a[1,1]
   init_last_month<-as.Date(init_last_month)
@@ -57,12 +58,8 @@ try({
                                 ifelse(a$tag<=init_last_month+27,4,
                                        ifelse(a$tag>=init_last_month+28,5,6)))))
   
-  #title Diagramme
-  woche1<-paste('Woche 1',init_last_month,'-',init_last_month+6)
-  woche2<-paste('Woche 2',init_last_month+7,'-',init_last_month+13)
-  woche3<-paste('Woche 3',init_last_month+14,'-',init_last_month+20)
-  woche4<-paste('Woche 4',init_last_month+21,'-',init_last_month+27)
-  woche5<-paste('Woche 5',init_last_month+28,'-',end_last_month)
+  
+
   #x-Achse Bezeichung
   time_labels<-c("00:00","02:00","04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","24:00")
   
@@ -82,6 +79,15 @@ try({
   a <- a[-nrow(a),]
   a$tag<-format(a$tag, format="%m-%d")
   
+  
+  #title Diagramme
+  woche1<-paste('Woche 1',init_last_month,'-',init_last_month+6)
+  woche2<-paste('Woche 2',init_last_month+7,'-',init_last_month+13)
+  woche3<-paste('Woche 3',init_last_month+14,'-',init_last_month+20)
+  woche4<-paste('Woche 4',init_last_month+21,'-',init_last_month+27)
+  woche5<-paste('Woche 5',init_last_month+28,'-',end_last_month)
+  woche5<-paste('Woche 5',init_last_month+28,'-',init_last_month+31)
+  
   a_woche1<-a%>%filter(woche==1)
   a_woche1<-subset(a_woche1,!(is.na(in_na)))
   graph<- ggplot(data=a_woche1, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
@@ -96,7 +102,7 @@ try({
   report.svg(graph, 'stayone')
   
   a_woche2<-a%>%filter(woche==2)
-  graph<- ggplot(data=a_woche2, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
+  graph2<- ggplot(data=a_woche2, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
     geom_line()+
     facet_grid(tag+tag_g~.)+
     theme_bw()+
@@ -105,10 +111,10 @@ try({
     scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
     coord_cartesian(xlim=c(0,86400))+
     ggtitle(woche2)
-  report.svg(graph, 'staytwo')
+  report.svg(graph2, 'staytwo')
   
   a_woche3<-a%>%filter(woche==3)
-  graph<- ggplot(data=a_woche3, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
+  graph3<- ggplot(data=a_woche3, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
     geom_line()+
     facet_grid(tag+tag_g~.)+
     theme_bw()+
@@ -117,10 +123,10 @@ try({
     scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
     coord_cartesian(xlim=c(0,86400))+
     ggtitle(woche3)
-  report.svg(graph, 'staythree')
+  report.svg(graph3, 'staythree')
   
   a_woche4<-a%>%filter(woche==4)
-  graph<- ggplot(data=a_woche4, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
+  graph4<- ggplot(data=a_woche4, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
     geom_line()+
     facet_grid(tag+tag_g~.)+
     theme_bw()+
@@ -129,10 +135,10 @@ try({
     scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
     coord_cartesian(xlim=c(0,86400))+
     ggtitle(woche4)
-  report.svg(graph, 'stayfour')
+  report.svg(graph4, 'stayfour')
   
-  a_woche5<-a%>%filter(woche==5)
-  graph<- ggplot(data=a_woche5, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
+  a_woche5<-a%>%filter(woche==5 & admit.ts<init_last_month+31)
+  graph5<- ggplot(data=a_woche5, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
     geom_line()+
     facet_grid(tag+tag_g~.)+
     theme_bw()+
@@ -141,5 +147,5 @@ try({
     scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
     coord_cartesian(xlim=c(0,86400))+
     ggtitle(woche5)
-  report.svg(graph, 'stayfive')
+  report.svg(graph5, 'stayfive')
 }, silent=FALSE)

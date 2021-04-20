@@ -22,7 +22,7 @@ try({
             axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
             axis.text.x = element_text(face="bold", color="#000000", size=12),
             axis.text.y = element_text(face="bold", color="#000000", size=12))+
-      scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(y$n),30))+
+      scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(y$n),100))+
       coord_flip()
     report.svg(graph, 'cedis_top')
     
@@ -53,7 +53,7 @@ try({
             axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
             axis.text.x = element_text(face="bold", color="#000000", size=12),
             axis.text.y = element_text(face="bold", color="#000000", size=12))+
-      scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(x$Freq),30))+
+      scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(x$Freq),100))+
       coord_flip()
     report.svg(graph, 'cedis_top')
     
@@ -82,7 +82,7 @@ try({
           axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
           axis.text.x = element_text(face="bold", color="#000000", size=12),
           axis.text.y = element_text(face="bold", color="#000000", size=10))+
-    scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(x$Freq),50))+
+    scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(x$Freq),150))+
     coord_flip()
   report.svg(graph, 'cedis_groups')
 }, silent=FALSE)

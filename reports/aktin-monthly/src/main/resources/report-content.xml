@@ -47,7 +47,7 @@ Homepage: www.aktin.org
   </section>
   <section>
     <header>Fallzahlen</header>
-    <paragraph>In diesem Abschnitt werden die Fallzahlen berichtet, sowohl absolut als auch die durchschnittlich behandelten Patienten pro Wochentag und Uhrzeit. Ausschlaggebend sind dabei immer das Datum und der Zeitpunkt der administrativen Aufnahme.</paragraph>
+    <paragraph>In diesem Abschnitt werden die Fallzahlen berichtet, sowohl absolut als auch die durchschnittlich behandelten Patienten pro Wochentag und Uhrzeit. Ausschlaggebend sind dabei immer das Datum und der Zeitpunkt der administrativen Aufnahme.Es werden nur die ersten 31 Tage angezeigt.</paragraph>
     <section>
       <header>Fallzahlen nach Kalendertagen</header>
       <table ref="t2.1">Tabelle 2.1: Fallzahlen nach Aufnahmetag</table>
@@ -153,7 +153,7 @@ Homepage: www.aktin.org
   </section>
   <section>
     <header>Patienten in der Notaufnahme</header>
-    <paragraph>Anzahl der gleichzeitig in Ihrer Notaufnahme anwesenden Patienten pro Tag über einen Zeitraum von 24h.</paragraph>
+    <paragraph>Anzahl der gleichzeitig in Ihrer Notaufnahme anwesenden Patienten pro Tag über einen Zeitraum von 24h.Es werden nur die ersten 31 Tage angezeigt.</paragraph>
     <section>
       <header>Woche 1</header>
       <plot ref="p9.1">Grafik 10.1: Patienten in der Notaufnahme Woche 1</plot>

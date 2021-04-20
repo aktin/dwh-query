@@ -112,5 +112,6 @@ try({
   levels(Wochentag) <- list("Montag"="1","Dienstag"="2","Mittwoch"="3","Donnerstag"="4","Freitag"="5","Samstag"="6", "Sonntag"=7)
   Anzahl <- as.vector(table(format(df2$admit.day,format='%d.%m.%Y',tz='GMT')))
   b <- data.frame(Datum,Wochentag,Anzahl)
+  b<-b[c(1:31),]
   report.table(b,name='admit.d.xml',align=c('left','right','right'),widths=c(25,15,13))
 }, silent=FALSE)

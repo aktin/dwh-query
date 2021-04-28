@@ -34,11 +34,14 @@ public class TestStudyManagerImpl {
 	@Test
 	public void verifyLoadStudies() throws IOException {
 		List<StudyImpl> list = sm.getStudies();
-		assertEquals(2, list.size());
+		assertEquals(3, list.size());
 		StudyImpl s = list.get(0);
 		assertEquals("AKTIN", s.getTitle());
 		s = list.get(1);
+		assertEquals("Zertifizierung", s.getTitle());
+		s = list.get(2);
 		assertEquals("Test", s.getTitle());
+
 	}
 
 	@Test

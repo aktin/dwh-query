@@ -5,18 +5,18 @@
 
 	<groupId>org.aktin</groupId>
 	<artifactId>report-schedule</artifactId>
-	<version>0.11</version>
+	<version>0.11-SNAPSHOT</version>
 
 	<description>
-		Schedule report generation and transmit the report 
+		Schedule report generation and transmit the report
 		via Email (or maybe file upload)
 	</description>
-	
-	
+
+
 	<parent>
 		<groupId>org.aktin</groupId>
 		<artifactId>dwh-query</artifactId>
-		<version>0.11</version>
+		<version>0.11-SNAPSHOT</version>
 	</parent>
 
 	<build>
@@ -50,6 +50,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-		</dependency>		
+		</dependency>
 	</dependencies>
 </project>

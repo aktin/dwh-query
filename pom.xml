@@ -4,7 +4,7 @@
 
 	<groupId>org.aktin</groupId>
 	<artifactId>dwh-query</artifactId>
-	<version>0.11</version>
+	<version>0.11-SNAPSHOT</version>
 
 	<name>AKTIN : DWH Query</name>
 	<description>AKTIN Software</description>

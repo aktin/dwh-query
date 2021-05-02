@@ -5,7 +5,7 @@
 
     <groupId>org.aktin</groupId>
     <artifactId>request-manager</artifactId>
-    <version>0.11-SNAPSHOT</version>
+    <version>0.11</version>
 
     <description>
         Retreives and manages requests from external
@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.aktin</groupId>
         <artifactId>dwh-query</artifactId>
-        <version>0.11-SNAPSHOT</version>
+        <version>0.11</version>
     </parent>
 
     <build>

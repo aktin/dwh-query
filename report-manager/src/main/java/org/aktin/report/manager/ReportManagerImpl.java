@@ -68,6 +68,16 @@ public class ReportManagerImpl extends Module implements ReportManager{
 
 	private Path tempDir;
 
+	/*
+	 * Timeout in ms for single script execution
+	 */
+	private int timeout = -1;
+
+	/*
+	 * Will print additional startup information and full error log if true
+	 */
+	private Boolean debugging;
+
 	/**
 	 * Will be injected via {@link #setDataExtractor(DataExtractor)}
 	 */
@@ -125,6 +135,12 @@ public class ReportManagerImpl extends Module implements ReportManager{
 		// load rScript and tempDir from preferences, if not overridden by manual constructor
 		if( rScript == null ){
 			rScript = prefs.get(PreferenceKey.rScriptBinary);
+		}
+		if( timeout == -1){
+			timeout = Integer.parseInt(preferenceManager.get(PreferenceKey.rScriptTimeout));
+		}
+		if( debugging == null){
+			debugging = Boolean.parseBoolean(preferenceManager.get(PreferenceKey.rScriptDebug));
 		}
 		if( this.tempDir == null ){
 			this.tempDir = Paths.get(prefs.get(PreferenceKey.reportTempPath));
@@ -205,7 +221,7 @@ public class ReportManagerImpl extends Module implements ReportManager{
 					throw new InsufficientDataException();
 				}
 				re.writePreferences(preferenceManager, reportInfo.getPreferences());
-				re.runR(Paths.get(ReportManagerImpl.this.rScript));
+				re.runR(Paths.get(ReportManagerImpl.this.rScript), timeout, debugging);
 				re.runFOP();
 				re.cleanup();
 			} catch (IOException | TimeoutException | AbnormalTerminationException e) {

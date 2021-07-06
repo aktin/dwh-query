@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>dwh-api</artifactId>
-            <version>0.8</version>
+            <version>0.9-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -80,12 +80,12 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>r-script</artifactId>
-            <version>1.3.1</version>
+            <version>1.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>r-script</artifactId>
-            <version>1.3.1</version>
+            <version>1.4-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -98,14 +98,14 @@
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-prefs</artifactId>
-            <version>0.10</version>
+            <version>0.11-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-prefs</artifactId>
-            <version>0.10</version>
+            <version>0.11-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

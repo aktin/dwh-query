@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -76,6 +77,9 @@ import org.xml.sax.XMLReader;
  */
 class ReportExecution implements GeneratedReport, URIResolver{
 	private static final Logger log = Logger.getLogger(ReportExecution.class.getName());	
+
+	@Inject
+	private Preferences preferences;
 
 	private Report report;
 	private Instant fromTimestamp;
@@ -237,7 +241,9 @@ class ReportExecution implements GeneratedReport, URIResolver{
 		// run main script
 		RScript rScript = new RScript(rScriptExecutable);
 		try {
-			rScript.runRscript(temp, files[0], null); // TODO specify and use timeout in properties
+			int timeout = Integer.parseInt(preferences.get(PreferenceKey.rScriptTimeout));
+			boolean debugging = Boolean.parseBoolean(preferences.get(PreferenceKey.rScriptDebug));
+			rScript.runRscript(temp, files[0], timeout, debugging);
 		}finally{
 			try {
 				// delete data files

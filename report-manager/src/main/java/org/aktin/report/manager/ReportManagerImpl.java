@@ -137,8 +137,12 @@ public class ReportManagerImpl extends Module implements ReportManager{
 		if( rScript == null ){
 			rScript = prefs.get(PreferenceKey.rScriptBinary);
 		}
-		if( timeout == null){
-			timeout = Integer.parseInt(preferenceManager.get(PreferenceKey.rScriptTimeout));
+		if (timeout == null) {
+			String key_timeout = preferenceManager.get(PreferenceKey.rScriptTimeout);
+			if (key_timeout.isEmpty())
+				timeout = null;
+			else
+				timeout = Integer.parseInt(key_timeout);
 		}
 		if( isDebugMode == null){
 			isDebugMode = Boolean.parseBoolean(preferenceManager.get(PreferenceKey.rScriptDebug));
@@ -224,7 +228,8 @@ public class ReportManagerImpl extends Module implements ReportManager{
 				re.writePreferences(preferenceManager, reportInfo.getPreferences());
 				re.runR(Paths.get(ReportManagerImpl.this.rScript), timeout, isDebugMode);
 				re.runFOP();
-				re.cleanup();
+				if(!isDebugMode)
+					re.cleanup();
 			} catch (IOException | TimeoutException | AbnormalTerminationException e) {
 				throw new CompletionException(e);
 			}

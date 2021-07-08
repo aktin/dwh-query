@@ -232,7 +232,7 @@ class ReportExecution implements GeneratedReport, URIResolver{
 		}
 	}
 
-	void runR(Path rScriptExecutable, int timeout, boolean debugging) throws IOException, TimeoutException, AbnormalTerminationException{
+	void runR(Path rScriptExecutable, Integer timeout, boolean debugging) throws IOException, TimeoutException, AbnormalTerminationException{
 		files = report.copyResourcesForR(temp);
 		// run main script
 		RScript rScript = new RScript(rScriptExecutable);

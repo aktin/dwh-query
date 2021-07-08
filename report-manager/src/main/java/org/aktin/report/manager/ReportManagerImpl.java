@@ -71,12 +71,13 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	/*
 	 * Timeout in ms for single script execution
 	 */
-	private int timeout = -1;
+	private Integer timeout;
 
 	/*
-	 * Will print additional startup information and full error log if true
+	 * Boolean if Rscript shall run in Debugging Mode.
+	 * Will print additional startup information and full error log and will keep all generated files if set on true
 	 */
-	private Boolean debugging;
+	private Boolean isDebugMode;
 
 	/**
 	 * Will be injected via {@link #setDataExtractor(DataExtractor)}
@@ -136,11 +137,11 @@ public class ReportManagerImpl extends Module implements ReportManager{
 		if( rScript == null ){
 			rScript = prefs.get(PreferenceKey.rScriptBinary);
 		}
-		if( timeout == -1){
+		if( timeout == null){
 			timeout = Integer.parseInt(preferenceManager.get(PreferenceKey.rScriptTimeout));
 		}
-		if( debugging == null){
-			debugging = Boolean.parseBoolean(preferenceManager.get(PreferenceKey.rScriptDebug));
+		if( isDebugMode == null){
+			isDebugMode = Boolean.parseBoolean(preferenceManager.get(PreferenceKey.rScriptDebug));
 		}
 		if( this.tempDir == null ){
 			this.tempDir = Paths.get(prefs.get(PreferenceKey.reportTempPath));
@@ -221,7 +222,7 @@ public class ReportManagerImpl extends Module implements ReportManager{
 					throw new InsufficientDataException();
 				}
 				re.writePreferences(preferenceManager, reportInfo.getPreferences());
-				re.runR(Paths.get(ReportManagerImpl.this.rScript), timeout, debugging);
+				re.runR(Paths.get(ReportManagerImpl.this.rScript), timeout, isDebugMode);
 				re.runFOP();
 				re.cleanup();
 			} catch (IOException | TimeoutException | AbnormalTerminationException e) {

@@ -237,14 +237,17 @@ class ReportExecution implements GeneratedReport, URIResolver{
 		// run main script
 		RScript rScript = new RScript(rScriptExecutable);
 		try {
-			rScript.runRscript(temp, files[0], timeout, debugging);
-		}finally{
+			rScript.setDebugPrintMode(debugging);
+			rScript.runRscript(temp, files[0], timeout);
+		} finally {
 			try {
-				// delete data files
-				deleteFiles(temp, dataFiles.getDataFileNames());
-				// delete copied R source files
-				deleteFiles(temp, files);
-			}catch( IOException e ) {
+				if (!debugging) {
+					// delete data files
+					deleteFiles(temp, dataFiles.getDataFileNames());
+					// delete copied R source files
+					deleteFiles(temp, files);
+				}
+			} catch (IOException e) {
 				log.log(Level.WARNING, "Unable to delete generated files for R execution", e);
 			}
 		}

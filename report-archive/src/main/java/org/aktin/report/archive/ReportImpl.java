@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +50,7 @@ public class ReportImpl implements ArchivedReport{
 	private static final Logger log = Logger.getLogger(ReportImpl.class.getName());	
 	private static final String MEDIATYPE_INSUFFICIENT_DATA = "text/vnd.error.insufficientdata";
 	private static final String MEDIATYPE_FAILURE_STACKTRACE = "text/vnd.error.stacktrace";
+	private static final String MEDIATYPE_TIMEOUT_STACKTRACE = "text/vnd.error.timeout";
 	static final String selectReports = "SELECT id, template_id, template_version, data_start, data_end, created_timestamp, created_by, data_timestamp, media_type, path FROM generated_reports ORDER BY id";
 	static final String selectNextReportId = "SELECT NEXTVAL('generated_reports_id')";
 	static final String selectNextReportIdHsql = "CALL NEXT VALUE FOR generated_reports_id";
@@ -255,6 +257,8 @@ public class ReportImpl implements ArchivedReport{
 			return Status.Waiting;
 		}else if( this.mediaType.equals(MEDIATYPE_FAILURE_STACKTRACE) ){
 			return Status.Failed;
+		}else if( this.mediaType.equals(MEDIATYPE_TIMEOUT_STACKTRACE) ){
+			return Status.Timeout;
 		}else if( this.mediaType.equals(MEDIATYPE_INSUFFICIENT_DATA) ){
 			return Status.InsufficientData;
 		}else{
@@ -294,7 +298,9 @@ public class ReportImpl implements ArchivedReport{
 	public void setFailed(Connection dbc, String description, Throwable cause) throws IOException, SQLException{
 		if( cause instanceof InsufficientDataException ){
 			this.mediaType = MEDIATYPE_INSUFFICIENT_DATA;
-		}else{
+		} else if(cause instanceof TimeoutException) {
+			this.mediaType = MEDIATYPE_TIMEOUT_STACKTRACE;
+		} else {
 			this.mediaType = MEDIATYPE_FAILURE_STACKTRACE;
 		}
 		// we don't have a data timestamp, use the created timestamp for path

@@ -52,9 +52,9 @@ import org.aktin.broker.request.RetrievedRequest;
 //import org.aktin.broker.request.StatusChanged;
 import org.aktin.broker.xml.RequestInfo;
 //import org.aktin.broker.request.Status;
+import org.aktin.dwh.BrokerResourceManager;
 import org.aktin.dwh.EmailService;
 import org.aktin.dwh.PreferenceKey;
-import org.aktin.scripting.r.RScript;
 
 
 @javax.ejb.Singleton
@@ -82,6 +82,9 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 
 	@Inject
 	private EmailService email;
+
+	@Inject
+	BrokerResourceManager brokerResourceManager;
 
 	private BrokerClient client;
 	private InteractionPreset interaction;
@@ -149,55 +152,18 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 		}
 	}
 
+	/**
+	 * Collects the version number of major dwh components
+	 * @return Hashmap with {component name} : {version number}
+	 */
 	private Map<String,String> loadSoftwareVersions(){
 		Map<String, String> versions = new HashMap<>();
-		versions.put("dwh-api", Objects.toString(PreferenceKey.class.getPackage().getImplementationVersion()));
-//		versions.put("dwh-db", LiquibaseWrapper.class.getPackage().getImplementationVersion());
-		versions.put("java", System.getProperty("java.vendor")+"/"+System.getProperty("java.version"));
-		// get application server version from TimerService implementation
-		String ver;
-		if( timer != null ){
-			ver =  timer.getClass().getPackage().getImplementationVersion();
-		}else{
-			ver = "undefined";
-		}
-		versions.put("j2ee-impl", ver);
-
-		// get EAR version
-		try {
-			ver = null;
-			ver = (String) (new InitialContext().lookup( "java:app/AppName"));
-		} catch (NamingException e) {
-			log.warning("Unable to get ear version via java:app/AppName");
-		}
-		if( ver == null ){
-			ver = "undefined";
-		}
-		versions.put("ear", ver);
-
-		// get postgres version
-		try( Connection dbc = getConnection() ){
-			Statement s = dbc.createStatement();
-			ResultSet rs = s.executeQuery("SELECT version()");
-			if( !rs.next() ){
-				throw new SQLException("Empty result set returned by version()");
-			}
-			versions.put("postgres", rs.getString(1));
-			rs.close();
-		} catch (SQLException e) {
-			versions.put("postgres", "[error]");
-			log.log(Level.WARNING,"Unable to determine postgres version",e);
-		}
-
-		// get R version
-		RScript rScript = new RScript(Paths.get(prefs.get(PreferenceKey.rScriptBinary)));
-		try {
-			// add detailed information about R package versions
-			rScript.getPackageVersions().forEach( (pkg,v) -> versions.put("r-script."+pkg, v) );
-		}catch( IOException e ) {
-			versions.put("r-script", "[error]");
-			log.log(Level.WARNING, "Unable to determine r-script version", e);
-		}
+		versions.put("dwh-api", brokerResourceManager.getDwhApiVersion());
+		versions.put("java", brokerResourceManager.getJavaVersion());
+		versions.put("j2ee-impl", brokerResourceManager.getApplicationServerVersion());
+		versions.put("dwh-j2ee", brokerResourceManager.getDwhVersion());
+		versions.put("postgres", brokerResourceManager.getDatabaseVersion());
+		versions.put("apache2", brokerResourceManager.getApacheVersion());
 		return versions;
 		// TODO find out application server name 
 	}

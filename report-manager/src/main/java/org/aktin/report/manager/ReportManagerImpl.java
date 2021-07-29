@@ -5,14 +5,13 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
@@ -22,6 +21,7 @@ import javax.inject.Singleton;
 
 import org.aktin.Module;
 import org.aktin.Preferences;
+import org.aktin.dwh.BrokerResourceManager;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.GeneratedReport;
@@ -68,14 +68,17 @@ public class ReportManagerImpl extends Module implements ReportManager{
 
 	private Path tempDir;
 
+	@Inject
+	private BrokerResourceManager brokerResourceManager;
+
 	/*
-	 * Timeout in ms for single script execution
+	 * Timeout in ms for a single script execution
 	 */
 	private Integer timeout;
 
 	/*
-	 * Boolean if Rscript shall run in Debugging Mode.
-	 * Will print additional startup information and full error log and will keep all generated files if set on true
+	 * Boolean if Rscript shall be executed in an debugging mode
+	 * Will print additional startup information/full error log and will keep all generated files if set on true
 	 */
 	private Boolean isDebugMode;
 
@@ -126,6 +129,32 @@ public class ReportManagerImpl extends Module implements ReportManager{
 			throw new UncheckedIOException(e);
 		}
 	}
+
+	/**
+	 * Collect (hard-coded) Rscript apt packages and put them as a new resource group
+	 * on the AKTIN Broker after class initialization
+	 */
+	@PostConstruct
+	public void putRscriptBrokerClientResources() {
+		Map<String, String> versions_Rscript = collectRscriptAptPackageVersions();
+		brokerResourceManager.putResourceGroup("rscript", versions_Rscript);
+	}
+
+	/**
+	 * Iterate through a list of necessary Rscript packages and get the corresponding installed version on operating system.
+	 * Package names are from apt package manager (ubuntu is default operating system on dwh)
+	 * @return Hashmap with {package name} : {installed version}
+	 */
+	private Map<String, String> collectRscriptAptPackageVersions() {
+		Map<String, String> versions_Rscript = new HashMap<>();
+		List<String> packages_Rscript = Arrays.asList("r-base-core", "r-cran-lattice", "r-cran-xml", "libcurl4-openssl-dev", "libssl-dev", "libxml2-dev", "r-cran-tidyverse");
+		packages_Rscript.forEach(aptPackage -> {
+			String version = brokerResourceManager.getLinuxPackageVersion(aptPackage);
+			versions_Rscript.put(aptPackage, version);
+		});
+		return versions_Rscript;
+	}
+
 	@Inject
 	public void setDataExtractor(DataExtractor extractor){
 		this.extractor = extractor;

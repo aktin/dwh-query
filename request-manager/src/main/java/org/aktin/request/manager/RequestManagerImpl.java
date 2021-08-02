@@ -153,29 +153,12 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 	}
 
 	/**
-	 * Collects the version number of major dwh components
-	 * @return Hashmap with {component name} : {version number}
-	 */
-	private Map<String,String> loadSoftwareVersions(){
-		Map<String, String> versions = new HashMap<>();
-		versions.put("dwh-api", brokerResourceManager.getDwhApiVersion());
-		versions.put("java", brokerResourceManager.getJavaVersion());
-		versions.put("j2ee-impl", brokerResourceManager.getApplicationServerVersion());
-		versions.put("dwh-j2ee", brokerResourceManager.getDwhVersion());
-		versions.put("postgres", brokerResourceManager.getDatabaseVersion());
-		versions.put("apache2", brokerResourceManager.getApacheVersion());
-		return versions;
-		// TODO find out application server name 
-	}
-
-	/**
 	 * Handshake requests broker status and posts version information
 	 * to the broker. Handshake is only required once after startup.
 	 * @throws IOException communications error
 	 */
 	private void performBrokerHandshake() throws IOException{
 		client.getBrokerStatus();
-		client.postSoftwareVersions(loadSoftwareVersions());
 	}
 
 	@Override // TODO use preference instead of hard coded JNDI URI

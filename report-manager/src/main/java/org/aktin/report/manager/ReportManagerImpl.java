@@ -24,6 +24,7 @@ import org.aktin.Preferences;
 import org.aktin.dwh.BrokerResourceManager;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
+import org.aktin.dwh.SystemStatusManager;
 import org.aktin.report.GeneratedReport;
 import org.aktin.report.InsufficientDataException;
 import org.aktin.report.Report;
@@ -43,7 +44,7 @@ import org.aktin.scripting.r.AbnormalTerminationException;
  * </p>
  * <p>
  * When generating a report, the report instance configuration
- * is written to a properties file as well as an xml file 
+ * is written to a properties file as well as an xml file
  * (e.g. start and end timestamps, local name, etc.).
  * To read these preferences from R, you can use
  * {@code read.table(file="Temp\\prefs.properties",sep="=",col.names=c("key","value")}
@@ -55,14 +56,14 @@ import org.aktin.scripting.r.AbnormalTerminationException;
 @Singleton
 //@Preferences(group="reports")
 public class ReportManagerImpl extends Module implements ReportManager{
-//	private static final Logger log = Logger.getLogger(ReportManager.class.getName());	
+//	private static final Logger log = Logger.getLogger(ReportManager.class.getName());
 	@Inject @Any
 	Instance<Report> cdiReports;
 	private Report[] staticReports;
-	
+
 //	@Inject @Preference(key=PreferenceKey.rScriptBinary)
 	String rScript;
-	
+
 	private Executor executor;
 	private boolean keepIntermediateFiles;
 
@@ -70,6 +71,9 @@ public class ReportManagerImpl extends Module implements ReportManager{
 
 	@Inject
 	private BrokerResourceManager brokerResourceManager;
+
+	@Inject
+	private SystemStatusManager systemStatusManager;
 
 	/*
 	 * Timeout in ms for a single script execution
@@ -86,12 +90,12 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	 * Will be injected via {@link #setDataExtractor(DataExtractor)}
 	 */
 	private DataExtractor extractor;
-	
+
 	/**
 	 * Will be injected via {@link #setPreferenceManager(Preferences)}
 	 */
 	private Preferences preferenceManager;
-	
+
 	/**
 	 * Empty constructor for CDI
 	 */
@@ -135,24 +139,22 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	 * on the AKTIN Broker after class initialization
 	 */
 	@PostConstruct
-	public void putRscriptBrokerClientResources() {
-		Map<String, String> versions_Rscript = collectRscriptAptPackageVersions();
-		brokerResourceManager.putResourceGroup("rscript", versions_Rscript);
+	private void uploadRscriptPackageVersions() {
+		Properties versions_rscript = collectRscriptPackageVersions();
+		brokerResourceManager.putMyResourceProperties("rscript", versions_rscript);
 	}
 
 	/**
 	 * Iterate through a list of necessary Rscript packages and get the corresponding installed version on operating system.
 	 * Package names are from apt package manager (ubuntu is default operating system on dwh)
-	 * @return Hashmap with {package name} : {installed version}
+	 * @return Properties with {package name} = {installed version}
 	 */
-	private Map<String, String> collectRscriptAptPackageVersions() {
-		Map<String, String> versions_Rscript = new HashMap<>();
-		List<String> packages_Rscript = Arrays.asList("r-base-core", "r-cran-lattice", "r-cran-xml", "libcurl4-openssl-dev", "libssl-dev", "libxml2-dev", "r-cran-tidyverse");
-		packages_Rscript.forEach(aptPackage -> {
-			String version = brokerResourceManager.getLinuxPackageVersion(aptPackage);
-			versions_Rscript.put(aptPackage, version);
-		});
-		return versions_Rscript;
+	private Properties collectRscriptPackageVersions() {
+		Properties properties = new Properties();
+		List<String> packages_rscript = Arrays.asList("r-base-core", "r-cran-lattice", "r-cran-xml", "libcurl4-openssl-dev", "libssl-dev", "libxml2-dev", "r-cran-tidyverse");
+		Map<String, String> versions_rscript = systemStatusManager.getLinuxPackagesVersion(packages_rscript);
+		properties.putAll(versions_rscript);
+		return properties;
 	}
 
 	@Inject
@@ -269,5 +271,5 @@ public class ReportManagerImpl extends Module implements ReportManager{
 	private Executor getExecutor(){
 		return executor;
 	}
-	
+
 }

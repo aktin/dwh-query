@@ -66,7 +66,7 @@ import org.xml.sax.XMLReader;
  *  <li>{@link #createTempDirectory(Path)}</li>
  *  <li>{@link #extractData(DataExtractor)}</li>
  *  <li>{@link #writePreferences(Preferences, Map)}</li>
- *  <li>{@link #runR(Path)}</li>
+ *  <li>{@link #runR(Path, Integer, boolean)}</li>
  *  <li>{@link #runFOP()}</li>
  *  <li>{@link #cleanup()}</li>
  * </ol>

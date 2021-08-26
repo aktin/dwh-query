@@ -4,12 +4,12 @@
 
 	<groupId>org.aktin.reports</groupId>
 	<artifactId>cda-field-stats</artifactId>
-	<version>0.13-SNAPSHOT</version>
+	<version>0.12-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.aktin.reports</groupId>
 		<artifactId>pom</artifactId>
-		<version>0.13-SNAPSHOT</version>
+		<version>0.12-SNAPSHOT</version>
 	</parent>
 	<build>
 		<plugins>

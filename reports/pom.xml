@@ -4,7 +4,7 @@
 
 	<groupId>org.aktin.reports</groupId>
 	<artifactId>pom</artifactId>
-	<version>0.12-SNAPSHOT</version>
+	<version>0.12</version>
 
 	<name>AKTIN : DWH Query : Reports</name>
 	<description>AKTIN reports parent pom</description>
@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.aktin</groupId>
 		<artifactId>dwh-query</artifactId>
-		<version>0.12-SNAPSHOT</version>
+		<version>0.12</version>
 	</parent>
 
 	<modules>
@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.12-SNAPSHOT</version>
+			<version>0.12</version>
 		</dependency>
 		<!-- dependency injection is optional
 			and provided by the CDI container.
@@ -43,33 +43,33 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.12-SNAPSHOT</version>
+			<version>0.12</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>r-script</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.4</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>r-script</artifactId>
-			<version>1.4-SNAPSHOT</version>
+			<version>1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin.dwh</groupId>
 			<artifactId>dwh-prefs</artifactId>
-			<version>0.11-SNAPSHOT</version>
+			<version>0.11</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin.dwh</groupId>
 			<artifactId>dwh-prefs</artifactId>
-			<version>0.11-SNAPSHOT</version>
+			<version>0.11</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

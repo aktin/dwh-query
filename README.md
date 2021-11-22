@@ -4,6 +4,8 @@ Berichte
 mit ProcessBuilder systemprozess "Rscript" ausführen.
 Ergebnisdokumente mit XSLT zu HTML und/oder PDF transformieren.
 
+ACHTUNG: Für das Erstellen des Berichts "aktin-monthly" wird das R-Paket "tidyverse" benötigt.
+
 Verteilte Abfragen im DWH
 ===============================
 Kommunikationsschnittstelle auf Datawarehouse-Seite. Nimmt verteilte Anfragen und geplante Anfragen entgegen und führt diese aus.

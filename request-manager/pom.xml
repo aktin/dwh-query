@@ -35,7 +35,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>dwh-api</artifactId>
-            <version>0.10-SNAPSHOT</version>
+            <version>0.9</version>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
@@ -77,13 +77,13 @@
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.12-SNAPSHOT</version>
+            <version>0.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.12-SNAPSHOT</version>
+            <version>0.11</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -96,7 +96,7 @@
         <dependency><!--  locate the R executable path for testing -->
             <groupId>org.aktin</groupId>
             <artifactId>r-script</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.4</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

@@ -12,8 +12,14 @@ try({
   los_erfasst=length(los)
   
   Kennzahl <- factors$los_txt[!is.na(factors$los_txt)]
-  Zeit <- c(round(mean(na.omit(los)),1),median(na.omit(los)),round(stdabw(na.omit(los)),1),min(na.omit(los)),max(na.omit(los)))
-  Zeit <- sprintf(fmt="%.0f",Zeit)
+  
+  if(length(los)==0){
+  Zeit <- c("NA","NA","NA","NA","NA")
+  }else{
+    Zeit <- c(round(mean(na.omit(los)),1),median(na.omit(los)),round(stdabw(na.omit(los)),1),min(na.omit(los)),max(na.omit(los)))
+    Zeit <- sprintf(fmt="%.0f",Zeit)
+     }
+  
   Zeit <- paste(Zeit, 'Min')
   Zeit <- c(los_erfasst,los_NA,lt_zero,gt_day,Zeit)
   
@@ -29,7 +35,22 @@ try({
   b <- a[!is.na(a)]
   b<-data.frame(b)
   b$b<-as.numeric(b$b)
-  b$x<-"Zeit"
+  if(nrow(b)==0){
+    text = paste("\n   Keine Daten \n")
+    graph<- ggplot() + 
+      annotate("text", x = 4, y = 25, size=8, label = text) + 
+      theme_void()
+    graph2<- ggplot() + 
+      annotate("text", x = 4, y = 25, size=8, label = text) + 
+      theme_void()
+    b<-data.frame(b)
+    b$b<-as.numeric(b$b)
+    b<-b%>%filter(b>-1 & b<61)
+    #b$x<-"Zeit"
+    z<-b%>%filter(b<11)
+    z<-length(z$b)
+  }else{ 
+   b$x<-"Zeit"
   graph<-ggplot(data=b,aes(x=x,y=b))+
     geom_boxplot(fill="#046C9A",width=0.5)+
     #geom_jitter(width = 0.05,alpha=0.2)+
@@ -60,7 +81,7 @@ try({
           #axis.text.x=element_blank(),
           legend.title = element_blank(),
           legend.position = "bottom",
-          legend.text = element_text(color="#e3000b",size=12,face="bold"))
+          legend.text = element_text(color="#e3000b",size=12,face="bold"))}
     
     report.svg(graph, 'discharge.d.box')
     report.svg(graph2, 'discharge.d.hist')

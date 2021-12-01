@@ -1,8 +1,14 @@
 #Patient Sex
 try({
-  a <- table(df$sex,useNA = "no") #NA values are not possible in Histream patient
-  b <- data.frame(Kategorie=factors$Geschlecht[!is.na(factors$Geschlecht)], Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
-  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(a)),Anteil=gformat(100,digits=1)))
+  a <- data.frame(table(df$sex,useNA = "no")) #NA values are not possible in Histream patient
+  b<-a
+  b$Anteil<-(b$Freq/sum(b$Freq))*100
+  colnames(b)<-c("Kategorie","Anzahl","Anteil")
+  summe<-sum(b$Anzahl)
+  b$Anzahl<-gformat(b$Anzahl)
+  b$Anteil<-gformat(b$Anteil,digits=1)
+  #b <- data.frame(Kategorie=factors$Geschlecht[!is.na(factors$Geschlecht)], Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(summe),Anteil=gformat(100,digits=1)))
   ##c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
   report.table(c,name='sex.xml',align=c('left','right','right'),widths=c(25,15,15))
@@ -34,7 +40,7 @@ try({
     scale_x_continuous(expand = c(0, 3),breaks = seq(0, 100, 5)) +
     scale_y_continuous(expand = c(0, 0.3))+
     geom_vline(aes(xintercept=mean(x)),
-               color="#e3000b", linetype="dashed", size=1)+
-    geom_text(aes(x=mean(x), label="Mittelwert\n", y=50), colour="white", angle=90,size=4)
+               color="#e3000b", linetype="dashed", size=1)
+    #geom_text(aes(x=mean(x), label="Mittelwert\n", y=50), colour="white", angle=90,size=4)
     report.svg(graph, 'age')
 }, silent=FALSE)

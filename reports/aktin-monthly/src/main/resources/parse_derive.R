@@ -6,8 +6,12 @@ enc$therapiebeginn_ts<-strptime(enc$therapiebeginn_ts, "%FT%T")
 enc$entlassung_ts<-strptime(enc$entlassung_ts, "%FT%T")
 enc$triage_ts<-strptime(enc$triage_ts, "%FT%T")
 
+colnames(pat)<-c("patient_id","dob","sex")
+colnames(df)<-c("patient_id","encounter")
+df<-left_join(df,pat,by="patient_id")
+df$dob<-strptime(df$dob,format="%Y-%m-%d",tz="GMT")
 
-df$dob = strptime(merge(enc,pat,by="patient_id")$geburtsdatum_ts,tz="GMT",format="%Y-%m-%d")
+#df$dob = strptime(merge(enc,pat,by="patient_id")$geburtsdatum_ts,tz="GMT",format="%Y-%m-%d")
 
 df$triage.ts = strptime(enc$triage_ts,format="%Y-%m-%d %H:%M",tz="GMT")
 
@@ -19,7 +23,7 @@ df$therapy.ts = strptime(enc$therapiebeginn_ts,format="%Y-%m-%d %H:%M",tz="GMT")
 df$discharge.ts = strptime(enc$entlassung_ts,format="%Y-%m-%d %H:%M",tz="GMT")
 
 df$age = (df$admit.day$year - df$dob$year) - 1 * (df$admit.day$yday < df$dob$yday) 
-df$sex = factor(merge(enc,pat,by="patient_id")$geschlecht)
+#df$sex = factor(merge(enc,pat,by="patient_id")$geschlecht)
 levels(df$sex) <- list("male"="male","female"="female","unbestimmt"="indeterminate")
 
 df$triage.result = as.factor(enc$triage)

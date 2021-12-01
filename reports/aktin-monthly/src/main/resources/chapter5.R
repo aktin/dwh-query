@@ -66,6 +66,21 @@ try({
   b <- a[!is.na(a)]
   c<-table(a<0)
   c<-data.frame(c)
+  if(nrow(c)==0){
+    text = paste("\n   Keine Daten \n")
+    graph<- ggplot() + 
+      annotate("text", x = 4, y = 25, size=8, label = text) + 
+      theme_void()
+    graph2<- ggplot() + 
+      annotate("text", x = 4, y = 25, size=8, label = text) + 
+      theme_void()
+    b<-data.frame(b)
+    b$b<-as.numeric(b$b)
+    b<-b%>%filter(b>-1 & b<61)
+    #b$x<-"Zeit"
+    z<-b%>%filter(b<11)
+    z<-length(z$b)
+  }else{ 
   c<-c%>%filter(Var1==TRUE)
   c<-c$Freq
   c<-ifelse(is.integer(c),"0",c)
@@ -107,7 +122,7 @@ try({
           #axis.text.x=element_blank(),
           legend.title = element_blank(),
           legend.position = "bottom",
-          legend.text = element_text(color="#e3000b",size=12,face="bold"))
+          legend.text = element_text(color="#e3000b",size=12,face="bold"))}
   
   report.svg(graph, 'triage.d.box')
   report.svg(graph2, 'triage.d.hist')
@@ -116,8 +131,13 @@ try({
 try({
   used <- length(b$b)
   Kennzahl <- factors$triage_txt[!is.na(factors$triage_txt)]
-  Zeit <- c(round(mean(b$b),1),median(b$b),round(stdabw(b$b),1),min(b$b),max(b$b))
-  Zeit <- sprintf(fmt="%.0f",Zeit)
+  if(nrow(b)==0){ 
+    Zeit <- c("k.A","k.A","k.A","k.A","k.A")
+  }else{
+    Zeit <- c(round(mean(b$b),1),median(b$b),round(stdabw(b$b),1),min(b$b),max(b$b))
+    Zeit <- sprintf(fmt="%.0f",Zeit)
+   }
+  
   Zeit <- paste(Zeit, 'Min')
   Zeit <- c(used,isNA,positiveoutofbounds,negativeoutofbounds,Zeit)
   

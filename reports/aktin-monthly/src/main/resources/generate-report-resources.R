@@ -64,7 +64,7 @@ icd = read.csv2(file='ICD-3Steller.csv', as.is=TRUE, na.strings='', header = FAL
 
 #load special factors (problems with umlauts if umlauts are placed in factor texts directly in R file)
 factors = read.csv2(file='factors.csv', as.is=TRUE, na.strings='', header = TRUE, sep=';', encoding = "UTF-8",comment.char="")
-
+library(tidyverse)
 source("parse_derive.R", encoding="UTF-8")
 
 # XHTML tables
@@ -72,7 +72,7 @@ source('xhtml-table.R')
 
 # Graphics & Plots
 library(lattice)
-library(tidyverse)
+
 
 
 source("chapter1.R", encoding="UTF-8")

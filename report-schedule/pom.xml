@@ -12,7 +12,6 @@
 		via Email (or maybe file upload)
 	</description>
 
-
 	<parent>
 		<groupId>org.aktin</groupId>
 		<artifactId>dwh-query</artifactId>
@@ -35,7 +34,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.9</version>
+			<version>0.10</version>
 		</dependency>
 		<!-- j2ee annotations -->
 		<dependency>

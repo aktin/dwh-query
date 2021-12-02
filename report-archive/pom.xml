@@ -11,7 +11,6 @@
         be put here.
     </description>
 
-
     <parent>
         <groupId>org.aktin</groupId>
         <artifactId>dwh-query</artifactId>
@@ -26,7 +25,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>dwh-api</artifactId>
-            <version>0.9</version>
+            <version>0.10</version>
         </dependency>
 
         <!-- j2ee annotations -->
@@ -46,14 +45,14 @@
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.11</version>
+            <version>0.12</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.11</version>
+            <version>0.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>

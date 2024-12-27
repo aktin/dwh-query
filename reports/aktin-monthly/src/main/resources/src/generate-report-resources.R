@@ -1,5 +1,6 @@
 #!/usr/bin/Rscript
-library(tidyverse)
+# library(tidyverse)
+library(ggplot2)
 library(lattice)
 
 base_dir <- "reports/aktin-monthly/src/main/resources"

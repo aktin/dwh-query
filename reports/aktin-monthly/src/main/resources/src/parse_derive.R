@@ -8,7 +8,7 @@ enc$triage_ts<-strptime(enc$triage_ts, "%FT%T")
 
 colnames(pat)<-c("patient_id","dob","sex")
 colnames(df)<-c("patient_id","encounter")
-df<-left_join(df,pat,by="patient_id")
+df<-left_join_base(df,pat,by="patient_id")
 df$dob<-strptime(df$dob,format="%Y-%m-%d",tz="GMT")
 
 #df$dob = strptime(merge(enc,pat,by="patient_id")$geburtsdatum_ts,tz="GMT",format="%Y-%m-%d")

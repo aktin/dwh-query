@@ -82,3 +82,33 @@ stdabw <- function(data) {
   sqrt(var(data) * (len - 1) / len)
 }
 
+#' @title Left Join Base Function
+#' @description Performs a left join between two data frames, similar to `dplyr::left_join`,
+#' but uses base R's `merge` function. The output is ordered by the first join column.
+#'
+#' @param x A data frame. The left data frame to be joined.
+#' @param y A data frame. The right data frame to be joined.
+#' @param by A character vector of column names to join by. These columns must exist in both `x` and `y`.
+#' @param suffix A character vector of length two, specifying suffixes to be added to non-join duplicate column names
+#' in `x` and `y`. Default is `c(".x", ".y")`.
+#'
+#' @return A data frame resulting from the left join of `x` and `y`.
+#' Rows from `x` are preserved, and missing matches in `y` are filled with `NA`.
+#' The output is ordered by the first column in `by`.
+left_join_base <- function(x, y, by, suffix = c(".x", ".y")) {
+  if (!all(by %in% colnames(x))) stop("Join column(s) not found in 'x'")
+  if (!all(by %in% colnames(y))) stop("Join column(s) not found in 'y'")
+
+  merged_data <- merge(x, y, by = by, all.x = TRUE, suffixes = suffix)
+
+  merged_data <- merged_data[order(as.numeric(merged_data[[by[1]]])), ]
+  rownames(merged_data) <- NULL
+
+  return(merged_data)
+}
+
+#' @title
+#' @description
+#'
+#' @param
+#' @return

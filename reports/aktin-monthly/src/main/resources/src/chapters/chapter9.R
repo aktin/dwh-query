@@ -7,10 +7,10 @@ try({
   
   isoreason_table <- table(df$combined_iso,useNA = "always")
   names(isoreason_table)[length(names(isoreason_table))]<-'Keine Daten'
-  b <- data.frame(Kategorie=names(isoreason_table), Anzahl=gformat(isoreason_table), Anteil=gformat((isoreason_table / sum(isoreason_table))*100,digits = 1))
-  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(isoreason_table)),Anteil=gformat(100,digits=1)))
+  b <- data.frame(Kategorie=names(isoreason_table), Anzahl=format_number(isoreason_table), Anteil=format_number((isoreason_table / sum(isoreason_table))*100,digits = 1))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=format_number(sum(isoreason_table)),Anteil=format_number(100,digits=1)))
   c[,3] <- paste(c[,3],'%')
-  report.table(c,name='isoreason.xml',align=c('left','right','right'),widths=c(30,15,15))
+  report_table(c,name='isoreason.xml',align=c('left','right','right'),widths=c(30,15,15))
 }, silent=FALSE)
 
 #Multiresistente Erreger
@@ -24,7 +24,7 @@ try({
   mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Andere",Bekannt=sum(df$keime_andere == 'OTH',na.rm=TRUE),Verdacht=sum(df$keime_andere == 'OTH:SUSP',na.rm=TRUE)))
   mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Keine Keime",Bekannt=sum(df$keime == 'AMRO:NEG',na.rm=TRUE),Verdacht='-'))
   mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Keine Angabe",Bekannt=sum(mrsa_patient<1),Verdacht='-'))
-  report.table(mrsa_table,name='multiresistant.xml',align=c('left','right','right'),widths=c(30,15,15))
+  report_table(mrsa_table,name='multiresistant.xml',align=c('left','right','right'),widths=c(30,15,15))
 }, silent=FALSE)
 
 #Patienten in der NA
@@ -99,7 +99,7 @@ try({
     scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
     coord_cartesian(xlim=c(0,86400))+
     ggtitle(woche1)
-  report.svg(graph, 'stayone')
+  report_svg(graph, 'stayone')
   
   a_woche2<-a%>%filter(woche==2)
   graph2<- ggplot(data=a_woche2, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
@@ -111,7 +111,7 @@ try({
     scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
     coord_cartesian(xlim=c(0,86400))+
     ggtitle(woche2)
-  report.svg(graph2, 'staytwo')
+  report_svg(graph2, 'staytwo')
   
   a_woche3<-a%>%filter(woche==3)
   graph3<- ggplot(data=a_woche3, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
@@ -123,7 +123,7 @@ try({
     scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
     coord_cartesian(xlim=c(0,86400))+
     ggtitle(woche3)
-  report.svg(graph3, 'staythree')
+  report_svg(graph3, 'staythree')
   
   a_woche4<-a%>%filter(woche==4)
   graph4<- ggplot(data=a_woche4, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
@@ -135,7 +135,7 @@ try({
     scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
     coord_cartesian(xlim=c(0,86400))+
     ggtitle(woche4)
-  report.svg(graph4, 'stayfour')
+  report_svg(graph4, 'stayfour')
   
   a_woche5<-a%>%filter(woche==5 & admit.ts<init_last_month+31)
   graph5<- ggplot(data=a_woche5, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
@@ -147,5 +147,5 @@ try({
     scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
     coord_cartesian(xlim=c(0,86400))+
     ggtitle(woche5)
-  report.svg(graph5, 'stayfive')
+  report_svg(graph5, 'stayfive')
 }, silent=FALSE)

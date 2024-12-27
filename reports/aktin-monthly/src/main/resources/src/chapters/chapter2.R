@@ -10,14 +10,14 @@ try({
           axis.text.x = element_text(face="bold", color="#000000", size=12),
           axis.text.y = element_text(face="bold", color="#000000", size=12))+
     scale_y_continuous(expand = c(0, 0.01))
-  report.svg(graph, 'admit.h')
+  report_svg(graph, 'admit.h')
 }, silent=FALSE)
 # Write table
 try({
   table_pretty <- format(round(table(df$admit.h)[1:12]/length(levels(df$admit.day)), 1), nsmall=1, big.mark=".")
-  report.table(table_pretty,name='admit.h.xml',align='center')
+  report_table(table_pretty,name='admit.h.xml',align='center')
   table_pretty <- format(round(table(df$admit.h)[13:24]/length(levels(df$admit.day)), 1), nsmall=1, big.mark=".")
-  report.table(table_pretty,name='admit2.h.xml',align='center')
+  report_table(table_pretty,name='admit2.h.xml',align='center')
 }, silent=FALSE)
 
 #calculate number of weekdays in the current period (month)
@@ -62,7 +62,7 @@ try({
           axis.text.x = element_text(face="bold", color="#000000", size=12),
           axis.text.y = element_text(face="bold", color="#000000", size=12))+
     scale_y_continuous(expand = c(0, 0.3))
-  report.svg(graph, 'admit.wd')
+  report_svg(graph, 'admit.wd')
 }, silent=FALSE)
 
 
@@ -99,7 +99,7 @@ try({
     scale_x_continuous(expand = c(0, 1),breaks = seq(0, 23, 2))+
     geom_point(data = df3, aes(x = y3, y = y1), color = "#890700",fill = "#890700",shape=22,size=3)+
     geom_point(data = df4, aes(x = y3,y= y2), color = "#FA9B06",fill = "#FA9B06",shape=24,size=3)
-    report.svg(graph, 'admit.hwd.weekend')
+    report_svg(graph, 'admit.hwd.weekend')
  }, silent=FALSE)
 
 #Admit Day
@@ -113,5 +113,5 @@ try({
   Anzahl <- as.vector(table(format(df2$admit.day,format='%d.%m.%Y',tz='GMT')))
   b <- data.frame(Datum,Wochentag,Anzahl)
   b<-b[c(1:31),]
-  report.table(b,name='admit.d.xml',align=c('left','right','right'),widths=c(25,15,13))
+  report_table(b,name='admit.d.xml',align=c('left','right','right'),widths=c(25,15,13))
 }, silent=FALSE)

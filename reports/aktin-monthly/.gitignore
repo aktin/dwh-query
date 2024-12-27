@@ -3,3 +3,6 @@
 .project
 target/
 src/main/resources/test_data
+src/main/resources/data/diagnoses.txt
+src/main/resources/data/encounters.txt
+src/main/resources/data/patients.txt

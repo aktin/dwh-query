@@ -1,4 +1,6 @@
 #TOP20 CEDIS
+std_cols5 <- c("firebrick3", "orange", "yellow", "forestgreen", "dodgerblue", "aliceblue") ### chapter8
+
 try({
   t <- table(df$cedis,useNA = "always") #frequencies
   y<-data.frame(df$cedis)
@@ -24,7 +26,7 @@ try({
             axis.text.y = element_text(face="bold", color="#000000", size=12))+
      # scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(y$n),100))+
       coord_flip()
-    report.svg(graph, 'cedis_top')
+    report_svg(graph, 'cedis_top')
     
     y<-y%>%filter(df.cedis !="999")
     y <- arrange(y, desc(n)) %>%
@@ -33,11 +35,11 @@ try({
     y$label <- as.character(factor(y$df.cedis, levels=cedis[[1]], labels=cedis[[3]]))
     x$label <- as.character(factor(x$df.cedis, levels=cedis[[1]], labels=cedis[[3]]))
     #x$label[is.na(x$label)] <- "Vorstellungsgrund nicht dokumentiert"
-    b <- data.frame(Code=y$df.cedis[1:20], Kategorie=y$label[1:20], Anzahl=gformat(y$n[1:20]), Anteil=gformat((y$n[1:20] / length(df$encounter))*100,digits = 1))
-    c <- rbind(b, data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=gformat(sum(y$n[1:20])),Anteil=gformat(sum(y$n[1:20]) / length(df$encounter)*100,digits=1)))
-    d <- rbind(c,data.frame(Code=x$df.cedis, Kategorie=x$label, Anzahl=gformat(x$n), Anteil=gformat((x$n / length(df$encounter))*100,digits = 1)))
+    b <- data.frame(Code=y$df.cedis[1:20], Kategorie=y$label[1:20], Anzahl=format_number(y$n[1:20]), Anteil=format_number((y$n[1:20] / length(df$encounter))*100,digits = 1))
+    c <- rbind(b, data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=format_number(sum(y$n[1:20])),Anteil=format_number(sum(y$n[1:20]) / length(df$encounter)*100,digits=1)))
+    d <- rbind(c,data.frame(Code=x$df.cedis, Kategorie=x$label, Anzahl=format_number(x$n), Anteil=format_number((x$n / length(df$encounter))*100,digits = 1)))
     d[,4] <- paste(d[,4],'%')
-    report.table(d,name='cedis.xml',align=c('left','left','right','right'),widths=c(8,60,15,15))
+    report_table(d,name='cedis.xml',align=c('left','left','right','right'),widths=c(8,60,15,15))
     
   }else{ # no CEDIS codes at all
     y <- data.frame() 
@@ -55,12 +57,12 @@ try({
             axis.text.y = element_text(face="bold", color="#000000", size=12))+
       #scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(x$Freq),100))+
       coord_flip()
-    report.svg(graph, 'cedis_top')
+    report_svg(graph, 'cedis_top')
     
-    c <- data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=gformat(0),Anteil=gformat(0,digits=1))
-    d <- rbind(c,data.frame(Code='', Kategorie="Vorstellungsgrund nicht dokumentiert", Anzahl=gformat(length(df$encounter)), Anteil=gformat(( 1 )*100,digits = 1)))
+    c <- data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=format_number(0),Anteil=format_number(0,digits=1))
+    d <- rbind(c,data.frame(Code='', Kategorie="Vorstellungsgrund nicht dokumentiert", Anzahl=format_number(length(df$encounter)), Anteil=format_number(( 1 )*100,digits = 1)))
     d[,4] <- paste(d[,4],'%')
-    report.table(d,name='cedis.xml',align=c('left','left','right','right'),widths=c(8,60,15,15))
+    report_table(d,name='cedis.xml',align=c('left','left','right','right'),widths=c(8,60,15,15))
     }
 }, silent=FALSE)
 
@@ -84,7 +86,7 @@ try({
           axis.text.y = element_text(face="bold", color="#000000", size=10))+
     #scale_y_continuous(expand = c(0, 0.3),breaks=seq(0,max(x$Freq),150))+
     coord_flip()
-  report.svg(graph, 'cedis_groups')
+  report_svg(graph, 'cedis_groups')
 }, silent=FALSE)
 
 #TOP20 ICD
@@ -128,7 +130,7 @@ try({
   stacktable <- stacktable[complete.cases(stacktable),] #remove rows
   graph <- barchart(stacktable[dim(stacktable)[1]:1,1:5],xlab="Anzahl Patienten",sub="blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",col=std_cols5[5:1],origin=0)
   #graph <- barchart( x [20:1], xlab="Anzahl Patienten",col=std_cols[1],origin=0)
-  report.svg(graph, 'icd_top') 
+  report_svg(graph, 'icd_top') 
   
   a <- t
   a <- sort(a, decreasing = TRUE)
@@ -141,12 +143,12 @@ try({
     codes <-  a  #do not output ICD-codes with no occurence in the table => make the table shorter
   }
   #kat <- paste(codes,": ",names(a),sep = '')
-  #b <- data.frame(Kategorie=kat, Anzahl=gformat(a), Anteil=gformat((a / sum(t))*100,digits = 1))
-  b <- data.frame(Code=codes,Kategorie=names(a), Anzahl=gformat(a), Anteil=gformat((a / length(df$encounter))*100,digits = 1))
+  #b <- data.frame(Kategorie=kat, Anzahl=format_number(a), Anteil=format_number((a / sum(t))*100,digits = 1))
+  b <- data.frame(Code=codes,Kategorie=names(a), Anzahl=format_number(a), Anteil=format_number((a / length(df$encounter))*100,digits = 1))
   ges <- sum(a)
-  c <- rbind(b, data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=gformat(ges),Anteil=gformat((ges / length(df$encounter)*100),digits = 1)))
-  d <- rbind(c, data.frame(Code='',Kategorie="Nicht dokumentiert",Anzahl=gformat(length(df$encounter)-length(f_diag)), Anteil=gformat(((length(df$encounter)-length(f_diag)) / length(df$encounter))*100,digits = 1)))  #f_diag is 1 or 0 per encounter, df$enc is the number of enc. Counting NA is not enough since there may be multiple or no diagnoses per encounter
+  c <- rbind(b, data.frame(Code='---',Kategorie="Summe TOP20",Anzahl=format_number(ges),Anteil=format_number((ges / length(df$encounter)*100),digits = 1)))
+  d <- rbind(c, data.frame(Code='',Kategorie="Nicht dokumentiert",Anzahl=format_number(length(df$encounter)-length(f_diag)), Anteil=format_number(((length(df$encounter)-length(f_diag)) / length(df$encounter))*100,digits = 1)))  #f_diag is 1 or 0 per encounter, df$enc is the number of enc. Counting NA is not enough since there may be multiple or no diagnoses per encounter
   d[,4] <- paste(d[,4],'%')
-  report.table(d,name='icd.xml',align=c('left','left','right','right'),widths=c(8,62,15,15))
+  report_table(d,name='icd.xml',align=c('left','left','right','right'),widths=c(8,62,15,15))
   
 }, silent=FALSE)

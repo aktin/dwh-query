@@ -5,13 +5,13 @@ try({
   b$Anteil<-(b$Freq/sum(b$Freq))*100
   colnames(b)<-c("Kategorie","Anzahl","Anteil")
   summe<-sum(b$Anzahl)
-  b$Anzahl<-gformat(b$Anzahl)
-  b$Anteil<-gformat(b$Anteil,digits=1)
-  #b <- data.frame(Kategorie=factors$Geschlecht[!is.na(factors$Geschlecht)], Anzahl=gformat(a), Anteil=gformat((a / sum(a))*100,digits = 1))
-  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(summe),Anteil=gformat(100,digits=1)))
+  b$Anzahl<-format_number(b$Anzahl)
+  b$Anteil<-format_number(b$Anteil,digits=1)
+  #b <- data.frame(Kategorie=factors$Geschlecht[!is.na(factors$Geschlecht)], Anzahl=format_number(a), Anteil=format_number((a / sum(a))*100,digits = 1))
+  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=format_number(summe),Anteil=format_number(100,digits=1)))
   ##c[,3] <- sprintf(fmt="%.1f",c[,3])
   c[,3] <- paste(c[,3],'%')
-  report.table(c,name='sex.xml',align=c('left','right','right'),widths=c(25,15,15))
+  report_table(c,name='sex.xml',align=c('left','right','right'),widths=c(25,15,15))
 }, silent=FALSE)
 
 #Patient Age
@@ -21,7 +21,7 @@ try({
   #Alter <- sprintf(fmt="%.1f",Alter)
   Alter <- paste(Alter,'Jahre')
   b <- data.frame(Kennzahl,Alter)
-  report.table(b,name='age.xml',align=c('left','right'),widths=c(30,15))
+  report_table(b,name='age.xml',align=c('left','right'),widths=c(30,15))
 }, silent=FALSE)
 try({
   x<-df$age
@@ -42,5 +42,5 @@ try({
     geom_vline(aes(xintercept=mean(x)),
                color="#e3000b", linetype="dashed", size=1)
     #geom_text(aes(x=mean(x), label="Mittelwert\n", y=50), colour="white", angle=90,size=4)
-    report.svg(graph, 'age')
+    report_svg(graph, 'age')
 }, silent=FALSE)

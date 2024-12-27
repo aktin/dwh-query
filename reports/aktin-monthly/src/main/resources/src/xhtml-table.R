@@ -22,8 +22,8 @@ xml.escape <- function(x){
 #' @param align.default alignment to use for non-numeric columns in auto align
 #' @param na.subst substitution for NA,NaN,Inf,-Inf values
 #' @examples
-#' xhtml.table(OrchardSprays)
-xhtml.table <- function(x, file='', widths=NULL, align='auto', align.default='left', na.subst=''){
+#' xhtml_table(OrchardSprays)
+xhtml_table <- function(x, file='', widths=NULL, align='auto', align.default='left', na.subst=''){
 	# equally spaced widths
 	if( is.null(widths) ){
 		widths <- round(100/length(names(x)))

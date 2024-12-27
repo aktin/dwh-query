@@ -43,8 +43,8 @@ try({
           legend.title = element_blank(),
           legend.position = "bottom",
           legend.text = element_text(color="#e3000b",size=12,face="bold"))
-    report.svg(graph, 'phys.d.box')
-    report.svg(graph2, 'phys.d.hist')
+    report_svg(graph, 'phys.d.box')
+    report_svg(graph2, 'phys.d.hist')
 }, silent=FALSE)
 
 try({
@@ -55,7 +55,7 @@ try({
   Zeit <- paste(Zeit, 'Min')
   Zeit <- c(used,isNA,positiveoutofbounds,negativeoutofbounds,Zeit)
   b <- data.frame(Kennzahl,Zeit)
-  report.table(b,name='phys.d.xml',align=c('left','right'),widths=c(45,15))
+  report_table(b,name='phys.d.xml',align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
 # Time to triage
@@ -124,8 +124,8 @@ try({
           legend.position = "bottom",
           legend.text = element_text(color="#e3000b",size=12,face="bold"))}
   
-  report.svg(graph, 'triage.d.box')
-  report.svg(graph2, 'triage.d.hist')
+  report_svg(graph, 'triage.d.box')
+  report_svg(graph2, 'triage.d.hist')
 }, silent=FALSE)
 
 try({
@@ -142,7 +142,7 @@ try({
   Zeit <- c(used,isNA,positiveoutofbounds,negativeoutofbounds,Zeit)
   
   b <- data.frame(Kennzahl,Zeit)
-  report.table(b,name='triage.d.xml',align=c('left','right'),widths=c(45,15))
+  report_table(b,name='triage.d.xml',align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
 # Time to physician mean grouped by triage result
@@ -168,7 +168,7 @@ try({
           axis.text.x = element_text(face="bold", color="#000000", size=12),
           axis.text.y = element_text(face="bold", color="#000000", size=12))+
     scale_y_continuous(breaks=seq(0,max(y$time),10),expand =c (0,0.3))
-  report.svg(graph, 'triage.phys.d.avg')
+  report_svg(graph, 'triage.phys.d.avg')
 }, silent=FALSE)
 
 
@@ -187,5 +187,5 @@ try({
  
   x <- data.frame(Kategorie=kat,agg.list)
   rm(agg.funs, agg.list)
-  report.table(x,'triage.phys.d.xml',align=c('left','right','right','right','right','right'),width=15)
+  report_table(x,'triage.phys.d.xml',align=c('left','right','right','right','right','right'),width=15)
 }, silent=FALSE)

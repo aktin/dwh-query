@@ -24,7 +24,7 @@ try({
   Zeit <- c(los_erfasst,los_NA,lt_zero,gt_day,Zeit)
   
   b <- data.frame(Kennzahl,Zeit)
-  report.table(b,name='los.xml',align=c('left','right'),widths=c(45,15))
+  report_table(b,name='los.xml',align=c('left','right'),widths=c(45,15))
 }, silent=FALSE)
 
 # Time to discharge
@@ -83,6 +83,6 @@ try({
           legend.position = "bottom",
           legend.text = element_text(color="#e3000b",size=12,face="bold"))}
     
-    report.svg(graph, 'discharge.d.box')
-    report.svg(graph2, 'discharge.d.hist')
+    report_svg(graph, 'discharge.d.box')
+    report_svg(graph2, 'discharge.d.hist')
 }, silent=FALSE)

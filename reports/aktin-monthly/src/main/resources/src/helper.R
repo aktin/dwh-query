@@ -69,7 +69,7 @@ report_table <- function(data, name, widths = NULL, align = "auto", translations
 #' @return A formatted number as a character string.
 format_number <- function(num, digits = 0) {
   pretty <- format(round(as.numeric(num), digits), nsmall = digits, big.mark = ".")
-  (pretty)
+  return(pretty)
 }
 
 #' @title Calculate Standard Deviation

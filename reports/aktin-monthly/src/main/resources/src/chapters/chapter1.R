@@ -26,6 +26,7 @@ try(
       widths = c(25, 15, 15),
       translations = column_name_translations
     )
+    rm(sex_summary, sex_summary_report)
   },
   silent = FALSE
 )
@@ -49,6 +50,7 @@ try(
       Age = paste(age_statistics, "Jahre")
     )
     report_table(age_report, name = "age_test.xml", align = c("left", "right"), widths = c(30, 15))
+    rm(age_report)
   },
   silent = FALSE
 )
@@ -85,7 +87,8 @@ try(
         color = "#e3000b", linetype = "dashed", size = 1
       )
 
-    report_svg(graph, "age") ### Change scala!!!! -> Scala is not correct in the histogram. 
+    report_svg(graph, "age") ### Change scala!!!! -> Scala is not correct in the histogram.
+    rm(age)
   },
   silent = FALSE
 )

@@ -1,117 +1,183 @@
-# Counts per Hour
-try({
-  df2<-data.frame(table(df$admit.h)/length(levels(df$admit.day)))
-  graph<-ggplot(data=df2, aes(x=Var1, y=Freq)) +
-    geom_bar(stat="identity", fill="#046C9A",width=0.5)+
-    labs(x=paste('Uhrzeit [Stunde]; n =',sum(!is.na(df$admit.h))), y = "Durchschnittliche Anzahl Patienten")+
-    theme(plot.caption = element_text(hjust=0.5,size=12),
-          panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
-          axis.text.x = element_text(face="bold", color="#000000", size=12),
-          axis.text.y = element_text(face="bold", color="#000000", size=12))+
-    scale_y_continuous(expand = c(0, 0.01))
-  report_svg(graph, 'admit.h')
-}, silent=FALSE)
-# Write table
-try({
-  table_pretty <- format(round(table(df$admit.h)[1:12]/length(levels(df$admit.day)), 1), nsmall=1, big.mark=".")
-  report_table(table_pretty,name='admit.h.xml',align='center')
-  table_pretty <- format(round(table(df$admit.h)[13:24]/length(levels(df$admit.day)), 1), nsmall=1, big.mark=".")
-  report_table(table_pretty,name='admit2.h.xml',align='center')
-}, silent=FALSE)
+# Admission day: Average number of patients per hour for the current month
+try(
+  {
+    frequency_table <- data.frame(table(df$admit.h) / length(levels(df$admit.day)))
 
-#calculate number of weekdays in the current period (month)
-#limitation/feature: days without patients will be excluded
-#df$admit is not ordered, but for this loop it needs to be ordered by date
-tempdf <- df[c("admit.day","admit.wd")]
-orderdf <- tempdf[order(tempdf$admit.day),]
-weekdaycounts=rep(0,7) #Mo-So
-if (length(orderdf$admit.wd) > 0) {
-  wbindex <- 0
-  lastwd <- 0
-  for (i in 1:length(orderdf$admit.wd)){
-    if (! is.na(orderdf$admit.wd[i])) {
-      if (orderdf$admit.wd[i] != lastwd) {
-        wbindex <- as.numeric(sapply(as.character(orderdf$admit.wd[i]), switch, 
-                                     Mo = 1, 
-                                     Di = 2, 
-                                     Mi = 3, 
-                                     Do = 4, 
-                                     Fr = 5, 
-                                     Sa = 6, 
-                                     So = 7))
-        weekdaycounts[wbindex] <- weekdaycounts[wbindex]+1
-        lastwd <- orderdf$admit.wd[i]
-      }
+    graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
+      geom_bar(
+        stat = "identity",
+        fill = "#046C9A",
+        width = 0.5
+      ) +
+      labs(
+        x = paste(
+          "Uhrzeit [Stunde]; n =",
+          sum(!is.na(df$admit.h))
+        ),
+        y = "Durchschnittliche Anzahl Patienten"
+      ) +
+      theme(
+        plot.caption = element_text(hjust = 0.5, size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+      ) +
+      scale_y_continuous(expand = c(0, 0.01))
+
+    report_svg(graph, "admit.h")
+    rm(frequency_table)
+  },
+  silent = FALSE
+)
+
+# Admission day: Daily percentage of patients for the current month
+# (Split into the first and and second half of the month.)
+try(
+  {
+    total_days <- length(levels(df$admit.day))
+
+    table_formatted <- format(
+      round(table(df$admit.h)[1:12] / total_days, 1),
+      nsmall = 1, big.mark = "."
+    )
+    report_table(table_formatted, name = "admit.h.xml", align = "center")
+
+    table_formatted_2 <- format(
+      round(table(df$admit.h)[13:24] / total_days, 1),
+      nsmall = 1, big.mark = "."
+    )
+    report_table(table_formatted_2, name = "admit2.h.xml", align = "center")
+  },
+  silent = FALSE
+)
+
+# Admission day: Average number of patients admitted per weekday
+try(
+  {
+    temp_df <- df[c("admit.day", "admit.wd")]
+    temp_df <- temp_df[!is.na(temp_df$admit.wd), ]
+    temp_df <- temp_df[!duplicated(temp_df), ]
+
+    week_day_counts <- table(temp_df$admit.wd)
+    rm(temp_df)
+
+    frequency_table <- round(table(df$admit.wd) / week_day_counts, digits = 1)
+    frequency_table[is.na(frequency_table)] <- 0
+    frequency_table <- data.frame(frequency_table)
+
+    graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
+      geom_bar(
+        stat = "identity",
+        fill = "#046C9A", width = 0.5
+      ) +
+      labs(
+        x = paste(
+          "Wochentag; n =",
+          sum(!is.na(df$admit.h))
+        ),
+        y = "Durchschnittliche Anzahl Patienten"
+      ) +
+      theme(
+        plot.caption = element_text(hjust = 0.5, size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+      ) +
+      scale_y_continuous(expand = c(0, 0.3))
+    report_svg(graph, "admit.wd")
+    rm(frequency_table)
+  },
+  silent = FALSE
+)
+
+
+# Admission day: Average number of patients per hour, week vs. weekend
+try(
+  {
+    weekday <- rep(0, 24)
+    weekend <- rep(0, 24)
+
+    for (i in 1:24) {
+      weekday[i] <- sum(admit.hwd[1:5, i])
+      weekend[i] <- sum(admit.hwd[6:7, i])
     }
-  }
-}
-rm(tempdf,orderdf) 
 
-# Counts per Weekday
-try({
-  plottable <- round(table(df$admit.wd)/weekdaycounts,digits = 1)
-  plottable[is.na(plottable)] <- 0
-  plottable<-data.frame(plottable)
-  graph<-ggplot(data=plottable, aes(x=Var1, y=Freq)) +
-    geom_bar(stat="identity", fill="#046C9A",width=0.5)+
-    labs(x=paste('Wochentag; n =',sum(!is.na(df$admit.h))), y = "Durchschnittliche Anzahl Patienten")+
-    theme(plot.caption = element_text(hjust=0.5,size=12),
-          panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
-          axis.text.x = element_text(face="bold", color="#000000", size=12),
-          axis.text.y = element_text(face="bold", color="#000000", size=12))+
-    scale_y_continuous(expand = c(0, 0.3))
-  report_svg(graph, 'admit.wd')
-}, silent=FALSE)
+    days_weekday <- sum(week_day_counts[1:5])
+    days_weekend <- sum(week_day_counts[6:7])
+    hours <- 0:23
 
+    avg_weekday <- weekday / days_weekday
+    avg_weekend <- weekend / days_weekend
 
-# Counts per Hour/Weekday vs. Weekend
-try({
-  # c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-  weekday <- rep(0,24)
-  weekend <- rep(0,24)
-  for (i in 1:24) {
-    weekday[i] <- admit.hwd[1,i]+admit.hwd[2,i]+admit.hwd[3,i]+admit.hwd[4,i]+admit.hwd[5,i]
-    weekend[i] <- admit.hwd[6,i]+admit.hwd[7,i]
-  }
-  days_weekday <- sum(weekdaycounts[1:5])
-  days_weekend <- sum(weekdaycounts[6:7])
-  
-  y3<-c("00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23")
-  y1<-weekday/days_weekday
-  y2<-weekend/days_weekend
-  df3<-data.frame(y3,y1)
-  df4<-data.frame(y3,y2)
-  rm(y1,y2,y3)
-  df3$y3 <- as.numeric(as.character(df3$y3))
-  df4$y3 <- as.numeric(as.character(df4$y3))
-  graph<-ggplot() + 
-    geom_line(data = df3, aes(x = y3, y = y1), color = "#890700") +
-    geom_line(data = df4, aes(x = y3,y= y2), color = "#FA9B06") +
-    xlab('Uhrzeit [Stunde]') +
-    ylab('Durchschnittliche Fallzahl')+
-    theme(plot.caption = element_text(hjust=0.5,size=12),
-          panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
-          axis.text.x = element_text(face="bold", color="#000000", size=12),
-          axis.text.y = element_text(face="bold", color="#000000", size=12))+
-    scale_x_continuous(expand = c(0, 1),breaks = seq(0, 23, 2))+
-    geom_point(data = df3, aes(x = y3, y = y1), color = "#890700",fill = "#890700",shape=22,size=3)+
-    geom_point(data = df4, aes(x = y3,y= y2), color = "#FA9B06",fill = "#FA9B06",shape=24,size=3)
-    report_svg(graph, 'admit.hwd.weekend')
- }, silent=FALSE)
+    data_weekday <- data.frame(
+      hours, avg_weekday
+    )
+    data_weekend <- data.frame(
+      hours, avg_weekend
+    )
 
-#Admit Day
-try({
-  df2<-subset(df,!is.na(admit.day))
-  Datum <- names(table(format(df2$admit.day,format='%d.%m.%Y',tz='GMT')))
-  #Wochentag <- weekdays(as.Date(names(table(df$admit.day))))
-  Wochentag <- format(as.Date(names(table(df2$admit.day))),format='%u',tz='GMT')
-  Wochentag <- factor(Wochentag)
-  levels(Wochentag) <- list("Montag"="1","Dienstag"="2","Mittwoch"="3","Donnerstag"="4","Freitag"="5","Samstag"="6", "Sonntag"=7)
-  Anzahl <- as.vector(table(format(df2$admit.day,format='%d.%m.%Y',tz='GMT')))
-  b <- data.frame(Datum,Wochentag,Anzahl)
-  b<-b[c(1:31),]
-  report_table(b,name='admit.d.xml',align=c('left','right','right'),widths=c(25,15,13))
-}, silent=FALSE)
+    graph <- ggplot() +
+      geom_line(data = data_weekday, aes(x = hours, y = avg_weekday), color = "#890700") +
+      geom_line(data = data_weekend, aes(x = hours, y = avg_weekend), color = "#FA9B06") +
+      xlab("Uhrzeit [Stunde]") +
+      ylab("Durchschnittliche Fallzahl") +
+      theme(
+        plot.caption = element_text(hjust = 0.5, size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+      ) +
+      scale_x_continuous(expand = c(0, 1), breaks = seq(0, 23, 2)) +
+      geom_point(
+        data = data_weekday,
+        aes(x = hours, y = avg_weekday), color = "#890700",
+        fill = "#890700", shape = 22, size = 3
+      ) +
+      geom_point(
+        data = data_weekend,
+        aes(x = hours, y = avg_weekend), color = "#FA9B06",
+        fill = "#FA9B06", shape = 24, size = 3
+      )
+    report_svg(graph, "admit.hwd.weekend")
+    rm(weekday, days_weekday, avg_weekday, data_weekday)
+    rm(weekend, days_weekend, avg_weekend, data_weekend)
+  },
+  silent = FALSE
+)
+
+# Admit day: Date, Weekday, Count
+try(
+  {
+    admission_days <- subset(df, !is.na(admit.day))
+    formatted_dates <- format(admission_days$admit.day, format = "%d.%m.%Y", tz = "GMT")
+    unique_dates <- names(table(formatted_dates))
+
+    weekdays_iso <- as.Date(unique_dates)
+    weekdays_numbers <- format(weekdays_iso, format = "%u", tz = "GMT")
+
+    weekdays_labeled <- factor(weekdays_numbers)
+    levels(weekdays_labeled) <- list(
+      "Montag" = "1", "Dienstag" = "2", "Mittwoch" = "3", "Donnerstag" = "4",
+      "Freitag" = "5", "Samstag" = "6", "Sonntag" = "7"
+    )
+
+    admission_counts <- as.vector(table(formatted_dates))
+    admissions_summary <- data.frame(
+      Date = unique_dates,
+      Weekday = weekdays_labeled,
+      Count = admission_counts
+    )
+    admissions_summary <- admissions_summary[1:31, ]
+
+    report_table(
+      admissions_summary,
+      name = "admit.d.xml",
+      align = c("left", "right", "right"),
+      widths = c(25, 15, 13)
+    )
+  },
+  silent = FALSE
+)

@@ -49,15 +49,15 @@ report_svg <- function(graph, name, width = 8, height = 4) {
 #' @param align A character vector or "auto" for alignment of columns. Default is "auto".
 #' @param align_default A character string for default column alignment. Default is "left".
 #' @param na_subst A character string to replace NA values in the table. Default is an empty string.
-report_table <- function(data, name, widths = NULL, align = "auto", align_default = "left", na_subst = "") {
+report_table <- function(data, name, widths = NULL, align = "auto", translations = NULL) {
   xml_dir <- "output/"
 
   xhtml_table(data,
     file = paste0(xml_dir, name),
     widths = widths,
-    align.default = align_default,
-    na.subst = na_subst
+    translations = translations
   )
+
   report_generated_file(name)
 }
 

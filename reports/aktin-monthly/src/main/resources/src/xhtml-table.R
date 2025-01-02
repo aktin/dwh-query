@@ -45,7 +45,8 @@ xml_escape <- function(data) {
 #' @param align A character vector specifying the alignment of the columns. Options include "left", "right", "center",
 #'              or "auto". The default is "auto", which automatically aligns numeric columns to "right"
 #'              and others to "left".
-xhtml_table <- function(data, file_name = "default_table.xml", widths = NULL, align = "auto") {
+#' @param translations A list representation of the english column names with their german translation.
+xhtml_table <- function(data, file_name = "default_table.xml", widths = NULL, align = "auto", translations = NULL) {
   if (!is.data.frame(data) && !is.matrix(data)) {
     stop("ERROR: 'data' must be a data frame or matrix.")
   }
@@ -85,7 +86,12 @@ xhtml_table <- function(data, file_name = "default_table.xml", widths = NULL, al
 
   cat("\t<thead>\n\t\t<tr>\n", file = file)
   for (name in names(data)) {
-    cat(sprintf("\t\t\t<th>%s</th>\n", xml_escape(name)), file = file)
+    translated_name <- if (!is.null(translations) && name %in% names(translations)) {
+      translations[[name]]
+    } else {
+      name
+    }
+    cat(sprintf("\t\t\t<th>%s</th>\n", xml_escape(translated_name)), file = file)
   }
   cat("\t\t</tr>\n\t</thead>\n", file = file)
 

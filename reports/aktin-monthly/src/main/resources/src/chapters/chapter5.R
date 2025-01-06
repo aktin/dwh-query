@@ -222,36 +222,48 @@ try(
   silent = FALSE
 )
 
-# # Time to physician mean grouped by triage result
-# try(
-#   {
-#     df$phys.d <- as.numeric(df$phys.d)
-#     a <- df$phys.d[df$phys.d < 181]
-#     c <- table(a == 0)
-#     c <- data.frame(c)
-#     c <- c %>% filter(Var1 == TRUE)
-#     c <- c$Freq
-#     outofbounds <- length(df$phys.d) - length(a)
-#     b <- df$triage.result[df$phys.d < 181]
-#     y <- data.frame(time = a, triage = b)
-#     y$time <- as.numeric(y$time)
-#     y <- y %>% filter(!is.na(time))
-#     graph <- ggplot(data = y, aes(x = triage, y = time, fill = triage)) +
-#       geom_boxplot(show.legend = FALSE) +
-#       labs(x = "Triage-Gruppe", y = "Durchschn. Zeit bis Arztkontakt [Min.]", caption = paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds, " ; Fehlender Zeitstempel Arztkontakt:", sum(is.na(df$phys.d)))) +
-#       scale_fill_manual(values = c("Rot" = "red", "Orange" = "orange", "Gelb" = "yellow2", "Grün" = "green4", "Blau" = "blue", "Ohne" = "grey48")) +
-#       theme(
-#         plot.caption = element_text(hjust = 0.5, size = 12),
-#         panel.background = element_rect(fill = "white"),
-#         axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-#         axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-#         axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
-#       ) +
-#       scale_y_continuous(breaks = seq(0, max(y$time), 10), expand = c(0, 0.3))
-#     report_svg(graph, "triage.phys.d.avg")
-#   },
-#   silent = FALSE
-# )
+# Time to physician mean grouped by triage result
+try(
+  {
+    outliers <- sum(df$phys.d >= 181, na.rm = TRUE)
+    phys_by_triage <- data.frame(
+      Time = na.omit(df$phys.d[df$phys.d < 181]),
+      Triage = df$triage.result[df$phys.d < 181 & !is.na(df$phys.d)]
+    )
+
+    graph <- ggplot(data = phys_by_triage, aes(x = Triage, y = Time, fill = Triage)) +
+      geom_boxplot(show.legend = FALSE) +
+      labs(
+        x = "Triage-Gruppe",
+        y = "Durchschn. Zeit bis Arztkontakt [Min.]",
+        caption = paste(
+          "Werte über 180 Minuten (unberücksichtigt): ", outliers,
+          " ; Fehlender Zeitstempel Arztkontakt:", sum(is.na(df$phys.d))
+        )
+      ) +
+      scale_fill_manual(
+        values = c(
+          "Rot" = "red",
+          "Orange" = "orange",
+          "Gelb" = "yellow2",
+          "Grün" = "green4",
+          "Blau" = "blue",
+          "Ohne" = "grey48"
+        )
+      ) +
+      theme(
+        plot.caption = element_text(hjust = 0.5, size = 12),
+        panel.background = element_rect(fill = "white"),
+        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+      ) +
+      scale_y_continuous(breaks = seq(0, max(phys_by_triage$Time), 10), expand = c(0, 0.3))
+    report_svg(graph, "triage.phys.d.avg")
+    rm(graph)
+  },
+  silent = FALSE
+)
 
 
 # try(

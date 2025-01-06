@@ -107,6 +107,20 @@ left_join_base <- function(x, y, by, suffix = c(".x", ".y")) {
   return(merged_data)
 }
 
+#' @title Create a "No Data" Figure
+#' @description Generates a simple ggplot2 figure displaying a "No Data" message.
+#'
+#' @param None This function does not take any arguments.
+#' @return A ggplot object containing a blank plot with a "No Data" message.
+create_no_data_figure <- function() {
+  text <- paste("\n   Keine Daten \n")
+  graph <- ggplot() +
+    annotate("text", x = 4, y = 25, size = 8, label = text) +
+    theme_void()
+
+  return(graph)
+}
+
 #' @title
 #' @description
 #'

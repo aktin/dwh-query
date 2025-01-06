@@ -165,7 +165,7 @@ create_delay_time_report <- function(
   }
 
   summary_df <- data.frame(
-    Metrics = factors$triage_txt[!is.na(factors$triage_txt)],
+    Metrics = factors[!is.na(factors)],
     Time = summary_values
   )
 

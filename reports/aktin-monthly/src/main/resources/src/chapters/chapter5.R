@@ -102,7 +102,7 @@ try(
       num_missing_times,
       num_positive_outliers,
       num_negative_outliers,
-      factors
+      factors$phys_txt
     )
 
     report_table(
@@ -207,7 +207,7 @@ try(
       num_missing_times,
       num_positive_outliers,
       num_negative_outliers,
-      factors
+      factors$triage_txt
     )
 
     report_table(

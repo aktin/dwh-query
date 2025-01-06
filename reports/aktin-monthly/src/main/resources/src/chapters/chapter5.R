@@ -10,6 +10,12 @@
 #
 # triage.phys.d.avg
 # triage.phy.d.avg.xml
+
+# Notes:
+# - Empty graph option for all graphs?
+# - Combine graph functions of similar type across the whole project into one function?
+# - How can the localisation be solved within the graphs?
+# - What is done for data prep in parse_derive and what in the chapters?
 #########################
 
 # phys.d.box
@@ -91,33 +97,22 @@ try(
 # phys.d.xml
 try(
   {
-    summary <- c(
-      length(delay_times$Time),
+    summary <- create_delay_time_report(
+      delay_times,
       num_missing_times,
       num_positive_outliers,
       num_negative_outliers,
-      sprintf(fmt = "%.0f Min", c(
-        round(mean(delay_times$Time), 1),
-        median(delay_times$Time),
-        round(stdabw(delay_times$Time), 1),
-        min(delay_times$Time),
-        max(delay_times$Time)
-      ))
-    )
-
-    metrics_frame <- data.frame(
-      Metrics = factors$phys_txt[!is.na(factors$phys_txt)],
-      Time = summary
+      factors
     )
 
     report_table(
-      metrics_frame,
-      name = "phys.d.testX.xml",
+      summary,
+      name = "phys.d.xml",
       align = c("left", "right"),
       widths = c(45, 15),
       translations = column_name_translations
     )
-    rm(summary, metrics_frame, delay_times)
+    rm(summary, delay_times)
   },
   silent = FALSE
 )
@@ -204,26 +199,28 @@ try(
   silent = FALSE
 )
 
-# # triage.d.xml
-# try(
-#   {
-#     used <- length(b$b)
-#     Kennzahl <- factors$triage_txt[!is.na(factors$triage_txt)]
-#     if (nrow(b) == 0) {
-#       Zeit <- c("k.A", "k.A", "k.A", "k.A", "k.A")
-#     } else {
-#       Zeit <- c(round(mean(b$b), 1), median(b$b), round(stdabw(b$b), 1), min(b$b), max(b$b))
-#       Zeit <- sprintf(fmt = "%.0f", Zeit)
-#     }
+# triage.d.xml
+try(
+  {
+    summary <- create_delay_time_report(
+      delay_times,
+      num_missing_times,
+      num_positive_outliers,
+      num_negative_outliers,
+      factors
+    )
 
-#     Zeit <- paste(Zeit, "Min")
-#     Zeit <- c(used, isNA, positiveoutofbounds, negativeoutofbounds, Zeit)
-
-#     b <- data.frame(Kennzahl, Zeit)
-#     report_table(b, name = "triage.d.xml", align = c("left", "right"), widths = c(45, 15))
-#   },
-#   silent = FALSE
-# )
+    report_table(
+      summary,
+      name = "triage.d.xml",
+      align = c("left", "right"),
+      widths = c(45, 15),
+      translations = column_name_translations
+    )
+    rm(summary, delay_times)
+  },
+  silent = FALSE
+)
 
 # # Time to physician mean grouped by triage result
 # try(

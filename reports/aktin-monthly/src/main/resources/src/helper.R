@@ -121,6 +121,57 @@ create_no_data_figure <- function() {
   return(graph)
 }
 
+#' @title Create Delay Time Report
+#' @description Generates a summary report for delay times, including metrics such as count,
+#' missing times, positive and negative outliers, and statistical summaries (mean, median,
+#' standard deviation, minimum, and maximum).
+#'
+#' @param delay_times A data frame containing delay times with at least one column named `Time`.
+#' @param num_missing_times An integer representing the number of missing time values.
+#' @param num_positive_outliers An integer representing the number of positive outliers.
+#' @param num_negative_outliers An integer representing the number of negative outliers.
+#' @param factors A data frame or list containing a `triage_txt` field, which provides metric
+#' names or descriptions to be used in the report.
+#'
+#' @return A data frame with two columns:
+#'   - `Metrics`: Metric names or descriptions (e.g., "Count", "Missing", "Positive Outliers").
+#'   - `Time`: Corresponding values for each metric, including statistical summaries or "k.A" (keine Angabe)
+#' if no data is available.
+create_delay_time_report <- function(
+    delay_times,
+    num_missing_times,
+    num_positive_outliers,
+    num_negative_outliers,
+    factors) {
+  if (nrow(delay_times) == 0) {
+    summary_values <- c("k.A", "k.A", "k.A", "k.A", "k.A")
+  } else {
+    summary_values <- c(
+      length(delay_times$Time),
+      num_missing_times,
+      num_positive_outliers,
+      num_negative_outliers,
+      sprintf(
+        fmt = "%.0f Min",
+        c(
+          round(mean(delay_times$Time), 1),
+          median(delay_times$Time),
+          round(stdabw(delay_times$Time), 1),
+          min(delay_times$Time),
+          max(delay_times$Time)
+        )
+      )
+    )
+  }
+
+  summary_df <- data.frame(
+    Metrics = factors$triage_txt[!is.na(factors$triage_txt)],
+    Time = summary_values
+  )
+
+  return(summary_df)
+}
+
 #' @title
 #' @description
 #'

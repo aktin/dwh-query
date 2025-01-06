@@ -41,13 +41,13 @@ try(
       round(table(df$admit.h)[1:12] / total_days, 1),
       nsmall = 1, big.mark = "."
     )
-    report_table(table_formatted, name = "admit.h.xml", align = "center")
+    report_table(data.frame(as.list(table_formatted), check.names = FALSE), name = "admit.h.xml", align = "center")
 
     table_formatted_2 <- format(
       round(table(df$admit.h)[13:24] / total_days, 1),
       nsmall = 1, big.mark = "."
     )
-    report_table(table_formatted_2, name = "admit2.h.xml", align = "center")
+    report_table(data.frame(as.list(table_formatted_2), check.names = FALSE), name = "admit2.h.xml", align = "center")
   },
   silent = FALSE
 )

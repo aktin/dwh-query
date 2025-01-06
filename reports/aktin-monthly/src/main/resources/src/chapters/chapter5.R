@@ -222,16 +222,16 @@ try(
   silent = FALSE
 )
 
-# Time to physician mean grouped by triage result
+# triage.phys.d.avg
 try(
   {
     outliers <- sum(df$phys.d >= 181, na.rm = TRUE)
-    phys_by_triage <- data.frame(
+    triage_by_phys <- data.frame(
       Time = na.omit(df$phys.d[df$phys.d < 181]),
       Triage = df$triage.result[df$phys.d < 181 & !is.na(df$phys.d)]
     )
 
-    graph <- ggplot(data = phys_by_triage, aes(x = Triage, y = Time, fill = Triage)) +
+    graph <- ggplot(data = triage_by_phys, aes(x = Triage, y = Time, fill = Triage)) +
       geom_boxplot(show.legend = FALSE) +
       labs(
         x = "Triage-Gruppe",
@@ -258,32 +258,54 @@ try(
         axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
         axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
       ) +
-      scale_y_continuous(breaks = seq(0, max(phys_by_triage$Time), 10), expand = c(0, 0.3))
+      scale_y_continuous(breaks = seq(0, max(triage_by_phys$Time), 10), expand = c(0, 0.3))
     report_svg(graph, "triage.phys.d.avg")
     rm(graph)
   },
   silent = FALSE
 )
 
+# triage.phy.d.avg.xml
+try(
+  {
 
-# try(
-#   {
-#     y2 <- data.frame(triage = df$triage.result, time = df$phys.d)
-#     y2 <- y2 %>% dplyr::filter(time < 181)
-#     agg.funs <- list(Mittelwert = mean, Median = median, Minimum = min, Maximum = max)
-#     agg.list <- lapply(agg.funs, function(fun) {
-#       with(y2, tapply(time, list(triage), FUN = fun, na.rm = TRUE))
-#     })
+    metrics_funs <- list(
+      Mean = function(x) round(mean(x, na.rm = TRUE), 1),
+      Median = function(x) round(median(x, na.rm = TRUE), 0),
+      Min = function(x) min(x, na.rm = TRUE),
+      Max = function(x) max(x, na.rm = TRUE)
+    )
 
-#     agg.list$Mittelwert <- round(agg.list$Mittelwert, 1)
-#     agg.list$Median <- round(agg.list$Median, 0)
-#     agg.list$Anzahl <- with(y2, tapply(time, list(triage), FUN = length))
-#     agg.list$Anzahl[is.na(agg.list$Anzahl)] <- 0
-#     kat <- c("Rot", "Orange", "Gelb", "Grün", "Blau", "Ohne")
+    compute_metrics <- function(funs, data, group_by_col, value_col) {
+      lapply(funs, function(fun) {
+        result <- tapply(data[[value_col]], data[[group_by_col]], FUN = fun)
+        result[is.na(result)] <- 0
+        return(result)
+      })
+    }
 
-#     x <- data.frame(Kategorie = kat, agg.list)
-#     rm(agg.funs, agg.list)
-#     report_table(x, "triage.phys.d.xml", align = c("left", "right", "right", "right", "right", "right"), width = 15)
-#   },
-#   silent = FALSE
-# )
+    metrics_list <- compute_metrics(
+      metrics_funs,
+      triage_by_phys,
+      group_by_col = "Triage",
+      value_col = "Time"
+    )
+
+    metrics_list$Count <- tapply(triage_by_phys$Time, triage_by_phys$Triage, FUN = length)
+    metrics_list$Count[is.na(metrics_list$Count)] <- 0
+
+    metrics_list$Category <- c("Red", "Orange", "Yellow", "Green", "Blue", "Ohne")
+
+    metrics_frame <- as.data.frame(metrics_list)
+    metrics_frame <- metrics_frame[, c("Category", setdiff(names(metrics_frame), "Category"))]
+
+    report_table(
+      metrics_frame,
+      name = "triage.phys.d.xml",
+      align = c("left", "right", "right", "right", "right", "right"),
+      width = 15,
+      translations = column_name_translations
+    )
+  },
+  silent = FALSE
+)

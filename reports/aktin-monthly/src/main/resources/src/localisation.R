@@ -3,5 +3,7 @@ column_name_translations <- list(
   Count = "Anzahl",
   Percentage = "Anteil",
   Time = "Zeit",
-  Metrics = "Kennzahl"
+  Metrics = "Kennzahl",
+  Suspected = "Verdacht",
+  Known = "Bekannt"
 )

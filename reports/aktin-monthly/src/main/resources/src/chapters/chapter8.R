@@ -29,7 +29,7 @@ try(
     } else {
       graph <- create_no_data_figure()
     }
-    report_svg(graph, "cedis_top_test")
+    report_svg(graph, "cedis_top")
     rm(graph)
 
     ## Very similar to chapter1 - Patient Sex - Function?
@@ -72,7 +72,7 @@ try(
 
     report_table(
       cedis_summary,
-      name = "cedis_test.xml",
+      name = "cedis.xml",
       align = c("left", "left", "right", "right"),
       widths = c(8, 60, 15, 15),
       translations = column_name_translations
@@ -121,7 +121,8 @@ try(
       ) +
       coord_flip()
 
-    report_svg(graph, "cedis_groups_test")
+    report_svg(graph, "cedis_groups")
+    rm(graph)
   },
   silent = FALSE
 )
@@ -129,73 +130,103 @@ try(
 # TOP20 ICD
 try(
   {
-    ### Data Prep
-    ## Old simple Version (still necessary, table is based only on "F" data)
-    f_diag <- df_diag$diagnosis[df_diag$fuehrend == "F" & !is.na(df_diag$fuehrend)]
-    t <- table(f_diag, useNA = "no") # frequencies
-    x <- sort(t, decreasing = TRUE)
-    names(x)[is.na(names(x))] <- "NA"
+    ## Data Prep
+    # Isolate all diagnoses with the fuehrend "F" and not NA.
+    # ATTENTION: In this part df_diag$diagnosis is needed as factor.
+    diag_factor <- df_diag$diagnosis[df_diag$fuehrend == "F" & !is.na(df_diag$fuehrend)]
+    numeric_diag <- as.numeric(diag_factor)
+    lookup_table <- levels(diag_factor)
+    top_diag <- sort(table(numeric_diag, useNA = "no"), decreasing = TRUE)[1:20]
 
-    # calculate table for stacked barchart based on Zusatzkennzeichen for all diagnoses with "F"
-    icd_stacked <- data.frame(mod_F = df_diag$diagnosis, mod_G = df_diag$diagnosis, mod_V = df_diag$diagnosis, mod_Z = df_diag$diagnosis, mod_A = df_diag$diagnosis)
-    # remove all diagnoses that are not 'F'
-    icd_stacked$mod_F[!df_diag$fuehrend == "F" | is.na(df_diag$fuehrend)] <- NA
-    icd_stacked$mod_G[!df_diag$fuehrend == "F" | is.na(df_diag$fuehrend)] <- NA
-    icd_stacked$mod_V[!df_diag$fuehrend == "F" | is.na(df_diag$fuehrend)] <- NA
-    icd_stacked$mod_Z[!df_diag$fuehrend == "F" | is.na(df_diag$fuehrend)] <- NA
-    icd_stacked$mod_A[!df_diag$fuehrend == "F" | is.na(df_diag$fuehrend)] <- NA
-    # remove all diagnoses that have the wrong modifier
-    icd_stacked$mod_G[(!df_diag$zusatz == "G") | is.na(df_diag$zusatz)] <- NA
-    icd_stacked$mod_V[(!df_diag$zusatz == "V") | is.na(df_diag$zusatz)] <- NA
-    icd_stacked$mod_Z[(!df_diag$zusatz == "Z") | is.na(df_diag$zusatz)] <- NA
-    icd_stacked$mod_A[(!df_diag$zusatz == "A") | is.na(df_diag$zusatz)] <- NA
-    # remove all diagnoses from 'mod_F' that have a modifier
-    icd_stacked$mod_F[df_diag$zusatz == "G"] <- NA
-    icd_stacked$mod_F[df_diag$zusatz == "V"] <- NA
-    icd_stacked$mod_F[df_diag$zusatz == "Z"] <- NA
-    icd_stacked$mod_F[df_diag$zusatz == "A"] <- NA
-    # lots of silly transformations to get a matrix that is plotable as a stacked barchart
-    stacktable <- data.frame(diag = names(table(icd_stacked$mod_F)), F = as.vector(table(icd_stacked$mod_F)), G = as.vector(table(icd_stacked$mod_G)), V = as.vector(table(icd_stacked$mod_V)), Z = as.vector(table(icd_stacked$mod_Z)), A = as.vector(table(icd_stacked$mod_A)))
-    diag_order <- order(table(f_diag, useNA = "always"), decreasing = TRUE)
-    stacktable <- t(stacktable[diag_order[1:20], ])
-    colnames(stacktable) <- stacktable[1, ]
-    if (!is.null(names(table(icd_stacked$mod_F)))) {
-      stacktable <- stacktable[2:6, ]
+    # Define modifiers (replacing NA with "Ohne")
+    modifiers <- unique(na.omit(c("Ohne", df_diag$zusatz)))
+
+    # Initialize an empty data matrix to store results
+    data_matrix <- data.frame(matrix(0, nrow = length(top_diag), ncol = length(modifiers)))
+    colnames(data_matrix) <- modifiers
+    rownames(data_matrix) <- lookup_table[as.numeric(names(top_diag))]
+
+    # Filter the df_diag to include just F and no NA.
+    # ATTENTION: In this part df_diag$diagnosis is needed as data frame.
+    # The frame itself is modified!
+    df_diag[df_diag$fuehrend == "F" & !is.na(df_diag$fuehrend), ]
+    # Filter rows that have the top20 diagnoses as entry.
+    rest_diag <- df_diag[as.numeric(df_diag$diagnosis) %in% as.numeric(names(top_diag)), ]
+    # Fill matrix with values
+    for (current_diag in as.numeric(names(top_diag))) {
+      frame <- rest_diag[as.numeric(rest_diag$diagnosis) == current_diag, ]
+      diag_name <- lookup_table[current_diag]
+
+      for (modifier in modifiers) {
+        if (modifier == "Ohne") {
+          count <- sum(is.na(frame$zusatz) | frame$zusatz != modifier)
+        } else {
+          count <- sum(frame$zusatz == modifier, na.rm = TRUE)
+        }
+        data_matrix[diag_name, modifier] <- count
+      }
     }
-    stacktable[is.na(stacktable)] <- 0
-    stacktable <- apply(stacktable, 2, as.numeric)
-    rownames(stacktable) <- c("F", "G", "V", "Z", "A")
-    stacktable <- t(stacktable)
-    stacktable <- stacktable[complete.cases(stacktable), ] # remove rows
 
-    ### Graph
+    data_matrix <- data_matrix[rev(rownames(data_matrix)), ]
+
+    ## Graph
+    modifier_colors <- c(
+      "Ohne" = "dodgerblue",
+      "G" = "forestgreen",
+      "V" = "yellow",
+      "Z.n." = "orange",
+      "A" = "firebrick3"
+    )
     graph <- barchart(
-      stacktable[dim(stacktable)[1]:1, 1:5], 
-      xlab = "Anzahl Patienten", 
-      sub = "blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss", 
-      col = std_cols5[5:1], 
-      origin = 0)
+      as.matrix(data_matrix),
+      xlab = "Anzahl Patienten",
+      sub = "blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",
+      col = modifier_colors[colnames(data_matrix)],
+      origin = 0
+    )
     report_svg(graph, "icd_top")
+    rm(graph)
+
 
     ### XML table
-    a <- t
-    a <- sort(a, decreasing = TRUE)
-    a <- a[1:20]
-    codes <- names(a)
-    # names(a) <- factor(names(a),t(icd[1]),labels=strtrim(t(icd[2]),60))
-    names(a) <- factor(names(a), t(icd[1]), labels = t(icd[2]), 61)
-    a <- a[complete.cases(a)]
-    if (length(a) == 0) {
-      codes <- a # do not output ICD-codes with no occurence in the table => make the table shorter
-    }
-    # kat <- paste(codes,": ",names(a),sep = '')
-    # b <- data.frame(Kategorie=kat, Anzahl=format_number(a), Anteil=format_number((a / sum(t))*100,digits = 1))
-    b <- data.frame(Code = codes, Kategorie = names(a), Anzahl = format_number(a), Anteil = format_number((a / length(df$encounter)) * 100, digits = 1))
-    ges <- sum(a)
-    c <- rbind(b, data.frame(Code = "---", Kategorie = "Summe TOP20", Anzahl = format_number(ges), Anteil = format_number((ges / length(df$encounter) * 100), digits = 1)))
-    d <- rbind(c, data.frame(Code = "", Kategorie = "Nicht dokumentiert", Anzahl = format_number(length(df$encounter) - length(f_diag)), Anteil = format_number(((length(df$encounter) - length(f_diag)) / length(df$encounter)) * 100, digits = 1))) # f_diag is 1 or 0 per encounter, df$enc is the number of enc. Counting NA is not enough since there may be multiple or no diagnoses per encounter
-    d[, 4] <- paste(d[, 4], "%")
-    report_table(d, name = "icd.xml", align = c("left", "left", "right", "right"), widths = c(8, 62, 15, 15))
+    ## Very similar to chapter1 - Patient Sex - Function?
+    # Get the top diagnoses as codes
+    codes <- lookup_table[as.numeric(names(top_diag))]
+
+    diag_summary <- data.frame(
+      Code = codes,
+      Category = icd$V2[match(codes, icd$V1)], # Map codes to categories from generate_report.R.
+      Count = as.numeric(top_diag),
+      Percentage = as.numeric(top_diag) / length(df$encounter) * 100
+    )
+
+    diag_summary <- rbind(
+      diag_summary,
+      data.frame(
+        Code = "Summe",
+        Category = "Summe TOP20",
+        Count = sum(top_diag),
+        Percentage = sum(as.numeric(top_diag)) / length(df$encounter) * 100
+      ),
+      data.frame(
+        Code = "Nicht dokumentiert",
+        Category = "Nicht dokumentiert",
+        Count = length(df$encounter) - length(f_diag),
+        Percentage = (length(df$encounter) - length(f_diag)) / length(df$encounter) * 100
+      )
+    )
+
+    diag_summary$Count <- format_number(diag_summary$Count)
+    diag_summary$Percentage <- paste(format_number(diag_summary$Percentage, digits = 1), "%")
+
+    report_table(
+      diag_summary,
+      name = "icd.xml",
+      align = c("left", "left", "right", "right"),
+      widths = c(8, 62, 15, 15),
+      translations = column_name_translations
+    )
+    rm(diag_summary)
   },
   silent = FALSE
 )

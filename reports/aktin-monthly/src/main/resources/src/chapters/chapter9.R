@@ -108,7 +108,7 @@ try(
   silent = FALSE
 )
 
-# Patients in emergency room
+# Patients in emergency room over time
 try(
   {
     data_frame <- data.frame(
@@ -129,28 +129,19 @@ try(
     data_frame$Time <- as.numeric(format(data_frame$admit.ts, "%H")) * 3600 +
       as.numeric(format(data_frame$admit.ts, "%M")) * 60
 
-    time_labels <- sprintf("%02d:00", seq(0, 24, by = 2))
-
-    # Generate all possible combinations of Day and Time (e.g., hourly points)
     fill_time <- data.frame(
       Day_complete = rep(seq(init_last_month, end_last_month, by = "day"), each = 2),
       Time = c(1, 86399)
     )
     data_frame <- merge(data_frame, fill_time, by = c("Day_complete", "Time"), all = TRUE)
-    
+
     data_frame$Week_day <- format(data_frame$Day_complete, format = "%a")
-    data_frame$Year <- as.numeric(format(data_frame$Day_complete, "%Y"))
-    data_frame$Day <- as.numeric(format(data_frame$Day_complete, "%d"))
     data_frame$Week <- findInterval(as.Date(data_frame$Day_complete), seq(init_last_month, end_last_month, by = "week"))
 
-    ###############
-
-
-    for (col in c("Patients_in_emergency_room", "Day", "Week_day")) {
+    for (col in c("Patients_in_emergency_room", "Week_day")) {
       data_frame[col] <- fill_na_locf(data_frame[[col]])
     }
-
-    #data_frame <- data_frame[-nrow(data_frame), ] # Why do we delete the last row of the dataframe?
+    data_frame <- data_frame[!is.na(data_frame$Patients_in_emergency_room), ]
 
     weekly_titles <- sapply(1:5, function(i) {
       start <- init_last_month + (i - 1) * 7
@@ -159,34 +150,29 @@ try(
     })
 
     plot_week <- function(week_num, title, data_frame) {
-      # Filter data for the given week
       data_frame_week <- subset(data_frame, Week == week_num)
-      data_frame_week <- subset(data_frame_week, !is.na(data_frame_week$Patients_in_emergency_room))
       data_frame_week$Day_complete <- format(as.Date(data_frame_week$Day_complete), "%m-%d")
 
-      # Plot using ggplot2
       ggplot(data = data_frame_week, aes(x = Time, y = Patients_in_emergency_room, group = Day_complete)) +
         geom_line() +
-        facet_grid(Day_complete + Week_day ~ .) + # Change facet layout for better organization
+        facet_grid(Day_complete + Week_day ~ .) +
         theme_bw() +
-        theme(
-          strip.text = element_text(size = 8), # Adjust facet label size
-          axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
-        ) +
         xlab("Uhrzeit") +
         ylab("Anzahl Patienten") +
         scale_x_continuous(
           breaks = seq(0, 86400, by = 7200),
           expand = c(0, 0),
-          labels = sprintf("%02d:00", seq(0, 24, by = 2)) # Proper time labels
+          labels = sprintf("%02d:00", seq(0, 24, by = 2))
         ) +
         coord_cartesian(xlim = c(0, 86400)) +
         ggtitle(title)
     }
 
+    file_names <- c("stayone", "staytwo", "staythree", "stayfour", "stayfive")
+
     for (i in 1:5) {
       graph <- plot_week(i, weekly_titles[i], data_frame)
-      report_svg(graph, paste0("stayweek_TE", i))
+      report_svg(graph, file_names[i])
     }
   },
   silent = FALSE

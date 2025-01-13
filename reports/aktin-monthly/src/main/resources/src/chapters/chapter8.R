@@ -1,4 +1,6 @@
 # TOP20 CEDIS
+
+#### Do something here with the colors
 std_cols5 <- c("firebrick3", "orange", "yellow", "forestgreen", "dodgerblue", "aliceblue") ### chapter8
 
 try(
@@ -188,7 +190,7 @@ try(
     rm(graph)
 
 
-    ### XML table
+    ## XML table
     ## Very similar to chapter1 - Patient Sex - Function?
     # Get the top diagnoses as codes
     codes <- lookup_table[as.numeric(names(top_diag))]
@@ -203,16 +205,16 @@ try(
     diag_summary <- rbind(
       diag_summary,
       data.frame(
-        Code = "Summe",
+        Code = "---",
         Category = "Summe TOP20",
         Count = sum(top_diag),
         Percentage = sum(as.numeric(top_diag)) / length(df$encounter) * 100
       ),
       data.frame(
-        Code = "Nicht dokumentiert",
+        Code = "",
         Category = "Nicht dokumentiert",
-        Count = length(df$encounter) - length(f_diag),
-        Percentage = (length(df$encounter) - length(f_diag)) / length(df$encounter) * 100
+        Count = length(df$encounter) - length(diag_factor),
+        Percentage = (length(df$encounter) - length(diag_factor)) / length(df$encounter) * 100
       )
     )
 

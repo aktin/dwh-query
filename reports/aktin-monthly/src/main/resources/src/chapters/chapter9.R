@@ -108,8 +108,7 @@ try(
   silent = FALSE
 )
 
-# Patienten in der NA
-# Überfüllung
+# Patients in emergency room
 try(
   {
     data_frame <- data.frame(
@@ -119,45 +118,39 @@ try(
     data_frame <- na.omit(data_frame)
     data_frame <- data_frame[order(as.Date(data_frame$admit.ts)), ]
 
-    data_frame$patients_in_emergency_room <- sapply(data_frame$admit.ts, function(enter) {
+    data_frame$Patients_in_emergency_room <- sapply(data_frame$admit.ts, function(enter) {
       sum(data_frame$admit.ts <= enter & data_frame$discharge.ts > enter)
     })
 
     init_last_month <- as.Date(data_frame$admit.ts[1])
     end_last_month <- as.Date(data_frame$admit.ts[nrow(data_frame)])
 
+    data_frame$Day_complete <- as.Date(data_frame$admit.ts)
     data_frame$Time <- as.numeric(format(data_frame$admit.ts, "%H")) * 3600 +
       as.numeric(format(data_frame$admit.ts, "%M")) * 60
-    data_frame$Day_complete <- as.Date(data_frame$admit.ts)
-    data_frame$Week_day <- format(data_frame$admit.ts, format = "%a")
-    data_frame$Year <- as.numeric(format(data_frame$admit.ts, "%Y"))
-    data_frame$Day <- as.numeric(format(data_frame$admit.ts, "%d"))
-    data_frame$Week <- findInterval(data_frame$Day, seq(init_last_month, end_last_month, by = "week"))
 
     time_labels <- sprintf("%02d:00", seq(0, 24, by = 2))
 
-    missing <- data.frame(
-      Day = rep(seq(init_last_month, end_last_month, by = "day"), each = 2),
-      Time = c(0, 86400)
+    # Generate all possible combinations of Day and Time (e.g., hourly points)
+    fill_time <- data.frame(
+      Day_complete = rep(seq(init_last_month, end_last_month, by = "day"), each = 2),
+      Time = c(1, 86399)
     )
-    data_frame <- merge(data_frame, missing, by = c("Day", "Time"), all = TRUE)
+    data_frame <- merge(data_frame, fill_time, by = c("Day_complete", "Time"), all = TRUE)
+    
+    data_frame$Week_day <- format(data_frame$Day_complete, format = "%a")
+    data_frame$Year <- as.numeric(format(data_frame$Day_complete, "%Y"))
+    data_frame$Day <- as.numeric(format(data_frame$Day_complete, "%d"))
+    data_frame$Week <- findInterval(as.Date(data_frame$Day_complete), seq(init_last_month, end_last_month, by = "week"))
 
-###############
-    na_locf <- function(vec) {
-      for (i in seq_along(vec)) {
-        if (is.na(vec[i]) && i > 1) {
-          vec[i] <- vec[i - 1]
-        }
-      }
-      return(vec)
+    ###############
+
+
+    for (col in c("Patients_in_emergency_room", "Day", "Week_day")) {
+      data_frame[col] <- fill_na_locf(data_frame[[col]])
     }
 
-    for (col in c("Week_day", "Day", "Week")) {
-      data_frame[[col]] <- na_locf(data_frame[[col]])
-    }
-
-    data_frame <- data_frame[-nrow(data_frame), ]
-    data_frame$Day <- format(as.Date(data_frame$Day), "%m-%d")
+    #data_frame <- data_frame[-nrow(data_frame), ] # Why do we delete the last row of the dataframe?
 
     weekly_titles <- sapply(1:5, function(i) {
       start <- init_last_month + (i - 1) * 7
@@ -166,19 +159,26 @@ try(
     })
 
     plot_week <- function(week_num, title, data_frame) {
+      # Filter data for the given week
       data_frame_week <- subset(data_frame, Week == week_num)
-      data_frame_week <- subset(data_frame_week, !is.na(patients_in_emergency_room))
+      data_frame_week <- subset(data_frame_week, !is.na(data_frame_week$Patients_in_emergency_room))
+      data_frame_week$Day_complete <- format(as.Date(data_frame_week$Day_complete), "%m-%d")
 
-      ggplot(data = data_frame_week, aes(x = Time, y = patients_in_emergency_room, fill = Day, group = 1)) +
+      # Plot using ggplot2
+      ggplot(data = data_frame_week, aes(x = Time, y = Patients_in_emergency_room, group = Day_complete)) +
         geom_line() +
-        facet_grid(Day + Week_day ~ .) +
+        facet_grid(Day_complete + Week_day ~ .) + # Change facet layout for better organization
         theme_bw() +
-        xlab("Time") +
+        theme(
+          strip.text = element_text(size = 8), # Adjust facet label size
+          axis.text.x = element_text(angle = 45, hjust = 1) # Rotate x-axis labels
+        ) +
+        xlab("Uhrzeit") +
         ylab("Anzahl Patienten") +
         scale_x_continuous(
           breaks = seq(0, 86400, by = 7200),
           expand = c(0, 0),
-          labels = time_labels
+          labels = sprintf("%02d:00", seq(0, 24, by = 2)) # Proper time labels
         ) +
         coord_cartesian(xlim = c(0, 86400)) +
         ggtitle(title)
@@ -186,7 +186,7 @@ try(
 
     for (i in 1:5) {
       graph <- plot_week(i, weekly_titles[i], data_frame)
-      report_svg(graph, paste0("stayweek_test", i))
+      report_svg(graph, paste0("stayweek_TE", i))
     }
   },
   silent = FALSE

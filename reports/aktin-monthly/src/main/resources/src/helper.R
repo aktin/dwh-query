@@ -172,6 +172,22 @@ create_delay_time_report <- function(
   return(summary_df)
 }
 
+#' @title Fill Missing Values with Last Observation Carried Forward
+#' @description This function replaces `NA` values in a vector with the most recent non-`NA` value
+#' found earlier in the vector. This is often referred to as "Last Observation Carried Forward" (LOCF).
+#'
+#' @param vec A numeric or character vector containing `NA` values to be replaced.
+#' @return A vector of the same type and length as the input, with `NA` values replaced by the previous non-`NA` value.
+#' If the first element of the vector is `NA`, it remains `NA`.
+fill_na_locf <- function(vec) {
+  for (index in seq_along(vec)) {
+    if (is.na(vec[index]) && index > 1) {
+      vec[index] <- vec[index - 1]
+    }
+  }
+  return(vec)
+}
+
 #' @title
 #' @description
 #'

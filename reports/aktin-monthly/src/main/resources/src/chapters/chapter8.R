@@ -1,8 +1,4 @@
 # TOP20 CEDIS
-
-#### Do something here with the colors
-std_cols5 <- c("firebrick3", "orange", "yellow", "forestgreen", "dodgerblue", "aliceblue") ### chapter8
-
 try(
   {
     df_cedis <- data.frame(df$cedis)

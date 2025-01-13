@@ -10,11 +10,6 @@
 #
 # triage.phys.d.avg
 # triage.phy.d.avg.xml
-
-# Notes:
-# - Empty graph option for all graphs?
-# - Combine graph functions of similar type across the whole project into one function?
-# - How can the localisation be solved within the graphs?
 #########################
 
 # phys.d.box

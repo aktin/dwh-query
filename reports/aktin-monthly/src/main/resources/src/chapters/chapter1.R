@@ -1,6 +1,7 @@
 # Patient Sex
 try(
   {
+    ## Very similar to chapter1 - Patient Sex - Function?
     # 1. Create data.frame
     sex_summary <- data.frame(table(df$sex, useNA = "no"))
     names(sex_summary) <- c("Category", "Count")
@@ -87,7 +88,7 @@ try(
         color = "#e3000b", linetype = "dashed", size = 1
       )
 
-    report_svg(graph, "age") ### Change scala!!!! -> Scala is not correct in the histogram.
+    report_svg(graph, "age")
     rm(age)
   },
   silent = FALSE

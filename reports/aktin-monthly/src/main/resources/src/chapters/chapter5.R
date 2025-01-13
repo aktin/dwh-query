@@ -15,15 +15,12 @@
 # - Empty graph option for all graphs?
 # - Combine graph functions of similar type across the whole project into one function?
 # - How can the localisation be solved within the graphs?
-# - What is done for data prep in parse_derive and what in the chapters?
 #########################
 
 # phys.d.box
 # phys.d.hist
 try(
   {
-    df$phys.d <- as.numeric(df$phys.d) ### Here or better in Parse_derive???
-
     num_positive_outliers <- as.character(sum(df$phys.d >= 181, na.rm = TRUE))
     num_negative_outliers <- as.character(sum(df$phys.d <= 0, na.rm = TRUE))
     num_missing_times <- as.character(length(df$phys.d[is.na(df$phys.d)]))
@@ -122,8 +119,6 @@ try(
 # triage.d.hist
 try(
   {
-    df$triage.d <- as.numeric(df$triage.d) ### Here or better in Parse_derive???
-
     num_positive_outliers <- as.character(sum(df$triage.d >= 61, na.rm = TRUE))
     num_negative_outliers <- as.character(sum(df$triage.d <= 0, na.rm = TRUE))
     num_missing_times <- as.character(length(df$triage.d[is.na(df$triage.d)]))

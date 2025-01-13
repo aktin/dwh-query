@@ -1,18 +1,16 @@
 #!/usr/bin/Rscript
-# library(tidyverse)
 library(ggplot2)
 library(lattice)
+
+options(OutDec = ",")
 
 base_dir <- "reports/aktin-monthly/src/main/resources"
 data_dir <- file.path(base_dir, "data")
 src_dir <- file.path(base_dir, "src")
 chapters_dir <- file.path(src_dir, "chapters")
 
-source(file.path(src_dir, "helper.R"), encoding = "UTF-8", echo = FALSE)
-options(OutDec = ",")
-
-pat <- read.table(
-  file = file.path(data_dir, "patients.txt"),
+enc <- read.table(
+  file = file.path(data_dir, "encounters.txt"),
   header = TRUE,
   sep = "\t",
   as.is = TRUE,
@@ -22,8 +20,8 @@ pat <- read.table(
   comment.char = ""
 )
 
-enc <- read.table(
-  file = file.path(data_dir, "encounters.txt"),
+pat <- read.table(
+  file = file.path(data_dir, "patients.txt"),
   header = TRUE,
   sep = "\t",
   as.is = TRUE,
@@ -44,10 +42,6 @@ diag <- read.table(
   encoding = "UTF-8",
   comment.char = ""
 )
-
-# Create new data frames for cleaning values
-df <- data.frame(patient = enc$patient_id, encounter = enc$encounter_id) ### Necessary?
-df_diag <- data.frame(diagnosis = as.factor(substring(diag$diagnose_code, first = 1, last = 3))) ### Necessary?
 
 cedis <- read.csv2(
   file = file.path(data_dir, "CEDIS.csv"),
@@ -75,8 +69,10 @@ factors <- read.csv2(
   comment.char = ""
 )
 
+source(file.path(src_dir, "helper.R"), encoding = "UTF-8", echo = FALSE)
 source(file.path(src_dir, "parse_derive.R"), encoding = "UTF-8")
 source(file.path(src_dir, "xhtml-table.R"))
+source(file.path(src_dir, "localisation.R"))
 
 for (i in 1:9) {
   source(file.path(chapters_dir, paste0("chapter", i, ".R")), encoding = "UTF-8")

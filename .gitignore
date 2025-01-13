@@ -9,4 +9,5 @@ target/
 .vscode
 .lintr
 output
+output_old
 r-generated-files.txt

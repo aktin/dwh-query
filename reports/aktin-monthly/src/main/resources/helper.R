@@ -29,7 +29,6 @@ check_dir <- function(dir) {
 #' @param width Numeric, the width of the SVG in inches. Default is 8.
 #' @param height Numeric, the height of the SVG in inches. Default is 4.
 report_svg <- function(graph, name, width = 8, height = 4) {
-  directory <- "output/"
   extension <- ".svg"
   device <- "svg"
 
@@ -50,7 +49,6 @@ report_svg <- function(graph, name, width = 8, height = 4) {
 #' @param align_default A character string for default column alignment. Default is "left".
 #' @param na_subst A character string to replace NA values in the table. Default is an empty string.
 report_table <- function(data, name, widths = NULL, align = "auto", translations = NULL) {
-  xml_dir <- "output/"
 
   xhtml_table(data,
     file = paste0(xml_dir, name),

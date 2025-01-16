@@ -18,7 +18,7 @@ try(
     isoreason_summary <- table(df$combined_iso, useNA = "always")
     names(isoreason_summary)[is.na(names(isoreason_summary))] <- "Keine Daten"
 
-    ## Very similar to chapter1 - Patient Sex - Function?
+
     iso_table <- data.frame(
       Category = names(isoreason_summary),
       Count = as.numeric(isoreason_summary),
@@ -99,7 +99,7 @@ try(
 
     report_table(
       mrsa_table,
-      name = "multiresistant_test.xml",
+      name = "multiresistant.xml",
       align = c("left", "right", "right"),
       widths = c(30, 15, 15),
       translations = column_name_translations

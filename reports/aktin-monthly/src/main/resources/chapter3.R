@@ -1,7 +1,6 @@
 # Transport and referral
 try(
   {
-    ## Very similar to chapter1 - Patient Sex - Function?
     transport_summary <- table(df$transport, useNA = "always")
     names(transport_summary)[is.na(names(transport_summary))] <- "Keine Daten"
 
@@ -32,7 +31,7 @@ try(
     )
     rm(transport_summary, data_frame)
 
-    ## Very similar to chapter1 - Patient Sex - Function?
+
     refferal_summary <- table(df$referral, useNA = "always")
     names(refferal_summary)[is.na(names(refferal_summary))] <- "Keine Daten"
 
@@ -56,7 +55,7 @@ try(
 
     report_table(
       data_frame,
-      name = "refferal_test.xml",
+      name = "refferal.xml",
       align = c("left", "right", "right"),
       widths = c(25, 15, 15),
       translations = column_name_translations

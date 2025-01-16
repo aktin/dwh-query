@@ -51,10 +51,11 @@ xhtml_table <- function(data, file_name = "default_table.xml", widths = NULL, al
     stop("ERROR: 'data' must be a data frame or matrix.")
   }
 
-  if (file.exists(file_name)) {
-    warning(sprintf("File '%s' already exists. Skipping file creation.", file_name))
-    return(invisible(NULL))
-  }
+  #### Currently disabled due tue debugging
+  # if (file.exists(file_name)) {
+  #   warning(sprintf("File '%s' already exists. Skipping file creation.", file_name))
+  #   return(invisible(NULL))
+  # }
 
   num_columns <- length(data)
   if (is.null(widths)) {

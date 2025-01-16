@@ -21,21 +21,21 @@ public class AktinMonthly extends AnnotatedReport {
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
 		String[] resNames = {
-		"src/generate-report-resources.R",
-		"src/xhtml-table.R",
-		"data/CEDIS.csv",
-		"data/ICD-3Steller.csv",
-		"data/factors.csv",
-		"src/parse_derive.R",
-		"src/chapters/chapter1.R",
-		"src/chapters/chapter2.R",
-		"src/chapters/chapter3.R",
-		"src/chapters/chapter4.R",
-		"src/chapters/chapter5.R",
-		"src/chapters/chapter6.R",
-		"src/chapters/chapter7.R",
-		"src/chapters/chapter8.R",
-		"src/chapters/chapter9.R"};
+		"generate-report-resources.R",
+		"xhtml-table.R",
+		"CEDIS.csv",
+		"ICD-3Steller.csv",
+		"factors.csv",
+		"parse_derive.R",
+		"chapter1.R",
+		"chapter2.R",
+		"chapter3.R",
+		"chapter4.R",
+		"chapter5.R",
+		"chapter6.R",
+		"chapter7.R",
+		"chapter8.R",
+		"chapter9.R"};
 		copyClasspathResources(workingDirectory, resNames);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.
@@ -46,11 +46,11 @@ public class AktinMonthly extends AnnotatedReport {
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
 		//log.info("Using configuration option="+dummyOption);
 		String[] resNames = {
-			"data/report-content.xml",
-			"data/fo-report.xsl",
-			"data/report-data.xml",
-			"data/Notaufnahmeregister_Logo_2021.svg",
-			"data/BMBF.svg"};
+			"report-content.xml",
+			"fo-report.xsl",
+			"report-data.xml",
+			"Notaufnahmeregister_Logo_2021.svg",
+			"BMBF.svg"};
 		copyClasspathResources(workingDirectory, resNames);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.
@@ -59,7 +59,7 @@ public class AktinMonthly extends AnnotatedReport {
 
 	@Override
 	public Source getExportDescriptor() {
-		return new StreamSource(getClass().getResourceAsStream("data/export-descriptor.xml"));
+		return new StreamSource(getClass().getResourceAsStream("export-descriptor.xml"));
 	}
 
 }

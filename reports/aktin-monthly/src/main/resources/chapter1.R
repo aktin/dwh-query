@@ -1,7 +1,7 @@
 # Patient Sex
 try(
   {
-    ## Very similar to chapter1 - Patient Sex - Function?
+
     # 1. Create data.frame
     sex_summary <- data.frame(table(df$sex, useNA = "no"))
     names(sex_summary) <- c("Category", "Count")
@@ -50,7 +50,7 @@ try(
       Metrics = c("Mittelwert", "Median", "Standardabweichung", "Minimum", "Maximum"),
       Age = paste(age_statistics, "Jahre")
     )
-    report_table(age_report, name = "age_test.xml", align = c("left", "right"), widths = c(30, 15))
+    report_table(age_report, name = "age.xml", align = c("left", "right"), widths = c(30, 15))
     rm(age_report)
   },
   silent = FALSE

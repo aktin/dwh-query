@@ -30,7 +30,7 @@ try(
     report_svg(graph, "cedis_top")
     rm(graph)
 
-    ## Very similar to chapter1 - Patient Sex - Function?
+
     xml_top_counts <- level_counts[order(-level_counts$Count), ]
     missing_cedis <- xml_top_counts[xml_top_counts$Cedis_codes == "999", , drop = FALSE]
 
@@ -187,7 +187,7 @@ try(
 
 
     ## XML table
-    ## Very similar to chapter1 - Patient Sex - Function?
+
     # Get the top diagnoses as codes
     codes <- lookup_table[as.numeric(names(top_diag))]
 

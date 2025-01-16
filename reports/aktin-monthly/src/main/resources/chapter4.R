@@ -1,6 +1,6 @@
 try(
   {
-    ## Very similar to chapter1 - Patient Sex - Function?
+
     triage_res_summary <- table(df$triage.result, useNA = "ifany")
 
     data_frame <- data.frame(
@@ -23,7 +23,7 @@ try(
 
     report_table(
       data_frame,
-      "triage_test.xml",
+      "triage.xml",
       align = c("left", "right", "right"),
       widths = c(20, 15, 15),
       translations = column_name_translations
@@ -41,7 +41,7 @@ try(
         axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
       ) +
       scale_y_continuous(expand = c(0, 0.01))
-    report_svg(graph, "triage_test")
+    report_svg(graph, "triage")
     rm(triage_res_summary, data_frame)
   },
   silent = FALSE

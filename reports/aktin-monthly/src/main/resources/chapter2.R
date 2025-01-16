@@ -100,8 +100,8 @@ try(
     weekend <- rep(0, 24)
 
     for (i in 1:24) {
-      weekday[i] <- sum(admit.hwd[1:5, i])
-      weekend[i] <- sum(admit.hwd[6:7, i])
+      weekday[i] <- sum(admit_hwd[1:5, i])
+      weekend[i] <- sum(admit_hwd[6:7, i])
     }
 
     days_weekday <- sum(week_day_counts[1:5])

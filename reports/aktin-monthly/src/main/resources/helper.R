@@ -32,7 +32,7 @@ report_svg <- function(graph, name, width = 8, height = 4) {
   extension <- ".svg"
   device <- "svg"
 
-  trellis.device(device, file = paste0(directory, name, extension), width = width, height = height)
+  trellis.device(device, file = paste0(name, extension), width = width, height = height)
   print(graph)
   dev.off()
 
@@ -49,9 +49,8 @@ report_svg <- function(graph, name, width = 8, height = 4) {
 #' @param align_default A character string for default column alignment. Default is "left".
 #' @param na_subst A character string to replace NA values in the table. Default is an empty string.
 report_table <- function(data, name, widths = NULL, align = "auto", translations = NULL) {
-
   xhtml_table(data,
-    file = paste0(xml_dir, name),
+    file = paste0(name),
     widths = widths,
     translations = translations
   )

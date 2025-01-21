@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -37,11 +38,14 @@ public class StudyImpl implements Study {
     private boolean hasOptIn;
     private boolean hasOptOut;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String sicGenerator;
-    @Getter @Setter
+    @Getter
+    @Setter
     private String sicGeneratorState;
-    @Getter @Setter
+    @Getter
+    @Setter
     private SICGeneration sicGeneration;
 
     private CodeGenerator codeGen;
@@ -142,16 +146,16 @@ public class StudyImpl implements Study {
     }
 
     @Override
-    public PatientEntryImpl getPatientByID(PatientReference ref, String id_root, String id_ext) throws IOException {
+    public PatientEntryImpl getPatientByID(PatientReference ref, String idRoot, String idExt) throws IOException {
         PatientEntryImpl pat;
-        id_root = trimIdPart(id_root);
-        id_ext = trimIdPart(id_ext);
+        idRoot = trimIdPart(idRoot);
+        idExt = trimIdPart(idExt);
         try (Connection dbc = manager.getConnection();
              PreparedStatement ps = dbc.prepareStatement(SELECT_PATIENT_SQL + " AND pat_ref=? AND pat_root=? AND pat_ext=?")) {
             ps.setString(1, id);
             ps.setString(2, StudyImpl.serializeReferenceType(ref));
-            ps.setString(3, id_root);
-            ps.setString(4, id_ext);
+            ps.setString(3, idRoot);
+            ps.setString(4, idExt);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 pat = loadPatient(rs);
@@ -257,51 +261,99 @@ public class StudyImpl implements Study {
     }
 
     @Override
-    public PatientEntry addPatient(PatientReference ref, String id_root, String id_ext, Participation opt, String sic,
+    public PatientEntry addPatient(PatientReference ref, String idRoot, String idExt, Participation opt, String sic,
                                    String comment, String user) throws IOException {
         Objects.requireNonNull(manager.getAnonymizer());
-        id_root = trimIdPart(id_root);
-        id_ext = trimIdPart(id_ext);
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        String psn = manager.getAnonymizer().calculateAbstractPseudonym(id_root, id_ext);
-        try (val dbc = manager.getConnection();
-             val insertEntry = dbc.prepareStatement("INSERT INTO optinout_patients(study_id,pat_ref,pat_root,pat_ext,pat_psn,create_user,create_timestamp,optinout,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?,?)");
-             val insertAudit = dbc.prepareStatement("INSERT INTO optinout_audittrail(study_id,pat_ref,pat_root,pat_ext,action_user,action_timestamp,action,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?)");) {
+        val now = new Timestamp(System.currentTimeMillis());
+        idRoot = trimIdPart(idRoot);
+        idExt = trimIdPart(idExt);
+
+        try (val dbc = manager.getConnection()) {
             dbc.setAutoCommit(false);
 
-            // write user
-            insertEntry.setString(1, getId());
-            insertEntry.setString(2, serializeReferenceType(ref));
-            insertEntry.setString(3, id_root);
-            insertEntry.setString(4, id_ext);
-            insertEntry.setString(5, psn);
-            insertEntry.setString(6, user);
-            insertEntry.setTimestamp(7, now);
-            insertEntry.setString(8, serializeParticipationType(opt));
-            insertEntry.setString(9, sic);
-            insertEntry.setString(10, comment);
-            insertEntry.executeUpdate();
+            // write patient
+            insertEntry(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);
 
             // write audit trail
-            insertAudit.setString(1, getId());
-            insertAudit.setString(2, serializeReferenceType(ref));
-            insertAudit.setString(3, id_root);
-            insertAudit.setString(4, id_ext);
-            insertAudit.setString(5, user);
-            insertAudit.setTimestamp(6, now);
-            insertAudit.setString(7, "C" + serializeParticipationType(opt));
-            insertAudit.setString(8, sic);
-            insertAudit.setString(9, comment);
-            insertAudit.executeUpdate();
+            insertAudit(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);
 
             dbc.commit();
         } catch (SQLException e) {
             throw new IOException("Unable to add patient to database", e);
         }
 
-        val pat = getPatientByID(ref, id_root, id_ext);
+        val pat = getPatientByID(ref, idRoot, idExt);
 
         return pat;
+    }
+
+    @Override
+    public List<PatientEntry> addPatients(PatientReference ref, String idRoot, List<String> idExts, List<String> sics, Participation opt,
+                                          String comment, String user) throws IOException {
+        Objects.requireNonNull(manager.getAnonymizer());
+        val now = new Timestamp(System.currentTimeMillis());
+        idRoot = trimIdPart(idRoot);
+
+        try (val dbc = manager.getConnection();) {
+            dbc.setAutoCommit(false);
+
+            for(int i = 0; i < idExts.size(); i++) {
+                val idExt = trimIdPart(idExts.get(i));
+                val sic = sics.get(i);
+
+                // write patient
+                insertEntry(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);
+
+                // write audit trail
+                insertAudit(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);
+            }
+            dbc.commit();
+        } catch (SQLException e) {
+            throw new IOException("Unable to add patient to database", e);
+        }
+
+        List<PatientEntry> patients = new ArrayList<>();
+
+        for (val idExt : idExts) {
+            patients.add(getPatientByID(ref, idRoot, idExt));
+        }
+
+
+        return patients;
+    }
+
+    private void insertEntry(Connection dbc, PatientReference ref, String idRoot, String idExt, Participation opt, String sic,
+                             String comment, String user, Timestamp timestamp) throws SQLException {
+        val psn = manager.getAnonymizer().calculateAbstractPseudonym(idRoot, idExt);
+        try (val insertEntry = dbc.prepareStatement("INSERT INTO optinout_patients(study_id,pat_ref,pat_root,pat_ext,pat_psn,create_user,create_timestamp,optinout,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?,?)")) {
+            insertEntry.setString(1, getId());
+            insertEntry.setString(2, serializeReferenceType(ref));
+            insertEntry.setString(3, idRoot);
+            insertEntry.setString(4, idExt);
+            insertEntry.setString(5, psn);
+            insertEntry.setString(6, user);
+            insertEntry.setTimestamp(7, timestamp);
+            insertEntry.setString(8, serializeParticipationType(opt));
+            insertEntry.setString(9, sic);
+            insertEntry.setString(10, comment);
+            insertEntry.executeUpdate();
+        }
+    }
+
+    private void insertAudit(Connection dbc, PatientReference ref, String idRoot, String idExt, Participation opt, String sic,
+                             String comment, String user, Timestamp timestamp) throws SQLException {
+        try (val insertAudit = dbc.prepareStatement("INSERT INTO optinout_audittrail(study_id,pat_ref,pat_root,pat_ext,action_user,action_timestamp,action,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?)");) {
+            insertAudit.setString(1, getId());
+            insertAudit.setString(2, serializeReferenceType(ref));
+            insertAudit.setString(3, idRoot);
+            insertAudit.setString(4, idExt);
+            insertAudit.setString(5, user);
+            insertAudit.setTimestamp(6, timestamp);
+            insertAudit.setString(7, "C" + serializeParticipationType(opt));
+            insertAudit.setString(8, sic);
+            insertAudit.setString(9, comment);
+            insertAudit.executeUpdate();
+        }
     }
 
     @Override

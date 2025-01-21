@@ -211,6 +211,11 @@ public class StudyManagerImpl implements StudyManager {
 		}
 	}
 
+	/**
+	 * Determine sql query to get encounters by reference
+	 * @param ref Patient reference
+	 * @return sql query
+	 */
 	private String resolveEncounterQueryByReference(PatientReference ref) {
 		String sql;
 		switch (ref) {
@@ -244,6 +249,12 @@ public class StudyManagerImpl implements StudyManager {
 		return sql;
 	}
 
+
+	/**
+	 * Determine sql query to get master data by reference
+	 * @param ref Patient reference
+	 * @return sql query
+	 */
 	private String resolveMasterDataQueryByReference(PatientReference ref) {
 		String sql;
 		switch (ref) {

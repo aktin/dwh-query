@@ -59,7 +59,7 @@ public class AktinMonthly extends AnnotatedReport {
 
 	@Override
 	public Source getExportDescriptor() {
-		return new StreamSource(getClass().getResourceAsStream("export-descriptor.xml"));
+		return new StreamSource(getClass().getResourceAsStream("/export-descriptor.xml"));
 	}
 
 }

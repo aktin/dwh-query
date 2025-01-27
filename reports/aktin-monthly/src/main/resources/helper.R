@@ -9,17 +9,6 @@ report_generated_file <- function(name) {
   )
 }
 
-#' @title Check and Prepare Directory
-#' @description Ensures that the specified directory exists and clears its contents if it already exists.
-#'
-#' @param dir A character string specifying the directory path.
-check_dir <- function(dir) {
-  if (dir.exists(dir)) {
-    unlink(file.path(dir, "*", recursive = TRUE))
-  } else {
-    dir.create(dir, recursive = TRUE)
-  }
-}
 
 #' @title Save Graph as SVG
 #' @description Saves a graph or plot to an SVG file and logs the file name.

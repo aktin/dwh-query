@@ -17,6 +17,7 @@
 try(
   {
     num_positive_outliers <- as.character(sum(df$phys.d >= 181, na.rm = TRUE))
+    
     num_negative_outliers <- as.character(sum(df$phys.d <= 0, na.rm = TRUE))
     num_missing_times <- as.character(length(df$phys.d[is.na(df$phys.d)]))
 

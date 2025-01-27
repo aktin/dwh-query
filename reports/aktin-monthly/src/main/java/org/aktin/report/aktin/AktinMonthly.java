@@ -22,6 +22,8 @@ public class AktinMonthly extends AnnotatedReport {
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
 		String[] resNames = {
 		"generate-report-resources.R",
+		"helper.R",
+		"localisation.R",
 		"xhtml-table.R",
 		"CEDIS.csv",
 		"ICD-3Steller.csv",

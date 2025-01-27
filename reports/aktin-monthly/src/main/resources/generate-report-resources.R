@@ -4,10 +4,8 @@ library(lattice)
 
 options(OutDec = ",")
 
-base_dir <- "reports/aktin-monthly/src/main/resources"
-
 enc <- read.table(
-  file = file.path(base_dir, "encounters.txt"),
+  file = "encounters.txt",
   header = TRUE,
   sep = "\t",
   as.is = TRUE,
@@ -18,7 +16,7 @@ enc <- read.table(
 )
 
 pat <- read.table(
-  file = file.path(base_dir, "patients.txt"),
+  file = "patients.txt",
   header = TRUE,
   sep = "\t",
   as.is = TRUE,
@@ -29,7 +27,7 @@ pat <- read.table(
 )
 
 diag <- read.table(
-  file = file.path(base_dir, "diagnoses.txt"),
+  file = "diagnoses.txt",
   header = TRUE,
   sep = "\t",
   as.is = TRUE,
@@ -41,7 +39,7 @@ diag <- read.table(
 )
 
 cedis <- read.csv2(
-  file = file.path(base_dir, "CEDIS.csv"),
+  file = "CEDIS.csv",
   as.is = TRUE, na.strings = "",
   header = FALSE, sep = ";",
   colClasses = "character",
@@ -50,7 +48,7 @@ cedis <- read.csv2(
 )
 
 icd <- read.csv2(
-  file = file.path(base_dir, "ICD-3Steller.csv"),
+  file = "ICD-3Steller.csv",
   as.is = TRUE, na.strings = "",
   header = FALSE, sep = ";",
   colClasses = "character",
@@ -59,18 +57,18 @@ icd <- read.csv2(
 )
 
 factors <- read.csv2(
-  file = file.path(base_dir, "factors.csv"),
+  file = "factors.csv",
   as.is = TRUE, na.strings = "",
   header = TRUE, sep = ";",
   encoding = "UTF-8",
   comment.char = ""
 )
 
-source(file.path(base_dir, "helper.R"), encoding = "UTF-8", echo = FALSE)
-source(file.path(base_dir, "parse_derive.R"), encoding = "UTF-8")
-source(file.path(base_dir, "xhtml-table.R"))
-source(file.path(base_dir, "localisation.R"))
+source("helper.R", encoding = "UTF-8", echo = FALSE)
+source("parse_derive.R", encoding = "UTF-8")
+source("xhtml-table.R")
+source("localisation.R")
 
 for (i in 1:9) {
-  source(file.path(base_dir, paste0("chapter", i, ".R")), encoding = "UTF-8")
+  source(paste0("chapter", i, ".R"), encoding = "UTF-8")
 }

@@ -4,6 +4,9 @@ column_name_translations <- list(
   Percentage = "Anteil",
   Time = "Zeit",
   Metrics = "Kennzahl",
+  Age = "Alter",
   Suspected = "Verdacht",
-  Known = "Bekannt"
+  Known = "Bekannt",
+  Date = "Datum",
+  Weekday = "Wochentag"
 )

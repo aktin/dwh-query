@@ -131,7 +131,7 @@ try(
 
     fill_time <- data.frame(
       Day_complete = rep(seq(init_last_month, end_last_month, by = "day"), each = 2),
-      Time = c(1, 86399)
+      Time = c(0, 86400)
     )
     data_frame <- merge(data_frame, fill_time, by = c("Day_complete", "Time"), all = TRUE)
 

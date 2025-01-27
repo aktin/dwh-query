@@ -41,6 +41,7 @@ report_table <- function(data, name, widths = NULL, align = "auto", translations
   xhtml_table(data,
     file = paste0(name),
     widths = widths,
+    align = align,
     translations = translations
   )
 

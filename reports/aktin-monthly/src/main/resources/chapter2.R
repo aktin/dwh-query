@@ -176,7 +176,8 @@ try(
       admissions_summary,
       name = "admit.d.xml",
       align = c("left", "right", "right"),
-      widths = c(25, 15, 13)
+      widths = c(25, 15, 13),
+      translations = column_name_translations
     )
   },
   silent = FALSE

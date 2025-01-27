@@ -47,7 +47,7 @@ Homepage: www.aktin.org
   </section>
   <section>
     <header>Fallzahlen</header>
-    <paragraph>In diesem Abschnitt werden die Fallzahlen berichtet, sowohl absolut als auch die durchschnittlich behandelten Patienten pro Wochentag und Uhrzeit. Ausschlaggebend sind dabei immer das Datum und der Zeitpunkt der administrativen Aufnahme.Es werden nur die ersten 31 Tage angezeigt.</paragraph>
+    <paragraph>In diesem Abschnitt werden die Fallzahlen berichtet, sowohl absolut als auch die durchschnittlich behandelten Patienten pro Wochentag und Uhrzeit. Ausschlaggebend sind dabei immer das Datum und der Zeitpunkt der administrativen Aufnahme. Es werden nur die ersten 31 Tage angezeigt.</paragraph>
     <section>
       <header>Fallzahlen nach Kalendertagen</header>
       <table ref="t2.1">Tabelle 2.1: Fallzahlen nach Aufnahmetag</table>

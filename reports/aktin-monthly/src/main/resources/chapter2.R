@@ -3,27 +3,31 @@ try(
   {
     frequency_table <- data.frame(table(df$admit.h) / length(levels(df$admit.day)))
 
-    graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
-      geom_bar(
-        stat = "identity",
-        fill = "#046C9A",
-        width = 0.5
-      ) +
-      labs(
-        x = paste(
-          "Uhrzeit [Stunde]; n =",
-          sum(!is.na(df$admit.h))
-        ),
-        y = "Durchschnittliche Anzahl Patienten"
-      ) +
-      theme(
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
-      ) +
-      scale_y_continuous(expand = c(0, 0.01))
+    if (nrow(frequency_table) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
+        geom_bar(
+          stat = "identity",
+          fill = "#046C9A",
+          width = 0.5
+        ) +
+        labs(
+          x = paste(
+            "Uhrzeit [Stunde]; n =",
+            sum(!is.na(df$admit.h))
+          ),
+          y = "Durchschnittliche Anzahl Patienten"
+        ) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+        ) +
+        scale_y_continuous(expand = c(0, 0.01))
+    }
 
     report_svg(graph, "admit.h")
     rm(frequency_table)
@@ -66,26 +70,30 @@ try(
     frequency_table[is.na(frequency_table)] <- 0
     frequency_table <- data.frame(frequency_table)
 
-    graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
-      geom_bar(
-        stat = "identity",
-        fill = "#046C9A", width = 0.5
-      ) +
-      labs(
-        x = paste(
-          "Wochentag; n =",
-          sum(!is.na(df$admit.h))
-        ),
-        y = "Durchschnittliche Anzahl Patienten"
-      ) +
-      theme(
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
-      ) +
-      scale_y_continuous(expand = c(0, 0.3))
+    if (nrow(frequency_table) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
+        geom_bar(
+          stat = "identity",
+          fill = "#046C9A", width = 0.5
+        ) +
+        labs(
+          x = paste(
+            "Wochentag; n =",
+            sum(!is.na(df$admit.h))
+          ),
+          y = "Durchschnittliche Anzahl Patienten"
+        ) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+        ) +
+        scale_y_continuous(expand = c(0, 0.3))
+    }
     report_svg(graph, "admit.wd")
     rm(frequency_table)
   },
@@ -118,29 +126,33 @@ try(
       hours, avg_weekend
     )
 
-    graph <- ggplot() +
-      geom_line(data = data_weekday, aes(x = hours, y = avg_weekday), color = "#890700") +
-      geom_line(data = data_weekend, aes(x = hours, y = avg_weekend), color = "#FA9B06") +
-      xlab("Uhrzeit [Stunde]") +
-      ylab("Durchschnittliche Fallzahl") +
-      theme(
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
-      ) +
-      scale_x_continuous(expand = c(0, 1), breaks = seq(0, 23, 2)) +
-      geom_point(
-        data = data_weekday,
-        aes(x = hours, y = avg_weekday), color = "#890700",
-        fill = "#890700", shape = 22, size = 3
-      ) +
-      geom_point(
-        data = data_weekend,
-        aes(x = hours, y = avg_weekend), color = "#FA9B06",
-        fill = "#FA9B06", shape = 24, size = 3
-      )
+    if (nrow(data_weekend) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot() +
+        geom_line(data = data_weekday, aes(x = hours, y = avg_weekday), color = "#890700") +
+        geom_line(data = data_weekend, aes(x = hours, y = avg_weekend), color = "#FA9B06") +
+        xlab("Uhrzeit [Stunde]") +
+        ylab("Durchschnittliche Fallzahl") +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+        ) +
+        scale_x_continuous(expand = c(0, 1), breaks = seq(0, 23, 2)) +
+        geom_point(
+          data = data_weekday,
+          aes(x = hours, y = avg_weekday), color = "#890700",
+          fill = "#890700", shape = 22, size = 3
+        ) +
+        geom_point(
+          data = data_weekend,
+          aes(x = hours, y = avg_weekend), color = "#FA9B06",
+          fill = "#FA9B06", shape = 24, size = 3
+        )
+    }
     report_svg(graph, "admit.hwd.weekend")
     rm(weekday, days_weekday, avg_weekday, data_weekday)
     rm(weekend, days_weekend, avg_weekend, data_weekend)

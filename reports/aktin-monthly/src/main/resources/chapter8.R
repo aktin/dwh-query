@@ -107,17 +107,21 @@ try(
     colnames(cedis_data_frame) <- c("Category", "Frequency")
     cedis_data_frame <- cedis_data_frame[order(-cedis_data_frame$Frequency), ]
 
-    graph <- ggplot(data = cedis_data_frame, aes(reorder(Category, Frequency), Frequency)) +
-      geom_bar(stat = "identity", fill = "#046C9A", width = 0.5) +
-      labs(y = "Anzahl Patienten", x = "") +
-      theme(
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-        axis.text.y = element_text(face = "bold", color = "#000000", size = 10)
-      ) +
-      coord_flip()
+    if (nrow(cedis_data_frame) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = cedis_data_frame, aes(reorder(Category, Frequency), Frequency)) +
+        geom_bar(stat = "identity", fill = "#046C9A", width = 0.5) +
+        labs(y = "Anzahl Patienten", x = "") +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(face = "bold", color = "#000000", size = 10)
+        ) +
+        coord_flip()
+    }
 
     report_svg(graph, "cedis_groups")
     rm(graph)
@@ -175,13 +179,19 @@ try(
       "Z.n." = "orange",
       "A" = "firebrick3"
     )
-    graph <- barchart(
-      as.matrix(data_matrix),
-      xlab = "Anzahl Patienten",
-      sub = "blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",
-      col = modifier_colors[colnames(data_matrix)],
-      origin = 0
-    )
+
+
+    if (nrow(data_matrix) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- barchart(
+        as.matrix(data_matrix),
+        xlab = "Anzahl Patienten",
+        sub = "blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",
+        col = modifier_colors[colnames(data_matrix)],
+        origin = 0
+      )
+    }
     report_svg(graph, "icd_top")
     rm(graph)
 

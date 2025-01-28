@@ -1,6 +1,5 @@
 try(
   {
-
     triage_res_summary <- table(df$triage.result, useNA = "ifany")
 
     data_frame <- data.frame(
@@ -29,18 +28,22 @@ try(
       translations = column_name_translations
     )
 
-    graph <- ggplot(data = data.frame(triage_res_summary), aes(x = Var1, y = Freq, fill = Var1)) +
-      geom_bar(stat = "identity", position = "dodge", colour = "black", show.legend = FALSE) +
-      labs(x = "Ersteinschätzung", y = "Anzahl Patienten") +
-      scale_fill_manual(values = c("red", "orange", "yellow2", "green4", "blue", "grey48")) +
-      theme(
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
-      ) +
-      scale_y_continuous(expand = c(0, 0.01))
+    if (nrow(data_frame) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = data.frame(triage_res_summary), aes(x = Var1, y = Freq, fill = Var1)) +
+        geom_bar(stat = "identity", position = "dodge", colour = "black", show.legend = FALSE) +
+        labs(x = "Ersteinschätzung", y = "Anzahl Patienten") +
+        scale_fill_manual(values = c("red", "orange", "yellow2", "green4", "blue", "grey48")) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+        ) +
+        scale_y_continuous(expand = c(0, 0.01))
+    }
     report_svg(graph, "triage")
     rm(triage_res_summary, data_frame)
   },

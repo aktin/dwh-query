@@ -153,19 +153,24 @@ try(
       data_frame_week <- subset(data_frame, Week == week_num)
       data_frame_week$Day_complete <- format(as.Date(data_frame_week$Day_complete), "%m-%d")
 
-      ggplot(data = data_frame_week, aes(x = Time, y = Patients_in_emergency_room, group = Day_complete)) +
-        geom_line() +
-        facet_grid(Day_complete + Week_day ~ .) +
-        theme_bw() +
-        xlab("Uhrzeit") +
-        ylab("Anzahl Patienten") +
-        scale_x_continuous(
-          breaks = seq(0, 86400, by = 7200),
-          expand = c(0, 0),
-          labels = sprintf("%02d:00", seq(0, 24, by = 2))
-        ) +
-        coord_cartesian(xlim = c(0, 86400)) +
-        ggtitle(title)
+      if (nrow(data_frame_week) == 0) {
+        graph <- create_no_data_figure()
+      } else {
+        graph <- ggplot(data = data_frame_week, aes(x = Time, y = Patients_in_emergency_room, group = Day_complete)) +
+          geom_line() +
+          facet_grid(Day_complete + Week_day ~ .) +
+          theme_bw() +
+          xlab("Uhrzeit") +
+          ylab("Anzahl Patienten") +
+          scale_x_continuous(
+            breaks = seq(0, 86400, by = 7200),
+            expand = c(0, 0),
+            labels = sprintf("%02d:00", seq(0, 24, by = 2))
+          ) +
+          coord_cartesian(xlim = c(0, 86400)) +
+          ggtitle(title)
+      }
+      return(graph)
     }
 
     file_names <- c("stayone", "staytwo", "staythree", "stayfour", "stayfive")

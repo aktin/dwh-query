@@ -17,7 +17,7 @@
 try(
   {
     num_positive_outliers <- as.character(sum(df$phys.d >= 181, na.rm = TRUE))
-    
+
     num_negative_outliers <- as.character(sum(df$phys.d <= 0, na.rm = TRUE))
     num_missing_times <- as.character(length(df$phys.d[is.na(df$phys.d)]))
 
@@ -222,34 +222,38 @@ try(
       Triage = df$triage.result[df$phys.d < 181 & !is.na(df$phys.d)]
     )
 
-    graph <- ggplot(data = triage_by_phys, aes(x = Triage, y = Time, fill = Triage)) +
-      geom_boxplot(show.legend = FALSE) +
-      labs(
-        x = "Triage-Gruppe",
-        y = "Durchschn. Zeit bis Arztkontakt [Min.]",
-        caption = paste(
-          "Werte über 180 Minuten (unberücksichtigt): ", outliers,
-          " ; Fehlender Zeitstempel Arztkontakt:", sum(is.na(df$phys.d))
-        )
-      ) +
-      scale_fill_manual(
-        values = c(
-          "Rot" = "red",
-          "Orange" = "orange",
-          "Gelb" = "yellow2",
-          "Grün" = "green4",
-          "Blau" = "blue",
-          "Ohne" = "grey48"
-        )
-      ) +
-      theme(
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
-      ) +
-      scale_y_continuous(breaks = seq(0, max(triage_by_phys$Time), 10), expand = c(0, 0.3))
+    if (nrow(triage_by_phys) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = triage_by_phys, aes(x = Triage, y = Time, fill = Triage)) +
+        geom_boxplot(show.legend = FALSE) +
+        labs(
+          x = "Triage-Gruppe",
+          y = "Durchschn. Zeit bis Arztkontakt [Min.]",
+          caption = paste(
+            "Werte über 180 Minuten (unberücksichtigt): ", outliers,
+            " ; Fehlender Zeitstempel Arztkontakt:", sum(is.na(df$phys.d))
+          )
+        ) +
+        scale_fill_manual(
+          values = c(
+            "Rot" = "red",
+            "Orange" = "orange",
+            "Gelb" = "yellow2",
+            "Grün" = "green4",
+            "Blau" = "blue",
+            "Ohne" = "grey48"
+          )
+        ) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+        ) +
+        scale_y_continuous(breaks = seq(0, max(triage_by_phys$Time), 10), expand = c(0, 0.3))
+    }
     report_svg(graph, "triage.phys.d.avg")
     rm(graph)
   },
@@ -259,7 +263,6 @@ try(
 # triage.phy.d.avg.xml
 try(
   {
-
     metrics_funs <- list(
       Mean = function(x) round(mean(x, na.rm = TRUE), 1),
       Median = function(x) round(median(x, na.rm = TRUE), 0),

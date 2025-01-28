@@ -5,17 +5,21 @@ try(
     names(discharge_table)[1] <- "Keine Daten"
     discharge_table <- data.frame(discharge_table)
 
-    graph <- ggplot(data = discharge_table, aes(x = Var1, y = Freq)) +
-      geom_bar(stat = "identity", fill = "#046C9A", width = 0.5) +
-      labs(y = "Anzahl Patienten", x = "") +
-      theme(
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-        axis.text.y = element_text(face = "bold", color = "#000000", size = 12),
-        axis.text.x = element_text(face = "bold", color = "#000000", size = 12)
-      ) +
-      coord_flip()
+    if (nrow(discharge_table) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = discharge_table, aes(x = Var1, y = Freq)) +
+        geom_bar(stat = "identity", fill = "#046C9A", width = 0.5) +
+        labs(y = "Anzahl Patienten", x = "") +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+          axis.text.y = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.x = element_text(face = "bold", color = "#000000", size = 12)
+        ) +
+        coord_flip()
+    }
     report_svg(graph, "discharge")
   },
   silent = FALSE

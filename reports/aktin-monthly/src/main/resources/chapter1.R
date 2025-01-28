@@ -66,32 +66,36 @@ try(
   {
     age <- na.omit(df$age)
 
-    graph <- ggplot(data = data.frame(age), aes(x = age)) +
-      geom_histogram(
-        aes(y = after_stat(count)),
-        color = "black", fill = "#046C9A",
-        binwidth = 5
-      ) +
-      labs(
-        x = "Alter [Jahre]", y = "Anzahl Patienten",
-        caption = paste("n =", length(age), ", Werte größer 110 werden als 110 gewertet")
-      ) +
-      theme(
-        plot.caption = element_text(hjust = 0.5, size = 12),
-        panel.background = element_rect(fill = "white"),
-        axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-        axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-        axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
-      ) +
-      scale_x_continuous(
-        breaks = seq(0, 110, 5)
-      ) +
-      scale_y_continuous(
-        expand = c(0, 0.3)
-      ) +
-      geom_vline(aes(xintercept = mean(age)),
-        color = "#e3000b", linetype = "dashed", size = 1
-      )
+    if (nrow(age) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = data.frame(age), aes(x = age)) +
+        geom_histogram(
+          aes(y = after_stat(count)),
+          color = "black", fill = "#046C9A",
+          binwidth = 5
+        ) +
+        labs(
+          x = "Alter [Jahre]", y = "Anzahl Patienten",
+          caption = paste("n =", length(age), ", Werte größer 110 werden als 110 gewertet")
+        ) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+        ) +
+        scale_x_continuous(
+          breaks = seq(0, 110, 5)
+        ) +
+        scale_y_continuous(
+          expand = c(0, 0.3)
+        ) +
+        geom_vline(aes(xintercept = mean(age)),
+          color = "#e3000b", linetype = "dashed", size = 1
+        )
+    }
 
     report_svg(graph, "age")
     rm(age)

@@ -66,7 +66,7 @@ try(
   {
     age <- na.omit(df$age)
 
-    if (nrow(age) == 0) {
+    if (length(age) == 0) {
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(data = data.frame(age), aes(x = age)) +

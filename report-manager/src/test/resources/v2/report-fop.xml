@@ -5,6 +5,7 @@
 	<data-res ../|
 	<resource type="application/xml" href="report-data.xml"/>
 	<resource type="image/svg" href="BMBF.svg"/>
+	<resource type="image/svg" href="NUM.svg"/>
 	<resource type="image/svg" href="AKTIN_Logo_final.svg"/>
 
 </fop-transform>

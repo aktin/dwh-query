@@ -52,7 +52,8 @@ public class AktinMonthly extends AnnotatedReport {
 			"fo-report.xsl",
 			"report-data.xml",
 			"Notaufnahmeregister_Logo_2021.svg",
-			"BMBF.svg"};
+			"BMBF.svg",
+			"NUM.svg"};
 		copyClasspathResources(workingDirectory, resNames);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.

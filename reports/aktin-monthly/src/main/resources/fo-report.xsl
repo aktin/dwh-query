@@ -66,11 +66,44 @@
 						</fo:external-graphic>
 					</fo:block>
 					<fo:block space-before="25mm"></fo:block>
-					<fo:block space-before="5mm">
-						<fo:external-graphic>
-							<xsl:attribute name="src">BMBF.svg</xsl:attribute>
-							<xsl:attribute name="content-height">30mm</xsl:attribute>
-						</fo:external-graphic>
+					    <fo:block space-before="5mm">
+							<!-- Create a table to align the images side by side -->
+							<fo:table table-layout="fixed" width="100%">
+									<fo:table-column column-width="auto"/>
+									<fo:table-column column-width="proportional-column-width(1)"/>
+									<fo:table-body>
+											<fo:table-row>
+													<!-- BMBF Logo -->
+													<fo:table-cell text-align="left">
+															<fo:block>
+																	<fo:external-graphic>
+																			<xsl:attribute name="src">BMBF.svg</xsl:attribute>
+																			<xsl:attribute name="content-height">30mm</xsl:attribute>
+																			<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
+																	</fo:external-graphic>
+															</fo:block>
+													</fo:table-cell>
+													<!-- NUM Logo -->
+													<fo:table-cell text-align="left">
+															<fo:block>
+																	<fo:external-graphic>
+																			<xsl:attribute name="src">NUM.svg</xsl:attribute>
+																			<xsl:attribute name="content-height">30mm</xsl:attribute>
+																			<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
+																	</fo:external-graphic>
+															</fo:block>
+													</fo:table-cell>
+											</fo:table-row>
+											<!-- Second row: Sentence below the images -->
+											<fo:table-row>
+													<fo:table-cell number-columns-spanned="2">
+															<fo:block text-align="left" space-before="5mm" font-size="10pt">
+																	Das AKTIN-Notaufnahmeregister wird gefördert durch das Bundesministerium für Bildung und Forschung (BMBF) im Rahmen des Netzwerks Universitätsmedizin 2.0: "NUM 2.0", Nr. 01KX2121, Projekt: AKTIN@NUM.
+															</fo:block>
+													</fo:table-cell>
+											</fo:table-row>
+									</fo:table-body>
+							</fo:table>
 					</fo:block>
 					<xsl:apply-templates select="./intro"/>
 					<xsl:call-template name="genTOC"/>

@@ -4,10 +4,8 @@ library(lattice)
 
 options(OutDec = ",")
 
-#/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/
-
 enc <- read.table(
-  file = "/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/encounters.txt",
+  file = "encounters.txt",
   header = TRUE,
   sep = "\t",
   as.is = TRUE,
@@ -18,7 +16,7 @@ enc <- read.table(
 )
 
 pat <- read.table(
-  file = "/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/patients.txt",
+  file = "patients.txt",
   header = TRUE,
   sep = "\t",
   as.is = TRUE,
@@ -29,7 +27,7 @@ pat <- read.table(
 )
 
 diag <- read.table(
-  file = "/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/diagnoses.txt",
+  file = "diagnoses.txt",
   header = TRUE,
   sep = "\t",
   as.is = TRUE,
@@ -41,7 +39,7 @@ diag <- read.table(
 )
 
 cedis <- read.csv2(
-  file = "/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/CEDIS.csv",
+  file = "CEDIS.csv",
   as.is = TRUE, na.strings = "",
   header = FALSE, sep = ";",
   colClasses = "character",
@@ -50,7 +48,7 @@ cedis <- read.csv2(
 )
 
 icd <- read.csv2(
-  file = "/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/ICD-3Steller.csv",
+  file = "ICD-3Steller.csv",
   as.is = TRUE, na.strings = "",
   header = FALSE, sep = ";",
   colClasses = "character",
@@ -59,18 +57,18 @@ icd <- read.csv2(
 )
 
 factors <- read.csv2(
-  file = "/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/factors.csv",
+  file = "factors.csv",
   as.is = TRUE, na.strings = "",
   header = TRUE, sep = ";",
   encoding = "UTF-8",
   comment.char = ""
 )
 
-source("/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/helper.R", encoding = "UTF-8", echo = FALSE)
-source("/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/parse_derive.R", encoding = "UTF-8")
-source("/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/xhtml-table.R")
-source("/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/localisation.R")
+source("helper.R", encoding = "UTF-8", echo = FALSE)
+source("parse_derive.R", encoding = "UTF-8")
+source("xhtml-table.R")
+source("localisation.R")
 
 for (i in 1:9) {
-  source(paste0("/Users/AKTIN/Documents/git/dwh-query/reports/aktin-monthly/src/main/resources/chapter", i, ".R"), encoding = "UTF-8")
+  source(paste0("chapter", i, ".R"), encoding = "UTF-8")
 }

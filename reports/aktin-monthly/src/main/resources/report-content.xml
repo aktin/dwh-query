@@ -86,25 +86,28 @@ Homepage: www.aktin.org
       <plot ref="p4.1">Grafik 4.1: Ersteinschätzung</plot>
       <table ref="t4.1">Tabelle 4.1: Ersteinschätzung</table>
     </section>
-
   </section>
   <section>
     <header>Prozesszeiten</header>
     <paragraph>Bei den Prozesszeiten wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Ersteinschätzung später als 60 Minuten nach administrativer Aufnahme, erster Arztkontakt später als 180 Minuten nach administrativer Aufnahme sowie negative Prozesszeiten.</paragraph>
     <section>
       <header>Ankunft/Aufnahme bis Ersteinschätzung</header>
+      <paragraph>&#x00A0;</paragraph>
+       <paragraph>&#x00A0;</paragraph>
       <plot ref="p5.1">Grafik 5.1: Ankunft/Aufnahme bis Ersteinschätzung</plot>
       <plot ref="p5.4">Grafik 5.1.1: Ankunft/Aufnahme bis Ersteinschätzung</plot>
       <table ref="t5.1">Tabelle 5.1: Ankunft/Aufnahme bis Ersteinschätzung</table>
     </section>
     <section>
       <header>Ankunft/Aufnahme bis zum ersten Arztkontakt</header>
+      <paragraph>&#x00A0;</paragraph>
+       <paragraph>&#x00A0;</paragraph>
       <plot ref="p5.2">Grafik 5.2: Ankunft/Aufnahme bis Arztkontakt</plot>
       <plot ref="p5.5">Grafik 5.2.1: Ankunft/Aufnahme bis Arztkontakt</plot>
       <table ref="t5.2">Tabelle 5.2: Ankunft/Aufnahme bis Arztkontakt</table>
     </section>
     <section>
-      <header break-before="manual">Prozesszeiten nach Kategorie der Ersteinschätzung</header>
+      <header>Prozesszeiten nach Kategorie der Ersteinschätzung</header>
       <plot ref="p5.3">Grafik 5.3: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</plot>
       <table ref="t5.3">Tabelle 5.3: Aufnahme bis Arztkontakt in Minuten, gruppiert nach
         Ersteinschätzung</table>
@@ -112,12 +115,15 @@ Homepage: www.aktin.org
   </section>
   <section>
     <header>Verlegung und Entlassung</header>
-    <plot ref="p6.1">Grafik 6.1: Verlegung und Entlassung</plot>
+    <paragraph>&#x00A0;</paragraph>
+    <plot ref="p6.1" >Grafik 6.1: Verlegung und Entlassung</plot>
     <table ref="t6.1">Tabelle 6.1: Verlegung und Entlassung</table>
   </section>
   <section>
     <header>Aufenthaltsdauer der Patienten</header>
     <paragraph>Bei der Gesamtaufenthaltsdauer wurden folgende Werte als nicht plausibel definiert und daher aus der Berechnung der Kennzahlen ausgeschlossen: Aufenthaltsdauer länger als 24 Stunden sowie negative Zeiten. Werte zwischen 10 Stunden und 24 Stunden werden in der Grafik nicht angezeigt, fließen aber in die Berechnung der Kennzahlen mit ein.</paragraph>
+    <paragraph>&#x00A0;</paragraph>
+     <paragraph>&#x00A0;</paragraph>
     <plot ref="p7.1">Grafik 7.1: Aufenthaltsdauer</plot>
     <plot ref="p7.2">Grafik 7.2: Aufenthaltsdauer</plot>
     <table ref="t7.1">Tabelle 7.1: Aufenthaltsdauer in Minuten</table>
@@ -153,7 +159,7 @@ Homepage: www.aktin.org
   </section>
   <section>
     <header>Patienten in der Notaufnahme</header>
-    <paragraph>Anzahl der gleichzeitig in Ihrer Notaufnahme anwesenden Patienten pro Tag über einen Zeitraum von 24h.Es werden nur die ersten 31 Tage angezeigt.</paragraph>
+    <paragraph>Anzahl der gleichzeitig in Ihrer Notaufnahme anwesenden Patienten pro Tag über einen Zeitraum von 24h. Es werden nur die ersten 31 Tage angezeigt.</paragraph>
     <section>
       <header>Woche 1</header>
       <plot ref="p9.1">Grafik 10.1: Patienten in der Notaufnahme Woche 1</plot>

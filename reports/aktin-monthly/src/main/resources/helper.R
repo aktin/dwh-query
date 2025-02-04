@@ -131,7 +131,17 @@ create_delay_time_report <- function(
     num_negative_outliers,
     factors) {
   if (nrow(delay_times) == 0) {
-    summary_values <- c("k.A", "k.A", "k.A", "k.A", "k.A")
+    summary_values <- c(
+      length(delay_times$Time),
+      num_missing_times,
+      num_positive_outliers,
+      num_negative_outliers,
+      "-",
+      "-",
+      "-",
+      "-",
+      "-"
+    )
   } else {
     summary_values <- c(
       length(delay_times$Time),

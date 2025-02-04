@@ -94,7 +94,13 @@
 															</fo:block>
 													</fo:table-cell>
 											</fo:table-row>
-											<!-- Second row: Sentence below the images -->
+											<!-- Second row: Placeholder between images and text field -->
+											<fo:table-row>
+													<fo:table-cell number-columns-spanned="2">
+															<fo:block space-before="10mm">&#x00A0;</fo:block>
+													</fo:table-cell>
+											</fo:table-row>
+											<!-- Third row: Sentence below the images -->
 											<fo:table-row>
 													<fo:table-cell number-columns-spanned="2">
 															<fo:block text-align="left" space-before="5mm" font-size="10pt">

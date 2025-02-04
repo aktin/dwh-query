@@ -3,29 +3,44 @@ try(
   {
     # 1. Create data.frame
     sex_summary <- data.frame(table(df$sex, useNA = "no"))
-    names(sex_summary) <- c("Category", "Count")
-    total_count <- sum(sex_summary$Count)
-    sex_summary$Percentage <- (sex_summary$Count / total_count) * 100
+    if (nrow(sex_summary) == 0) {
+      sex_summary_report <- data.frame(
+        Category = "-",
+        Count = "-",
+        Percentage = "-"
+      )
 
-    # 2. Metrics
-    sex_summary_report <- rbind(sex_summary, data.frame(
-      Category = "Summe",
-      Count = total_count,
-      Percentage = sum(sex_summary$Percentage)
-    ))
+      report_table(
+        sex_summary_report,
+        name = "sex.xml",
+        align = c("center", "center", "center"),
+        translations = column_name_translations
+      )
+    } else {
+      names(sex_summary) <- c("Category", "Count")
+      total_count <- sum(sex_summary$Count)
+      sex_summary$Percentage <- (sex_summary$Count / total_count) * 100
 
-    # 3. Formatting
-    sex_summary_report$Count <- format_number(sex_summary_report$Count)
-    sex_summary_report$Percentage <- paste(format_number(sex_summary_report$Percentage, digits = 1), "%")
+      # 2. Metrics
+      sex_summary_report <- rbind(sex_summary, data.frame(
+        Category = "Summe",
+        Count = total_count,
+        Percentage = sum(sex_summary$Percentage)
+      ))
 
-    # 4. Localisation and print report
-    report_table(
-      sex_summary_report,
-      name = "sex.xml",
-      align = c("left", "right", "right"),
-      widths = c(25, 15, 15),
-      translations = column_name_translations
-    )
+      # 3. Formatting
+      sex_summary_report$Count <- format_number(sex_summary_report$Count)
+      sex_summary_report$Percentage <- paste(format_number(sex_summary_report$Percentage, digits = 1), "%")
+
+      # 4. Localisation and print report
+      report_table(
+        sex_summary_report,
+        name = "sex.xml",
+        align = c("left", "right", "right"),
+        widths = c(25, 15, 15),
+        translations = column_name_translations
+      )
+    }
     rm(sex_summary, sex_summary_report)
   },
   silent = FALSE
@@ -44,6 +59,10 @@ try(
       min(df$age, na.rm = TRUE),
       max(df$age, na.rm = TRUE)
     )
+
+
+    age_statistics[is.na(age_statistics)] <- "-"
+    age_statistics[age_statistics == "-Inf" | age_statistics == "Inf"] <- "-"
 
     age_report <- data.frame(
       Metrics = c("Mittelwert", "Median", "Standardabweichung", "Minimum", "Maximum"),

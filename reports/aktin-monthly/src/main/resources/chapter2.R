@@ -3,7 +3,7 @@ try(
   {
     frequency_table <- data.frame(table(df$admit.h) / length(levels(df$admit.day)))
 
-    if (nrow(frequency_table) == 0) {
+    if (nrow(frequency_table) == 0 || all(is.na(frequency_table$Freq))) {
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
@@ -45,12 +45,16 @@ try(
       round(table(df$admit.h)[1:12] / total_days, 1),
       nsmall = 1, big.mark = "."
     )
+    table_formatted[table_formatted == "NaN"] <- "-"
+
     report_table(data.frame(as.list(table_formatted), check.names = FALSE), name = "admit.h.xml", align = "center")
 
     table_formatted_2 <- format(
       round(table(df$admit.h)[13:24] / total_days, 1),
       nsmall = 1, big.mark = "."
     )
+    table_formatted_2[table_formatted_2 == "NaN"] <- "-"
+
     report_table(data.frame(as.list(table_formatted_2), check.names = FALSE), name = "admit2.h.xml", align = "center")
   },
   silent = FALSE
@@ -70,7 +74,7 @@ try(
     frequency_table[is.na(frequency_table)] <- 0
     frequency_table <- data.frame(frequency_table)
 
-    if (nrow(frequency_table) == 0) {
+    if (nrow(frequency_table) == 0 || all(frequency_table$Freq == 0)) {
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
@@ -126,7 +130,7 @@ try(
       hours, avg_weekend
     )
 
-    if (nrow(data_weekend) == 0) {
+    if (nrow(data_weekend) == 0 || all(data_weekend$avg_weekend == "NaN") && all(data_weekend$avg_weekday == "NaN")) {
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot() +
@@ -167,30 +171,44 @@ try(
     formatted_dates <- format(admission_days$admit.day, format = "%d.%m.%Y", tz = "GMT")
     unique_dates <- names(table(formatted_dates))
 
-    weekdays_iso <- as.Date(unique_dates)
-    weekdays_numbers <- format(weekdays_iso, format = "%u", tz = "GMT")
+    if (all(is.na(unique_dates))) {
+      admissions_summary <- data.frame(
+        Date = "-",
+        Weekday = "-",
+        Count = "-"
+      )
 
-    weekdays_labeled <- factor(weekdays_numbers)
-    levels(weekdays_labeled) <- list(
-      "Montag" = "1", "Dienstag" = "2", "Mittwoch" = "3", "Donnerstag" = "4",
-      "Freitag" = "5", "Samstag" = "6", "Sonntag" = "7"
-    )
+      report_table(
+        admissions_summary,
+        name = "admit.d.xml",
+        align = c("center", "center", "center"),
+        translations = column_name_translations
+      )
+    } else {
+      weekdays_iso <- as.Date(unique_dates)
+      weekdays_numbers <- format(weekdays_iso, format = "%u", tz = "GMT")
 
-    admission_counts <- as.vector(table(formatted_dates))
-    admissions_summary <- data.frame(
-      Date = unique_dates,
-      Weekday = weekdays_labeled,
-      Count = admission_counts
-    )
-    admissions_summary <- admissions_summary[1:31, ]
+      weekdays_labeled <- factor(weekdays_numbers)
+      levels(weekdays_labeled) <- list(
+        "Montag" = "1", "Dienstag" = "2", "Mittwoch" = "3", "Donnerstag" = "4",
+        "Freitag" = "5", "Samstag" = "6", "Sonntag" = "7"
+      )
+      admission_counts <- as.vector(table(formatted_dates))
+      admissions_summary <- data.frame(
+        Date = unique_dates,
+        Weekday = weekdays_labeled,
+        Count = admission_counts
+      )
+      admissions_summary <- admissions_summary[1:31, ]
 
-    report_table(
-      admissions_summary,
-      name = "admit.d.xml",
-      align = c("left", "right", "right"),
-      widths = c(25, 15, 13),
-      translations = column_name_translations
-    )
+      report_table(
+        admissions_summary,
+        name = "admit.d.xml",
+        align = c("left", "right", "right"),
+        widths = c(25, 15, 13),
+        translations = column_name_translations
+      )
+    }
   },
   silent = FALSE
 )

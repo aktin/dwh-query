@@ -54,6 +54,7 @@ try(
         scale_y_continuous(breaks = seq(0, 200, 20))
     }
     report_svg(graph, "phys.d.box")
+
     rm(graph)
 
     if (nrow(delay_times) == 0) {
@@ -90,7 +91,7 @@ try(
 # phys.d.xml
 try(
   {
-    summary <- create_delay_time_report(
+    summary_table <- create_delay_time_report(
       delay_times,
       num_missing_times,
       num_positive_outliers,
@@ -99,13 +100,13 @@ try(
     )
 
     report_table(
-      summary,
+      summary_table,
       name = "phys.d.xml",
       align = c("left", "right"),
       widths = c(45, 15),
       translations = column_name_translations
     )
-    rm(summary, delay_times)
+    rm(summary_table, delay_times)
   },
   silent = FALSE
 )

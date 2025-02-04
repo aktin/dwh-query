@@ -46,7 +46,7 @@ try(
       Description = rep("Zeit", length(valid_discharge))
     )
 
-    if (nrow(discharge_times) == 0) {
+    if (nrow(discharge_times) == 0 || all(discharge_times$Time == 0)) {
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(data = discharge_times, aes(x = Description, y = Time)) +
@@ -80,7 +80,7 @@ try(
     report_svg(graph, "discharge.d.box")
     rm(graph)
 
-    if (nrow(discharge_times) == 0) {
+    if (nrow(discharge_times) == 0 || all(discharge_times$Time == 0)) {
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(discharge_times, aes(x = Time)) +

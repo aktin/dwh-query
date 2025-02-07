@@ -12,7 +12,9 @@
 	<parent>
 		<groupId>org.aktin</groupId>
 		<artifactId>aktin</artifactId>
+		<!-- TODO Revert this change -->
 		<version>0.13-SNAPSHOT</version>
+		<!-- -->
 	</parent>
 
 	<scm>

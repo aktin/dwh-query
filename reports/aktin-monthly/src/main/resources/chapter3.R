@@ -1,4 +1,4 @@
-# Transport and referral
+# Table 3.1 and Table 3.2 - Referral and transport
 try(
   {
     if (length(df$transport) == 0) {
@@ -13,7 +13,7 @@ try(
         data_frame,
         name = "transport.xml",
         align = c("center", "center", "center"),
-        translations = column_name_translations
+        translations = translations
       )
     } else {
       transport_summary <- table(df$transport, useNA = "always")
@@ -42,7 +42,7 @@ try(
         name = "transport.xml",
         align = c("left", "right", "right"),
         widths = c(25, 15, 15),
-        translations = column_name_translations
+        translations = translations
       )
     }
 
@@ -60,7 +60,7 @@ try(
         data_frame,
         name = "referral.xml",
         align = c("center", "center", "center"),
-        translations = column_name_translations
+        translations = translations
       )
     } else {
       referral_summary <- table(df$referral, useNA = "always")
@@ -89,7 +89,7 @@ try(
         name = "referral.xml",
         align = c("left", "right", "right"),
         widths = c(60, 15, 15),
-        translations = column_name_translations
+        translations = translations
       )
     }
     rm(referral_summary, data_frame)

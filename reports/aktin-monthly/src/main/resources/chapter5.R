@@ -31,7 +31,7 @@ try(
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(data = delay_times, aes(x = Description, y = Time)) +
-        geom_boxplot(fill = "#046C9A", width = 0.5) +
+        geom_boxplot(fill = "#00427e", width = 0.5) +
         labs(
           y = "Zeit von Aufnahme bis Arztkontakt [Minuten]",
           caption = paste(
@@ -46,44 +46,58 @@ try(
           axis.title = element_text(size = 12),
           panel.border = element_blank(),
           axis.line = element_line(color = "black"),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(color = "#000000", size = 12),
           axis.title.x = element_blank(),
           axis.ticks.x = element_blank(),
           axis.text.x = element_blank()
         ) +
-        scale_y_continuous(breaks = seq(0, 200, 20))
+        scale_y_continuous(breaks = seq(0, 200, 20), expand = c(0, 0.1))
     }
     report_svg(graph, "phys.d.box")
 
     rm(graph)
 
-    if (nrow(delay_times) == 0) {
+
+    delay_times_intervals <- data.frame(
+      Time = cut(
+        valid_times_raw,
+        breaks = seq(0, 180, by = 15),
+        include.lowest = TRUE,
+        right = FALSE
+      )
+    )
+
+    if (nrow(delay_times_intervals) == 0) {
       graph <- create_no_data_figure()
     } else {
-      graph <- ggplot(delay_times, aes(x = Time)) +
-        geom_histogram(
+      graph <- ggplot(delay_times_intervals, aes(x = Time)) +
+        geom_bar(
           aes(y = 100 * after_stat(count) / sum(after_stat(count))),
-          bins = 12,
           color = "black",
-          fill = "#046C9A", boundary = 0
+          fill = "#00427e",
+          stat = "count"
         ) +
-        scale_x_continuous(breaks = seq(0, 180, length = 7)) +
-        labs(y = "Relative Häufigkeit [%]") +
+        labs(
+          x = "Zeit von Aufnahme bis Arztkontakt [Minuten]",
+          y = "Relative Häufigkeit [%]"
+        ) +
         theme(
           plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size = 12),
           panel.border = element_blank(),
           axis.line = element_line(color = "black"),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12),
-          axis.title.x = element_blank(),
+          axis.text.y = element_text(color = "#000000", size = 12),
+          axis.text.x = element_text(color = "#000000", size = 12, angle = 45, hjust = 1),
           legend.title = element_blank(),
           legend.position = "bottom",
           legend.text = element_text(color = "#e3000b", size = 12, face = "bold")
-        )
+        ) +
+        scale_y_continuous(expand = c(0, 0.1)) +
+        scale_x_discrete(labels = function(x) paste0(x))
     }
     report_svg(graph, "phys.d.hist")
-    rm(graph)
+    rm(graph, delay_times_intervals)
   },
   silent = FALSE
 )
@@ -104,7 +118,7 @@ try(
       name = "phys.d.xml",
       align = c("left", "right"),
       widths = c(45, 15),
-      translations = column_name_translations
+      translations = translations
     )
     rm(summary_table, delay_times)
   },
@@ -131,8 +145,8 @@ try(
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(data = delay_times, aes(x = Description, y = Time)) +
-        geom_boxplot(fill = "#046C9A", width = 0.5) +
-        geom_hline(aes(yintercept = 10, linetype = "Ersteinschätzung innerhalb 10 Minuten"), color = "red", size = 1) +
+        geom_boxplot(fill = "#00427e", width = 0.5) +
+        geom_hline(aes(yintercept = 10, linetype = "Ersteinschätzung innerhalb 10 Minuten"), color = "#e3000f", linewidth = 1) +
         labs(
           y = "Zeit von Aufnahme bis Triage [Minuten]",
           caption = paste(
@@ -148,45 +162,59 @@ try(
           axis.title = element_text(size = 12),
           panel.border = element_blank(),
           axis.line = element_line(color = "black"),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(color = "#000000", size = 12),
           axis.title.x = element_blank(),
           axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
-          legend.position = "bottom", legend.title = element_blank()
+          legend.position = "bottom", legend.title = element_blank(),
+          legend.text = element_text(size = 12)
         ) +
-        coord_cartesian(ylim = c(0, 60))
+        coord_cartesian(ylim = c(0, 60)) +
+        scale_y_continuous(expand = c(0, 0.1))
     }
     report_svg(graph, "triage.d.box")
     rm(graph)
 
-    if (nrow(delay_times) == 0) {
+    delay_times_intervals <- data.frame(
+      Time = cut(
+        valid_times_raw,
+        breaks = seq(0, 60, by = 5),
+        include.lowest = TRUE,
+        right = FALSE
+      )
+    )
+
+    if (nrow(delay_times_intervals) == 0) {
       graph <- create_no_data_figure()
     } else {
-      graph <- ggplot(delay_times, aes(x = Time)) +
-        geom_histogram(
+      graph <- ggplot(delay_times_intervals, aes(x = Time)) +
+        geom_bar(
           aes(y = 100 * after_stat(count) / sum(after_stat(count))),
-          bins = 12, color = "black",
-          fill = "#046C9A",
-          boundary = 0
+          color = "black",
+          fill = "#00427e",
+          stat = "count"
         ) +
-        scale_x_continuous(breaks = seq(0, 60, length = 7)) +
-        labs(y = "Relative Häufigkeit [%]") +
+        labs(
+          x = "Zeit von Aufnahme bis Triage [Minuten]",
+          y = "Relative Häufigkeit [%]"
+        ) +
         theme(
           plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size = 12),
           panel.border = element_blank(),
           axis.line = element_line(color = "black"),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12),
-          axis.title.x = element_blank(),
-          legend.title = element_blank(),
+          axis.text.y = element_text(color = "#000000", size = 12),
+          axis.text.x = element_text(color = "#000000", size = 12, angle = 45, hjust = 1),
           legend.position = "bottom",
           legend.text = element_text(color = "#e3000b", size = 12, face = "bold")
-        )
+        ) +
+        scale_y_continuous(expand = c(0, 0.1)) +
+        scale_x_discrete(labels = function(x) paste0(x))
     }
 
     report_svg(graph, "triage.d.hist")
-    rm(graph)
+    rm(graph, delay_times_intervals)
   },
   silent = FALSE
 )
@@ -207,7 +235,7 @@ try(
       name = "triage.d.xml",
       align = c("left", "right"),
       widths = c(45, 15),
-      translations = column_name_translations
+      translations = translations
     )
     rm(summary, delay_times)
   },
@@ -237,23 +265,16 @@ try(
           )
         ) +
         scale_fill_manual(
-          values = c(
-            "Rot" = "red",
-            "Orange" = "orange",
-            "Gelb" = "yellow2",
-            "Grün" = "green4",
-            "Blau" = "blue",
-            "Ohne" = "grey48"
-          )
+          values = aktin_colors
         ) +
         theme(
           plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+          axis.text.x = element_text(color = "#000000", size = 12),
+          axis.text.y = element_text(color = "#000000", size = 12)
         ) +
-        scale_y_continuous(breaks = seq(0, max(triage_by_phys$Time), 10), expand = c(0, 0.3))
+        scale_y_continuous(breaks = seq(0, max(triage_by_phys$Time), 10), expand = c(0, 0.1))
     }
     report_svg(graph, "triage.phys.d.avg")
     rm(graph)
@@ -299,7 +320,7 @@ try(
       name = "triage.phys.d.xml",
       align = c("left", "right", "right", "right", "right", "right"),
       width = 15,
-      translations = column_name_translations
+      translations = translations
     )
   },
   silent = FALSE

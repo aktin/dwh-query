@@ -1,4 +1,4 @@
-column_name_translations <- list(
+translations <- list(
   Category = "Kategorie",
   Count = "Anzahl",
   Percentage = "Anteil",
@@ -8,5 +8,10 @@ column_name_translations <- list(
   Suspected = "Verdacht",
   Known = "Bekannt",
   Date = "Datum",
-  Weekday = "Wochentag"
+  Weekday = "Wochentag",
+  "male" = "Männlich",
+  "female" = "Weiblich",
+  "indetermined" = "Divers",
+  "NA" = "Keine Angaben",
+  "sum" = "Summe"
 )

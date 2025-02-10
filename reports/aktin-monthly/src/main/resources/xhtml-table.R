@@ -51,11 +51,10 @@ xhtml_table <- function(data, file_name = "default_table.xml", widths = NULL, al
     stop("ERROR: 'data' must be a data frame or matrix.")
   }
 
-  if (file.exists(file_name)) {
-    warning(sprintf("File '%s' already exists. Skipping file creation.", file_name))
-    return(invisible(NULL))
-  }
-
+  # if (file.exists(file_name)) {
+  #   warning(sprintf("File '%s' already exists. Skipping file creation.", file_name))
+  #   return(invisible(NULL))
+  # }
 
   num_columns <- length(data)
   if (is.null(widths)) {
@@ -100,7 +99,12 @@ xhtml_table <- function(data, file_name = "default_table.xml", widths = NULL, al
   for (row in seq_len(nrow(data))) {
     cat("\t\t<tr>\n", file = file)
     for (cell in data[row, , drop = FALSE]) {
-      value <- if (is.na(cell) || is.nan(cell) || is.infinite(cell)) "" else xml_escape(cell)
+      translated_value <- if (!is.null(translations) && cell %in% names(translations)) {
+        translations[[as.character(cell)]]
+      } else {
+        cell
+      }
+      value <- if (is.na(translated_value) || is.nan(translated_value) || is.infinite(translated_value)) "" else xml_escape(translated_value)
       cat(sprintf("\t\t\t<td>%s</td>\n", value), file = file)
     }
     cat("\t\t</tr>\n", file = file)

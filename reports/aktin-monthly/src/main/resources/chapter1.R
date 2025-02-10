@@ -1,9 +1,10 @@
-# Patient Sex
+# Table 1.1
 try(
   {
     # 1. Create data.frame
-    sex_summary <- data.frame(table(df$sex, useNA = "no"))
+    sex_summary <- data.frame(table(df$sex, useNA = "always"))
     if (nrow(sex_summary) == 0) {
+      # Backup data.frame if no data are available
       sex_summary_report <- data.frame(
         Category = "-",
         Count = "-",
@@ -14,16 +15,18 @@ try(
         sex_summary_report,
         name = "sex.xml",
         align = c("center", "center", "center"),
-        translations = column_name_translations
+        translations = translations
       )
     } else {
       names(sex_summary) <- c("Category", "Count")
+      sex_summary$Category <- as.character(sex_summary$Category)
+      sex_summary$Category[is.na(sex_summary$Category)] <- "NA"
       total_count <- sum(sex_summary$Count)
       sex_summary$Percentage <- (sex_summary$Count / total_count) * 100
 
       # 2. Metrics
       sex_summary_report <- rbind(sex_summary, data.frame(
-        Category = "Summe",
+        Category = "sum",
         Count = total_count,
         Percentage = sum(sex_summary$Percentage)
       ))
@@ -38,7 +41,7 @@ try(
         name = "sex.xml",
         align = c("left", "right", "right"),
         widths = c(25, 15, 15),
-        translations = column_name_translations
+        translations = translations
       )
     }
     rm(sex_summary, sex_summary_report)
@@ -46,7 +49,7 @@ try(
   silent = FALSE
 )
 
-# Patient Age
+# Table 1.2
 try(
   {
     df$age[df$age > 110] <- 110
@@ -73,14 +76,14 @@ try(
       name = "age.xml",
       align = c("left", "right"),
       widths = c(30, 15),
-      translations = column_name_translations
+      translations = translations
     )
     rm(age_report)
   },
   silent = FALSE
 )
 
-
+# Figure 1.1
 try(
   {
     age <- na.omit(df$age)
@@ -88,32 +91,49 @@ try(
     if (length(age) == 0) {
       graph <- create_no_data_figure()
     } else {
-      graph <- ggplot(data = data.frame(age), aes(x = age)) +
-        geom_histogram(
-          aes(y = after_stat(count)),
-          color = "black", fill = "#046C9A",
-          binwidth = 5
+      age_groups <- cut(
+        age,
+        breaks = seq(0, 110, by = 5),
+        include.lowest = TRUE,
+        right = FALSE
+      )
+      age_df <- data.frame(age_groups = age_groups)
+
+      counts <- table(age_groups)
+      max_count <- max(counts)
+
+      graph <- ggplot(data = age_df, aes(x = age_groups)) +
+        geom_bar(
+          color = "black", fill = "#00427e",
+          stat = "count"
+        ) +
+        geom_vline(
+          aes(xintercept = mean(as.numeric(age_groups)), linetype = "Durchschnittsalter"),
+          color = "#e3000f", linewidth = 1
+        ) +
+        theme(
+          plot.caption = element_text(size = 12, hjust = 0.5),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12),
+          panel.border = element_blank(),
+          axis.line = element_line(color = "black"),
+          axis.text.x = element_text(color = "#000000", size = 12, hjust = 1, angle = 45),
+          axis.text.y = element_text(color = "#000000", size = 12),
+          legend.title = element_blank(),
+          legend.position = "bottom",
+          legend.justification = "center",
+          legend.direction = "horizontal",
+          legend.box = "horizontal",
+          legend.text = element_text(size = 12)
         ) +
         labs(
           x = "Alter [Jahre]", y = "Anzahl Patienten",
-          caption = paste("n =", length(age), ", Werte größer 110 werden als 110 gewertet")
+          caption = paste("n =", length(age), ", Werte größer 110 werden als 110 gewertet.")
         ) +
-        theme(
-          plot.caption = element_text(hjust = 0.5, size = 12),
-          panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+        scale_x_discrete(
+          labels = function(x) paste0(x)
         ) +
-        scale_x_continuous(
-          breaks = seq(0, 110, 5)
-        ) +
-        scale_y_continuous(
-          expand = c(0, 0.3)
-        ) +
-        geom_vline(aes(xintercept = mean(age)),
-          color = "#e3000b", linetype = "dashed", size = 1
-        )
+        scale_y_continuous(expand = c(0,0))
     }
 
     report_svg(graph, "age")

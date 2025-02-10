@@ -67,7 +67,7 @@ factors <- read.csv2(
 source("helper.R", encoding = "UTF-8", echo = FALSE)
 source("parse_derive.R", encoding = "UTF-8")
 source("xhtml-table.R")
-source("localisation.R")
+source("localisation.R", encoding = "UTF-8")
 
 for (i in 1:9) {
   source(paste0("chapter", i, ".R"), encoding = "UTF-8")

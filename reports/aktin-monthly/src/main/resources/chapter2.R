@@ -1,3 +1,4 @@
+# Figure 2.3
 # Admission day: Average number of patients per hour for the current month
 try(
   {
@@ -9,7 +10,7 @@ try(
       graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
         geom_bar(
           stat = "identity",
-          fill = "#046C9A",
+          fill = "#00427e",
           width = 0.5
         ) +
         labs(
@@ -23,8 +24,8 @@ try(
           plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+          axis.text.x = element_text(color = "#000000", size = 12),
+          axis.text.y = element_text(color = "#000000", size = 12)
         ) +
         scale_y_continuous(expand = c(0, 0.01))
     }
@@ -35,6 +36,7 @@ try(
   silent = FALSE
 )
 
+# Table 2.2
 # Admission day: Daily percentage of patients for the current month
 # (Split into the first and and second half of the month.)
 try(
@@ -60,6 +62,7 @@ try(
   silent = FALSE
 )
 
+# Figure 2.1
 # Admission day: Average number of patients admitted per weekday
 try(
   {
@@ -80,7 +83,7 @@ try(
       graph <- ggplot(data = frequency_table, aes(x = Var1, y = Freq)) +
         geom_bar(
           stat = "identity",
-          fill = "#046C9A", width = 0.5
+          fill = "#00427e", width = 0.5
         ) +
         labs(
           x = paste(
@@ -93,10 +96,10 @@ try(
           plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+          axis.text.x = element_text(color = "#000000", size = 12),
+          axis.text.y = element_text(color = "#000000", size = 12)
         ) +
-        scale_y_continuous(expand = c(0, 0.3))
+        scale_y_continuous(expand = c(0, 0.1))
     }
     report_svg(graph, "admit.wd")
     rm(frequency_table)
@@ -104,7 +107,7 @@ try(
   silent = FALSE
 )
 
-
+# Figure 2.3
 # Admission day: Average number of patients per hour, week vs. weekend
 try(
   {
@@ -142,19 +145,19 @@ try(
           plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+          axis.text.x = element_text(color = "#000000", size = 12),
+          axis.text.y = element_text(color = "#000000", size = 12)
         ) +
         scale_x_continuous(expand = c(0, 1), breaks = seq(0, 23, 2)) +
         geom_point(
           data = data_weekday,
-          aes(x = hours, y = avg_weekday), color = "#890700",
-          fill = "#890700", shape = 22, size = 3
+          aes(x = hours, y = avg_weekday), color = "#6c1023",
+          fill = "#6c1023", shape = 22, size = 3
         ) +
         geom_point(
           data = data_weekend,
-          aes(x = hours, y = avg_weekend), color = "#FA9B06",
-          fill = "#FA9B06", shape = 24, size = 3
+          aes(x = hours, y = avg_weekend), color = "#e26800",
+          fill = "#e26800", shape = 24, size = 3
         )
     }
     report_svg(graph, "admit.hwd.weekend")
@@ -164,6 +167,7 @@ try(
   silent = FALSE
 )
 
+# Table 2.1
 # Admit day: Date, Weekday, Count
 try(
   {
@@ -182,7 +186,7 @@ try(
         admissions_summary,
         name = "admit.d.xml",
         align = c("center", "center", "center"),
-        translations = column_name_translations
+        translations = translations
       )
     } else {
       weekdays_iso <- as.Date(unique_dates)
@@ -206,7 +210,7 @@ try(
         name = "admit.d.xml",
         align = c("left", "right", "right"),
         widths = c(25, 15, 13),
-        translations = column_name_translations
+        translations = translations
       )
     }
   },

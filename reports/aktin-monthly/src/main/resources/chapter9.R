@@ -12,7 +12,7 @@ try(
         iso_table,
         name = "isoreason.xml",
         align = c("center", "center", "center"),
-        translations = column_name_translations
+        translations = translations
       )
     } else {
       df$combined_iso <- factor(enc$isolation_grund)
@@ -56,7 +56,7 @@ try(
         name = "isoreason.xml",
         align = c("left", "right", "right"),
         widths = c(30, 15, 15),
-        translations = column_name_translations
+        translations = translations
       )
     }
     rm(isoreason_summary, iso_table)
@@ -80,7 +80,7 @@ try(
         mrsa_table,
         name = "multiresistant.xml",
         align = c("center", "center", "center"),
-        translations = column_name_translations
+        translations = translations
       )
     } else {
       mrsa_patient <- rowSums(mrsa_patient, na.rm = TRUE)
@@ -132,7 +132,7 @@ try(
         name = "multiresistant.xml",
         align = c("left", "right", "right"),
         widths = c(30, 15, 15),
-        translations = column_name_translations
+        translations = translations
       )
     }
   },
@@ -213,7 +213,16 @@ try(
           labels = sprintf("%02d:00", seq(0, 24, by = 2))
         ) +
         coord_cartesian(xlim = c(0, 86400)) +
-        ggtitle(title)
+        ggtitle(title) +
+        theme(
+          text = element_text(size = 12),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 12),
+          strip.text = element_text(size = 12),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size = 12),
+          plot.title = element_text(size = 12)
+        )
 
       return(graph)
     }

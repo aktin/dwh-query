@@ -23,7 +23,7 @@ try(
       name = "los.xml",
       align = c("left", "right"),
       widths = c(45, 15),
-      translations = column_name_translations
+      translations = translations
     )
     rm(summary, los_times)
   },
@@ -50,7 +50,7 @@ try(
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(data = discharge_times, aes(x = Description, y = Time)) +
-        geom_boxplot(fill = "#046C9A", width = 0.5) +
+        geom_boxplot(fill = "#00427e", width = 0.5) +
         labs(
           y = "Zeit von Aufnahme bis zur Entlassung/ \n Verlegung [Minuten]",
           caption = paste(
@@ -66,43 +66,57 @@ try(
           axis.title = element_text(size = 12),
           panel.border = element_blank(),
           axis.line = element_line(color = "black"),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12),
+          axis.text.y = element_text(color = "#000000", size = 12),
           axis.title.x = element_blank(),
           axis.ticks.x = element_blank(),
           axis.text.x = element_blank(),
           legend.title = element_blank(),
           legend.position = "bottom",
-          legend.text = element_text(color = "#e3000b", size = 12, face = "bold")
+          legend.text = element_text(size = 12)
         ) +
-        scale_y_continuous(breaks = seq(0, 600, 40)) +
-        geom_hline(aes(yintercept = mean(Time), color = "Mittelwert"), size = 0.9)
+        scale_y_continuous(breaks = seq(0, 600, 40), expand = c(0, 0.1)) +
+        geom_hline(aes(yintercept = mean(Time), linetype = "Ersteinschätzung innerhalb 10 Minuten"), color = "#e3000f", linewidth = 1)
     }
     report_svg(graph, "discharge.d.box")
     rm(graph)
 
-    if (nrow(discharge_times) == 0 || all(discharge_times$Time == 0)) {
+    discharge_times <- data.frame(
+      Time = cut(
+        as.numeric(valid_discharge),
+        breaks = seq(0, 600, by = 60),
+        include.lowest = TRUE,
+        right = FALSE
+      )
+    )
+
+    if (nrow(discharge_times) == 0 || all(is.na(discharge_times$Time))) {
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(discharge_times, aes(x = Time)) +
-        geom_histogram(
+        geom_bar(
           aes(y = 100 * after_stat(count) / sum(after_stat(count))),
-          bins = 11, color = "black",
-          fill = "#046C9A", boundary = 0
+          color = "black",
+          fill = "#00427e",
+          stat = "count"
         ) +
-        scale_x_continuous(breaks = seq(0, 600, length = 11)) +
-        labs(y = "Relative Häufigkeit [%]") +
+        labs(
+          x = "Zeit von Aufnahme bis zur Entlassung/Verlegung [Minuten]",
+          y = "Relative Häufigkeit [%]"
+        ) +
         theme(
           plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
           axis.title = element_text(size = 12),
           panel.border = element_blank(),
           axis.line = element_line(color = "black"),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12),
-          axis.title.x = element_blank(),
+          axis.text.y = element_text(color = "#000000", size = 12),
+          axis.text.x = element_text(color = "#000000", size = 12, angle = 45, hjust = 1),
           legend.title = element_blank(),
           legend.position = "bottom",
-          legend.text = element_text(color = "#251516", size = 12, face = "bold")
-        )
+          legend.text = element_text(color = "#e3000f", size = 12, face = "bold")
+        ) +
+        scale_y_continuous(expand = c(0, 0.1)) +
+        scale_x_discrete(labels = function(x) paste0(x))
     }
     report_svg(graph, "discharge.d.hist")
     rm(graph)

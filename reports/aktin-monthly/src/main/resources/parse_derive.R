@@ -22,8 +22,9 @@ df$phys.ts <- strptime(enc$arztkontakt_ts, format = "%Y-%m-%d %H:%M", tz = "GMT"
 df$therapy.ts <- strptime(enc$therapiebeginn_ts, format = "%Y-%m-%d %H:%M", tz = "GMT")
 df$discharge.ts <- strptime(enc$entlassung_ts, format = "%Y-%m-%d %H:%M", tz = "GMT")
 df$age <- (df$admit.day$year - df$dob$year) - 1 * (df$admit.day$yday < df$dob$yday)
-levels(df$sex) <- list("male" = "male", "female" = "female", "unbestimmt" = "indeterminate")
 df$triage.result <- as.factor(enc$triage)
+gender_categories <- c("female", "male", "indetermined")
+df$sex <- factor(df$sex, levels = gender_categories)
 levels(df$triage.result) <- list("Rot" = "1", "Orange" = "2", "Gelb" = "3", "Grün" = "4", "Blau" = "5", "Ohne" = "NA")
 df$triage.result[is.na(df$triage.result)] <- "Ohne"
 

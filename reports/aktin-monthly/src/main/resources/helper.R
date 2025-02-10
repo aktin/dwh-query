@@ -9,7 +9,6 @@ report_generated_file <- function(name) {
   )
 }
 
-
 #' @title Save Graph as SVG
 #' @description Saves a graph or plot to an SVG file and logs the file name.
 #'
@@ -57,16 +56,6 @@ report_table <- function(data, name, widths = NULL, align = "auto", translations
 format_number <- function(num, digits = 0) {
   pretty <- format(round(as.numeric(num), digits), nsmall = digits, big.mark = ".")
   return(pretty)
-}
-
-#' @title Calculate Standard Deviation
-#' @description Computes the standard deviation of a numeric vector using the formula for a population.
-#'
-#' @param data A numeric vector of data.
-#' @return The standard deviation of the input vector.
-stdabw <- function(data) {
-  len <- length(data)
-  sqrt(var(data) * (len - 1) / len)
 }
 
 #' @title Left Join Base Function
@@ -153,7 +142,7 @@ create_delay_time_report <- function(
         c(
           round(mean(delay_times$Time), 1),
           median(delay_times$Time),
-          round(stdabw(delay_times$Time), 1),
+          round(sd(delay_times$Time), 1),
           min(delay_times$Time),
           max(delay_times$Time)
         )
@@ -185,8 +174,8 @@ fill_na_locf <- function(vec) {
   return(vec)
 }
 
-#' @title
-#' @description
-#'
-#' @param
-#' @return
+#' @title Aktin Color Palette
+#' @description A predefined vector of six colors used in the Aktin branding.
+#' @return A character vector containing six HEX color codes representing
+#'         primary and secondary colors of the Aktin brand.
+aktin_colors <- c("#e3000f", "#e26800", "#f9b404", "#00843D", "#00427e", "#4F4F4F")

@@ -14,7 +14,7 @@ try(
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(data = top_counts, aes(reorder(Cedis_codes, Count), Count)) +
-        geom_bar(stat = "identity", fill = "#046C9A", width = 0.5) +
+        geom_bar(stat = "identity", fill = "#00427e", width = 0.5) +
         labs(y = "Anzahl Patienten", x = "CEDIS") +
         theme(
           plot.caption = element_text(hjust = 0.5, size = 12),
@@ -22,8 +22,8 @@ try(
           axis.title = element_text(size = 12),
           panel.border = element_blank(),
           axis.line = element_line(color = "black"),
-          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 12)
+          axis.text.x = element_text(color = "#000000", size = 12),
+          axis.text.y = element_text(color = "#000000", size = 12)
         ) +
         coord_flip()
     }
@@ -50,7 +50,7 @@ try(
         cedis_summary,
         name = "cedis.xml",
         align = c("center", "center", "center", "center"),
-        translations = column_name_translations
+        translations = translations
       )
     } else {
       cedis_summary <- data.frame(
@@ -88,7 +88,7 @@ try(
         name = "cedis.xml",
         align = c("left", "left", "right", "right"),
         widths = c(8, 60, 15, 15),
-        translations = column_name_translations
+        translations = translations
       )
     }
     rm(cedis_summary)
@@ -127,14 +127,21 @@ try(
       graph <- create_no_data_figure()
     } else {
       graph <- ggplot(data = cedis_data_frame, aes(reorder(Category, Frequency), Frequency)) +
-        geom_bar(stat = "identity", fill = "#046C9A", width = 0.5) +
+        geom_bar(stat = "identity", fill = "#00427e", width = 0.5) +
         labs(y = "Anzahl Patienten", x = "") +
         theme(
+          text = element_text(size = 12),
+          plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
           plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
-          axis.text.x = element_text(face = "bold", color = "#000000", size = 12),
-          axis.text.y = element_text(face = "bold", color = "#000000", size = 10)
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 12, color = "#000000"),
+          axis.text.x = element_text(size = 12, color = "#000000"),
+          axis.text.y = element_text(size = 12, color = "#000000"),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size = 12),
+          panel.border = element_blank(),
+          axis.line = element_line(color = "black")
         ) +
         coord_flip()
     }
@@ -191,19 +198,26 @@ try(
 
       ## Graph
       modifier_colors <- c(
-        "Ohne" = "dodgerblue",
-        "G" = "forestgreen",
-        "V" = "yellow",
-        "Z.n." = "orange",
-        "A" = "firebrick3"
+        "Ohne" = "#4F4F4F",
+        "G" = "#00843D",
+        "V" = "#f9b404",
+        "Z.n." = "#e26800",
+        "A" = "#e3000f"
       )
 
       graph <- barchart(
         as.matrix(data_matrix),
         xlab = "Anzahl Patienten",
-        sub = "blau=Ohne Zusatzkennzeichen, grün=Gesichert, gelb=Verdacht, orange=Z.n., rot=Ausschluss",
+        sub = "grau = Ohne Zusatzkennzeichen, grün = Gesichert, gelb = Verdacht, orange = Z.n., rot = Ausschluss",
         col = modifier_colors[colnames(data_matrix)],
-        origin = 0
+        origin = 0,
+        par.settings = list(
+          axis.text = list(cex = 1.1),
+          par.xlab.text = list(cex = 1.1),
+          par.ylab.text = list(cex = 1.1),
+          par.main.text = list(cex = 1.2),
+          par.sub.text = list(cex = 1.2)
+        )
       )
     }
 
@@ -228,7 +242,7 @@ try(
         diag_summary,
         name = "icd.xml",
         align = c("center", "center", "center", "center"),
-        translations = column_name_translations
+        translations = translations
       )
     } else {
       diag_summary <- data.frame(
@@ -262,7 +276,7 @@ try(
         name = "icd.xml",
         align = c("left", "left", "right", "right"),
         widths = c(8, 62, 15, 15),
-        translations = column_name_translations
+        translations = translations
       )
     }
     rm(diag_summary)

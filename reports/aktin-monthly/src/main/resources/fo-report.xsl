@@ -175,6 +175,9 @@
 		<xsl:attribute name="font-size">9pt</xsl:attribute>
 		<xsl:attribute name="font-style">italic</xsl:attribute>
 	</xsl:attribute-set>
+	<xsl:attribute-set name="paragraph-style">
+    <xsl:attribute name="text-align">justify</xsl:attribute>
+	</xsl:attribute-set>
 
 	<xsl:template name="genTOC">
 		<fo:block break-before="page" break-after="page">
@@ -257,7 +260,7 @@
 	</xsl:template>
 
 	<xsl:template match="paragraph">
-		<fo:block>
+		<fo:block xsl:use-attribute-sets="paragraph-style">
 			<xsl:apply-templates select="text() | var | pref"/>
 		</fo:block>
 	</xsl:template>
@@ -328,25 +331,25 @@
 	</xsl:template>
 
 	<xsl:template match="xhtml:th">
-		<fo:table-cell xsl:use-attribute-sets="tablehead">
-			<fo:block>
-				<xsl:value-of select="./text()"/>
-			</fo:block>
-		</fo:table-cell>
+			<fo:table-cell xsl:use-attribute-sets="tablehead">
+					<fo:block text-align="{ancestor::xhtml:table/xhtml:col[position() = count(current()/preceding-sibling::xhtml:th) + 1]/@align}">
+							<xsl:value-of select="./text()"/>
+					</fo:block>
+			</fo:table-cell>
 	</xsl:template>
 
 	<xsl:template match="xhtml:td">
-		<xsl:variable name="p" select="position()"/>
-		<fo:table-cell xsl:use-attribute-sets="cellborder">
-			<xsl:attribute name="text-align">
-				<xsl:value-of select="../../../xhtml:col[$p]/@align"/>
-			</xsl:attribute>
-			<fo:block-container overflow="hidden">
-                <fo:block xsl:use-attribute-sets="celltext">
-                    <xsl:value-of select="./text()"/>
-                </fo:block>
-            </fo:block-container>
-		</fo:table-cell>
+			<xsl:variable name="p" select="position()"/>
+			<fo:table-cell xsl:use-attribute-sets="cellborder">
+					<xsl:attribute name="text-align">
+							<xsl:value-of select="ancestor::xhtml:table/xhtml:col[$p]/@align"/>
+					</xsl:attribute>
+					<fo:block-container overflow="hidden">
+							<fo:block xsl:use-attribute-sets="celltext">
+									<xsl:value-of select="./text()"/>
+							</fo:block>
+					</fo:block-container>
+			</fo:table-cell>
 	</xsl:template>
 
 	<xsl:template match="xhtml:tr">

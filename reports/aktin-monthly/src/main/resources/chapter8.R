@@ -212,11 +212,11 @@ try(
         col = modifier_colors[colnames(data_matrix)],
         origin = 0,
         par.settings = list(
-          axis.text = list(cex = 1.1),
-          par.xlab.text = list(cex = 1.1),
-          par.ylab.text = list(cex = 1.1),
-          par.main.text = list(cex = 1.2),
-          par.sub.text = list(cex = 1.2)
+          axis.text = list(cex = 1),
+          par.xlab.text = list(cex = 1),
+          par.ylab.text = list(cex = 1),
+          par.main.text = list(cex = 1),
+          par.sub.text = list(cex = 1, font = 1)
         )
       )
     }

@@ -200,19 +200,27 @@ try(
       data_matrix$Diagnosis <- rownames(data_matrix)
       data_long <- melt(data_matrix, id.vars = "Diagnosis", variable.name = "Modifier", value.name = "Count")
 
-      ## Define colors
+      # Define colors
       modifier_colors <- c(
-        "Ohne" = "#4F4F4F",
+        "Ohne" = "#00427e",
         "G" = "#00843D",
         "V" = "#f9b404",
-        "Zustand nach" = "#e26800",
+        "Z.n." = "#e26800",
         "A" = "#e3000f"
+      )
+
+      modifier_names <- c(
+        "Ohne" = "Ohne Modifier",
+        "G" = "Gesichert",
+        "V" = "Verdacht auf",
+        "Z.n." = "Zustand nach",
+        "A" = "Auschluss"
       )
 
       ## Graph
       graph <- ggplot(data_long, aes(x = reorder(Diagnosis, Count), y = Count, fill = Modifier)) +
         geom_bar(stat = "identity", position = "stack") +
-        scale_fill_manual(values = modifier_colors) +
+        scale_fill_manual(values = modifier_colors, labels = modifier_names) +
         labs(
           x = NULL,
           y = "Anzahl Patienten",

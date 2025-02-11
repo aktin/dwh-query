@@ -16,15 +16,6 @@
 		</plugins>
 	</build>
 	<dependencies>
-
-		<!-- TODO Revert this change -->
-		<dependency>
-			<groupId>org.aktin</groupId>
-			<artifactId>report-manager</artifactId>
-			<version>0.14-SNAPSHOT</version>
-	</dependency>
-		<!-- -->
-
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>

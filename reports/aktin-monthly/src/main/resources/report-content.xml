@@ -29,7 +29,6 @@ AKTIN-Team
 
 ------------------------
 E-Mail: office@aktin.org
-Telefon: 0391 – 67-28186
 Homepage: www.aktin.org
   </intro>
   <section>
@@ -64,7 +63,7 @@ Homepage: www.aktin.org
     </section>
     <section>
       <header>Fallzahlen nach Wochentag und Aufnahmezeit</header>
-      <plot ref="p2.3">Grafik 2.3: Durchschnittliche Fallzahlen: Mo-Fr rote Quadrate; Sa/So gelbe Dreiecke</plot>
+      <plot ref="p2.3">Grafik 2.3: Durchschnittliche Fallzahlen: Mo-Fr rote Quadrate; Sa/So orange Dreiecke</plot>
     </section>
   </section>
   <section>
@@ -93,21 +92,23 @@ Homepage: www.aktin.org
     <section>
       <header>Ankunft/Aufnahme bis Ersteinschätzung</header>
       <paragraph>&#x00A0;</paragraph>
-       <paragraph>&#x00A0;</paragraph>
-      <plot ref="p5.1">Grafik 5.1: Ankunft/Aufnahme bis Ersteinschätzung</plot>
-      <plot ref="p5.4">Grafik 5.1.1: Ankunft/Aufnahme bis Ersteinschätzung</plot>
+      <paragraph>&#x00A0;</paragraph>
+      <plot ref="p5.1">Grafik 5.1: Histogram zur Wartezeit von Ankunft/Aufnahme bis zur Ersteinschätzung</plot>
+      <plot ref="p5.4">Grafik 5.1.1: Boxplot der Zeitspanne zwischen Ankunft/Aufnahme und Ersteinschätzung</plot>
       <table ref="t5.1">Tabelle 5.1: Ankunft/Aufnahme bis Ersteinschätzung</table>
     </section>
     <section>
-      <header>Ankunft/Aufnahme bis zum ersten Arztkontakt</header>
+      <header break-before="manual">Ankunft/Aufnahme bis zum ersten Arztkontakt</header>
       <paragraph>&#x00A0;</paragraph>
-       <paragraph>&#x00A0;</paragraph>
-      <plot ref="p5.2">Grafik 5.2: Ankunft/Aufnahme bis Arztkontakt</plot>
-      <plot ref="p5.5">Grafik 5.2.1: Ankunft/Aufnahme bis Arztkontakt</plot>
+      <paragraph>&#x00A0;</paragraph>
+      <plot ref="p5.2">Grafik 5.2: Histogram zur Wartezeit von Ankunft/Aufnahme bis zum ersten Arztkontakt</plot>
+      <plot ref="p5.5">Grafik 5.2.1: Boxplot der Zeitspanne zwischen Ankunft/Aufnahme und Arztkontakt</plot>
       <table ref="t5.2">Tabelle 5.2: Ankunft/Aufnahme bis Arztkontakt</table>
     </section>
-    <section>
+    <section break-before="manual">
       <header>Prozesszeiten nach Kategorie der Ersteinschätzung</header>
+      <paragraph>&#x00A0;</paragraph>
+      <paragraph>&#x00A0;</paragraph>
       <plot ref="p5.3">Grafik 5.3: Aufnahme bis Arztkontakt, gruppiert nach Ersteinschätzung</plot>
       <table ref="t5.3">Tabelle 5.3: Aufnahme bis Arztkontakt in Minuten, gruppiert nach
         Ersteinschätzung</table>
@@ -129,21 +130,24 @@ Homepage: www.aktin.org
     <table ref="t7.1">Tabelle 7.1: Aufenthaltsdauer in Minuten</table>
   </section>
   <section>
-    <header>Vorstellungsgrund und führende Diagnose</header>
-    <paragraph>Die kodierten Diagnosen nach ICD-10-GM werden hier als sogenannte 3-Steller berichtet, sofern sie in dem primären Dokumentationssystem als „führende Diagnose“ definiert sind. Weitere Diagnosen werden nicht berücksichtigt.</paragraph>
+    <header break-before="manual">Vorstellungsgrund und führende Diagnosen</header>
+    <paragraph>Aufgelistet werden die führenden Vorstellungsgründe CEDIS-PCL.</paragraph>
     <section>
-      <header>Top 20 führende Diagnosen</header>
-      <plot ref="p8.1">Grafik 8.1: Top 20 führende Diagnosen (ICD 3-Steller)</plot>
-      <table ref="t8.1">Tabelle 8.1: Top 20 Diagnosen (Angaben zu Zusatzkennzeichen für die Diagnosesicherheit siehe Grafik 8.1)</table>
+      <header>Top 20 Vorstellungsgründe (CEDIS-PCL)</header>
+      <plot ref="p8.2">Grafik 8.1: Top 20 Vorstellungsgründe</plot>
+      <table ref="t8.2">Tabelle 8.1: Top 20 Vorstellungsgründe</table>
     </section>
     <section>
-      <header break-before="manual">Top 20 Vorstellungsgründe (CEDIS)</header>
-      <plot ref="p8.2">Grafik 8.2: Top 20 Vorstellungsgründe</plot>
-      <table ref="t8.2">Tabelle 8.2: Top 20 Vorstellungsgründe</table>
+      <header break-before="manual">Top 20 führende Diagnosen</header>
+      <paragraph>Die kodierten Diagnosen nach ICD-10-GM werden hier als sogenannte 3-Steller berichtet, sofern sie in dem primären Dokumentationssystem als „führende Diagnose“ definiert sind. Weitere Diagnosen werden nicht berücksichtigt.</paragraph>
+      <paragraph>&#x00A0;</paragraph>
+      <paragraph>&#x00A0;</paragraph>
+      <plot ref="p8.1">Grafik 8.2: Top 20 führende Diagnosen (ICD 3-Steller)</plot>
+      <table ref="t8.1">Tabelle 8.2: Top 20 Diagnosen (Angaben zu Zusatzkennzeichen für die Diagnosesicherheit siehe Grafik 8.1)</table>
     </section>
     <section>
       <header>Vorstellungsgründe (Gruppen)</header>
-      <plot ref="p8.3">Grafik 8.3: Alle dokumentierten CEDIS Codes nach Gruppen</plot>
+      <plot ref="p8.3">Grafik 8.3: Alle dokumentierten CEDIS-PCL Codes nach Gruppen</plot>
     </section>
   </section>
   <section>

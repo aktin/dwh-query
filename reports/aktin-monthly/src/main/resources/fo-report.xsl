@@ -56,12 +56,10 @@
 					<fo:block>
 						Datenstand: <xsl:call-template name="datenstand"><xsl:with-param name="timestamp" select="document('prefs.xml')/properties/entry[@key = 'report.data.timestamp']/text()"/></xsl:call-template>
 					</fo:block>
-					<fo:block space-before="75mm">Das AKTIN-Notaufnahmeregister – Daten 
-					für die Qualitätssicherung,Public-Health Surveillance und Versorgungsforschung 
-					in der Akutmedizin</fo:block>
+					<fo:block space-before="75mm">Das AKTIN-Notaufnahmeregister – Optimale transsektorale Notfallversorgung durch Smart Data</fo:block>
 					<fo:block space-before="10mm">
 						<fo:external-graphic>
-							<xsl:attribute name="src">Notaufnahmeregister_Logo_2021.svg</xsl:attribute>
+							<xsl:attribute name="src">Aktin_Logo_CMYK.jpg</xsl:attribute>
 							<xsl:attribute name="content-height">30mm</xsl:attribute>
 						</fo:external-graphic>
 					</fo:block>
@@ -74,7 +72,7 @@
 									<fo:table-body>
 											<fo:table-row>
 													<!-- BMBF Logo -->
-													<fo:table-cell text-align="left">
+													<fo:table-cell text-align="center">
 															<fo:block>
 																	<fo:external-graphic>
 																			<xsl:attribute name="src">BMBF.svg</xsl:attribute>
@@ -84,27 +82,13 @@
 															</fo:block>
 													</fo:table-cell>
 													<!-- NUM Logo -->
-													<fo:table-cell text-align="left">
+													<fo:table-cell text-align="center">
 															<fo:block>
 																	<fo:external-graphic>
-																			<xsl:attribute name="src">NUM.svg</xsl:attribute>
+																			<xsl:attribute name="src">Logo_NUM.png</xsl:attribute>
 																			<xsl:attribute name="content-height">30mm</xsl:attribute>
 																			<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
 																	</fo:external-graphic>
-															</fo:block>
-													</fo:table-cell>
-											</fo:table-row>
-											<!-- Second row: Placeholder between images and text field -->
-											<fo:table-row>
-													<fo:table-cell number-columns-spanned="2">
-															<fo:block space-before="10mm">&#x00A0;</fo:block>
-													</fo:table-cell>
-											</fo:table-row>
-											<!-- Third row: Sentence below the images -->
-											<fo:table-row>
-													<fo:table-cell number-columns-spanned="2">
-															<fo:block text-align="left" space-before="5mm" font-size="10pt">
-																	Das AKTIN-Notaufnahmeregister wird gefördert durch das Bundesministerium für Bildung und Forschung (BMBF) im Rahmen des Netzwerks Universitätsmedizin 2.0: "NUM 2.0", Nr. 01KX2121, Projekt: AKTIN@NUM.
 															</fo:block>
 													</fo:table-cell>
 											</fo:table-row>
@@ -123,7 +107,7 @@
 	<xsl:attribute-set name="table">
 		<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
 		<xsl:attribute name="border-collapse">collapse</xsl:attribute>
-		<xsl:attribute name="space-before">10pt</xsl:attribute>
+		<xsl:attribute name="space-before">0pt</xsl:attribute>
 		<xsl:attribute name="keep-together">always</xsl:attribute>
 		<xsl:attribute name="table-layout">fixed</xsl:attribute>
 		<xsl:attribute name="width">100%</xsl:attribute>
@@ -150,25 +134,30 @@
 		<xsl:attribute name="text-align">center</xsl:attribute>
 		<xsl:attribute name="space-before">30pt</xsl:attribute>
 		<xsl:attribute name="space-after">30pt</xsl:attribute>
+		<xsl:attribute name="page-break-before">always</xsl:attribute>
 	</xsl:attribute-set>
 	<xsl:attribute-set name="textheaderformat"> <!-- Überschriften im Fließtext -->
 		<xsl:attribute name="font-size">15pt</xsl:attribute>
 		<xsl:attribute name="font-weight">bold</xsl:attribute>
 		<xsl:attribute name="page-break-before">always</xsl:attribute>
-		<xsl:attribute name="space-after">10pt</xsl:attribute>
-		<xsl:attribute name="keep-with-next">always</xsl:attribute>		
+		<xsl:attribute name="space-before">20pt</xsl:attribute>
+		<xsl:attribute name="space-after">20pt</xsl:attribute>
+		<xsl:attribute name="keep-with-next">always</xsl:attribute>
 	</xsl:attribute-set>
 	<xsl:attribute-set name="subheaderformat">
 		<xsl:attribute name="font-size">14pt</xsl:attribute>
 		<xsl:attribute name="space-before">20pt</xsl:attribute>
+		<xsl:attribute name="space-after">30pt</xsl:attribute>
 		<xsl:attribute name="keep-with-next">always</xsl:attribute>
 	</xsl:attribute-set>
 	<xsl:attribute-set name="plotformat">
 		<xsl:attribute name="inline-progression-dimension">100%</xsl:attribute>
 		<xsl:attribute name="content-height">scale-to-fit</xsl:attribute>
 		<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
-		<xsl:attribute name="space-before">0pt</xsl:attribute>
-		<xsl:attribute name="space-before.precedence">force</xsl:attribute> <!-- Plot haben sonst zu viel Abstand -->
+		<xsl:attribute name="space-before">5pt</xsl:attribute>
+		<xsl:attribute name="space-after">5pt</xsl:attribute>
+		<xsl:attribute name="keep-with-previous">always</xsl:attribute>
+		<!-- <xsl:attribute name="space-before.precedence">force</xsl:attribute> Plot haben sonst zu viel Abstand -->
 	</xsl:attribute-set>
     <xsl:attribute-set name="headerfooter">
 		<xsl:attribute name="text-align">center</xsl:attribute>
@@ -221,7 +210,7 @@
 	</xsl:template>
 	
     <xsl:template match="intro">
-		<fo:block padding-top="40mm" linefeed-treatment="preserve" break-before="page" break-after="page">
+		<fo:block padding-top="40mm" linefeed-treatment="preserve" break-before="page" break-after="page" text-align="justify">
 			<xsl:apply-templates select="text()"/>
 		</fo:block>
 	</xsl:template>

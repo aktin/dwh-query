@@ -1,6 +1,7 @@
 #!/usr/bin/Rscript
 library(ggplot2)
 library(lattice)
+library(reshape2)
 
 options(OutDec = ",")
 

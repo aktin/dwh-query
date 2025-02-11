@@ -196,37 +196,52 @@ try(
 
       data_matrix <- data_matrix[rev(rownames(data_matrix)), ]
 
-      ## Graph
+      # Reshape data for ggplot
+      data_matrix$Diagnosis <- rownames(data_matrix)
+      data_long <- melt(data_matrix, id.vars = "Diagnosis", variable.name = "Modifier", value.name = "Count")
+
+      ## Define colors
       modifier_colors <- c(
         "Ohne" = "#4F4F4F",
         "G" = "#00843D",
         "V" = "#f9b404",
-        "Z.n." = "#e26800",
+        "Zustand nach" = "#e26800",
         "A" = "#e3000f"
       )
 
-      graph <- barchart(
-        as.matrix(data_matrix),
-        xlab = "Anzahl Patienten",
-        sub = "grau = Ohne Zusatzkennzeichen, grün = Gesichert, gelb = Verdacht, orange = Z.n., rot = Ausschluss",
-        col = modifier_colors[colnames(data_matrix)],
-        origin = 0,
-        par.settings = list(
-          axis.text = list(cex = 1),
-          par.xlab.text = list(cex = 1),
-          par.ylab.text = list(cex = 1),
-          par.main.text = list(cex = 1),
-          par.sub.text = list(cex = 1, font = 1)
+      ## Graph
+      graph <- ggplot(data_long, aes(x = reorder(Diagnosis, Count), y = Count, fill = Modifier)) +
+        geom_bar(stat = "identity", position = "stack") +
+        scale_fill_manual(values = modifier_colors) +
+        labs(
+          x = NULL,
+          y = "Anzahl Patienten",
+          fill = "Modifier"
+        ) +
+        coord_flip() +
+        theme(
+          text = element_text(size = 12),
+          plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+          plot.caption = element_text(hjust = 0.5, size = 12),
+          panel.background = element_rect(fill = "white"),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 12, color = "#000000"),
+          axis.text.x = element_text(size = 12, color = "#000000"),
+          axis.text.y = element_text(size = 12, color = "#000000"),
+          legend.text = element_text(size = 12),
+          legend.title = element_blank(),
+          panel.border = element_blank(),
+          axis.line = element_line(color = "black"),
+          legend.position = "bottom",
+          panel.grid.major.y = element_blank(),
+          panel.grid.minor.y = element_blank()
         )
-      )
     }
 
     report_svg(graph, "icd_top")
     rm(graph)
 
-
     ## XML table
-
     # Get the top diagnoses as codes
     codes <- lookup_table[as.numeric(names(top_diag))]
 
@@ -275,7 +290,7 @@ try(
         diag_summary,
         name = "icd.xml",
         align = c("left", "left", "right", "right"),
-        widths = c(8, 62, 15, 15),
+        widths = c(8, 70, 10, 10),
         translations = translations
       )
     }

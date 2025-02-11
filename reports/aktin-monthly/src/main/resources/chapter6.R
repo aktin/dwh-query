@@ -66,7 +66,7 @@ try(
         data_frame,
         name = "discharge.xml",
         align = c("left", "right", "right"),
-        widths = c(25, 15, 15),
+        widths = c(30, 15, 15),
         translations = translations
       )
     }

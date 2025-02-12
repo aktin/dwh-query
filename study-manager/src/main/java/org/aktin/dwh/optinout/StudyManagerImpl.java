@@ -196,10 +196,10 @@ public class StudyManagerImpl implements StudyManager {
 			List<PatientEncounter> encounters = new ArrayList<>();
 			while (rs.next()) {
 				PatientEncounter encounter = new PatientEncounterImpl(
-						rs.getInt("patient_num"),
-						rs.getInt("encounter_num"),
-						rs.getTimestamp("start_date").toInstant(),
-						rs.getTimestamp("end_date").toInstant()
+						rs.getInt(0),
+						rs.getInt(1),
+						rs.getTimestamp(2).toInstant(),
+						rs.getTimestamp(3).toInstant()
 				);
 				encounters.add(encounter);
 			}
@@ -299,10 +299,10 @@ public class StudyManagerImpl implements StudyManager {
 			if (rs.isBeforeFirst()) {
 				rs.next();
 				masterData = new PatientMasterDataImpl(
-						rs.getTimestamp("birth_date").toInstant(),
-						rs.getString("sex_cd"),
-						rs.getString("zip_cd"),
-						rs.getInt("patient_num")
+						rs.getTimestamp(1).toInstant(),
+						rs.getString(3),
+						rs.getString(2),
+						rs.getInt(0)
 						);
 			} else {
 				masterData = null;

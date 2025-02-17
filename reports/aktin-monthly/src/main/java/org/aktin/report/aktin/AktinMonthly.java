@@ -53,7 +53,6 @@ public class AktinMonthly extends AnnotatedReport {
 			"report-data.xml",
 			"Aktin_Logo_CMYK.jpg",
 			"BMBF.svg",
-			"NUM.svg",
 			"Logo_NUM.png"
 		};
 		copyClasspathResources(workingDirectory, resNames);

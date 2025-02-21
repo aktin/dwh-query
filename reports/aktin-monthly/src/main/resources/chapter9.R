@@ -1,151 +1,238 @@
-#Isolierte Patienten
-try({
-  df$combined_iso <- factor(enc$isolation_grund) #Code ISO is redundant with Reason; CAVE: if Reverse and Reason are given, only Reverse is used
-  levels(df$combined_iso) <- list("Keine Isolation"="ISO:NEG","Multiresistenter Keim"="U80","Gastroenteritis"="A09.9","Tuberkulose"="A16.9","Meningitis"="G03.9","Umkehrisolation"="RISO","Andere"="OTH")
-  df$combined_iso[df$isolation == 'Keine Isolation'] <- 'Keine Isolation'
-  df$combined_iso[df$isolation == 'Umkehrisolation'] <- 'Umkehrisolation'
-  
-  isoreason_table <- table(df$combined_iso,useNA = "always")
-  names(isoreason_table)[length(names(isoreason_table))]<-'Keine Daten'
-  b <- data.frame(Kategorie=names(isoreason_table), Anzahl=gformat(isoreason_table), Anteil=gformat((isoreason_table / sum(isoreason_table))*100,digits = 1))
-  c <- rbind(b, data.frame(Kategorie="Summe",Anzahl=gformat(sum(isoreason_table)),Anteil=gformat(100,digits=1)))
-  c[,3] <- paste(c[,3],'%')
-  report.table(c,name='isoreason.xml',align=c('left','right','right'),widths=c(30,15,15))
-}, silent=FALSE)
+# Isolated patients
+try(
+  {
+    if (length(enc$isolation_grund) == 0) {
+      iso_table <- data.frame(
+        Category = "-",
+        Count = "-",
+        Percentage = "-"
+      )
 
-#Multiresistente Erreger
-try({
-  mrsa_patient <- cbind(df$keime,df$keime_mrsa,df$keime_3mrgn,df$keime_4mrgn,df$keime_vre)
-  mrsa_patient <- rowSums(mrsa_patient,na.rm=TRUE)
-  mrsa_table <-                   data.frame(Kategorie="MRSA", Bekannt=sum(df$keime_mrsa == 'MRSA',na.rm=TRUE), Verdacht=sum(df$keime_mrsa == 'MRSA:SUSP',na.rm=TRUE))
-  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="3-MRGN",Bekannt=sum(df$keime_3mrgn == '3MRGN',na.rm=TRUE),Verdacht=sum(df$keime_3mrgn == '3MRGN:SUSP',na.rm=TRUE)))
-  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="4-MRGN",Bekannt=sum(df$keime_4mrgn == '4MRGN',na.rm=TRUE),Verdacht=sum(df$keime_4mrgn == '4MRGN:SUSP',na.rm=TRUE)))
-  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="VRE",Bekannt=sum(df$keime_vre == 'VRE',na.rm=TRUE),Verdacht=sum(df$keime_vre == 'VRE:SUSP',na.rm=TRUE)))
-  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Andere",Bekannt=sum(df$keime_andere == 'OTH',na.rm=TRUE),Verdacht=sum(df$keime_andere == 'OTH:SUSP',na.rm=TRUE)))
-  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Keine Keime",Bekannt=sum(df$keime == 'AMRO:NEG',na.rm=TRUE),Verdacht='-'))
-  mrsa_table <- rbind(mrsa_table, data.frame(Kategorie="Keine Angabe",Bekannt=sum(mrsa_patient<1),Verdacht='-'))
-  report.table(mrsa_table,name='multiresistant.xml',align=c('left','right','right'),widths=c(30,15,15))
-}, silent=FALSE)
+      report_table(
+        iso_table,
+        name = "isoreason.xml",
+        align = c("center", "center", "center"),
+        translations = translations
+      )
+    } else {
+      df$combined_iso <- factor(enc$isolation_grund)
+      levels(df$combined_iso) <- list(
+        "Keine Isolation" = "ISO:NEG",
+        "Multiresistenter Keim" = "U80",
+        "Gastroenteritis" = "A09.9",
+        "Tuberkulose" = "A16.9",
+        "Meningitis" = "G03.9",
+        "Umkehrisolation" = "RISO",
+        "Andere" = "OTH"
+      )
 
-#Patienten in der NA
-#Überfüllung
-try({
-  a<-data.frame(as.POSIXct(df$admit.ts),as.POSIXct(df$discharge.ts))
-  colnames(a)<-c("admit.ts","discharge.ts")
-  a<-subset(a,!(is.na(admit.ts) | is.na(discharge.ts)))
-  a <- a[(order(as.Date(a$admit.ts))),]
-  a$in_na <- sapply(a$admit.ts, function(enter){sum(a$admit.ts <= enter & a$discharge.ts > enter)})
-  init_last_month<-a[1,1]
-  init_last_month<-as.Date(init_last_month)
-  end_last_month<-length(a$admit.ts)
-  end_last_month<-a[end_last_month,1]
-  end_last_month<-as.Date(end_last_month)
-  #a$Uhrzeit<-substr(a$admit.ts,12,16)
-  a$Uhrzeit<- strptime(a$admit.ts, "%Y-%m-%d %H:%M:%S")
-  a$Uhrzeit <- as.numeric(format(a$Uhrzeit, "%H")) +as.numeric(format(a$Uhrzeit, "%M"))/60
-  a$Uhrzeit<-a$Uhrzeit*3600
-  # a$Uhrzeit<-as.numeric(lubridate::hm(a$Uhrzeit))
-  a$tag<-as.Date(a$admit.ts)
-  #a$tag_g<-weekdays(a$admit.ts)
-  a$tag_g<-format(a$admit.ts, format = "%a")
-  #a$year<-lubridate::year(a$admit.ts)
-  a$year<-as.numeric(format(a$admit.ts,'%Y'))
-  #a$day<-lubridate::day(a$admit.ts)
-  a$day<-as.numeric(format(a$admit.ts,'%d'))
-  a$woche<-ifelse(a$tag<=init_last_month+6,1,
-                  ifelse(a$tag<=init_last_month+13,2,
-                         ifelse(a$tag<=init_last_month+20,3,
-                                ifelse(a$tag<=init_last_month+27,4,
-                                       ifelse(a$tag>=init_last_month+28,5,6)))))
-  
-  
+      df$combined_iso[df$isolation == "Keine Isolation"] <- "Keine Isolation"
+      df$combined_iso[df$isolation == "Umkehrisolation"] <- "Umkehrisolation"
 
-  #x-Achse Bezeichung
-  time_labels<-c("00:00","02:00","04:00","06:00","08:00","10:00","12:00","14:00","16:00","18:00","20:00","22:00","24:00")
-  
-  #fehlende 0 und 24 Uhr Zeiten zur Vollständigen Linie
-  fehlend<-data.frame(tag=as.Date(init_last_month,origin = "1970-01-01"):as.Date(end_last_month,origin = "1970-01-01"),Uhrzeit=0)
-  fehlend$tag<-as.Date(fehlend$tag,origin = "1970-01-01")
-  a<-full_join(a,fehlend)
-  a <- `row.names<-`(a[with(a,order(tag,Uhrzeit)),], NULL)
-  a<-fill(a, tag_g,day,woche, .direction = 'up')
-  
-  fehlend<-data.frame(tag=as.Date(init_last_month,origin = "1970-01-01"):as.Date(end_last_month,origin = "1970-01-01"),Uhrzeit=86400)
-  fehlend$tag<-as.Date(fehlend$tag,origin = "1970-01-01")
-  a<-full_join(a,fehlend)
-  
-  a <- `row.names<-`(a[with(a,order(tag,Uhrzeit)),], NULL)
-  a<-fill(a, in_na,tag_g,day,woche, .direction = 'down')
-  a <- a[-nrow(a),]
-  a$tag<-format(a$tag, format="%m-%d")
-  
-  
-  #title Diagramme
-  woche1<-paste('Woche 1',init_last_month,'-',init_last_month+6)
-  woche2<-paste('Woche 2',init_last_month+7,'-',init_last_month+13)
-  woche3<-paste('Woche 3',init_last_month+14,'-',init_last_month+20)
-  woche4<-paste('Woche 4',init_last_month+21,'-',init_last_month+27)
-  woche5<-paste('Woche 5',init_last_month+28,'-',end_last_month)
-  woche5<-paste('Woche 5',init_last_month+28,'-',init_last_month+31)
-  
-  a_woche1<-a%>%filter(woche==1)
-  a_woche1<-subset(a_woche1,!(is.na(in_na)))
-  graph<- ggplot(data=a_woche1, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
-    geom_line()+
-    facet_grid(tag+tag_g~.)+
-    theme_bw()+
-    xlab("Uhrzeit")+
-    ylab("Anzahl Patienten")+
-    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
-    coord_cartesian(xlim=c(0,86400))+
-    ggtitle(woche1)
-  report.svg(graph, 'stayone')
-  
-  a_woche2<-a%>%filter(woche==2)
-  graph2<- ggplot(data=a_woche2, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
-    geom_line()+
-    facet_grid(tag+tag_g~.)+
-    theme_bw()+
-    xlab("Uhrzeit")+
-    ylab("Anzahl Patienten")+
-    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
-    coord_cartesian(xlim=c(0,86400))+
-    ggtitle(woche2)
-  report.svg(graph2, 'staytwo')
-  
-  a_woche3<-a%>%filter(woche==3)
-  graph3<- ggplot(data=a_woche3, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
-    geom_line()+
-    facet_grid(tag+tag_g~.)+
-    theme_bw()+
-    xlab("Uhrzeit")+
-    ylab("Anzahl Patienten")+
-    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
-    coord_cartesian(xlim=c(0,86400))+
-    ggtitle(woche3)
-  report.svg(graph3, 'staythree')
-  
-  a_woche4<-a%>%filter(woche==4)
-  graph4<- ggplot(data=a_woche4, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
-    geom_line()+
-    facet_grid(tag+tag_g~.)+
-    theme_bw()+
-    xlab("Uhrzeit")+
-    ylab("Anzahl Patienten")+
-    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
-    coord_cartesian(xlim=c(0,86400))+
-    ggtitle(woche4)
-  report.svg(graph4, 'stayfour')
-  
-  a_woche5<-a%>%filter(woche==5 & admit.ts<init_last_month+31)
-  graph5<- ggplot(data=a_woche5, aes(x=Uhrzeit, y=in_na, fill=tag,group=1))+ 
-    geom_line()+
-    facet_grid(tag+tag_g~.)+
-    theme_bw()+
-    xlab("Uhrzeit")+
-    ylab("Anzahl Patienten")+
-    scale_x_continuous(breaks = seq(0,86400, by=7200),expand = c(0,0),labels = time_labels)+
-    coord_cartesian(xlim=c(0,86400))+
-    ggtitle(woche5)
-  report.svg(graph5, 'stayfive')
-}, silent=FALSE)
+      isoreason_summary <- table(df$combined_iso, useNA = "always")
+      names(isoreason_summary)[is.na(names(isoreason_summary))] <- "Keine Daten"
+
+
+      iso_table <- data.frame(
+        Category = names(isoreason_summary),
+        Count = as.numeric(isoreason_summary),
+        Percentage = as.numeric(isoreason_summary) / sum(isoreason_summary) * 100
+      )
+
+      iso_table <- rbind(
+        iso_table,
+        data.frame(
+          Category = "Summe",
+          Count = sum(isoreason_summary),
+          Percentage = 100
+        )
+      )
+
+      iso_table$Count <- format_number(iso_table$Count)
+      iso_table$Percentage <- paste(format_number(iso_table$Percentage, digits = 1), "%")
+
+      report_table(
+        iso_table,
+        name = "isoreason.xml",
+        align = c("left", "right", "right"),
+        widths = c(30, 15, 15),
+        translations = translations
+      )
+    }
+    rm(isoreason_summary, iso_table)
+  },
+  silent = FALSE
+)
+
+# Multidrug-resistant organisms
+try(
+  {
+    mrsa_patient <- cbind(df$keime, df$keime_mrsa, df$keime_3mrgn, df$keime_4mrgn, df$keime_vre)
+
+    if (nrow(mrsa_patient) == 0) {
+      mrsa_table <- data.frame(
+        Category = "-",
+        Known = "-",
+        Suspected = "-"
+      )
+
+      report_table(
+        mrsa_table,
+        name = "multiresistant.xml",
+        align = c("center", "center", "center"),
+        translations = translations
+      )
+    } else {
+      mrsa_patient <- rowSums(mrsa_patient, na.rm = TRUE)
+
+      mrsa_table <- data.frame(
+        Category = "MRSA",
+        Known = sum(df$keime_mrsa == "MRSA", na.rm = TRUE),
+        Suspected = sum(df$keime_mrsa == "MRSA:SUSP", na.rm = TRUE)
+      )
+
+      mrsa_table <- rbind(mrsa_table, data.frame(
+        Category = "3-MRGN",
+        Known = sum(df$keime_3mrgn == "3MRGN", na.rm = TRUE),
+        Suspected = sum(df$keime_3mrgn == "3MRGN:SUSP", na.rm = TRUE)
+      ))
+
+      mrsa_table <- rbind(mrsa_table, data.frame(
+        Category = "4-MRGN",
+        Known = sum(df$keime_4mrgn == "4MRGN", na.rm = TRUE),
+        Suspected = sum(df$keime_4mrgn == "4MRGN:SUSP", na.rm = TRUE)
+      ))
+
+      mrsa_table <- rbind(mrsa_table, data.frame(
+        Category = "VRE",
+        Known = sum(df$keime_vre == "VRE", na.rm = TRUE),
+        Suspected = sum(df$keime_vre == "VRE:SUSP", na.rm = TRUE)
+      ))
+
+      mrsa_table <- rbind(mrsa_table, data.frame(
+        Category = "Andere",
+        Known = sum(df$keime_andere == "OTH", na.rm = TRUE),
+        Suspected = sum(df$keime_andere == "OTH:SUSP", na.rm = TRUE)
+      ))
+
+      mrsa_table <- rbind(mrsa_table, data.frame(
+        Category = "Keine Keime",
+        Known = sum(df$keime == "AMRO:NEG", na.rm = TRUE),
+        Suspected = "-"
+      ))
+
+      mrsa_table <- rbind(mrsa_table, data.frame(
+        Category = "Keine Angabe",
+        Known = sum(mrsa_patient < 1),
+        Suspected = "-"
+      ))
+
+      report_table(
+        mrsa_table,
+        name = "multiresistant.xml",
+        align = c("left", "right", "right"),
+        widths = c(30, 15, 15),
+        translations = translations
+      )
+    }
+  },
+  silent = FALSE
+)
+
+# Patients in emergency room over time
+try(
+  {
+    data_frame <- data.frame(
+      admit.ts = as.POSIXct(df$admit.ts),
+      discharge.ts = as.POSIXct(df$discharge.ts)
+    )
+
+    data_frame <- na.omit(data_frame)
+    data_frame <- data_frame[order(as.Date(data_frame$admit.ts)), ]
+
+    data_frame$Patients_in_emergency_room <- sapply(data_frame$admit.ts, function(enter) {
+      sum(data_frame$admit.ts <= enter & data_frame$discharge.ts > enter)
+    })
+
+    init_last_month <- as.Date(data_frame$admit.ts[1])
+    end_last_month <- as.Date(data_frame$admit.ts[nrow(data_frame)])
+
+    data_frame$Day_complete <- as.Date(data_frame$admit.ts)
+    data_frame$Time <- as.numeric(format(data_frame$admit.ts, "%H")) * 3600 +
+      as.numeric(format(data_frame$admit.ts, "%M")) * 60
+
+    if (!is.na(init_last_month) && !is.na(end_last_month)) {
+      fill_time <- data.frame(
+        Day_complete = rep(seq(init_last_month, end_last_month, by = "day"), each = 2),
+        Time = c(0, 86400)
+      )
+      data_frame <- merge(data_frame, fill_time, by = c("Day_complete", "Time"), all = TRUE)
+
+      data_frame$Week_day <- format(data_frame$Day_complete, format = "%a")
+      data_frame$Week <- findInterval(
+        as.Date(data_frame$Day_complete),
+        seq(init_last_month,
+          end_last_month,
+          by = "week"
+        )
+      )
+      for (col in c("Patients_in_emergency_room", "Week_day")) {
+        data_frame[col] <- fill_na_locf(data_frame[[col]])
+      }
+      data_frame <- data_frame[!is.na(data_frame$Patients_in_emergency_room), ]
+    } else {
+      data_frame$Week_day
+      data_frame$Week
+    }
+
+
+    weekly_titles <- sapply(1:5, function(i) {
+      start <- init_last_month + (i - 1) * 7
+      end <- pmin(init_last_month + i * 7 - 1, end_last_month)
+      paste0("Woche ", i, " ", start, " - ", end)
+    })
+
+
+    plot_week <- function(week_num, title, data_frame) {
+      if (nrow(data_frame) == 0) {
+        graph <- create_no_data_figure()
+        return(graph)
+      }
+      data_frame_week <- subset(data_frame, Week == week_num)
+      data_frame_week$Day_complete <- format(as.Date(data_frame_week$Day_complete), "%m-%d")
+
+      graph <- ggplot(data = data_frame_week, aes(x = Time, y = Patients_in_emergency_room, group = Day_complete)) +
+        geom_line() +
+        facet_grid(Day_complete + Week_day ~ .) +
+        theme_bw() +
+        xlab("Uhrzeit") +
+        ylab("Anzahl Patienten") +
+        scale_x_continuous(
+          breaks = seq(0, 86400, by = 7200),
+          expand = c(0, 0),
+          labels = sprintf("%02d:00", seq(0, 24, by = 2))
+        ) +
+        coord_cartesian(xlim = c(0, 86400)) +
+        ggtitle(title) +
+        theme(
+          text = element_text(size = 12),
+          axis.title = element_text(size = 12),
+          axis.text = element_text(size = 12),
+          strip.text = element_text(size = 12),
+          legend.text = element_text(size = 12),
+          legend.title = element_text(size = 12),
+          plot.title = element_text(size = 12)
+        )
+
+      return(graph)
+    }
+
+    file_names <- c("stayone", "staytwo", "staythree", "stayfour", "stayfive")
+
+    for (i in 1:5) {
+      graph <- plot_week(i, weekly_titles[i], data_frame)
+      report_svg(graph, file_names[i])
+    }
+  },
+  silent = FALSE
+)

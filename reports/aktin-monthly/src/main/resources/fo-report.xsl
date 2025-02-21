@@ -56,21 +56,44 @@
 					<fo:block>
 						Datenstand: <xsl:call-template name="datenstand"><xsl:with-param name="timestamp" select="document('prefs.xml')/properties/entry[@key = 'report.data.timestamp']/text()"/></xsl:call-template>
 					</fo:block>
-					<fo:block space-before="75mm">Das AKTIN-Notaufnahmeregister – Daten 
-					für die Qualitätssicherung,Public-Health Surveillance und Versorgungsforschung 
-					in der Akutmedizin</fo:block>
+					<fo:block space-before="75mm">Das AKTIN-Notaufnahmeregister – Optimale transsektorale Notfallversorgung durch Smart Data</fo:block>
 					<fo:block space-before="10mm">
 						<fo:external-graphic>
-							<xsl:attribute name="src">Notaufnahmeregister_Logo_2021.svg</xsl:attribute>
+							<xsl:attribute name="src">Aktin_Logo_CMYK.jpg</xsl:attribute>
 							<xsl:attribute name="content-height">30mm</xsl:attribute>
 						</fo:external-graphic>
 					</fo:block>
 					<fo:block space-before="25mm"></fo:block>
-					<fo:block space-before="5mm">
-						<fo:external-graphic>
-							<xsl:attribute name="src">BMBF.svg</xsl:attribute>
-							<xsl:attribute name="content-height">30mm</xsl:attribute>
-						</fo:external-graphic>
+					    <fo:block space-before="5mm">
+							<!-- Create a table to align the images side by side -->
+							<fo:table table-layout="fixed" width="100%">
+									<fo:table-column column-width="auto"/>
+									<fo:table-column column-width="proportional-column-width(1)"/>
+									<fo:table-body>
+											<fo:table-row>
+													<!-- BMBF Logo -->
+													<fo:table-cell text-align="center">
+															<fo:block>
+																	<fo:external-graphic>
+																			<xsl:attribute name="src">BMBF.svg</xsl:attribute>
+																			<xsl:attribute name="content-height">30mm</xsl:attribute>
+																			<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
+																	</fo:external-graphic>
+															</fo:block>
+													</fo:table-cell>
+													<!-- NUM Logo -->
+													<fo:table-cell text-align="center">
+															<fo:block>
+																	<fo:external-graphic>
+																			<xsl:attribute name="src">Logo_NUM.png</xsl:attribute>
+																			<xsl:attribute name="content-height">30mm</xsl:attribute>
+																			<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
+																	</fo:external-graphic>
+															</fo:block>
+													</fo:table-cell>
+											</fo:table-row>
+									</fo:table-body>
+							</fo:table>
 					</fo:block>
 					<xsl:apply-templates select="./intro"/>
 					<xsl:call-template name="genTOC"/>
@@ -84,7 +107,7 @@
 	<xsl:attribute-set name="table">
 		<xsl:attribute name="border-bottom-style">solid</xsl:attribute>
 		<xsl:attribute name="border-collapse">collapse</xsl:attribute>
-		<xsl:attribute name="space-before">10pt</xsl:attribute>
+		<xsl:attribute name="space-before">0pt</xsl:attribute>
 		<xsl:attribute name="keep-together">always</xsl:attribute>
 		<xsl:attribute name="table-layout">fixed</xsl:attribute>
 		<xsl:attribute name="width">100%</xsl:attribute>
@@ -111,30 +134,38 @@
 		<xsl:attribute name="text-align">center</xsl:attribute>
 		<xsl:attribute name="space-before">30pt</xsl:attribute>
 		<xsl:attribute name="space-after">30pt</xsl:attribute>
+		<xsl:attribute name="page-break-before">always</xsl:attribute>
 	</xsl:attribute-set>
 	<xsl:attribute-set name="textheaderformat"> <!-- Überschriften im Fließtext -->
 		<xsl:attribute name="font-size">15pt</xsl:attribute>
 		<xsl:attribute name="font-weight">bold</xsl:attribute>
 		<xsl:attribute name="page-break-before">always</xsl:attribute>
-		<xsl:attribute name="space-after">10pt</xsl:attribute>
-		<xsl:attribute name="keep-with-next">always</xsl:attribute>		
+		<xsl:attribute name="space-before">20pt</xsl:attribute>
+		<xsl:attribute name="space-after">20pt</xsl:attribute>
+		<xsl:attribute name="keep-with-next">always</xsl:attribute>
 	</xsl:attribute-set>
 	<xsl:attribute-set name="subheaderformat">
 		<xsl:attribute name="font-size">14pt</xsl:attribute>
 		<xsl:attribute name="space-before">20pt</xsl:attribute>
+		<xsl:attribute name="space-after">30pt</xsl:attribute>
 		<xsl:attribute name="keep-with-next">always</xsl:attribute>
 	</xsl:attribute-set>
 	<xsl:attribute-set name="plotformat">
 		<xsl:attribute name="inline-progression-dimension">100%</xsl:attribute>
 		<xsl:attribute name="content-height">scale-to-fit</xsl:attribute>
 		<xsl:attribute name="content-width">scale-to-fit</xsl:attribute>
-		<xsl:attribute name="space-before">0pt</xsl:attribute>
-		<xsl:attribute name="space-before.precedence">force</xsl:attribute> <!-- Plot haben sonst zu viel Abstand -->
+		<xsl:attribute name="space-before">5pt</xsl:attribute>
+		<xsl:attribute name="space-after">5pt</xsl:attribute>
+		<xsl:attribute name="keep-with-previous">always</xsl:attribute>
+		<!-- <xsl:attribute name="space-before.precedence">force</xsl:attribute> Plot haben sonst zu viel Abstand -->
 	</xsl:attribute-set>
     <xsl:attribute-set name="headerfooter">
 		<xsl:attribute name="text-align">center</xsl:attribute>
 		<xsl:attribute name="font-size">9pt</xsl:attribute>
 		<xsl:attribute name="font-style">italic</xsl:attribute>
+	</xsl:attribute-set>
+	<xsl:attribute-set name="paragraph-style">
+    <xsl:attribute name="text-align">justify</xsl:attribute>
 	</xsl:attribute-set>
 
 	<xsl:template name="genTOC">
@@ -179,7 +210,7 @@
 	</xsl:template>
 	
     <xsl:template match="intro">
-		<fo:block padding-top="40mm" linefeed-treatment="preserve" break-before="page" break-after="page">
+		<fo:block padding-top="40mm" linefeed-treatment="preserve" break-before="page" break-after="page" text-align="justify">
 			<xsl:apply-templates select="text()"/>
 		</fo:block>
 	</xsl:template>
@@ -218,7 +249,7 @@
 	</xsl:template>
 
 	<xsl:template match="paragraph">
-		<fo:block>
+		<fo:block xsl:use-attribute-sets="paragraph-style">
 			<xsl:apply-templates select="text() | var | pref"/>
 		</fo:block>
 	</xsl:template>
@@ -289,25 +320,25 @@
 	</xsl:template>
 
 	<xsl:template match="xhtml:th">
-		<fo:table-cell xsl:use-attribute-sets="tablehead">
-			<fo:block>
-				<xsl:value-of select="./text()"/>
-			</fo:block>
-		</fo:table-cell>
+			<fo:table-cell xsl:use-attribute-sets="tablehead">
+					<fo:block text-align="{ancestor::xhtml:table/xhtml:col[position() = count(current()/preceding-sibling::xhtml:th) + 1]/@align}">
+							<xsl:value-of select="./text()"/>
+					</fo:block>
+			</fo:table-cell>
 	</xsl:template>
 
 	<xsl:template match="xhtml:td">
-		<xsl:variable name="p" select="position()"/>
-		<fo:table-cell xsl:use-attribute-sets="cellborder">
-			<xsl:attribute name="text-align">
-				<xsl:value-of select="../../../xhtml:col[$p]/@align"/>
-			</xsl:attribute>
-			<fo:block-container overflow="hidden">
-                <fo:block xsl:use-attribute-sets="celltext">
-                    <xsl:value-of select="./text()"/>
-                </fo:block>
-            </fo:block-container>
-		</fo:table-cell>
+			<xsl:variable name="p" select="position()"/>
+			<fo:table-cell xsl:use-attribute-sets="cellborder">
+					<xsl:attribute name="text-align">
+							<xsl:value-of select="ancestor::xhtml:table/xhtml:col[$p]/@align"/>
+					</xsl:attribute>
+					<fo:block-container overflow="hidden">
+							<fo:block xsl:use-attribute-sets="celltext">
+									<xsl:value-of select="./text()"/>
+							</fo:block>
+					</fo:block-container>
+			</fo:table-cell>
 	</xsl:template>
 
 	<xsl:template match="xhtml:tr">

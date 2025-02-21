@@ -1,6 +1,6 @@
 library(lattice)
 
-report.generatedFile <- function(name){
+report_generated_files <- function(name){
 	cat(paste(name,"\n",sep=""), file="r-generated-files.txt", append=TRUE)
 }
 

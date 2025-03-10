@@ -215,10 +215,10 @@ try(
         coord_cartesian(xlim = c(0, 86400)) +
         ggtitle(title) +
         theme(
-          text = element_text(size = 12),
-          axis.title = element_text(size = 12),
-          axis.text = element_text(size = 12),
-          strip.text = element_text(size = 12),
+          text = element_text(size = 10),
+          axis.title = element_text(size = 10),
+          axis.text = element_text(size = 10),
+          strip.text = element_text(size = 10),
           legend.text = element_text(size = 12),
           legend.title = element_text(size = 12),
           plot.title = element_text(size = 12)

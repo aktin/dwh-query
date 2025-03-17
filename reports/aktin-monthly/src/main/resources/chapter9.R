@@ -217,7 +217,7 @@ try(
         theme(
           text = element_text(size = 10),
           axis.title = element_text(size = 10),
-          axis.text = element_text(size = 10),
+          axis.text = element_text(size = 9),
           strip.text = element_text(size = 10),
           legend.text = element_text(size = 12),
           legend.title = element_text(size = 12),

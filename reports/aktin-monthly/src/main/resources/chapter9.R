@@ -212,12 +212,15 @@ try(
           expand = c(0, 0),
           labels = sprintf("%02d:00", seq(0, 24, by = 2))
         ) +
+        scale_y_continuous(
+          breaks = scales::breaks_extended(n = 4)
+        ) +
         coord_cartesian(xlim = c(0, 86400)) +
         ggtitle(title) +
         theme(
           text = element_text(size = 10),
           axis.title = element_text(size = 10),
-          axis.text = element_text(size = 9),
+          axis.text = element_text(size = 10),
           strip.text = element_text(size = 10),
           legend.text = element_text(size = 12),
           legend.title = element_text(size = 12),

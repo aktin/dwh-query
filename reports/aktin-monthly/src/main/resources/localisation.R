@@ -12,6 +12,6 @@ translations <- list(
   "male" = "Männlich",
   "female" = "Weiblich",
   "indetermined" = "Divers",
-  "NA" = "Keine Angaben",
+  "NA" = "k.A.",
   "sum" = "Summe"
 )

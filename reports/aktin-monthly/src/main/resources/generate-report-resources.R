@@ -2,6 +2,7 @@
 library(ggplot2)
 library(lattice)
 library(reshape2)
+library(scales)
 
 options(OutDec = ",")
 

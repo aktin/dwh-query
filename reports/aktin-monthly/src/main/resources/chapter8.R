@@ -1,4 +1,4 @@
-# TOP20 CEDIS
+# TOP 20 CEDIS
 try(
   {
     df_cedis <- data.frame(df$cedis)
@@ -64,7 +64,7 @@ try(
         cedis_summary,
         data.frame(
           Code = "---",
-          Category = "Summe TOP20",
+          Category = "Summe TOP 20",
           Count = sum(xml_top_counts$Count),
           Percentage = sum(cedis_summary$Percentage, na.rm = TRUE)
         )
@@ -152,7 +152,7 @@ try(
   silent = FALSE
 )
 
-# TOP20 ICD
+# TOP 20 ICD
 try(
   {
     ## Data Prep
@@ -177,7 +177,7 @@ try(
       # ATTENTION: In this part df_diag$diagnosis is needed as data frame.
       # The frame itself is modified!
       df_diag[df_diag$fuehrend == "F" & !is.na(df_diag$fuehrend), ]
-      # Filter rows that have the top20 diagnoses as entry.
+      # Filter rows that have the TOP 20 diagnoses as entry.
       rest_diag <- df_diag[as.numeric(df_diag$diagnosis) %in% as.numeric(names(top_diag)), ]
       # Fill matrix with values
       for (current_diag in as.numeric(names(top_diag))) {
@@ -279,7 +279,7 @@ try(
         diag_summary,
         data.frame(
           Code = "---",
-          Category = "Summe TOP20",
+          Category = "Summe TOP 20",
           Count = sum(top_diag),
           Percentage = sum(as.numeric(top_diag)) / length(df$encounter) * 100
         ),

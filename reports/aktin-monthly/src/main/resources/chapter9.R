@@ -213,7 +213,7 @@ try(
           labels = sprintf("%02d:00", seq(0, 24, by = 2))
         ) +
         scale_y_continuous(
-          breaks = scales::breaks_extended(n = 4)
+          breaks = scales::breaks_extended(n = 3)
         ) +
         coord_cartesian(xlim = c(0, 86400)) +
         ggtitle(title) +

@@ -1,13 +1,12 @@
 package org.aktin.generic.imports.manager.model;
 
-import org.aktin.generic.imports.manager.enums.CSVFile;
-
 public class ImportStats {
+
   private final int year;
-  private final CSVFile source;
+  private final String source;
   private final int count;
 
-  public ImportStats(int year, CSVFile source, int count) {
+  public ImportStats(int year, String source, int count) {
     this.year = year;
     this.source = source;
     this.count = count;
@@ -17,7 +16,7 @@ public class ImportStats {
     return year;
   }
 
-  public CSVFile getSource() {
+  public String getSource() {
     return source;
   }
 

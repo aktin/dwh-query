@@ -1,4 +1,4 @@
-package org.aktin.generic.imports.manager.model;
+package org.aktin.generic.imports.manager;
 
 public class ImportStats {
 

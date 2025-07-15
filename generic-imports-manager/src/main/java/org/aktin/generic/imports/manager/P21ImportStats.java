@@ -1,12 +1,12 @@
 package org.aktin.generic.imports.manager;
 
-public class ImportStats {
+public class P21ImportStats {
 
   private final int year;
   private final String source;
   private final int count;
 
-  public ImportStats(int year, String source, int count) {
+  public P21ImportStats(int year, String source, int count) {
     this.year = year;
     this.source = source;
     this.count = count;

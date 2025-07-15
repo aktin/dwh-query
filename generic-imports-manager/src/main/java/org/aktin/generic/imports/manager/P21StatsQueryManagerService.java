@@ -47,7 +47,7 @@ public class P21StatsQueryManagerService {
   private void startUp() throws SQLException, NamingException {
     if (this.dataSource == null) {
       assert preferences != null;
-      String dataSourceName = preferences.get(PreferenceKey.datasource);
+      String dataSourceName = preferences.get(PreferenceKey.i2b2DatasourceCRC);
       LOG.info("Initializing data source " + dataSourceName);
       InitialContext initialContext = new InitialContext();
       this.dataSource = (DataSource) initialContext.lookup(dataSourceName);

@@ -1,5 +1,6 @@
 package org.aktin.generic.imports.manager;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,12 @@ public class P21StatsQueryManagerService {
     this.startUp();
   }
 
+  public P21StatsQueryManagerService(Connection connection) throws SQLException {
+    this.manager = new P21ImportStatsQueryManager(connection);
+    this.statsBySource = new HashMap<>();
+    putStats();
+  }
+
   @Inject
   public void setPreferences(Preferences preferences) {
     this.preferences = preferences;
@@ -54,6 +61,7 @@ public class P21StatsQueryManagerService {
     }
     this.manager = new P21ImportStatsQueryManager(dataSource.getConnection());
     this.statsBySource = new HashMap<>();
+    putStats();
   }
 
   @PostConstruct

@@ -48,7 +48,7 @@ public class P21ImportStatsQueryManager implements GenericQueryManager<P21Import
   }
 
   protected List<P21ImportStats> fetchFallStats() throws SQLException {
-    return fetchStats("FALL", "of.concept_cd LIKE 'P21:ADMC%'");
+    return fetchStats("FALL", "of.provider_id = 'P21' AND of.concept_cd LIKE 'P21:ADMC%'");
   }
 
   protected List<P21ImportStats> fetchIcdStats() throws SQLException {

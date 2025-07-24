@@ -3,6 +3,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import org.aktin.generic.imports.manager.P21ImportStats;
@@ -18,7 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 class P21StatsQueryManagerServiceTest {
 
   @Container
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
+  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14")
       .withDatabaseName("testdb")
       .withUsername("test")
       .withPassword("test");
@@ -27,20 +28,32 @@ class P21StatsQueryManagerServiceTest {
 
   @BeforeAll
   static void setUp() throws Exception {
-    connection = DriverManager.getConnection(
+    connection = createConnection();
+    createTables(connection);
+    insertTestData(connection);
+  }
+
+  private static Connection createConnection() throws SQLException {
+    return DriverManager.getConnection(
         postgres.getJdbcUrl(),
         postgres.getUsername(),
         postgres.getPassword()
     );
+  }
 
-    try (Statement stmt = connection.createStatement()) {
+  private static void createTables(Connection conn) throws SQLException {
+    try (Statement stmt = conn.createStatement()) {
       stmt.execute("CREATE TABLE visit_dimension (encounter_num INT)");
       stmt.execute("CREATE TABLE observation_fact (" +
           "encounter_num INT, " +
           "provider_id VARCHAR(50), " +
           "concept_cd VARCHAR(50), " +
           "import_date DATE)");
+    }
+  }
 
+  private static void insertTestData(Connection conn) throws SQLException {
+    try (Statement stmt = conn.createStatement()) {
       stmt.execute("INSERT INTO visit_dimension VALUES (1), (2), (3), (4)");
       stmt.execute("INSERT INTO observation_fact VALUES (1, 'P21', 'P21:DEP001', '2025-07-16')");
       stmt.execute("INSERT INTO observation_fact VALUES (2, 'P21', 'ICD10GM:ABC', '2025-07-16')");
@@ -55,6 +68,7 @@ class P21StatsQueryManagerServiceTest {
       connection.close();
     }
   }
+
 
   @Test
   void testFetchFabStats() throws Exception {

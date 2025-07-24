@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class P21ImportStatsQueryManager implements GenericQueryManager<P21ImportStats> {
+public class P21ImportStatsQueryManager {
 
   private final Connection connection;
 
@@ -15,7 +15,6 @@ public class P21ImportStatsQueryManager implements GenericQueryManager<P21Import
     this.connection = connection;
   }
 
-  @Override
   public String buildQuery(String queryFilter) {
     return "SELECT date_part('year', of.import_date) AS year, " +
         "COUNT(DISTINCT of.encounter_num) AS count " +
@@ -25,7 +24,6 @@ public class P21ImportStatsQueryManager implements GenericQueryManager<P21Import
         "GROUP BY year";
   }
 
-  @Override
   public List<P21ImportStats> executeQuery(String sql, String sourceName) throws SQLException {
     List<P21ImportStats> stats = new ArrayList<>();
     try (Statement statement = connection.createStatement(); ResultSet rs = statement.executeQuery(sql)) {

@@ -2,78 +2,49 @@ package org.aktin.generic.imports.manager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
-import org.aktin.dwh.PreferenceKey;
 import org.aktin.Preferences;
+import org.aktin.dwh.PreferenceKey;
 
+/**
+ * Service class that initializes the P21StatsQueryExecutor and provides access to aggregated P21 import statistics.
+ * <p>
+ * Fetches data from multiple predefined sources (FAB, FALL, ICD, OPS) using SQL queries built and executed by {@link P21StatsQueryExecutor}.
+ */
 @Singleton
 public class P21StatsQueryManagerService {
 
   private static final Logger LOG = Logger.getLogger(P21StatsQueryManagerService.class.getName());
 
-  private Map<String, List<P21ImportStats>> statsBySource;
-
-  private P21ImportStatsQueryManager manager;
-
-  private DataSource dataSource;
-
-  @Inject
-  private Preferences preferences;
+  private P21StatsQueryExecutor manager;
 
   @Inject
   public P21StatsQueryManagerService(Preferences preferences) throws SQLException, NamingException {
-    this.setPreferences(preferences);
-    this.startUp();
+    String dataSourceName = preferences.get(PreferenceKey.i2b2DatasourceCRC);
+    LOG.info("Initializing data source: " + dataSourceName);
+    InitialContext ctx = new InitialContext();
+    DataSource dataSource = (DataSource) ctx.lookup(dataSourceName);
+    this.manager = new P21StatsQueryExecutor(dataSource.getConnection());
   }
 
-  public P21StatsQueryManagerService(Connection connection) throws SQLException {
-    this.manager = new P21ImportStatsQueryManager(connection);
-    this.statsBySource = new HashMap<>();
-    putStats();
+  // Tests only
+  public P21StatsQueryManagerService(Connection connection) {
+    this.manager = new P21StatsQueryExecutor(connection);
   }
 
-  @Inject
-  public void setPreferences(Preferences preferences) {
-    this.preferences = preferences;
+  public List<P21ImportStats> fetchAllP21Stats() throws SQLException {
+    List<P21ImportStats> stats = new ArrayList<>();
+    stats.addAll(this.manager.fetchFallStats());
+    stats.addAll(this.manager.fetchFabStats());
+    stats.addAll(this.manager.fetchIcdStats());
+    stats.addAll(this.manager.fetchOpsStats());
+    return stats;
   }
-
-  public void setDataSource(DataSource dataSource) {
-    this.dataSource = dataSource;
-  }
-
-  private void startUp() throws SQLException, NamingException {
-    if (this.dataSource == null) {
-      assert preferences != null;
-      String dataSourceName = preferences.get(PreferenceKey.i2b2DatasourceCRC);
-      LOG.info("Initializing data source " + dataSourceName);
-      InitialContext initialContext = new InitialContext();
-      this.dataSource = (DataSource) initialContext.lookup(dataSourceName);
-    }
-    this.manager = new P21ImportStatsQueryManager(dataSource.getConnection());
-    this.statsBySource = new HashMap<>();
-    putStats();
-  }
-
-  @PostConstruct
-  private void putStats() throws SQLException {
-    this.statsBySource.put("FAB", this.manager.fetchFabStats());
-    this.statsBySource.put("FALL", this.manager.fetchFallStats());
-    this.statsBySource.put("OPS", this.manager.fetchOpsStats());
-    this.statsBySource.put("ICD", this.manager.fetchIcdStats());
-  }
-
-  public List<P21ImportStats> getStatsBySource(String source) throws SQLException {
-    return statsBySource.get(source);
-  }
-
 }

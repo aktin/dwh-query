@@ -25,10 +25,20 @@ public class P21StatsQueryManagerService {
 
   private P21StatsQueryExecutor manager;
 
+  /**
+   * Default constructor for dependency injection.
+   */
   public P21StatsQueryManagerService() {
 
   }
 
+  /**
+   * Constructs the service using application preferences to resolve the data source via JNDI.
+   *
+   * @param preferences the application preferences used to look up the data source
+   * @throws SQLException if a database access error occurs
+   * @throws NamingException if the data source lookup fails
+   */
   @Inject
   public P21StatsQueryManagerService(Preferences preferences) throws SQLException, NamingException {
     String dataSourceName = preferences.get(PreferenceKey.i2b2DatasourceCRC);
@@ -38,11 +48,21 @@ public class P21StatsQueryManagerService {
     this.manager = new P21StatsQueryExecutor(dataSource.getConnection());
   }
 
-  // Tests only
+  /**
+   * Constructor for testing purposes. Initializes the executor with a direct JDBC connection.
+   *
+   * @param connection the JDBC connection to use for querying
+   */
   public P21StatsQueryManagerService(Connection connection) {
     this.manager = new P21StatsQueryExecutor(connection);
   }
 
+  /**
+   * Fetches and aggregates all available P21 import statistics from FALL, FAB, ICD, and OPS files.
+   *
+   * @return a combined list of {@link P21ImportStats} representing all known import statistics
+   * @throws SQLException if an error occurs during query execution
+   */
   public List<P21ImportStats> fetchAllP21Stats() throws SQLException {
     List<P21ImportStats> stats = new ArrayList<>();
     stats.addAll(this.manager.fetchFallStats());

@@ -25,6 +25,10 @@ public class P21StatsQueryManagerService {
 
   private P21StatsQueryExecutor manager;
 
+  public P21StatsQueryManagerService() {
+
+  }
+
   @Inject
   public P21StatsQueryManagerService(Preferences preferences) throws SQLException, NamingException {
     String dataSourceName = preferences.get(PreferenceKey.i2b2DatasourceCRC);

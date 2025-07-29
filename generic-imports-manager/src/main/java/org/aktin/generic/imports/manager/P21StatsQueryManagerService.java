@@ -25,18 +25,15 @@ public class P21StatsQueryManagerService {
 
   private P21StatsQueryExecutor manager;
 
-  /**
-   * Default constructor for dependency injection.
-   */
-  public P21StatsQueryManagerService() {
 
+  public P21StatsQueryManagerService() {
   }
 
   /**
    * Constructs the service using application preferences to resolve the data source via JNDI.
    *
    * @param preferences the application preferences used to look up the data source
-   * @throws SQLException if a database access error occurs
+   * @throws SQLException    if a database access error occurs
    * @throws NamingException if the data source lookup fails
    */
   @Inject
@@ -50,8 +47,6 @@ public class P21StatsQueryManagerService {
 
   /**
    * Constructor for testing purposes. Initializes the executor with a direct JDBC connection.
-   *
-   * @param connection the JDBC connection to use for querying
    */
   public P21StatsQueryManagerService(Connection connection) {
     this.manager = new P21StatsQueryExecutor(connection);

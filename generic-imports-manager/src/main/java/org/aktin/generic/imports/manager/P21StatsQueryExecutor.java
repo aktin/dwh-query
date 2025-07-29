@@ -21,8 +21,7 @@ public class P21StatsQueryExecutor {
   }
 
   /**
-   * Builds a SQL query to count distinct encounters per year from the {@code observation_fact} table
-   * based on the provided filter condition.
+   * Builds a SQL query to count distinct encounters per year from the {@code observation_fact} table based on the provided filter condition.
    *
    * @param queryFilter the WHERE clause to filter data (e.g., concept code prefixes)
    * @return a complete SQL query string
@@ -39,7 +38,7 @@ public class P21StatsQueryExecutor {
   /**
    * Executes the given SQL query and maps the results into a list of {@link P21ImportStats}.
    *
-   * @param sql the SQL query to execute
+   * @param sql        the SQL query to execute
    * @param sourceName the logical name of the data source (e.g., "FAB", "ICD")
    * @return a list of statistics objects for the specified data source
    * @throws SQLException if an error occurs during SQL execution
@@ -59,7 +58,7 @@ public class P21StatsQueryExecutor {
   /**
    * Executes a filtered query and fetches statistics for the specified data source.
    *
-   * @param sourceName the name of the data source (e.g., "FALL", "OPS")
+   * @param sourceName  the name of the data source (e.g., "FALL", "OPS")
    * @param queryFilter the WHERE clause to use in the SQL query
    * @return list of import statistics for the given filter and source
    * @throws SQLException if an error occurs while querying
@@ -69,42 +68,18 @@ public class P21StatsQueryExecutor {
     return executeQuery(sql, sourceName);
   }
 
-  /**
-   * Fetches import statistics for FAB data (encounters/admissions).
-   *
-   * @return a list of yearly import statistics for FAB data
-   * @throws SQLException if an error occurs during the query
-   */
   public List<P21ImportStats> fetchFabStats() throws SQLException {
     return fetchStats("FAB", "of.provider_id = 'P21' AND of.concept_cd LIKE 'P21:DEP%'");
   }
 
-  /**
-   * Fetches import statistics for FALL data (encounters/admissions).
-   *
-   * @return a list of yearly import statistics for FALL data
-   * @throws SQLException if an error occurs during the query
-   */
   public List<P21ImportStats> fetchFallStats() throws SQLException {
     return fetchStats("FALL", "of.provider_id = 'P21' AND of.concept_cd LIKE 'P21:ADMC%'");
   }
 
-  /**
-   * Fetches import statistics for ICD data (encounters/admissions).
-   *
-   * @return a list of yearly import statistics for ICD data
-   * @throws SQLException if an error occurs during the query
-   */
   public List<P21ImportStats> fetchIcdStats() throws SQLException {
     return fetchStats("ICD", "of.provider_id = 'P21' AND of.concept_cd LIKE 'ICD10GM%'");
   }
 
-  /**
-   * Fetches import statistics for OPS data (encounters/admissions).
-   *
-   * @return a list of yearly import statistics for OPS data
-   * @throws SQLException if an error occurs during the query
-   */
   public List<P21ImportStats> fetchOpsStats() throws SQLException {
     return fetchStats("OPS", "of.provider_id = 'P21' AND of.concept_cd LIKE 'OPS%'");
   }

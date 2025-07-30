@@ -27,6 +27,7 @@
 		<module>reports</module>
 		<module>request-manager</module>
 		<module>study-manager</module>
-	</modules>
+    <module>generic-imports-manager</module>
+  </modules>
 
 </project>

@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -21,10 +23,13 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 
 /**
- * Executes parameterized SQL queries defined by {@link QueryDef} and maps rows to JSON-friendly {@code Map<String,Object>} structures
+ * Executes parameterized SQL queries defined by {@link QueryDef} and maps rows to JSON-friendly {@code Map<String,Object>} structures.
  * <p>
- * Resolves the JDBC {@link DataSource} from preferences in production or accepts an injected DataSource in tests
+ * Resolves the JDBC {@link DataSource} from preferences in production or accepts an injected DataSource in tests.
+ * <p>
+ * Annotated with {@code @Stateless} for container-managed lifecycle and pooling, and {@code @TransactionAttribute(SUPPORTS)} to join an existing transaction or run without one for read-only queries.
  */
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 @Stateless
 public class StatsQueryExecutor {
 
@@ -34,7 +39,7 @@ public class StatsQueryExecutor {
   private final int queryTimeoutSeconds;
 
   /**
-   * Container-managed constructor Looks up the DataSource via JNDI name from {@link Preferences}
+   * Container-managed constructor. Looks up the DataSource via JNDI name from {@link Preferences}
    *
    * @param preferences application preferences
    * @throws NamingException if JNDI lookup fails
@@ -66,8 +71,7 @@ public class StatsQueryExecutor {
    *
    * @param q query definition (SQL + params)
    * @return list of rows (column label -> value)
-   * @throws SQLTimeoutException if the timeout is hit
-   * @throws SQLException        on database errors
+   * @throws SQLException if a database error occurs (includes timeouts)
    */
   public List<Map<String, Object>> run(QueryDef q) throws SQLException {
     long t0 = System.currentTimeMillis();

@@ -20,7 +20,6 @@
     <version>0.14-SNAPSHOT</version>
   </parent>
 
-
   <dependencies>
     <dependency>
       <groupId>org.aktin</groupId>

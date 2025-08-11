@@ -4,12 +4,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * {@link StatsSpec} implementation for P21 import statistics.
+ * Defines queries for FAB, FALL, ICD, and OPS concepts using the fixed provider ID "P21".
+ */
 public class P21StatsSpec implements StatsSpec {
 
+  /**
+   * {@inheritDoc}
+   */
   public String id() {
     return "p21";
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>Each query counts distinct encounters per year for a given concept code prefix.</p>
+   */
   public List<QueryDef> queries() {
     String sql = "SELECT date_part('year', of.import_date) AS year, "
         + "COUNT(DISTINCT of.encounter_num) AS count "

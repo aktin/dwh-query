@@ -6,34 +6,52 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import javax.ejb.Singleton;
 import javax.inject.Inject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+import org.aktin.Preferences;
+import org.aktin.dwh.PreferenceKey;
 
 /**
- * Executes all queries defined by a {@link StatsSpec} using a {@link StatsQueryExecutor} and aggregates the results.
- * <p>
- * Annotated with {@code @Stateless} for container-managed lifecycle and pooling, and {@code @TransactionAttribute(SUPPORTS)} to avoid starting new transactions for read-only operations.
+ * Singleton service that initializes the {@link StatsQueryExecutor} (via JNDI {@link DataSource}) and runs specs. CDI-injected constructor resolves the JNDI name from {@link Preferences}.
  */
-@TransactionAttribute(TransactionAttributeType.SUPPORTS)
-@Stateless
+@Singleton
 public class StatsQueryService {
 
   private static final Logger LOGGER = Logger.getLogger(StatsQueryService.class.getName());
 
-  private final StatsQueryExecutor executor;
+  private StatsQueryExecutor executor;
+
+  public StatsQueryService() {
+  }
 
   @Inject
+  public StatsQueryService(Preferences preferences) {
+    try {
+      String jndi = preferences.get(PreferenceKey.i2b2DatasourceCRC);
+      LOGGER.info("Initializing DataSource via JNDI: " + jndi);
+      InitialContext ctx = new InitialContext();
+      DataSource dataSource = (DataSource) ctx.lookup(jndi);
+      this.executor = new StatsQueryExecutor(dataSource, 60);
+    } catch (NamingException e) {
+      throw new IllegalStateException("DataSource lookup failed", e);
+    }
+  }
+
+  /**
+   * Test-only constructor
+   */
   public StatsQueryService(StatsQueryExecutor executor) {
     this.executor = executor;
   }
 
   /**
-   * Runs all queries from the specified {@link StatsSpec} and returns the combined results. Logs any {@link SQLException} and returns empty list if execution fails.
+   * Runs all queries from the given spec and aggregates the results. Returns an empty list on {@link SQLException} and logs the error.
    *
-   * @param spec statistics specification containing queries to execute
-   * @return list of result rows as maps, or empty list if a database error occurs
+   * @param spec statistics specification
+   * @return list of result rows as maps, or empty list on error
    */
   public List<Map<String, Object>> run(StatsSpec spec) {
     try {

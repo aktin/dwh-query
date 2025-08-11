@@ -12,66 +12,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
-import org.aktin.Preferences;
-import org.aktin.dwh.PreferenceKey;
 
 /**
- * Executes parameterized SQL queries defined by {@link QueryDef} and maps rows to JSON-friendly {@code Map<String,Object>} structures.
- * <p>
- * Resolves the JDBC {@link DataSource} from preferences in production or accepts an injected DataSource in tests.
- * <p>
- * Annotated with {@code @Stateless} for container-managed lifecycle and pooling, and {@code @TransactionAttribute(SUPPORTS)} to join an existing transaction or run without one for read-only queries.
+ * Executes parameterized SQL queries ({@link QueryDef}) and returns each row as a {@code Map<String,Object>}. Uses {@code @TransactionAttribute(SUPPORTS)} so methods join an existing TX or run
+ * without one (read-only).
  */
 @TransactionAttribute(TransactionAttributeType.SUPPORTS)
-@Stateless
 public class StatsQueryExecutor {
 
   private static final Logger LOGGER = Logger.getLogger(StatsQueryExecutor.class.getName());
 
-  private final DataSource dataSource;
-  private final int queryTimeoutSeconds;
+  private DataSource dataSource;
+  private int queryTimeoutSeconds;
 
-  /**
-   * Container-managed constructor. Looks up the DataSource via JNDI name from {@link Preferences}
-   *
-   * @param preferences application preferences
-   * @throws NamingException if JNDI lookup fails
-   */
-  @Inject
-  public StatsQueryExecutor(Preferences preferences) throws NamingException {
-    String dataSourceName = preferences.get(PreferenceKey.i2b2DatasourceCRC);
-    LOGGER.info("Initializing DataSource via JNDI: " + dataSourceName);
-    InitialContext ctx = new InitialContext();
-    this.dataSource = (DataSource) ctx.lookup(dataSourceName);
-    this.queryTimeoutSeconds = 60;
-  }
-
-  /**
-   * Test-only constructor
-   *
-   * @param dataSource          DataSource to use
-   * @param queryTimeoutSeconds JDBC query timeout in seconds
-   */
   public StatsQueryExecutor(DataSource dataSource, int queryTimeoutSeconds) {
     this.dataSource = dataSource;
     this.queryTimeoutSeconds = queryTimeoutSeconds;
   }
 
   /**
-   * Executes the given query and returns rows as ordered maps keyed by column label
-   * <p>
-   * Injects the {@code source} field from {@link QueryDef#getName()} if not provided by SQL
+   * Executes the query and maps all rows.
    *
-   * @param q query definition (SQL + params)
-   * @return list of rows (column label -> value)
-   * @throws SQLException if a database error occurs (includes timeouts)
+   * @param q SQL + params + logical name
+   * @return list of rows (column label -> value); adds {@code source} if not provided by SQL
+   * @throws SQLException on database error (includes timeouts)
    */
   public List<Map<String, Object>> run(QueryDef q) throws SQLException {
     long t0 = System.currentTimeMillis();
@@ -91,11 +58,11 @@ public class StatsQueryExecutor {
   }
 
   /**
-   * Prepares a {@link PreparedStatement} for the given query and binds all parameters. Sets {@link PreparedStatement#setQueryTimeout(int)} when configured.
+   * Creates a {@link PreparedStatement}, sets {@code setQueryTimeout}, and binds parameters in order.
    *
    * @param c JDBC connection
    * @param q query definition
-   * @return prepared and bound statement
+   * @return prepared, bound statement
    * @throws SQLException if preparing or binding fails
    */
   private PreparedStatement prepareAndBind(Connection c, QueryDef q) throws SQLException {
@@ -111,12 +78,12 @@ public class StatsQueryExecutor {
   }
 
   /**
-   * Reads all rows from the {@link ResultSet} and returns them as ordered maps. If the SQL did not produce a "source" column, adds it using {@code fallbackSource}.
+   * Iterates the {@link ResultSet} and builds ordered maps for each row. Adds {@code source=fallbackSource} when the SQL result has no {@code source} column.
    *
-   * @param rs             result set positioned before the first row
-   * @param fallbackSource value to use for "source" when the column is absent
-   * @return list of rows
-   * @throws SQLException if reading metadata or rows fails
+   * @param rs             result set
+   * @param fallbackSource value for {@code source} if missing
+   * @return mapped rows
+   * @throws SQLException on metadata or read errors
    */
   private List<Map<String, Object>> mapAllRows(ResultSet rs, String fallbackSource) throws SQLException {
     List<Map<String, Object>> rows = new ArrayList<>();

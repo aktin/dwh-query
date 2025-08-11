@@ -39,7 +39,7 @@ public class StatsQueryService {
       return out;
     } catch (SQLException e) {
       LOGGER.log(Level.SEVERE, "Failed to execute stats queries", e);
-      return null;
+      return new ArrayList<>();
     }
   }
 }

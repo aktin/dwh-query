@@ -61,7 +61,7 @@ class P21StatsSpecTest {
           "encounter_num INT, " +
           "provider_id VARCHAR(50), " +
           "concept_cd VARCHAR(50), " +
-          "import_date DATE)");
+          "start_date DATE)");
     }
   }
 

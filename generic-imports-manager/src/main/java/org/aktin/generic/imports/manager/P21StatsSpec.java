@@ -22,7 +22,7 @@ public class P21StatsSpec implements StatsSpec {
    * <p>Each query counts distinct encounters per year for a given concept code prefix.</p>
    */
   public List<QueryDef> queries() {
-    String sql = "SELECT date_part('year', of.import_date) AS year, "
+    String sql = "SELECT date_part('year', of.start_date) AS year, "
         + "COUNT(DISTINCT of.encounter_num) AS count "
         + "FROM visit_dimension vd "
         + "JOIN observation_fact of ON vd.encounter_num = of.encounter_num "

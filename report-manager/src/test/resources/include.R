@@ -4,10 +4,10 @@ graph <- barchart(runif(10) ~ x, horizontal=FALSE, xlab="Unicode Text ÄÖÜäö
 trellis.device('svg',file='barchart1.svg',width=8, height=4)
 print(graph)
 d <- dev.off()
-report.generatedFile('barchart1.svg')
+report_generated_files('barchart1.svg')
 
 # png
 trellis.device('png',file='barchart1.png')
 print(graph)
 d <- dev.off()
-report.generatedFile('barchart1.png')
+report_generated_files('barchart1.png')

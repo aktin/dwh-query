@@ -16,8 +16,8 @@
 	</parent>
 
 	<scm>
-		<developerConnection>scm:git:https://git.rwth-aachen.de/aktin/dwh-query.git</developerConnection>
-		<tag>v0.11</tag>
+		<developerConnection>scm:git:https://github.com/aktin/dwh-query.git</developerConnection>
+		<tag>HEAD</tag>
 	</scm>
 
 	<modules>

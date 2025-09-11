@@ -20,7 +20,24 @@ public class AktinMonthly extends AnnotatedReport {
 	
 	@Override
 	public String[] copyResourcesForR(Path workingDirectory) throws IOException {
-		String[] resNames = {"generate-report-resources.R","xhtml-table.R","CEDIS.csv","ICD-3Steller.csv","factors.csv","parse_derive.R","chapter1.R","chapter2.R","chapter3.R","chapter4.R","chapter5.R","chapter6.R","chapter7.R","chapter8.R","chapter9.R"};
+		String[] resNames = {
+		"generate-report-resources.R",
+		"helper.R",
+		"localisation.R",
+		"xhtml-table.R",
+		"CEDIS.csv",
+		"ICD-3Steller.csv",
+		"factors.csv",
+		"parse_derive.R",
+		"chapter1.R",
+		"chapter2.R",
+		"chapter3.R",
+		"chapter4.R",
+		"chapter5.R",
+		"chapter6.R",
+		"chapter7.R",
+		"chapter8.R",
+		"chapter9.R"};
 		copyClasspathResources(workingDirectory, resNames);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.
@@ -30,7 +47,14 @@ public class AktinMonthly extends AnnotatedReport {
 	@Override
 	public String[] copyResourcesForFOP(Path workingDirectory) throws IOException {
 		//log.info("Using configuration option="+dummyOption);
-		String[] resNames = {"report-content.xml","fo-report.xsl","report-data.xml","Notaufnahmeregister_Logo_2021.svg","BMBF.svg"};
+		String[] resNames = {
+			"report-content.xml",
+			"fo-report.xsl",
+			"report-data.xml",
+			"Aktin_Logo_CMYK.jpg",
+			"BMBF.svg",
+			"Logo_NUM.png"
+		};
 		copyClasspathResources(workingDirectory, resNames);
 		// return resource names within workingDirectory. 
 		// do not include path separators or sub directories.

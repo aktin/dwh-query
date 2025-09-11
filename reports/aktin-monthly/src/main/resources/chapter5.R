@@ -1,191 +1,327 @@
+# File overview:
+#
+# phys.d.box
+# phys.d.hist
+# phys.d.xml
+#
+# triage.d.box
+# triage.d.hist
+# triage.d.xml
+#
+# triage.phys.d.avg
+# triage.phy.d.avg.xml
+#########################
 
-try({
-  df$phys.d<-as.numeric(df$phys.d)
-  a <- df$phys.d[df$phys.d<181]
-  isNA <- length(df$phys.d[is.na(df$phys.d )])
-  b <- a[!is.na(a)]
-  c<-table(a<0)
-  c<-data.frame(c)
-  c<-c%>%filter(Var1==TRUE)
-  c<-c$Freq
-  c<-ifelse(is.integer(c),"0",c)
-  positiveoutofbounds <- length(df$phys.d) - length(a)
-  negativeoutofbounds <- c
-   b<-data.frame(b)
-  b<-data.frame(b)
-  b$b<-as.numeric(b$b)
-  b<-b%>%filter(b>-1 & b<181)
-  b$x<-"Zeit"
-  graph<-ggplot(data=b,aes(x=x,y=b))+
-    geom_boxplot(fill="#046C9A",width=0.5)+
-    #geom_jitter(width = 0.05,alpha=0.2)+
-    labs(y = "Zeit von Aufnahme bis Arztkontakt [Minuten]",
-         caption = paste("Fehlende Werte: ", isNA, "; Werte > 180 Minuten: ", positiveoutofbounds,"; Werte < 0 Minuten: ", negativeoutofbounds))+
-    theme(plot.caption = element_text(hjust=0.5,size=12),
+# phys.d.box
+# phys.d.hist
+try(
+  {
+    num_positive_outliers <- as.character(sum(df$phys.d >= 181, na.rm = TRUE))
+
+    num_negative_outliers <- as.character(sum(df$phys.d <= 0, na.rm = TRUE))
+    num_missing_times <- as.character(length(df$phys.d[is.na(df$phys.d)]))
+
+    valid_times_raw <- na.omit(df$phys.d[df$phys.d < 181 & df$phys.d >= 0])
+    delay_times <- data.frame(
+      Time = valid_times_raw,
+      Description = rep("Zeit", length(valid_times_raw))
+    )
+
+    if (nrow(delay_times) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = delay_times, aes(x = Description, y = Time)) +
+        geom_boxplot(fill = "#00427e", width = 0.5) +
+        labs(
+          y = "Zeit von Aufnahme bis Arztkontakt [Minuten]",
+          caption = paste(
+            "Fehlende Werte: ", num_missing_times,
+            "; Werte > 180 Minuten: ", num_positive_outliers,
+            "; Werte < 0 Minuten: ", num_negative_outliers
+          )
+        ) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
-          axis.text.y = element_text(face="bold", color="#000000", size=12),
+          axis.title = element_text(size = 12),
+          panel.border = element_blank(),
+          axis.line = element_line(color = "black"),
+          axis.text.y = element_text(color = "#000000", size = 12),
           axis.title.x = element_blank(),
-          axis.ticks.x=element_blank(),
-          axis.text.x=element_blank())+
-    scale_y_continuous(breaks=seq(0,200,20))
-  graph2<- ggplot(b, aes(x = b)) +  
-    geom_histogram(aes(y = 100*(..count..)/sum(..count..)),bins = 12,color="black", fill="#046C9A",boundary=0)+
-    scale_x_continuous(breaks=seq(0,180,length=7))+
-    labs(y = "Relative Häufigkeit [%]")+
-    theme(plot.caption = element_text(hjust=0.5,size=12),
+          axis.ticks.x = element_blank(),
+          axis.text.x = element_blank()
+        ) +
+        scale_y_continuous(breaks = seq(0, 200, 20), expand = c(0, 0.1))
+    }
+    report_svg(graph, "phys.d.box")
+
+    rm(graph)
+
+
+    delay_times_intervals <- data.frame(
+      Time = cut(
+        valid_times_raw,
+        breaks = seq(0, 180, by = 15),
+        include.lowest = TRUE,
+        right = FALSE
+      )
+    )
+
+    if (nrow(delay_times_intervals) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(delay_times_intervals, aes(x = Time)) +
+        geom_bar(
+          aes(y = 100 * after_stat(count) / sum(after_stat(count))),
+          color = "black",
+          fill = "#00427e",
+          stat = "count"
+        ) +
+        labs(
+          x = "Zeit von Aufnahme bis Arztkontakt [Minuten]",
+          y = "Relative Häufigkeit [%]"
+        ) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
-          axis.text.y = element_text(face="bold", color="#000000", size=12),
-          axis.title.x = element_blank(),
-          #axis.ticks.x=element_blank(),
-          #axis.text.x=element_blank(),
+          axis.title = element_text(size = 12),
+          panel.border = element_blank(),
+          axis.line = element_line(color = "black"),
+          axis.text.y = element_text(color = "#000000", size = 12),
+          axis.text.x = element_text(color = "#000000", size = 12, angle = 45, hjust = 1),
           legend.title = element_blank(),
           legend.position = "bottom",
-          legend.text = element_text(color="#e3000b",size=12,face="bold"))
-    report.svg(graph, 'phys.d.box')
-    report.svg(graph2, 'phys.d.hist')
-}, silent=FALSE)
+          legend.text = element_text(color = "#e3000b", size = 12, face = "bold")
+        ) +
+        scale_y_continuous(expand = c(0, 0.1)) +
+        scale_x_discrete(labels = function(x) paste0(x))
+    }
+    report_svg(graph, "phys.d.hist")
+    rm(graph, delay_times_intervals)
+  },
+  silent = FALSE
+)
 
-try({
-  used <- length(b$b)
-  Kennzahl <- factors$phys_txt[!is.na(factors$phys_txt)]
-  Zeit <- c(round(mean(b$b),1),median(b$b),round(stdabw(b$b),1),min(b$b),max(b$b))
-  Zeit <- sprintf(fmt="%.0f",Zeit)
-  Zeit <- paste(Zeit, 'Min')
-  Zeit <- c(used,isNA,positiveoutofbounds,negativeoutofbounds,Zeit)
-  b <- data.frame(Kennzahl,Zeit)
-  report.table(b,name='phys.d.xml',align=c('left','right'),widths=c(45,15))
-}, silent=FALSE)
+# phys.d.xml
+try(
+  {
+    summary_table <- create_delay_time_report(
+      delay_times,
+      num_missing_times,
+      num_positive_outliers,
+      num_negative_outliers,
+      factors$phys_txt
+    )
+
+    report_table(
+      summary_table,
+      name = "phys.d.xml",
+      align = c("left", "right"),
+      widths = c(45, 15),
+      translations = translations
+    )
+    rm(summary_table, delay_times)
+  },
+  silent = FALSE
+)
 
 # Time to triage
-try({
-  df$triage.d<-as.numeric(df$triage.d)
-  a <- df$triage.d[df$triage.d<61]
-  isNA <- length(df$triage.d[is.na(df$triage.d)])
-  b <- a[!is.na(a)]
-  c<-table(a<0)
-  c<-data.frame(c)
-  if(nrow(c)==0){
-    text = paste("\n   Keine Daten \n")
-    graph<- ggplot() + 
-      annotate("text", x = 4, y = 25, size=8, label = text) + 
-      theme_void()
-    graph2<- ggplot() + 
-      annotate("text", x = 4, y = 25, size=8, label = text) + 
-      theme_void()
-    b<-data.frame(b)
-    b$b<-as.numeric(b$b)
-    b<-b%>%filter(b>-1 & b<61)
-    #b$x<-"Zeit"
-    z<-b%>%filter(b<11)
-    z<-length(z$b)
-  }else{ 
-  c<-c%>%filter(Var1==TRUE)
-  c<-c$Freq
-  c<-ifelse(is.integer(c),"0",c)
-  positiveoutofbounds <- length(df$triage.d) - length(a)
-  negativeoutofbounds <- c
-  b<-data.frame(b)
-  b$b<-as.numeric(b$b)
-  b<-b%>%filter(b>-1 & b<61)
-  b$x<-"Zeit"
-  z<-b%>%filter(b<11)
-  z<-length(z$b)
-  
-  graph<-ggplot(data=b,aes(x=x,y=b))+
-    geom_boxplot(fill="#046C9A",width=0.5)+
-    #geom_jitter(width = 0.05,alpha=0.2)+
-    geom_hline(aes(yintercept = 10, linetype = "Ersteinschätzung innerhalb 10 Minuten"), color = "red", size = 1)+ 
-    labs(y = "Zeit von Aufnahme bis Triage [Minuten]",
-         caption = paste("Fehlende Werte: ", isNA, "; Werte > 60 Minuten: ", positiveoutofbounds,"; Werte < 0 Minuten: ", negativeoutofbounds,"; Werte innerhalb 10 min: ",z))+
-    theme(plot.caption = element_text(hjust=0.5,size=12),
+# triage.d.box
+# triage.d.hist
+try(
+  {
+    num_positive_outliers <- as.character(sum(df$triage.d >= 61, na.rm = TRUE))
+    num_negative_outliers <- as.character(sum(df$triage.d <= 0, na.rm = TRUE))
+    num_missing_times <- as.character(length(df$triage.d[is.na(df$triage.d)]))
+
+    valid_times_raw <- na.omit(df$triage.d[df$triage.d < 61 & df$triage.d >= 0])
+
+    delay_times <- data.frame(
+      Time = valid_times_raw,
+      Description = rep("Zeit", length(valid_times_raw))
+    )
+
+    if (nrow(delay_times) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = delay_times, aes(x = Description, y = Time)) +
+        geom_boxplot(fill = "#00427e", width = 0.5) +
+        geom_hline(aes(yintercept = 10, linetype = "Ersteinschätzung innerhalb 10 Minuten"), color = "#e3000f", linewidth = 1) +
+        labs(
+          y = "Zeit von Aufnahme bis Triage [Minuten]",
+          caption = paste(
+            "Fehlende Werte: ", num_missing_times,
+            "; Werte > 60 Minuten: ", num_positive_outliers,
+            "; Werte < 0 Minuten: ", num_negative_outliers,
+            "; Werte innerhalb 10 min: ", sum(delay_times$Time < 11)
+          )
+        ) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
-          axis.text.y = element_text(face="bold", color="#000000", size=12),
+          axis.title = element_text(size = 12),
+          panel.border = element_blank(),
+          axis.line = element_line(color = "black"),
+          axis.text.y = element_text(color = "#000000", size = 12),
           axis.title.x = element_blank(),
-          axis.ticks.x=element_blank(),
-          axis.text.x=element_blank(),
-          legend.position = "bottom",legend.title = element_blank())+
-    coord_cartesian(ylim = c(0, 60))
-    #scale_y_continuous(breaks=seq(0,max(b$b),4))
-  graph2<- ggplot(b, aes(x = b)) +  
-    geom_histogram(aes(y = 100*(..count..)/sum(..count..)),bins = 12,color="black", fill="#046C9A",boundary=0)+
-    scale_x_continuous(breaks=seq(0,60,length=7))+
-    labs(y = "Relative Häufigkeit [%]")+
-    theme(plot.caption = element_text(hjust=0.5,size=12),
+          axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          legend.position = "bottom", legend.title = element_blank(),
+          legend.text = element_text(size = 12)
+        ) +
+        coord_cartesian(ylim = c(0, 60)) +
+        scale_y_continuous(expand = c(0, 0.1))
+    }
+    report_svg(graph, "triage.d.box")
+    rm(graph)
+
+    delay_times_intervals <- data.frame(
+      Time = cut(
+        valid_times_raw,
+        breaks = seq(0, 60, by = 5),
+        include.lowest = TRUE,
+        right = FALSE
+      )
+    )
+
+    if (nrow(delay_times_intervals) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(delay_times_intervals, aes(x = Time)) +
+        geom_bar(
+          aes(y = 100 * after_stat(count) / sum(after_stat(count))),
+          color = "black",
+          fill = "#00427e",
+          stat = "count"
+        ) +
+        labs(
+          x = "Zeit von Aufnahme bis Triage [Minuten]",
+          y = "Relative Häufigkeit [%]"
+        ) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
-          axis.text.y = element_text(face="bold", color="#000000", size=12),
-          axis.title.x = element_blank(),
-          #axis.ticks.x=element_blank(),
-          #axis.text.x=element_blank(),
-          legend.title = element_blank(),
+          axis.title = element_text(size = 12),
+          panel.border = element_blank(),
+          axis.line = element_line(color = "black"),
+          axis.text.y = element_text(color = "#000000", size = 12),
+          axis.text.x = element_text(color = "#000000", size = 12, angle = 45, hjust = 1),
           legend.position = "bottom",
-          legend.text = element_text(color="#e3000b",size=12,face="bold"))}
-  
-  report.svg(graph, 'triage.d.box')
-  report.svg(graph2, 'triage.d.hist')
-}, silent=FALSE)
+          legend.text = element_text(color = "#e3000b", size = 12, face = "bold")
+        ) +
+        scale_y_continuous(expand = c(0, 0.1)) +
+        scale_x_discrete(labels = function(x) paste0(x))
+    }
 
-try({
-  used <- length(b$b)
-  Kennzahl <- factors$triage_txt[!is.na(factors$triage_txt)]
-  if(nrow(b)==0){ 
-    Zeit <- c("k.A","k.A","k.A","k.A","k.A")
-  }else{
-    Zeit <- c(round(mean(b$b),1),median(b$b),round(stdabw(b$b),1),min(b$b),max(b$b))
-    Zeit <- sprintf(fmt="%.0f",Zeit)
-   }
-  
-  Zeit <- paste(Zeit, 'Min')
-  Zeit <- c(used,isNA,positiveoutofbounds,negativeoutofbounds,Zeit)
-  
-  b <- data.frame(Kennzahl,Zeit)
-  report.table(b,name='triage.d.xml',align=c('left','right'),widths=c(45,15))
-}, silent=FALSE)
+    report_svg(graph, "triage.d.hist")
+    rm(graph, delay_times_intervals)
+  },
+  silent = FALSE
+)
 
-# Time to physician mean grouped by triage result
-try({
-  df$phys.d<-as.numeric(df$phys.d)
-  a <- df$phys.d[df$phys.d<181]
-  c<-table(a==0)
-  c<-data.frame(c)
-  c<-c%>%filter(Var1==TRUE)
-  c<-c$Freq
-  outofbounds <- length(df$phys.d) - length(a)
-  b <- df$triage.result[df$phys.d<181]
-  y <- data.frame(time=a, triage=b)
-  y$time<-as.numeric(y$time)
-  y<-y%>%filter(!is.na(time))
-  graph<-ggplot(data=y, aes(x=triage, y=time,fill=triage)) +
-    geom_boxplot(show.legend = FALSE)+
-    labs(x="Triage-Gruppe", y = "Durchschn. Zeit bis Arztkontakt [Min.]",caption =paste("Werte über 180 Minuten (unberücksichtigt): ", outofbounds," ; Fehlender Zeitstempel Arztkontakt:",sum(is.na(df$phys.d))) )+
-    scale_fill_manual(values = c("Rot"="red","Orange"= "orange", "Gelb"="yellow2", "Grün"="green4","Blau"= "blue","Ohne"= "grey48"))+
-    theme(plot.caption = element_text(hjust=0.5,size=12),
+# triage.d.xml
+try(
+  {
+    summary <- create_delay_time_report(
+      delay_times,
+      num_missing_times,
+      num_positive_outliers,
+      num_negative_outliers,
+      factors$triage_txt
+    )
+
+    report_table(
+      summary,
+      name = "triage.d.xml",
+      align = c("left", "right"),
+      widths = c(45, 15),
+      translations = translations
+    )
+    rm(summary, delay_times)
+  },
+  silent = FALSE
+)
+
+# triage.phys.d.avg
+try(
+  {
+    outliers <- sum(df$phys.d >= 181, na.rm = TRUE)
+    triage_by_phys <- data.frame(
+      Time = na.omit(df$phys.d[df$phys.d < 181]),
+      Triage = df$triage.result[df$phys.d < 181 & !is.na(df$phys.d)]
+    )
+
+    if (nrow(triage_by_phys) == 0) {
+      graph <- create_no_data_figure()
+    } else {
+      graph <- ggplot(data = triage_by_phys, aes(x = Triage, y = Time, fill = Triage)) +
+        geom_boxplot(show.legend = FALSE) +
+        labs(
+          x = "Triage-Gruppe",
+          y = "Durchschn. Zeit bis Arztkontakt [Min.]",
+          caption = paste(
+            "Werte über 180 Minuten (unberücksichtigt): ", outliers,
+            " ; Fehlender Zeitstempel Arztkontakt:", sum(is.na(df$phys.d))
+          )
+        ) +
+        scale_fill_manual(
+          values = aktin_colors
+        ) +
+        theme(
+          plot.caption = element_text(hjust = 0.5, size = 12),
           panel.background = element_rect(fill = "white"),
-          axis.title = element_text(size=12),panel.border = element_blank(),axis.line = element_line(color = 'black'),
-          axis.text.x = element_text(face="bold", color="#000000", size=12),
-          axis.text.y = element_text(face="bold", color="#000000", size=12))+
-    scale_y_continuous(breaks=seq(0,max(y$time),10),expand =c (0,0.3))
-  report.svg(graph, 'triage.phys.d.avg')
-}, silent=FALSE)
+          axis.title = element_text(size = 12), panel.border = element_blank(), axis.line = element_line(color = "black"),
+          axis.text.x = element_text(color = "#000000", size = 12),
+          axis.text.y = element_text(color = "#000000", size = 12)
+        ) +
+        scale_y_continuous(breaks = seq(0, max(triage_by_phys$Time), 10), expand = c(0, 0.1))
+    }
+    report_svg(graph, "triage.phys.d.avg")
+    rm(graph)
+  },
+  silent = FALSE
+)
 
+# triage.phy.d.avg.xml
+try(
+  {
+    metrics_funs <- list(
+      Mean = function(x) round(mean(x, na.rm = TRUE), 1),
+      Median = function(x) round(median(x, na.rm = TRUE), 0),
+      Min = function(x) min(x, na.rm = TRUE),
+      Max = function(x) max(x, na.rm = TRUE)
+    )
 
-try({
-  y2 <- data.frame(triage=df$triage.result, time=df$phys.d)
-  y2<-y2%>%dplyr::filter(time<181)
-  agg.funs <- list(Mittelwert=mean, Median=median, Minimum=min, Maximum=max)
-  agg.list <- lapply(agg.funs, function(fun){
-    with(y2, tapply(time, list(triage), FUN=fun, na.rm=TRUE))})
-  
-  agg.list$Mittelwert <- round(agg.list$Mittelwert,1)
-  agg.list$Median <- round(agg.list$Median,0)
-  agg.list$Anzahl <- with(y2, tapply(time, list(triage), FUN=length))
-  agg.list$Anzahl[is.na(agg.list$Anzahl)] <- 0
-  kat<-c("Rot","Orange","Gelb","Grün","Blau","Ohne")
- 
-  x <- data.frame(Kategorie=kat,agg.list)
-  rm(agg.funs, agg.list)
-  report.table(x,'triage.phys.d.xml',align=c('left','right','right','right','right','right'),width=15)
-}, silent=FALSE)
+    compute_metrics <- function(funs, data, group_by_col, value_col) {
+      lapply(funs, function(fun) {
+        result <- tapply(data[[value_col]], data[[group_by_col]], FUN = fun)
+        result[is.na(result)] <- 0
+        return(result)
+      })
+    }
+
+    metrics_list <- compute_metrics(
+      metrics_funs,
+      triage_by_phys,
+      group_by_col = "Triage",
+      value_col = "Time"
+    )
+
+    metrics_list$Count <- tapply(triage_by_phys$Time, triage_by_phys$Triage, FUN = length)
+    metrics_list$Count[is.na(metrics_list$Count)] <- 0
+
+    metrics_list$Category <- c("Red", "Orange", "Yellow", "Green", "Blue", "Ohne")
+
+    metrics_frame <- as.data.frame(metrics_list)
+    metrics_frame <- metrics_frame[, c("Category", setdiff(names(metrics_frame), "Category"))]
+
+    report_table(
+      metrics_frame,
+      name = "triage.phys.d.xml",
+      align = c("left", "right", "right", "right", "right", "right"),
+      width = 15,
+      translations = translations
+    )
+  },
+  silent = FALSE
+)

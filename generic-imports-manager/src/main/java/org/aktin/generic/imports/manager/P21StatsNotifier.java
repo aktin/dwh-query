@@ -1,4 +1,5 @@
 package org.aktin.generic.imports.manager;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import org.aktin.dwh.BrokerResourceManager;
 
 @Singleton
 @Startup
-public class P21StatsNotifier  implements StatsNotifier {
+public class P21StatsNotifier implements StatsNotifier {
 
   @Inject
   private BrokerResourceManager brokerResourceManager;
@@ -43,8 +44,8 @@ public class P21StatsNotifier  implements StatsNotifier {
     Properties props = new Properties();
     for (Map<String, Object> row : results) {
       Object year = row.get("year");
-      Object count =  row.get("count");
-      Object source =  row.get("source");
+      Object count = row.get("count");
+      Object source = row.get("source");
       if (year != null && count != null && source != null) {
         props.put(source + "." + year, String.valueOf(count));
       }

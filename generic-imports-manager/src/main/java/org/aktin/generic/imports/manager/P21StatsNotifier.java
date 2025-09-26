@@ -34,7 +34,6 @@ public class P21StatsNotifier implements StatsNotifier {
   @PostConstruct
   public void uploadStatsInformation() {
     List<Map<String, Object>> results = statsQueryService.run(p21StatsSpec);
-    System.out.println(results);
     Properties props = flattenResults(results);
     props.put("timestamp", Instant.now());
     brokerResourceManager.putMyResourceProperties(this.id(), props);

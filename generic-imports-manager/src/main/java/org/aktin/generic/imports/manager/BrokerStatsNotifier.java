@@ -17,11 +17,11 @@ public class BrokerStatsNotifier {
   @Inject
   private StatsQueryService statsQueryService;
 
-  public void upload(String resourceName, StatsSpec spec) {
+  public void upload(StatsSpec spec) {
     List<Map<String, Object>> results = statsQueryService.run(spec);
     Properties props = flattenResults(results);
     props.put("timestamp", Instant.now());
-    brokerResourceManager.putMyResourceProperties(resourceName, props);
+    brokerResourceManager.putMyResourceProperties(spec.id(), props);
   }
 
   private Properties flattenResults(List<Map<String, Object>> results) {

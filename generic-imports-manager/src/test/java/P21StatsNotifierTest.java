@@ -28,6 +28,6 @@ public class P21StatsNotifierTest {
   public void testDelegatesToBrokerStatsNotifier() {
     p21StatsNotifier.uploadStatsInformation();
 
-    verify(brokerStatsNotifier).upload(eq("stats/p21"), any(P21StatsSpec.class));
+    verify(brokerStatsNotifier).upload(any(P21StatsSpec.class));
   }
 }

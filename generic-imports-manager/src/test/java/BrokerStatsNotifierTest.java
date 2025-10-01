@@ -45,10 +45,10 @@ public class BrokerStatsNotifierTest {
     when(statsQueryService.run(org.mockito.ArgumentMatchers.any(P21StatsSpec.class)))
         .thenReturn(results);
 
-    brokerStatsNotifier.upload("stats/p21", new P21StatsSpec());
+    brokerStatsNotifier.upload(new P21StatsSpec());
 
     verify(brokerResourceManager).putMyResourceProperties(
-        eq("stats/p21"),
+        eq("p21"),
         argThat((Properties props) ->
             "1000".equals(props.get("FAB.2025")) && props.get("timestamp") != null
         )

@@ -10,9 +10,7 @@ public class P21StatsNotifier {
   @Inject
   private BrokerStatsNotifier brokerStatsNotifier;
 
-  public P21StatsNotifier() {
-
-  }
+  public P21StatsNotifier() {}
 
   // Used only in tests
   public P21StatsNotifier(BrokerStatsNotifier brokerStatsNotifier) {
@@ -21,6 +19,6 @@ public class P21StatsNotifier {
 
   @PostConstruct
   public void uploadStatsInformation() {
-    brokerStatsNotifier.upload("stats/p21", new P21StatsSpec());
+    brokerStatsNotifier.upload(new P21StatsSpec());
   }
 }

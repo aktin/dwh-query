@@ -13,7 +13,7 @@ import org.aktin.dwh.BrokerResourceManager;
 
 @Singleton
 @Startup
-public class P21StatsNotifier implements StatsNotifier {
+public class P21StatsNotifier {
 
   @Inject
   private BrokerResourceManager brokerResourceManager;

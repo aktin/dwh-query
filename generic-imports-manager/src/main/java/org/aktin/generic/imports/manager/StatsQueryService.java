@@ -4,9 +4,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.naming.InitialContext;
@@ -25,7 +28,13 @@ public class StatsQueryService {
 
   private StatsQueryExecutor executor;
 
-  private BrokerStatsNotifier notifier;
+  @Inject
+  private BrokerStatsNotifier brokerStatsNotifier;
+
+  @Inject
+  private Event<StatsViewedEvent> statsViewedEvent;
+
+  private final ExecutorService async = Executors.newSingleThreadExecutor();
 
   public StatsQueryService() {
   }
@@ -62,10 +71,15 @@ public class StatsQueryService {
       for (QueryDef q : spec.queries()) {
         out.addAll(executor.run(q));
       }
+
+      final List<Map<String, Object>> resultsCopy = new ArrayList<>(out);
+      CompletableFuture.runAsync(() -> statsViewedEvent.fire(new StatsViewedEvent(spec, resultsCopy)), async);
+
       return out;
     } catch (SQLException e) {
       LOGGER.log(Level.SEVERE, "Failed to execute stats queries", e);
       return new ArrayList<>();
     }
   }
+
 }

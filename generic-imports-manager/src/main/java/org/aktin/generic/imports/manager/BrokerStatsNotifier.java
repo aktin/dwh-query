@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.aktin.dwh.BrokerResourceManager;
@@ -19,9 +20,14 @@ public class BrokerStatsNotifier {
   @Inject
   private StatsQueryService statsQueryService;
 
-  private final Map<String, Instant> lastStats = new HashMap<>();
+  private Map<String, Instant> lastStats;
 
-  public void upload(StatsSpec spec) {
+  @PostConstruct
+  public void init() {
+    this.lastStats = new HashMap<>();
+  }
+
+  public void upload(StatsSpec spec, List<Map<String, Object>> results) {
     Instant now = Instant.now();
     Instant cutoff = now.minus(1, ChronoUnit.DAYS);
 
@@ -37,9 +43,8 @@ public class BrokerStatsNotifier {
       return;
     }
 
-    List<Map<String, Object>> results = statsQueryService.run(spec);
     Properties props = flattenResults(results);
-    props.put("timestamp", Instant.now().toString());
+    props.put("timestamp", now.toString());
 
     brokerResourceManager.putMyResourceProperties(spec.id(), props);
   }

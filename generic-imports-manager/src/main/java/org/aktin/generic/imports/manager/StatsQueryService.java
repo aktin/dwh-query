@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Singleton;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -23,6 +24,8 @@ public class StatsQueryService {
   private static final Logger LOGGER = Logger.getLogger(StatsQueryService.class.getName());
 
   private StatsQueryExecutor executor;
+
+  private BrokerStatsNotifier notifier;
 
   public StatsQueryService() {
   }

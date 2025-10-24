@@ -1,9 +1,8 @@
 package org.aktin.dwh.optinout;
 
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.time.Instant;
 
 @AllArgsConstructor
 public class PatientMasterDataImpl implements PatientMasterData {

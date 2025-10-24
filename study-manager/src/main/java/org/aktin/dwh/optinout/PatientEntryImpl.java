@@ -1,15 +1,13 @@
 package org.aktin.dwh.optinout;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class PatientEntryImpl implements PatientEntry {

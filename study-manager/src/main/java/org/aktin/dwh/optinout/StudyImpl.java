@@ -9,10 +9,8 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;

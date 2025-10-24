@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.logging.Logger;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedExecutorService;
@@ -23,7 +22,6 @@ import javax.inject.Singleton;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-
 import org.aktin.Preferences;
 import org.aktin.dwh.Anonymizer;
 import org.aktin.dwh.PreferenceKey;
@@ -148,19 +146,15 @@ public class StudyManagerImpl implements StudyManager {
 				while( rs.next() ) {
 					StudyImpl s = new StudyImpl(this, rs.getString(1), rs.getString(2), rs.getString(3));
 					// find and initialize code generator
-					String gen = rs.getString(7);
-					if( gen == null ) {
-						// no SIC codes
+					s.setSicGenerator(rs.getString(7));
+					s.setSicGeneratorState(rs.getString(8));
+					if(s.getSicGenerator() == null || s.getSicGenerator().isEmpty() || s.getSicGenerator().equals("MANUAL")) {
 						s.setCodeGenerator(null);
-						s.setManualCodes(false);
-					}else if( gen.equals("MANUAL") ) {
-						// only manual SICs
-						s.setCodeGenerator(null);
-						s.setManualCodes(true);
-					}else {
+						s.setSicGeneration(SICGeneration.ManualOnly);
+					} else {
 						// use generated codes
-						s.setManualCodes(false);
-						s.setCodeGenerator(codeFactory.createInstance(gen, rs.getString(8)));
+						s.setCodeGenerator(codeFactory.createInstance(s.getSicGenerator(), s.getSicGeneratorState()));
+						s.setSicGeneration(SICGeneration.AutoAndManual);
 					}
 					// load options
 					s.loadOptions(rs.getString(6));
@@ -188,6 +182,133 @@ public class StudyManagerImpl implements StudyManager {
 		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
+	@Override
+	public List<PatientEncounter> loadEncounters(PatientReference ref, String root, String ext) throws IOException {
+		String ide = anon.calculatePatientPseudonym(root, ext);
+		try (Connection dbc = getConnection();
+			 PreparedStatement ps = dbc.prepareStatement(resolveEncounterQueryByReference(ref))) {
+			ps.setString(1, ide);
+			ResultSet rs = ps.executeQuery();
+			List<PatientEncounter> encounters = new ArrayList<>();
+			while (rs.next()) {
+				PatientEncounter encounter = new PatientEncounterImpl(
+						rs.getInt(1),
+						rs.getInt(2),
+						rs.getTimestamp(3).toInstant(),
+						rs.getTimestamp(4).toInstant()
+				);
+				encounters.add(encounter);
+			}
+			rs.close();
+
+			return encounters;
+		} catch (SQLException e) {
+			throw new IOException(e);
+		}
+	}
+
+	/**
+	 * Determine sql query to get encounters by reference
+	 * @param ref Patient reference
+	 * @return sql query
+	 */
+	private String resolveEncounterQueryByReference(PatientReference ref) {
+		String sql;
+		switch (ref) {
+			case Patient:
+				sql = "SELECT vd.patient_num, vd.encounter_num, vd.start_date, vd.end_date " +
+						"FROM i2b2.i2b2crcdata.visit_dimension vd " +
+						"JOIN i2b2.i2b2crcdata.patient_mapping pm on vd.patient_num = pm.patient_num " +
+						"WHERE pm.patient_ide = ? " +
+						"ORDER BY vd.patient_num asc, vd.start_date desc";
+				break;
+			case Encounter:
+				sql = "SELECT pm.patient_num, vd.encounter_num, vd.start_date, vd.end_date " +
+						"FROM i2b2crcdata.visit_dimension vd " +
+						"JOIN i2b2crcdata.patient_mapping pm on vd.patient_num = pm.patient_num " +
+						"JOIN i2b2crcdata.encounter_mapping em on vd.encounter_num = em.encounter_num " +
+						"where em.encounter_ide = ? " +
+						"ORDER BY vd.patient_num asc, vd.start_date desc";
+				break;
+			case Billing:
+				sql = "SELECT pm.patient_num, vd.encounter_num, vd.start_date, vd.end_date " +
+						"FROM i2b2crcdata.visit_dimension vd " +
+						"JOIN i2b2crcdata.observation_fact o on vd.patient_num = o.patient_num " +
+						"JOIN i2b2crcdata.patient_mapping pm on vd.patient_num = pm.patient_num " +
+						"WHERE o.concept_cd LIKE 'AKTIN:Fall%' " +
+						"AND o.tval_char = ? " +
+						"ORDER BY vd.patient_num asc, vd.start_date desc";
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown ref: "+ref);
+		}
+		return sql;
+	}
+
+
+	/**
+	 * Determine sql query to get master data by reference
+	 * @param ref Patient reference
+	 * @return sql query
+	 */
+	private String resolveMasterDataQueryByReference(PatientReference ref) {
+		String sql;
+		switch (ref) {
+			case Patient:
+				sql = "SELECT pd.patient_num, pd.birth_date, pd.zip_cd, pd.sex_cd " +
+						"FROM i2b2.i2b2crcdata.patient_dimension pd " +
+						"JOIN i2b2.i2b2crcdata.patient_mapping pm ON pm.patient_num = pd.patient_num " +
+						"WHERE pm.patient_ide = ? " +
+						"LIMIT 1";
+				break;
+			case Encounter:
+				sql = "SELECT pd.patient_num, pd.birth_date, pd.zip_cd, pd.sex_cd\n" +
+						"FROM i2b2.i2b2crcdata.patient_dimension pd\n" +
+						"         JOIN i2b2.i2b2crcdata.visit_dimension vm ON vm.patient_num = pd.patient_num\n" +
+						"         JOIN i2b2crcdata.encounter_mapping em on vm.encounter_num = em.encounter_num\n" +
+						"WHERE em.encounter_ide = ?\n" +
+						"LIMIT 1;";
+				break;
+			case Billing:
+				sql = "SELECT pd.patient_num, pd.birth_date, pd.zip_cd, pd.sex_cd\n" +
+						"FROM i2b2.i2b2crcdata.patient_dimension pd\n" +
+						"    JOIN i2b2crcdata.observation_fact o on pd.patient_num = o.patient_num\n" +
+						"WHERE o.concept_cd LIKE 'AKTIN:Fall%'\n" +
+						"  AND o.tval_char = ?\n" +
+						"LIMIT 1;";
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown ref: "+ref);
+		}
+
+		return sql;
+	}
+
+    @Override
+	public PatientMasterData loadMasterData(PatientReference ref, String root, String ext) throws IOException {
+		String ide = anon.calculatePatientPseudonym(root, ext);
+		try (Connection dbc = getConnection();
+			 PreparedStatement ps = dbc.prepareStatement(resolveMasterDataQueryByReference(ref))) {
+			ps.setString(1, ide);
+			ResultSet rs = ps.executeQuery();
+			PatientMasterData masterData;
+			if (rs.isBeforeFirst()) {
+				rs.next();
+				masterData = new PatientMasterDataImpl(
+						rs.getTimestamp(2).toInstant(),
+						rs.getString(4),
+						rs.getString(3),
+						rs.getInt(1)
+						);
+			} else {
+				masterData = null;
+			}
+			rs.close();
+			return masterData;
+		} catch (SQLException e) {
+			throw new IOException(e);
+		}
+	}
 
 	/**
 	 * Synchronize a single patient entry with existing data

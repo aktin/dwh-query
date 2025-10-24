@@ -26,6 +26,8 @@ public class StatsQueryService {
 
   private final StatsQueryExecutor executor;
 
+  private final StatsSpecNotifier notifier;
+
   /**
    * CDI constructor. Looks up the CRC DataSource and builds the executor. Timeout is fixed at 60 seconds.
    *
@@ -41,6 +43,7 @@ public class StatsQueryService {
       InitialContext ctx = new InitialContext();
       DataSource dataSource = (DataSource) ctx.lookup(jndi);
       this.executor = new StatsQueryExecutor(dataSource, 60);
+      this.notifier = new StatsSpecNotifier();
     } catch (NamingException e) {
       throw new IllegalStateException("DataSource lookup failed", e);
     }
@@ -51,6 +54,7 @@ public class StatsQueryService {
    */
   public StatsQueryService(StatsQueryExecutor executor) {
     this.executor = Objects.requireNonNull(executor, "executor");
+    this.notifier = new StatsSpecNotifier();
   }
 
   /**
@@ -66,6 +70,7 @@ public class StatsQueryService {
       for (QueryDef q : spec.queries()) {
         out.addAll(executor.run(q));
       }
+      notifier.tryUpload(spec.id(), out);
       return out;
     } catch (SQLException e) {
       LOGGER.log(Level.SEVERE, "Stats execution failed for spec: " + spec.id(), e);

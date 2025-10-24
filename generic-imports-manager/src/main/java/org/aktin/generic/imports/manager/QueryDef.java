@@ -2,9 +2,6 @@ package org.aktin.generic.imports.manager;
 
 import java.util.List;
 
-/**
- * Encapsulates a single SQL query definition.
- */
 public class QueryDef {
 
   private final String name;

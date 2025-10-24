@@ -3,21 +3,17 @@ package org.aktin.generic.imports.manager;
 import java.util.List;
 
 /**
- * Defines a set of SQL queries to collect statistics for a specific data import type. Implementations provide an identifier and the queries to be executed.
+ * Groups one or more SQL queries into a named statistics specification. Used by {@link StatsQueryExecutor} to collect metrics.
  */
 public interface StatsSpec {
 
   /**
-   * Returns the unique identifier for this statistics specification.
-   *
-   * @return specification ID
+   * Unique id of this statistics specification.
    */
   String id();
 
   /**
-   * Returns the list of queries to execute for this specification.
-   *
-   * @return list of query definitions
+   * All queries belonging to this specification.
    */
   List<QueryDef> queries();
 }

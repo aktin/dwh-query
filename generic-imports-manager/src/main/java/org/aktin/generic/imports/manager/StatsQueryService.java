@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -19,31 +20,30 @@ import org.aktin.dwh.PreferenceKey;
 /**
  * Singleton facade to execute {@link StatsSpec} via a {@link StatsQueryExecutor}. Resolves the i2b2 {@link DataSource} from JNDI using {@link Preferences}.
  */
-@Singleton
+@ApplicationScoped
 public class StatsQueryService {
 
   private static final Logger LOGGER = Logger.getLogger(StatsQueryService.class.getName());
 
-  private final StatsQueryExecutor executor;
-
-  private final StatsSpecNotifier notifier;
-
-  /**
-   * CDI constructor. Looks up the CRC DataSource and builds the executor. Timeout is fixed at 60 seconds.
-   *
-   * @param preferences config provider for the JNDI name
-   * @throws IllegalStateException if the DataSource lookup fails
-   */
   @Inject
-  public StatsQueryService(Preferences preferences) {
-    Objects.requireNonNull(preferences, "preferences");
+  Preferences preferences;
+
+  @Inject
+  StatsSpecNotifier notifier;
+
+  private StatsQueryExecutor executor;
+
+  public StatsQueryService() {
+  } // required for proxy
+
+  @PostConstruct
+  void init() {
     try {
       String jndi = preferences.get(PreferenceKey.i2b2DatasourceCRC);
       LOGGER.info("Initializing DataSource via JNDI: " + jndi);
       InitialContext ctx = new InitialContext();
       DataSource dataSource = (DataSource) ctx.lookup(jndi);
       this.executor = new StatsQueryExecutor(dataSource, 60);
-      this.notifier = new StatsSpecNotifier();
     } catch (NamingException e) {
       throw new IllegalStateException("DataSource lookup failed", e);
     }
@@ -52,9 +52,9 @@ public class StatsQueryService {
   /**
    * Test-only constructor
    */
-  public StatsQueryService(StatsQueryExecutor executor) {
-    this.executor = Objects.requireNonNull(executor, "executor");
-    this.notifier = new StatsSpecNotifier();
+  public StatsQueryService(StatsQueryExecutor ex, StatsSpecNotifier up) {
+    this.executor = Objects.requireNonNull(ex);
+    this.notifier = Objects.requireNonNull(up);
   }
 
   /**

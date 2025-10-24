@@ -15,6 +15,7 @@ import org.aktin.generic.imports.manager.QueryDef;
 import org.aktin.generic.imports.manager.StatsQueryExecutor;
 import org.aktin.generic.imports.manager.StatsQueryService;
 import org.aktin.generic.imports.manager.StatsSpec;
+import org.aktin.generic.imports.manager.StatsSpecNotifier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.postgresql.ds.PGSimpleDataSource;
@@ -43,7 +44,8 @@ class P21StatsSpecTest {
       insertTestData(c);
     }
     StatsQueryExecutor executor = new StatsQueryExecutor(dataSource, 60);
-    service = new StatsQueryService(executor);
+    StatsSpecNotifier notifier = new StatsSpecNotifier();
+    service = new StatsQueryService(executor, notifier);
   }
 
   private static DataSource buildDataSourceFromContainer(PostgreSQLContainer<?> pg) {
@@ -173,7 +175,8 @@ class P21StatsSpecTest {
   @Test
   void testSqlTimeout() {
     StatsQueryExecutor executor = new StatsQueryExecutor(dataSource, 1);
-    StatsQueryService serviceLowTimeout = new StatsQueryService(executor);
+    StatsSpecNotifier notifier = new StatsSpecNotifier();
+    StatsQueryService serviceLowTimeout = new StatsQueryService(executor, notifier);
     StatsSpec slowSpec = new StatsSpec() {
       public String id() {
         return "slow";

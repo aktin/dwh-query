@@ -44,8 +44,8 @@ public class P21StatsSpec implements StatsSpec {
   public Properties toProperties(List<QueryResult> results) {
     Properties p = new Properties();
     for (QueryResult r : results) {
-      final String source = r.name; // FAB/FALL/ICD/OPS
-      for (Map<String, Object> row : r.rows) {
+      final String source = r.getName(); // FAB/FALL/ICD/OPS
+      for (Map<String, Object> row : r.getRows()) {
         Object year = row.get("year");
         Object count = row.get("count");
         if (year != null && count != null) {

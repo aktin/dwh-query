@@ -56,12 +56,12 @@ public class StatsQueryExecutor {
         }
         rows.add(m);
       }
-      return new QueryResult(q.name, rows, columns);
+      return new QueryResult(q.getName(), rows, columns);
     } catch (SQLTimeoutException te) {
-      LOGGER.log(Level.WARNING, "Query timed out after {0}s: {1}", new Object[]{queryTimeoutSeconds, q.name});
+      LOGGER.log(Level.WARNING, "Query timed out after {0}s: {1}", new Object[]{queryTimeoutSeconds, q.getName()});
       throw te;
     } catch (SQLException e) {
-      LOGGER.log(Level.WARNING, "Query failed: " + q.name, e);
+      LOGGER.log(Level.WARNING, "Query failed: " + q.getName(), e);
       throw e;
     }
   }
@@ -75,11 +75,11 @@ public class StatsQueryExecutor {
    * @throws SQLException if preparation or binding fails
    */
   private PreparedStatement prepareAndBind(Connection c, QueryDef q) throws SQLException {
-    PreparedStatement ps = c.prepareStatement(q.sql);
+    PreparedStatement ps = c.prepareStatement(q.getSql());
     if (queryTimeoutSeconds > 0) {
       ps.setQueryTimeout(queryTimeoutSeconds);
     }
-    List<Object> params = q.params == null ? Collections.emptyList() : q.params;
+    List<Object> params = q.getParams() == null ? Collections.emptyList() : q.getParams();
     for (int i = 0; i < params.size(); i++) {
       ps.setObject(i + 1, params.get(i));
     }

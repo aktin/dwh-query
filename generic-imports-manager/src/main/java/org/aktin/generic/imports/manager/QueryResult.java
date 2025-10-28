@@ -5,9 +5,9 @@ import java.util.Map;
 
 public final class QueryResult {
 
-  public String name;
-  public List<Map<String, Object>> rows;
-  public List<String> columns;
+  private String name;
+  private List<Map<String, Object>> rows;
+  private List<String> columns;
 
   /**
    * Creates a new container for the complete result of a single executed SQL query.
@@ -20,5 +20,17 @@ public final class QueryResult {
     this.name = name;
     this.rows = rows;
     this.columns = columns;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public List<Map<String, Object>> getRows() {
+    return rows;
+  }
+
+  public List<String> getColumns() {
+    return columns;
   }
 }

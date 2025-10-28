@@ -2,11 +2,11 @@ package org.aktin.generic.imports.manager;
 
 import java.util.List;
 
-public class QueryDef {
+public final class QueryDef {
 
-  private final String name;
-  private final String sql;
-  private final List<Object> params;
+  public String name;
+  public String sql;
+  public List<Object> params;
 
   /**
    * Creates a new query definition.

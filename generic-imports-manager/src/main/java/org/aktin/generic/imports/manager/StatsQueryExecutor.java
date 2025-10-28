@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -40,14 +40,28 @@ public class StatsQueryExecutor {
    * @return list of rows with column labels as keys
    * @throws SQLException if execution or mapping fails
    */
-  public List<Map<String, Object>> run(QueryDef q) throws SQLException {
+  public QueryResult run(QueryDef q) throws SQLException {
     try (Connection c = dataSource.getConnection(); PreparedStatement ps = prepareAndBind(c, q); ResultSet rs = ps.executeQuery()) {
-      return mapAllRows(rs, q.getName());
+      ResultSetMetaData md = rs.getMetaData();
+      int colCount = md.getColumnCount();
+      List<String> columns = new ArrayList<>(colCount);
+      for (int i = 1; i <= colCount; i++) {
+        columns.add(md.getColumnLabel(i));
+      }
+      List<Map<String, Object>> rows = new ArrayList<>();
+      while (rs.next()) {
+        Map<String, Object> m = new HashMap<>(colCount * 2);
+        for (int i = 1; i <= colCount; i++) {
+          m.put(columns.get(i - 1), rs.getObject(i));
+        }
+        rows.add(m);
+      }
+      return new QueryResult(q.name, rows, columns);
     } catch (SQLTimeoutException te) {
-      LOGGER.log(Level.WARNING, "Query timed out after {0}s: {1}", new Object[]{queryTimeoutSeconds, q.getName()});
+      LOGGER.log(Level.WARNING, "Query timed out after {0}s: {1}", new Object[]{queryTimeoutSeconds, q.name});
       throw te;
     } catch (SQLException e) {
-      LOGGER.log(Level.WARNING, "Query failed: " + q.getName(), e);
+      LOGGER.log(Level.WARNING, "Query failed: " + q.name, e);
       throw e;
     }
   }
@@ -61,44 +75,14 @@ public class StatsQueryExecutor {
    * @throws SQLException if preparation or binding fails
    */
   private PreparedStatement prepareAndBind(Connection c, QueryDef q) throws SQLException {
-    PreparedStatement ps = c.prepareStatement(q.getSql());
+    PreparedStatement ps = c.prepareStatement(q.sql);
     if (queryTimeoutSeconds > 0) {
       ps.setQueryTimeout(queryTimeoutSeconds);
     }
-    List<Object> params = q.getParams() == null ? Collections.emptyList() : q.getParams();
+    List<Object> params = q.params == null ? Collections.emptyList() : q.params;
     for (int i = 0; i < params.size(); i++) {
       ps.setObject(i + 1, params.get(i));
     }
     return ps;
-  }
-
-  /**
-   * Converts a {@link ResultSet} into a list of ordered maps. Each map holds column label → value. If {@code source} column is missing, adds {@code source=fallbackSource}.
-   *
-   * @param rs             result set to map
-   * @param fallbackSource value for {@code source} if missing
-   * @return mapped rows
-   * @throws SQLException if reading result metadata or data fails
-   */
-  private List<Map<String, Object>> mapAllRows(ResultSet rs, String fallbackSource) throws SQLException {
-    ResultSetMetaData md = rs.getMetaData();
-    int cols = md.getColumnCount();
-    String[] labels = new String[cols];
-    for (int i = 1; i <= cols; i++) {
-      String l = md.getColumnLabel(i);
-      labels[i - 1] = (l == null || l.isEmpty()) ? md.getColumnName(i) : l;
-    }
-    List<Map<String, Object>> rows = new ArrayList<>();
-    while (rs.next()) {
-      Map<String, Object> row = new LinkedHashMap<>(cols + 1);
-      for (int i = 1; i <= cols; i++) {
-        row.put(labels[i - 1], rs.getObject(i));
-      }
-      if (!row.containsKey("source")) {
-        row.put("source", fallbackSource);
-      }
-      rows.add(row);
-    }
-    return rows;
   }
 }

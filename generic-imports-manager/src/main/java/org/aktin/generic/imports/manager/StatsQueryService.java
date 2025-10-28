@@ -2,10 +2,9 @@ package org.aktin.generic.imports.manager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -63,18 +62,19 @@ public class StatsQueryService {
    * @param spec statistics specification
    * @return combined result rows, or an empty list on failure
    */
-  public List<Map<String, Object>> run(StatsSpec spec) {
+  public Properties run(StatsSpec spec) {
     Objects.requireNonNull(spec, "spec");
     try {
-      List<Map<String, Object>> out = new ArrayList<>();
+      List<QueryResult> results = new ArrayList<>();
       for (QueryDef q : spec.queries()) {
-        out.addAll(executor.run(q));
+        results.add(executor.run(q));
       }
-      notifier.tryUpload(spec.id(), out);
-      return out;
+      Properties props = spec.toProperties(results);
+      notifier.tryUpload(spec.id(), props);
+      return props;
     } catch (SQLException e) {
       LOGGER.log(Level.SEVERE, "Stats execution failed for spec: " + spec.id(), e);
-      return Collections.emptyList();
+      return new Properties();
     }
   }
 }

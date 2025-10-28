@@ -9,12 +9,12 @@ import java.util.Properties;
 public interface StatsSpec {
 
   /**
-   * Unique id of this statistics specification.
+   * Returns the unique identifier of this statistics specification.
    */
   String id();
 
   /**
-   * All queries belonging to this specification.
+   * Returns all queries belonging to this specification.
    */
   List<QueryDef> queries();
 

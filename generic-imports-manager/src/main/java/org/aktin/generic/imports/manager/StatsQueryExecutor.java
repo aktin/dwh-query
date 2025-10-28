@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 /**
- * Executes parameterized SQL queries ({@link QueryDef}) and returns each row as a {@code Map<String,Object>}
+ * Executes a parameterized {@link QueryDef} against a JDBC {@link DataSource} and returns a {@link QueryResult} containing column labels and row maps.
  */
 public class StatsQueryExecutor {
 
@@ -34,11 +34,11 @@ public class StatsQueryExecutor {
   }
 
   /**
-   * Executes one SQL query and returns all rows as ordered maps. Adds {@code source} if the result lacks that column.
+   * Executes one SQL query and returns its complete {@link QueryResult}. Rows are mapped as {@code Map<String,Object>} using JDBC column labels.
    *
-   * @param q query definition (SQL, params, logical name)
-   * @return list of rows with column labels as keys
-   * @throws SQLException if execution or mapping fails
+   * @param q query definition (logical name, SQL, ordered params)
+   * @return query result with name, column labels, and rows
+   * @throws SQLException on execution or mapping errors
    */
   public QueryResult run(QueryDef q) throws SQLException {
     try (Connection c = dataSource.getConnection(); PreparedStatement ps = prepareAndBind(c, q); ResultSet rs = ps.executeQuery()) {
@@ -67,7 +67,7 @@ public class StatsQueryExecutor {
   }
 
   /**
-   * Builds a {@link PreparedStatement}, sets query timeout, and binds parameters. Parameters are bound in positional order.
+   * Builds a {@link PreparedStatement}, sets a timeout if configured, and binds parameters in positional order.
    *
    * @param c open JDBC connection
    * @param q query definition

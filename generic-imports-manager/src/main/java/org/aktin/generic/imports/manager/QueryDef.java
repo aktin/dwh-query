@@ -9,7 +9,8 @@ public final class QueryDef {
   public List<Object> params;
 
   /**
-   * Creates a new query definition.
+   * Creates a new immutable definition of a single SQL query.
+   * Each {@code QueryDef} corresponds to exactly one database query executed by {@link StatsQueryExecutor}.
    *
    * @param name   logical name of the query, used for identification in results
    * @param sql    SQL statement with parameter placeholders
@@ -19,17 +20,5 @@ public final class QueryDef {
     this.name = name;
     this.sql = sql;
     this.params = params;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getSql() {
-    return sql;
-  }
-
-  public List<Object> getParams() {
-    return params;
   }
 }

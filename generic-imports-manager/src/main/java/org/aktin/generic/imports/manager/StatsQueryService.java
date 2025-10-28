@@ -17,7 +17,7 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 
 /**
- * Singleton facade to execute {@link StatsSpec} via a {@link StatsQueryExecutor}. Resolves the i2b2 {@link DataSource} from JNDI using {@link Preferences}.
+ * Application-scoped facade that executes a {@link StatsSpec} via {@link StatsQueryExecutor}. Resolves the i2b2 {@link DataSource} from JNDI using {@link Preferences}.
  */
 @ApplicationScoped
 public class StatsQueryService {
@@ -57,10 +57,10 @@ public class StatsQueryService {
   }
 
   /**
-   * Runs all queries of the given spec and returns the combined rows. On error returns an empty list and logs the cause.
+   * Executes all queries of the given spec, converts the raw results to {@link Properties} via {@link StatsSpec#toProperties(java.util.List)}, and triggers upload.
    *
    * @param spec statistics specification
-   * @return combined result rows, or an empty list on failure
+   * @return flattened properties, or empty properties on failure
    */
   public Properties run(StatsSpec spec) {
     Objects.requireNonNull(spec, "spec");

@@ -11,313 +11,414 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.val;
 import org.aktin.dwh.optinout.sic.CodeGenerator;
 
 
-public class StudyImpl implements Study{
-	private static final Logger log = Logger.getLogger(StudyImpl.class.getName());
-	StudyManagerImpl manager;
-	
+public class StudyImpl implements Study {
+    private static final Logger log = Logger.getLogger(StudyImpl.class.getName());
+    StudyManagerImpl manager;
 
-	private String id;
-	private String title;
-	private String description;
-	Instant createdTime;
-	/** when the study was closed. {@code null} if still open */
-	Instant closedTime;
+    @Getter
+    private String id;
+    @Getter
+    private String title;
+    @Getter
+    private String description;
+    Instant createdTime;
+    /**
+     * when the study was closed. {@code null} if still open
+     */
+    Instant closedTime;
 
-	private boolean hasOptIn;
-	private boolean hasOptOut;
+    private boolean hasOptIn;
+    private boolean hasOptOut;
 
-	private boolean manualCodes;
-	private CodeGenerator codeGen;
+    @Getter
+    @Setter
+    private String sicGenerator;
+    @Getter
+    @Setter
+    private String sicGeneratorState;
+    @Getter
+    @Setter
+    private SICGeneration sicGeneration;
 
-	private static final String SELECT_PATIENT_SQL = "SELECT pat_ref,pat_root,pat_ext,optinout,create_user,create_timestamp,study_subject_id,comment,i2b2_patient_num FROM optinout_patients WHERE study_id=?";
+    private CodeGenerator codeGen;
 
-	StudyImpl(StudyManagerImpl manager, String id, String title, String description){
-		this.manager = manager;
-		this.id = id;
-		this.title = title;
-		this.description = description;
-	}
+    private static final String SELECT_PATIENT_SQL = "SELECT pat_ref,pat_root,pat_ext,optinout,create_user,create_timestamp,study_subject_id,comment,i2b2_patient_num FROM optinout_patients WHERE study_id=?";
 
-	@Override
-	public String getId() {return id;}
-	@Override
-	public String getTitle() {return title;}
-	@Override
-	public String getDescription() {return description;}
-	@Override
-	public String validateSIC(String sic) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    StudyImpl(StudyManagerImpl manager, String id, String title, String description) {
+        this.manager = manager;
+        this.id = id;
+        this.title = title;
+        this.description = description;
+    }
 
-	void setManualCodes(boolean manual) {
-		this.manualCodes = manual;
-	}
-	void setCodeGenerator(CodeGenerator codeGen) {
-		this.codeGen = codeGen;
-	}
-	
-	void loadOptions(String db_options) {
-		// options default to false
-		hasOptIn = false;
-		hasOptOut = false;
 
-		String[] opts = db_options.split(",");
-		for( int i=0; i<opts.length; i++ ) {
-			String option = opts[i];
-			int pos = option.indexOf('=');
-			if( pos == -1 ) {
-				throw new IllegalArgumentException("Ignoring option without '=': "+option);
-			}
-			String val = option.substring(pos+1);
-			switch( option.substring(0, pos) ){
-			case "OPT":
-				// allow opt in or out
-				if( val.contains("I") ) {
-					hasOptIn = true;
-				}
-				if( val.contains("O") ) {
-					hasOptOut = true;
-				}
-				break;
-			}
-		}
-		
-	}
-	@Override
-	public String generateSIC() throws UnsupportedOperationException, IllegalStateException, IOException {
-		if( codeGen == null ) {
-			throw new UnsupportedOperationException("Generation of SICs not supported by this study: "+getTitle());
-		}
-		String code = codeGen.generateCode();
-		// write state
-		try( Connection dbc = manager.getConnection();
-				PreparedStatement ps = dbc.prepareStatement("UPDATE optinout_studies SET sic_generator_state=? WHERE id=?") )
-		{
-			ps.setString(1, codeGen.getState());
-			ps.setString(2, getId());
-			ps.executeUpdate();
-		} catch (SQLException e) {
-			throw new IOException("Unable to store SIC generator state for study "+getTitle(), e);
-		}
-		return code;
-	}
-	@Override
-	public PatientEntryImpl getPatientBySIC(String sic) throws IOException {
-		PatientEntryImpl pat;
-		try( Connection dbc = manager.getConnection();
-				PreparedStatement ps = dbc.prepareStatement(SELECT_PATIENT_SQL+" AND study_subject_id=?"))
-		{
-			ps.setString(1, id);
-			ps.setString(2, sic);
-			ResultSet rs = ps.executeQuery();
-			if( rs.next() ) {
-				pat = loadPatient(rs);
-			}else {
-				pat = null;
-			}
-		} catch (SQLException e) {
-			throw new IOException(e);
-		}
-		return pat;
-	}
-	@Override
-	public PatientEntryImpl getPatientByID(PatientReference ref, String id_root, String id_ext) throws IOException {
-		PatientEntryImpl pat;
-		id_root = trimIdPart(id_root);
-		id_ext = trimIdPart(id_ext);
-		try( Connection dbc = manager.getConnection();
-				PreparedStatement ps = dbc.prepareStatement(SELECT_PATIENT_SQL+" AND pat_ref=? AND pat_root=? AND pat_ext=?"))
-		{
-			ps.setString(1, id);
-			ps.setString(2, StudyImpl.serializeReferenceType(ref));
-			ps.setString(3, id_root);
-			ps.setString(4, id_ext);
-			ResultSet rs = ps.executeQuery();
-			if( rs.next() ) {
-				pat = loadPatient(rs);
-			}else {
-				pat = null;
-			}
-		} catch (SQLException e) {
-			throw new IOException(e);
-		}
-		return pat;
-	}
+    @Override
+    public String validateSIC(String sic) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	private PatientEntryImpl loadPatient(ResultSet rs) throws SQLException {
-		PatientEntryImpl pat = new PatientEntryImpl(this, 
-				unserializeReferenceType(rs.getString(1)), 
-				rs.getString(2), rs.getString(3),
-				unserializeParticipationType(rs.getString(4)));
-		pat.user = rs.getString(5);
-		pat.timestamp = rs.getTimestamp(6).getTime();
-		pat.sic = rs.getString(7);
-		pat.comment = rs.getString(8);
-		int num = rs.getInt(9);
-		if( rs.wasNull() ) {
-			pat.i2b2_patient_num = null;
-		}else {
-			pat.i2b2_patient_num = num;
-		}
-		return pat;
-	}
-	@Override
-	public List<PatientEntryImpl> allPatients() throws IOException {
-		List<PatientEntryImpl> list;
-		try( Connection dbc = manager.getConnection();
-				PreparedStatement ps = dbc.prepareStatement(SELECT_PATIENT_SQL))
-		{
-			ps.setString(1, id);
-			ResultSet rs = ps.executeQuery();
-			list = new ArrayList<>();
-			while( rs.next() ) {
-				list.add(loadPatient(rs));
-			}
-			rs.close();
-		} catch (SQLException e) {
-			throw new IOException(e);
-		}
-		return list;
-	}
+    @Override
+    public boolean isOptIn() {
+        return hasOptIn;
+    }
 
-	static String serializeReferenceType(PatientReference ref) {
-		switch( ref ) {
-		case Patient:
-			return "PAT";
-		case Visit:
-			return "VIS";
-		case Encounter:
-			return "ENC";
-		case Billing:
-			return "BIL";
-		}
-		throw new IllegalStateException("Enum value not handled: "+ref);
-	}
-	static PatientReference unserializeReferenceType(String ref) {
-		switch( ref ) {
-		case "PAT":
-			return PatientReference.Patient;
-		case "VIS":
-			return PatientReference.Visit;
-		case "ENC":
-			return PatientReference.Encounter;
-		case "BIL":
-			return PatientReference.Billing;
-		}
-		throw new IllegalStateException("Enum value not handled: "+ref);
-	}
-	static String serializeParticipationType(Participation par) {
-		switch( par ) {
-		case OptIn:
-			return "I";
-		case OptOut:
-			return "O";
-		}
-		throw new IllegalStateException("Enum value not handled: "+par);
-	}
-	static Participation unserializeParticipationType(String par) {
-		switch( par ) {
-		case "I":
-			return Participation.OptIn;
-		case "O":
-			return Participation.OptOut;
-		}
-		throw new IllegalStateException("Enum value not handled: "+par);
-	}
+    @Override
+    public boolean isOptOut() {
+        return hasOptOut;
+    }
 
-	public static final String trimIdPart(String id) {
-		if( id == null ) {
-			return null;
-		}
-		String trimmed = id.trim();
-		if( !trimmed.contentEquals(id) ) {
-			log.warning("Whitespace removed from ID '"+id+"'");
-			return trimmed;
-		}else {
-			return id;
-		}
-	}
+    void setCodeGenerator(CodeGenerator codeGen) {
+        this.codeGen = codeGen;
+    }
 
-	@Override
-	public PatientEntry addPatient(PatientReference ref, String id_root, String id_ext, Participation opt, String sic,
-			String comment, String user) throws IOException {
-		Objects.requireNonNull(manager.getAnonymizer());
-		id_root = trimIdPart(id_root);
-		id_ext = trimIdPart(id_ext);
-		Timestamp now = new Timestamp(System.currentTimeMillis());
-		String psn = manager.getAnonymizer().calculateAbstractPseudonym(id_root,id_ext);
-		try( Connection dbc = manager.getConnection() )
-		{
-			// write user
-			PreparedStatement ps = dbc.prepareStatement("INSERT INTO optinout_patients(study_id,pat_ref,pat_root,pat_ext,pat_psn,create_user,create_timestamp,optinout,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?,?)");
-			
-			ps.setString(1, getId());
-			ps.setString(2, serializeReferenceType(ref));
-			ps.setString(3, id_root);
-			ps.setString(4, id_ext);
-			ps.setString(5, psn);
-			ps.setString(6, user);
-			ps.setTimestamp(7, now);
-			ps.setString(8, serializeParticipationType(opt));
-			ps.setString(9, sic);
-			ps.setString(10, comment);
-			ps.executeUpdate();
-			ps.close();
+    void loadOptions(String db_options) {
+        // options default to false
+        hasOptIn = false;
+        hasOptOut = false;
 
-			// write audit trail
-			ps = dbc.prepareStatement("INSERT INTO optinout_audittrail(study_id,pat_ref,pat_root,pat_ext,action_user,action_timestamp,action,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?)");
-			ps.setString(1, getId());
-			ps.setString(2, serializeReferenceType(ref));
-			ps.setString(3, id_root);
-			ps.setString(4, id_ext);
-			ps.setString(5, user);
-			ps.setTimestamp(6, now);
-			ps.setString(7, "C"+serializeParticipationType(opt));
-			ps.setString(8, sic);
-			ps.setString(9, comment);
-			ps.executeUpdate();
-			ps.close();
-		} catch (SQLException e) {
-			throw new IOException("Unable to add patient to database", e);
-		}
-		PatientEntryImpl pat = new PatientEntryImpl(this, ref, id_root, id_ext, opt);
-		pat.sic = sic;
-		pat.timestamp = now.getTime();
-		pat.comment = comment;
-		pat.user = user;
-		return pat;
-	}
+        String[] opts = db_options.split(",");
+        for (int i = 0; i < opts.length; i++) {
+            String option = opts[i];
+            int pos = option.indexOf('=');
+            if (pos == -1) {
+                throw new IllegalArgumentException("Ignoring option without '=': " + option);
+            }
+            String val = option.substring(pos + 1);
+            switch (option.substring(0, pos)) {
+                case "OPT":
+                    // allow opt in or out
+                    if (val.contains("I")) {
+                        hasOptIn = true;
+                    }
+                    if (val.contains("O")) {
+                        hasOptOut = true;
+                    }
+                    break;
+            }
+        }
 
-	@Override
-	public boolean isParticipationSupported(Participation participation) {
-		switch( participation ) {
-		case OptIn:
-			return hasOptIn;
-		case OptOut:
-			return hasOptOut;
-		default:
-			return false;
-		}
-	}
+    }
 
-	@Override
-	public boolean supportsManualSICs() {
-		return manualCodes;
-	}
+    @Override
+    public String generateSIC() throws UnsupportedOperationException, IllegalStateException, IOException {
+        if (codeGen == null) {
+            throw new UnsupportedOperationException("Generation of SICs not supported by this study: " + getTitle());
+        }
+        String code = codeGen.generateCode();
+        // write state
+        try (Connection dbc = manager.getConnection();
+             PreparedStatement ps = dbc.prepareStatement("UPDATE optinout_studies SET sic_generator_state=? WHERE id=?")) {
+            ps.setString(1, codeGen.getState());
+            ps.setString(2, getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new IOException("Unable to store SIC generator state for study " + getTitle(), e);
+        }
+        return code;
+    }
 
-	@Override
-	public Instant getCreatedTimestamp() {
-		return createdTime;
-	}
+    @Override
+    public PatientEntryImpl getPatientBySIC(String sic) throws IOException {
+        PatientEntryImpl pat;
+        try (Connection dbc = manager.getConnection();
+             PreparedStatement ps = dbc.prepareStatement(SELECT_PATIENT_SQL + " AND study_subject_id=?")) {
+            ps.setString(1, id);
+            ps.setString(2, sic);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                pat = loadPatient(rs);
+            } else {
+                pat = null;
+            }
+        } catch (SQLException e) {
+            throw new IOException(e);
+        }
+        return pat;
+    }
 
-	@Override
-	public Instant getClosedTimestamp() {
-		return closedTime;
-	}
-	
+    @Override
+    public PatientEntryImpl getPatientByID(PatientReference ref, String idRoot, String idExt) throws IOException {
+        PatientEntryImpl pat;
+        idRoot = trimIdPart(idRoot);
+        idExt = trimIdPart(idExt);
+        try (Connection dbc = manager.getConnection();
+             PreparedStatement ps = dbc.prepareStatement(SELECT_PATIENT_SQL + " AND pat_ref=? AND pat_root=? AND pat_ext=?")) {
+            ps.setString(1, id);
+            ps.setString(2, StudyImpl.serializeReferenceType(ref));
+            ps.setString(3, idRoot);
+            ps.setString(4, idExt);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                pat = loadPatient(rs);
+            } else {
+                pat = null;
+            }
+        } catch (SQLException e) {
+            throw new IOException(e);
+        }
+        return pat;
+    }
+
+    private PatientEntryImpl loadPatient(ResultSet rs) throws SQLException {
+        PatientEntryImpl pat = new PatientEntryImpl(this,
+                unserializeReferenceType(rs.getString(1)),
+                rs.getString(2), rs.getString(3),
+                unserializeParticipationType(rs.getString(4)));
+        pat.setUser(rs.getString(5));
+        pat.setTimestamp(rs.getTimestamp(6).toInstant());
+        pat.setSIC(rs.getString(7));
+        pat.setComment(rs.getString(8));
+        pat.setI2b2PatientNum(rs.getInt(9));
+        return pat;
+    }
+
+    @Override
+    public List<PatientEntryImpl> allPatients() throws IOException {
+        List<PatientEntryImpl> list;
+        try (Connection dbc = manager.getConnection();
+             PreparedStatement ps = dbc.prepareStatement(SELECT_PATIENT_SQL)) {
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            list = new ArrayList<>();
+            while (rs.next()) {
+                list.add(loadPatient(rs));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            throw new IOException(e);
+        }
+        return list;
+    }
+
+    static String serializeReferenceType(PatientReference ref) {
+        switch (ref) {
+            case Patient:
+                return "PAT";
+            case Visit:
+                return "VIS";
+            case Encounter:
+                return "ENC";
+            case Billing:
+                return "BIL";
+        }
+        throw new IllegalStateException("Enum value not handled: " + ref);
+    }
+
+    static PatientReference unserializeReferenceType(String ref) {
+        switch (ref) {
+            case "PAT":
+                return PatientReference.Patient;
+            case "VIS":
+                return PatientReference.Visit;
+            case "ENC":
+                return PatientReference.Encounter;
+            case "BIL":
+                return PatientReference.Billing;
+        }
+        throw new IllegalStateException("Enum value not handled: " + ref);
+    }
+
+    static String serializeParticipationType(Participation par) {
+        switch (par) {
+            case OptIn:
+                return "I";
+            case OptOut:
+                return "O";
+        }
+        throw new IllegalStateException("Enum value not handled: " + par);
+    }
+
+    static Participation unserializeParticipationType(String par) {
+        switch (par) {
+            case "I":
+                return Participation.OptIn;
+            case "O":
+                return Participation.OptOut;
+        }
+        throw new IllegalStateException("Enum value not handled: " + par);
+    }
+
+    public static final String trimIdPart(String id) {
+        if (id == null) {
+            return null;
+        }
+        String trimmed = id.trim();
+        if (!trimmed.contentEquals(id)) {
+            log.warning("Whitespace removed from ID '" + id + "'");
+            return trimmed;
+        } else {
+            return id;
+        }
+    }
+
+    @Override
+    public PatientEntry addPatient(PatientReference ref, String idRoot, String idExt, Participation opt, String sic,
+                                   String comment, String user) throws IOException {
+        Objects.requireNonNull(manager.getAnonymizer());
+        val now = new Timestamp(System.currentTimeMillis());
+        idRoot = trimIdPart(idRoot);
+        idExt = trimIdPart(idExt);
+
+        try (val dbc = manager.getConnection()) {
+            dbc.setAutoCommit(false);
+
+            // write patient
+            insertEntry(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);
+
+            // write audit trail
+            insertAudit(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);
+
+            dbc.commit();
+        } catch (SQLException e) {
+            throw new IOException("Unable to add patient to database", e);
+        }
+
+        val pat = getPatientByID(ref, idRoot, idExt);
+
+        return pat;
+    }
+
+    @Override
+    public List<PatientEntry> addPatients(PatientReference ref, String idRoot, List<String> idExts, List<String> sics, Participation opt,
+                                          String comment, String user) throws IOException {
+        Objects.requireNonNull(manager.getAnonymizer());
+        val now = new Timestamp(System.currentTimeMillis());
+        idRoot = trimIdPart(idRoot);
+
+        try (val dbc = manager.getConnection();) {
+            dbc.setAutoCommit(false);
+
+            for(int i = 0; i < idExts.size(); i++) {
+                val idExt = trimIdPart(idExts.get(i));
+                val sic = sics.get(i);
+
+                // write patient
+                insertEntry(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);
+
+                // write audit trail
+                insertAudit(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);
+            }
+            dbc.commit();
+        } catch (SQLException e) {
+            throw new IOException("Unable to add patient to database", e);
+        }
+
+        List<PatientEntry> patients = new ArrayList<>();
+
+        for (val idExt : idExts) {
+            patients.add(getPatientByID(ref, idRoot, idExt));
+        }
+
+
+        return patients;
+    }
+
+    private void insertEntry(Connection dbc, PatientReference ref, String idRoot, String idExt, Participation opt, String sic,
+                             String comment, String user, Timestamp timestamp) throws SQLException {
+        val psn = manager.getAnonymizer().calculateAbstractPseudonym(idRoot, idExt);
+        try (val insertEntry = dbc.prepareStatement("INSERT INTO optinout_patients(study_id,pat_ref,pat_root,pat_ext,pat_psn,create_user,create_timestamp,optinout,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?,?)")) {
+            insertEntry.setString(1, getId());
+            insertEntry.setString(2, serializeReferenceType(ref));
+            insertEntry.setString(3, idRoot);
+            insertEntry.setString(4, idExt);
+            insertEntry.setString(5, psn);
+            insertEntry.setString(6, user);
+            insertEntry.setTimestamp(7, timestamp);
+            insertEntry.setString(8, serializeParticipationType(opt));
+            insertEntry.setString(9, sic);
+            insertEntry.setString(10, comment);
+            insertEntry.executeUpdate();
+        }
+    }
+
+    private void insertAudit(Connection dbc, PatientReference ref, String idRoot, String idExt, Participation opt, String sic,
+                             String comment, String user, Timestamp timestamp) throws SQLException {
+        try (val insertAudit = dbc.prepareStatement("INSERT INTO optinout_audittrail(study_id,pat_ref,pat_root,pat_ext,action_user,action_timestamp,action,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?)");) {
+            insertAudit.setString(1, getId());
+            insertAudit.setString(2, serializeReferenceType(ref));
+            insertAudit.setString(3, idRoot);
+            insertAudit.setString(4, idExt);
+            insertAudit.setString(5, user);
+            insertAudit.setTimestamp(6, timestamp);
+            insertAudit.setString(7, "C" + serializeParticipationType(opt));
+            insertAudit.setString(8, sic);
+            insertAudit.setString(9, comment);
+            insertAudit.executeUpdate();
+        }
+    }
+
+    @Override
+    public PatientEntry updatePatient(PatientEntry oldEntry, PatientEntry newEntry) throws IOException {
+        Objects.requireNonNull(manager.getAnonymizer());
+        val root = trimIdPart(oldEntry.getIdRoot());
+        val extension = trimIdPart(oldEntry.getIdExt());
+        val now = new Timestamp(System.currentTimeMillis());
+        val psn = manager.getAnonymizer().calculateAbstractPseudonym(root, extension);
+        try (val dbc = manager.getConnection();
+             val insertEntry = dbc.prepareStatement("UPDATE optinout_patients\n" +
+                     "SET comment = ?\n" +
+                     "WHERE study_id = ? and pat_ref = ? and pat_root = ? and pat_ext = ?;");
+             val insertAudit = dbc.prepareStatement("INSERT INTO optinout_audittrail(study_id,pat_ref,pat_root,pat_ext,action_user,action_timestamp,action,study_subject_id,comment)\n" +
+                     "VALUES(?,?,?,?,?,?,?,?,?)");) {
+            //turn auto commit off for transaction
+            dbc.setAutoCommit(false);
+            // update patient
+            int i = 1;
+            insertEntry.setString(i++, newEntry.getComment());
+            insertEntry.setString(i++, oldEntry.getStudy().getId());
+            insertEntry.setString(i++, serializeReferenceType(oldEntry.getReference()));
+            insertEntry.setString(i++, root);
+            insertEntry.setString(i, extension);
+            insertEntry.executeUpdate();
+
+            // write audit trail
+            i = 1;
+            insertAudit.setString(i++, getId());
+            insertAudit.setString(i++, serializeReferenceType(newEntry.getReference()));
+            insertAudit.setString(i++, newEntry.getIdRoot());
+            insertAudit.setString(i++, newEntry.getIdExt());
+            insertAudit.setString(i++, newEntry.getUser());
+            insertAudit.setTimestamp(i++, now);
+            insertAudit.setString(i++, "U" + serializeParticipationType(newEntry.getParticipation()));
+            insertAudit.setString(i++, newEntry.getSIC());
+            insertAudit.setString(i, newEntry.getComment());
+            insertAudit.executeUpdate();
+
+            dbc.commit();
+        } catch (SQLException e) {
+            throw new IOException("Unable to add patient to database", e);
+        }
+
+        val pat = getPatientByID(newEntry.getReference(), newEntry.getIdRoot(), newEntry.getIdExt());
+        return pat;
+    }
+
+    @Override
+    public boolean isParticipationSupported(Participation participation) {
+        switch (participation) {
+            case OptIn:
+                return hasOptIn;
+            case OptOut:
+                return hasOptOut;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public Instant getCreatedTimestamp() {
+        return createdTime;
+    }
+
+    @Override
+    public Instant getClosedTimestamp() {
+        return closedTime;
+    }
 }

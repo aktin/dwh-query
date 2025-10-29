@@ -1,23 +1,25 @@
 package org.aktin.generic.imports.manager;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
- * Defines a set of SQL queries to collect statistics for a specific data import type. Implementations provide an identifier and the queries to be executed.
+ * Groups one or more SQL queries into a named statistics specification. Used by {@link StatsQueryExecutor} to collect metrics.
  */
 public interface StatsSpec {
 
   /**
-   * Returns the unique identifier for this statistics specification.
-   *
-   * @return specification ID
+   * Returns the unique identifier of this statistics specification.
    */
   String id();
 
   /**
-   * Returns the list of queries to execute for this specification.
-   *
-   * @return list of query definitions
+   * Returns all queries belonging to this specification.
    */
   List<QueryDef> queries();
+
+  /**
+   * Converts the raw query results into a flattened {@link Properties} object suitable for broker upload or serialization.
+   */
+  Properties toProperties(List<QueryResult> results);
 }

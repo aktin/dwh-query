@@ -9,8 +9,11 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -286,7 +289,7 @@ public class StudyImpl implements Study {
     }
 
     @Override
-    public List<PatientEntry> addPatients(PatientReference ref, String idRoot, List<String> idExts, List<String> sics, Participation opt,
+    public List<PatientEntry> addPatients(PatientReference ref, String idRoot, Map<String, String> entries, Participation opt,
                                           String comment, String user) throws IOException {
         Objects.requireNonNull(manager.getAnonymizer());
         val now = new Timestamp(System.currentTimeMillis());
@@ -295,9 +298,9 @@ public class StudyImpl implements Study {
         try (val dbc = manager.getConnection();) {
             dbc.setAutoCommit(false);
 
-            for(int i = 0; i < idExts.size(); i++) {
-                val idExt = trimIdPart(idExts.get(i));
-                val sic = sics.get(i);
+            for(val entry : entries.entrySet()) {
+                val idExt = trimIdPart(entry.getKey());
+                val sic = entry.getValue();
 
                 // write patient
                 insertEntry(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);
@@ -312,7 +315,7 @@ public class StudyImpl implements Study {
 
         List<PatientEntry> patients = new ArrayList<>();
 
-        for (val idExt : idExts) {
+        for (val idExt : entries.keySet()) {
             patients.add(getPatientByID(ref, idRoot, idExt));
         }
 

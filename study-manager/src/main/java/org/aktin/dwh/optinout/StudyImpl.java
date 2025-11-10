@@ -269,6 +269,10 @@ public class StudyImpl implements Study {
         idRoot = trimIdPart(idRoot);
         idExt = trimIdPart(idExt);
 
+        if (getSicGeneration() == SICGeneration.AutoAndManual && (sic == null || sic.isEmpty())) {
+            sic = generateSIC();
+        }
+
         try (val dbc = manager.getConnection()) {
             dbc.setAutoCommit(false);
 
@@ -300,7 +304,11 @@ public class StudyImpl implements Study {
 
             for(val entry : entries.entrySet()) {
                 val idExt = trimIdPart(entry.getKey());
-                val sic = entry.getValue();
+                String sic = entry.getValue();
+
+                if (getSicGeneration() == SICGeneration.AutoAndManual && (sic == null || sic.isEmpty())) {
+                    sic = generateSIC();
+                }
 
                 // write patient
                 insertEntry(dbc, ref, idRoot, idExt, opt, sic, comment, user, now);

@@ -3,8 +3,12 @@ package org.aktin.dwh.optinout;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import lombok.val;
 import org.aktin.dwh.db.TestDataSourcePlain;
 import org.aktin.dwh.db.TestDatabasePlain;
 import org.junit.Before;
@@ -66,42 +70,50 @@ public class TestStudyManagerImpl {
 		StudyImpl s = sm.getStudies().get(1);
 		assertTrue(s.isParticipationSupported(Participation.OptIn));
 		assertFalse(s.isParticipationSupported(Participation.OptOut));
-		
-		s.addPatient(PatientReference.Patient, "0", "0", Participation.OptIn, s.generateSIC(), "First patient", "TestUser1");
+
+		val patientEntryData1 = new PatientEntryData("0", "0", "0", "First patient", false, Participation.OptIn, PatientReference.Patient);
+		val patientEntryData2 = new PatientEntryData("0", "1", null, "Second patient", true, Participation.OptIn, PatientReference.Patient);
+		val patientEntryData3 = new PatientEntryData("0", "2", null, "Third patient", true, Participation.OptIn, PatientReference.Patient);
+
+		s.addPatients(Collections.singletonList(patientEntryData1), "testuser");
 
 		// same patient should throw exception
 		try {
 			// even if non-id values are different
-			s.addPatient(PatientReference.Patient, "0", "0", Participation.OptOut, s.generateSIC(), "test", "test");
+			s.addPatients(Collections.singletonList(patientEntryData1), "testuser");
 			fail();
 		}catch( IOException e ) {
 			// user already present, duplicate key exception
 		}
-		// add second (different) patient
-		s.addPatient(PatientReference.Patient, "0", "1", Participation.OptIn, s.generateSIC(), "Second patient", "TestUser1");
+		// add two (different) patients
+		s.addPatients(Arrays.asList(patientEntryData2, patientEntryData3), "testuser1");
 
 		// list patients
 		List<PatientEntryImpl> list = s.allPatients();
-		assertEquals(2, list.size());
+		assertEquals(3, list.size());
 
 		// delete first patient
-		list.get(0).delete("TestUser2");
 		// delete again should throw exception
 		try {
-			list.get(0).delete("TestUser3");
+			val pat = list.get(0);
+			s.deletePatient(pat.getReference(), pat.getIdRoot(), pat.getIdExt(), "testuser2");
+			s.deletePatient(pat.getReference(), pat.getIdRoot(), pat.getIdExt(), "testuser2");
 			fail();
-		}catch( FileNotFoundException e ) {
+		}catch( IOException e ) {
 			// entry was deleted previously
+			list.remove(0);
 		}
 
-		// list should have only one entry left
-		assertEquals(1, s.allPatients().size());
+		// list should have two entries left
+		assertEquals(2, s.allPatients().size());
 	}
 
 	@Test
 	public void findPatientBySIC() throws IOException {
 		StudyImpl s = sm.getStudies().get(0);
-		s.addPatient(PatientReference.Patient, "0", "0", Participation.OptIn, "4321", null, "TestUser1");
+		val patientEntryData1 = new PatientEntryData("0", "0", "4321", "First patient", false, Participation.OptIn, PatientReference.Patient);
+
+		s.addPatients(Collections.singletonList(patientEntryData1), "testuser");
 		// retrieve patient
 		PatientEntryImpl pat = s.getPatientBySIC("4321");
 		assertNotNull(pat);

@@ -8,8 +8,8 @@ import java.time.Instant;
 @AllArgsConstructor
 @Getter
 public class PatientEncounterImpl implements PatientEncounter {
-    private int encounterId;
-    private int patientId;
+    private String pseudonym;
+    private String encounterId;
     private Instant startDate;
     private Instant endDate;
 }

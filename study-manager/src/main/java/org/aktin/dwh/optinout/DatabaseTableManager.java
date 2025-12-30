@@ -45,16 +45,6 @@ public class DatabaseTableManager {
 		executeSQL("/create_tables.sql");
 	}
 
-	public void addStudy(String id, String title, String description, String options, String sic_generate) throws SQLException {
-		try( PreparedStatement ps = dbc.prepareStatement("INSERT INTO optinout_studies (id,title,description,created_ts,options,sic_generate) VALUES (?,?,?,NOW(),?,?)") ){
-			ps.setString(1, id);
-			ps.setString(2, title);
-			ps.setString(3, description);
-			ps.setString(4, options);
-			ps.setString(5, sic_generate);
-			ps.execute();
-		}
-	}
 	private void executeSQL(String resourceName) throws IOException, SQLException {
 		List<String> sql = new ArrayList<>();
 		try( InputStream in = DatabaseTableManager.class.getResourceAsStream(resourceName) ){

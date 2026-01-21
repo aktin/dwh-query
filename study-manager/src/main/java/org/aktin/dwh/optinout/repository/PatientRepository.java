@@ -1,7 +1,14 @@
-package org.aktin.dwh.optinout;
+package org.aktin.dwh.optinout.repository;
 
 import lombok.val;
 import org.aktin.dwh.Anonymizer;
+import org.aktin.dwh.optinout.*;
+import org.aktin.dwh.optinout.model.PatientEncounterImpl;
+import org.aktin.dwh.optinout.model.PatientEntryImpl;
+import org.aktin.dwh.optinout.model.PatientMasterDataImpl;
+import org.aktin.dwh.optinout.util.DataSourceProvider;
+import org.aktin.dwh.optinout.util.PatientReferenceService;
+import org.aktin.dwh.optinout.util.QueryResolver;
 
 import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;

@@ -1,4 +1,4 @@
-package org.aktin.dwh.optinout;
+package org.aktin.dwh.optinout.util;
 
 import lombok.Getter;
 import lombok.val;

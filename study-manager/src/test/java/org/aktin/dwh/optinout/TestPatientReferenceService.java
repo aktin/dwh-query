@@ -1,8 +1,8 @@
 package org.aktin.dwh.optinout;
 
 import lombok.val;
+import org.aktin.dwh.optinout.util.PatientReferenceService;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

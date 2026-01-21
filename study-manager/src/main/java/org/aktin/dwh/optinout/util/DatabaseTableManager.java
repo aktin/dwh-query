@@ -1,4 +1,4 @@
-package org.aktin.dwh.optinout;
+package org.aktin.dwh.optinout.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,7 +1,13 @@
-package org.aktin.dwh.optinout;
+package org.aktin.dwh.optinout.repository;
 
 import lombok.val;
+import org.aktin.dwh.optinout.Participation;
+import org.aktin.dwh.optinout.SICGeneration;
+import org.aktin.dwh.optinout.Study;
+import org.aktin.dwh.optinout.model.StudyImpl;
 import org.aktin.dwh.optinout.sic.CodeGeneratorFactory;
+import org.aktin.dwh.optinout.util.DataSourceProvider;
+import org.aktin.dwh.optinout.util.QueryResolver;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

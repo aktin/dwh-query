@@ -3,6 +3,10 @@ package org.aktin.dwh.optinout;
 import lombok.val;
 import org.aktin.dwh.db.TestDataSourcePlain;
 import org.aktin.dwh.db.TestDatabasePlain;
+import org.aktin.dwh.optinout.model.PatientEntryImpl;
+import org.aktin.dwh.optinout.model.StudyImpl;
+import org.aktin.dwh.optinout.repository.PatientRepository;
+import org.aktin.dwh.optinout.repository.StudyRepository;
 import org.junit.Before;
 import org.junit.Test;
 

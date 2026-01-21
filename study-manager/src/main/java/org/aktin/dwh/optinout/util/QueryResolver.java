@@ -1,6 +1,7 @@
-package org.aktin.dwh.optinout;
+package org.aktin.dwh.optinout.util;
 
 import lombok.val;
+import org.aktin.dwh.optinout.PatientReference;
 
 import java.util.Collections;
 import java.util.HashMap;

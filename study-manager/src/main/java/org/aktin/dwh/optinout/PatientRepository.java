@@ -68,7 +68,8 @@ public class PatientRepository {
      */
     public List<PatientEntryImpl> getAllPatientsOfStudy(String studyId) throws SQLException {
         val list = new ArrayList<PatientEntryImpl>();
-        try (val ps = dsp.getDataSource().getConnection().prepareStatement(QueryResolver.SQL_ALL_PATIENTS_BY_STUDY_ID)) {
+        try (val dbc = dsp.getDataSource().getConnection();
+             val ps = dbc.prepareStatement(QueryResolver.SQL_ALL_PATIENTS_BY_STUDY_ID)) {
             ps.setString(1, studyId);
             val rs = ps.executeQuery();
             while (rs.next()) {
@@ -90,7 +91,7 @@ public class PatientRepository {
      * @throws IOException  if an I/O error occurs during SIC generation or database operations.
      * @throws SQLException if an SQL error occurs while interacting with the database.
      */
-    public void addPatients(String studyId, List<PatientEntryData> entries, String user) throws IOException, SQLException {
+    public void addPatientsToStudy(String studyId, List<PatientEntryData> entries, String user) throws IOException, SQLException {
         Objects.requireNonNull(anonymizer);
         val now = new Timestamp(System.currentTimeMillis());
 
@@ -198,7 +199,8 @@ public class PatientRepository {
         Objects.requireNonNull(anonymizer);
         val root = referenceService.getRoot(ref);
         val pseudonyms = extensions.stream().map(e -> anonymizer.calculatePatientPseudonym(root, e)).collect(Collectors.toList());
-        try (val ps = dsp.getDataSource().getConnection().prepareStatement(QueryResolver.resolveEncounterQueryByReference(ref, extensions.size()))) {
+        try (val dbc = dsp.getDataSource().getConnection();
+             val ps = dbc.prepareStatement(QueryResolver.resolveEncounterQueryByReference(ref, extensions.size()))) {
 
             for (int i = 0; i < pseudonyms.size(); i++) {
                 ps.setString(i, pseudonyms.get(i));
@@ -209,7 +211,6 @@ public class PatientRepository {
             while (rs.next()) {
                 val encounter = new PatientEncounterImpl(
                         rs.getString(1),
-                        rs.getString(2),
                         rs.getTimestamp(3).toInstant(),
                         rs.getTimestamp(4).toInstant());
                 encounters.add(encounter);
@@ -233,7 +234,8 @@ public class PatientRepository {
         Objects.requireNonNull(anonymizer);
         val root = referenceService.getRoot(ref);
         val pseudonyms = extensions.stream().map(e ->anonymizer.calculatePatientPseudonym(root, e)).collect(Collectors.toList());
-        try (val ps = dsp.getDataSource().getConnection().prepareStatement(QueryResolver.resolveMasterDataQueryByReference(ref))) {
+        try (val dbc = dsp.getDataSource().getConnection();
+             val ps = dbc.prepareStatement(QueryResolver.resolveMasterDataQueryByReference(ref))) {
             for (int i = 0; i < pseudonyms.size(); i++) {
                 ps.setString(i+1, pseudonyms.get(i));
             }
@@ -352,7 +354,8 @@ public class PatientRepository {
      */
     private void updateEntry(String studyId, PatientReference ref, String extension, PatientEntryData newData) throws SQLException {
         val root = referenceService.getRoot(ref);
-        try (val ps = dsp.getDataSource().getConnection().prepareStatement(QueryResolver.SQL_UPDATE_PATIENT)) {
+        try (val dbc = dsp.getDataSource().getConnection();
+             val ps = dbc.prepareStatement(QueryResolver.SQL_UPDATE_PATIENT)) {
             ps.setString(1, newData.getComment());
             ps.setString(2, studyId);
             ps.setString(3, serializeReferenceType(ref));
@@ -372,7 +375,8 @@ public class PatientRepository {
      */
     private void deleteEntry(String studyId, PatientReference ref, String extension) throws SQLException {
         val root = referenceService.getRoot(ref);
-        try (val ps = dsp.getDataSource().getConnection().prepareStatement(QueryResolver.SQL_DELETE_PATIENT)) {
+        try (val dbc = dsp.getDataSource().getConnection();
+             val ps = dbc.prepareStatement(QueryResolver.SQL_DELETE_PATIENT)) {
             ps.setString(1, studyId);
             ps.setString(2, serializeReferenceType(ref));
             ps.setString(3, root);

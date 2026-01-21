@@ -9,7 +9,6 @@ import java.time.Instant;
 @Getter
 public class PatientEncounterImpl implements PatientEncounter {
     private String pseudonym;
-    private String encounterId;
     private Instant startDate;
     private Instant endDate;
 }

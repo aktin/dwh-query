@@ -45,7 +45,7 @@ public class TestStudyManagerImpl {
 		val list = studyRepository.getStudies();
 		// On init database, there are two studies plus the test study added before running the test
 		assertEquals(3, list.size());
-		StudyImpl s = list.get(0);
+		Study s = list.get(0);
 		assertEquals("AKTIN", s.getTitle());
 		s = list.get(1);
 		assertEquals("Zertifizierung", s.getTitle());
@@ -78,18 +78,18 @@ public class TestStudyManagerImpl {
 		val patientEntryData2 = new PatientEntryData("0", prs.getRoot(PatientReference.Billing), null, "Second patient", true, Participation.OptIn, PatientReference.Billing);
 		val patientEntryData3 = new PatientEntryData("0", prs.getRoot(PatientReference.Encounter), null, "Third patient", true, Participation.OptIn, PatientReference.Encounter);
 
-		patientRepository.addPatients(studyId, Collections.singletonList(patientEntryData1), "testuser");
+		patientRepository.addPatientsToStudy(studyId, Collections.singletonList(patientEntryData1), "testuser");
 
 		// same patient should throw exception
 		try {
 			// even if non-id values are different
-			patientRepository.addPatients(studyId, Collections.singletonList(patientEntryData1), "testuser");
+			patientRepository.addPatientsToStudy(studyId, Collections.singletonList(patientEntryData1), "testuser");
 			fail();
-		}catch( SQLException e ) {
+		} catch( SQLException e ) {
 			// user already present, duplicate key exception
 		}
 		// add two (different) patients
-		patientRepository.addPatients(studyId, Arrays.asList(patientEntryData2, patientEntryData3), "testuser1");
+		patientRepository.addPatientsToStudy(studyId, Arrays.asList(patientEntryData2, patientEntryData3), "testuser1");
 
 		// list patients
 		List<PatientEntryImpl> list = patientRepository.getAllPatientsOfStudy(studyId);
@@ -102,8 +102,7 @@ public class TestStudyManagerImpl {
 			patientRepository.deletePatient(studyId, pat.getReference(), pat.getIdExt(), "testuser2");
 			patientRepository.deletePatient(studyId, pat.getReference(), pat.getIdExt(), "testuser2");
 			fail();
-		}catch( IllegalArgumentException e ) {
-
+		} catch( IllegalArgumentException e ) {
 		}
 	}
 //

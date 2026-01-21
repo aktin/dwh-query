@@ -31,44 +31,76 @@ public class PatientValidatorImpl implements PatientValidator {
 
     @Override
     public Map<PatientEntryData, List<ValidationResult>> validatePatients(String studyId, List<PatientEntryData> patients) throws IOException {
-        if (studyId == null) {
-            throw new IllegalArgumentException("Study ID must not be null");
-        }
-
-        if (patients.isEmpty()) {
-            throw new IllegalArgumentException("No patient entries provided");
-        }
+        validateInputParams(studyId, patients);
 
         try {
-            // preload everything we need for validation
-            val existingPatients = patientEntryRepository.getAllPatientsOfStudy(studyId);
-            val existingSics = existingPatients.stream().map(PatientEntry::getSIC).collect(Collectors.toList());
-
-            val ref = patients.get(0).getReference();
-            val extensions = patients.stream().map(PatientEntryData::getExtension).collect(Collectors.toList());
-            val masterData = patientEntryRepository.getMasterData(ref, extensions);
-            val encounters = patientEntryRepository.getEncounters(ref, extensions);
-
-
+            val validationContext = preloadValidationData(studyId, patients);
             val validatedEntries = new HashMap<PatientEntryData, List<ValidationResult>>();
+
             for (val entry : patients) {
-                val results = new ArrayList<ValidationResult>();
-                if (!entry.isGenerateSic()) {
-                    results.add(validateSic(entry.getSic(), patients, existingSics));
-                }
-
-                results.add(validateExtension(entry.getExtension(), patients));
-                results.add(validatePatientId(entry.getReference(), entry.getExtension(), existingPatients));
-                results.add(validateEncounters(entry.getReference(), entry.getExtension(), encounters));
-                results.add(validateMasterData(entry.getReference(), entry.getExtension(), masterData));
-
-                // if results are valid, validation result is not added to the list
-                validatedEntries.put(entry, results.stream().filter(r -> r != ValidationResult.VALID).collect(Collectors.toList()));
+                val results = performSinglePatientValidation(entry, patients, validationContext);
+                validatedEntries.put(entry, results);
             }
 
             return validatedEntries;
         } catch (SQLException ex) {
             throw new IOException(ex);
+        }
+    }
+
+    private void validateInputParams(String studyId, List<PatientEntryData> patients) {
+        if (studyId == null) {
+            throw new IllegalArgumentException("Study ID must not be null");
+        }
+        if (patients.isEmpty()) {
+            throw new IllegalArgumentException("No patient entries provided");
+        }
+    }
+
+    private ValidationContext preloadValidationData(String studyId, List<PatientEntryData> patients) throws SQLException {
+        val existingPatients = patientEntryRepository.getAllPatientsOfStudy(studyId);
+        val existingSics = existingPatients.stream()
+                .filter(p -> p.getSIC() != null)
+                .map(PatientEntry::getSIC).collect(Collectors.toList());
+
+        val ref = patients.get(0).getReference();
+        val extensions = patients.stream().map(PatientEntryData::getExtension).collect(Collectors.toList());
+
+        return new ValidationContext(
+                existingPatients,
+                existingSics,
+                patientEntryRepository.getMasterData(ref, extensions),
+                patientEntryRepository.getEncounters(ref, extensions)
+        );
+    }
+
+    private List<ValidationResult> performSinglePatientValidation(PatientEntryData entry, List<PatientEntryData> allPatients, ValidationContext ctx) {
+        val results = new ArrayList<ValidationResult>();
+        if (!entry.isGenerateSic()) {
+            results.add(validateSic(entry.getSic(), allPatients, ctx.existingSics));
+        }
+
+        results.add(validateExtension(entry.getExtension(), allPatients));
+        results.add(validatePatientId(entry.getReference(), entry.getExtension(), ctx.existingPatients));
+        results.add(validateEncounters(entry.getReference(), entry.getExtension(), ctx.encounters));
+        results.add(validateMasterData(entry.getReference(), entry.getExtension(), ctx.masterData));
+
+        return results.stream()
+                .filter(r -> r != ValidationResult.VALID) // filter out valid results, empty array means patient entry is valid
+                .collect(Collectors.toList());
+    }
+
+    private static class ValidationContext {
+        final List<PatientEntryImpl> existingPatients;
+        final List<String> existingSics;
+        final List<PatientMasterData> masterData;
+        final List<PatientEncounter> encounters;
+
+        ValidationContext(List<PatientEntryImpl> ep, List<String> es, List<PatientMasterData> md, List<PatientEncounter> enc) {
+            this.existingPatients = ep;
+            this.existingSics = es;
+            this.masterData = md;
+            this.encounters = enc;
         }
     }
 

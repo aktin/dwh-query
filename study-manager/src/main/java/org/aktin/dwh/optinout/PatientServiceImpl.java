@@ -25,7 +25,7 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public PatientEntryImpl getPatientByID(String studyId, PatientReference ref, String extension) throws IOException {
+    public PatientEntry getPatientByID(String studyId, PatientReference ref, String extension) throws IOException {
         try {
             return repository.getPatientByID(studyId, ref, extension);
         } catch( SQLException e ) {
@@ -34,9 +34,9 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public void addPatients(String studyId, List<PatientEntryData> patientEntryData, String user) throws IOException {
+    public void addPatientsToStudy(String studyId, List<PatientEntryData> patientEntryData, String user) throws IOException {
         try {
-            repository.addPatients(studyId, patientEntryData, user);
+            repository.addPatientsToStudy(studyId, patientEntryData, user);
         } catch (SQLException e) {
             throw new IOException(e);
         }

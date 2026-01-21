@@ -1,6 +1,7 @@
 package org.aktin.dwh.optinout;
 
 import lombok.val;
+import org.aktin.dwh.optinout.model.PatientReference;
 import org.aktin.dwh.optinout.util.PatientReferenceService;
 
 import java.util.Collections;

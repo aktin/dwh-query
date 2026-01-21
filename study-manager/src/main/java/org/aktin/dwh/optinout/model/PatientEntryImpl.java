@@ -2,9 +2,6 @@ package org.aktin.dwh.optinout.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.aktin.dwh.optinout.Participation;
-import org.aktin.dwh.optinout.PatientEntry;
-import org.aktin.dwh.optinout.PatientReference;
 
 import java.time.Instant;
 

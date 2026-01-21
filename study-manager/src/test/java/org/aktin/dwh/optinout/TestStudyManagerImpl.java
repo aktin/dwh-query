@@ -3,8 +3,7 @@ package org.aktin.dwh.optinout;
 import lombok.val;
 import org.aktin.dwh.db.TestDataSourcePlain;
 import org.aktin.dwh.db.TestDatabasePlain;
-import org.aktin.dwh.optinout.model.PatientEntryImpl;
-import org.aktin.dwh.optinout.model.StudyImpl;
+import org.aktin.dwh.optinout.model.*;
 import org.aktin.dwh.optinout.repository.PatientRepository;
 import org.aktin.dwh.optinout.repository.StudyRepository;
 import org.junit.Before;
@@ -96,7 +95,7 @@ public class TestStudyManagerImpl {
 		patientRepository.addPatientsToStudy(studyId, Arrays.asList(patientEntryData2, patientEntryData3), "testuser1");
 
 		// list patients
-		List<PatientEntryImpl> list = patientRepository.getAllPatientsOfStudy(studyId);
+		val list = patientRepository.getAllPatientsOfStudy(studyId);
 		assertEquals(3, list.size());
 
 		val pat = list.get(0);

@@ -1,7 +1,6 @@
 package org.aktin.dwh.optinout.service;
 
-import org.aktin.dwh.optinout.Study;
-import org.aktin.dwh.optinout.StudyService;
+import org.aktin.dwh.optinout.model.Study;
 import org.aktin.dwh.optinout.repository.StudyRepository;
 
 import javax.faces.bean.ApplicationScoped;

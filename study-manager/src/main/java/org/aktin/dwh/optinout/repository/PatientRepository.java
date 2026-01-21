@@ -2,10 +2,7 @@ package org.aktin.dwh.optinout.repository;
 
 import lombok.val;
 import org.aktin.dwh.Anonymizer;
-import org.aktin.dwh.optinout.*;
-import org.aktin.dwh.optinout.model.PatientEncounterImpl;
-import org.aktin.dwh.optinout.model.PatientEntryImpl;
-import org.aktin.dwh.optinout.model.PatientMasterDataImpl;
+import org.aktin.dwh.optinout.model.*;
 import org.aktin.dwh.optinout.util.DataSourceProvider;
 import org.aktin.dwh.optinout.util.PatientReferenceService;
 import org.aktin.dwh.optinout.util.QueryResolver;
@@ -30,10 +27,10 @@ public class PatientRepository {
     private PatientReferenceService referenceService;
 
     @Inject
-    PatientRepository(DataSourceProvider dsp,
-                      Anonymizer anonymizer,
-                      StudyRepository studyRepository,
-                      PatientReferenceService referenceService) {
+    public PatientRepository(DataSourceProvider dsp,
+                             Anonymizer anonymizer,
+                             StudyRepository studyRepository,
+                             PatientReferenceService referenceService) {
         this.dsp = dsp;
         this.anonymizer = anonymizer;
         this.studyRepository = studyRepository;
@@ -73,8 +70,8 @@ public class PatientRepository {
      * @return a {@code List} of {@code PatientEntryImpl} objects representing all patients associated with the study.
      * @throws SQLException if an SQL error occurs while executing the query or interacting with the database.
      */
-    public List<PatientEntryImpl> getAllPatientsOfStudy(String studyId) throws SQLException {
-        val list = new ArrayList<PatientEntryImpl>();
+    public List<PatientEntry> getAllPatientsOfStudy(String studyId) throws SQLException {
+        val list = new ArrayList<PatientEntry>();
         try (val dbc = dsp.getDataSource().getConnection();
              val ps = dbc.prepareStatement(QueryResolver.SQL_ALL_PATIENTS_BY_STUDY_ID)) {
             ps.setString(1, studyId);

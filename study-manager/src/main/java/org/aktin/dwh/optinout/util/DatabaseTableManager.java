@@ -32,7 +32,7 @@ public class DatabaseTableManager {
 	public void checkAndCreateTables() throws IOException, SQLException {
 		// check if tables exist
 		try( Statement s = dbc.createStatement();
-				ResultSet rs = s.executeQuery("SELECT COUNT(*) FROM optinout_studies") ){
+				ResultSet rs = s.executeQuery(QueryResolver.SQL_COUNT_STUDIES) ){
 			rs.next();
 			log.info("Tables for study_manager existing");
 			return; // leave this method

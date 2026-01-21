@@ -1,13 +1,13 @@
 package org.aktin.dwh.optinout.util;
 
 import lombok.val;
-import org.aktin.dwh.optinout.PatientReference;
+import org.aktin.dwh.optinout.model.PatientReference;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-class QueryResolver {
+public class QueryResolver {
     public static final String SQL_ALL_STUDIES = "SELECT id, title, description, created_ts, closed_ts, options, sic_generate, sic_generator_state, sic_validate FROM optinout_studies ORDER BY id";
     public static final String SQL_STUDY_BY_ID = "SELECT id, title, description, created_ts, closed_ts, options, sic_generate, sic_generator_state, sic_validate FROM optinout_studies WHERE id = ? LIMIT 1";
     public static final String SQL_UPDATE_SIC_STATE = "UPDATE optinout_studies SET sic_generator_state=? WHERE id=?";
@@ -18,6 +18,7 @@ class QueryResolver {
     public static final String SQL_INSERT_AUDIT_TRAIL = "INSERT INTO optinout_audittrail(study_id,pat_ref,pat_root,pat_ext,action_user,action_timestamp,action,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?)";
     public static final String SQL_UPDATE_PATIENT = "UPDATE optinout_patients SET comment = ? WHERE study_id = ? and pat_ref = ? and pat_root = ? and pat_ext = ?";
     public static final String SQL_DELETE_PATIENT = "DELETE FROM optinout_patients WHERE study_id=? AND pat_ref=? AND pat_root=? AND pat_ext=?";
+    public static final String SQL_COUNT_STUDIES = "SELECT COUNT(*) FROM optinout_studies";
 
     private static final String SQL_ENCOUNTER_BY_PATIENT_REF = "SELECT pm.patient_ide, vd.encounter_num, vd.start_date, vd.end_date " +
             "FROM i2b2crcdata.visit_dimension vd " +

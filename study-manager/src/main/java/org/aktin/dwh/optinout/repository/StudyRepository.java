@@ -1,9 +1,9 @@
 package org.aktin.dwh.optinout.repository;
 
 import lombok.val;
-import org.aktin.dwh.optinout.Participation;
-import org.aktin.dwh.optinout.SICGeneration;
-import org.aktin.dwh.optinout.Study;
+import org.aktin.dwh.optinout.model.Participation;
+import org.aktin.dwh.optinout.model.SICGeneration;
+import org.aktin.dwh.optinout.model.Study;
 import org.aktin.dwh.optinout.model.StudyImpl;
 import org.aktin.dwh.optinout.sic.CodeGeneratorFactory;
 import org.aktin.dwh.optinout.util.DataSourceProvider;
@@ -30,7 +30,7 @@ public class StudyRepository {
     }
 
     @Inject
-    StudyRepository(DataSourceProvider dsp) {
+    public StudyRepository(DataSourceProvider dsp) {
         this.dsp = dsp;
     }
 

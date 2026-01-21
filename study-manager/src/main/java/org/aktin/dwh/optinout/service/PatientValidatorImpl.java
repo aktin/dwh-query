@@ -3,7 +3,7 @@ package org.aktin.dwh.optinout.service;
 import lombok.val;
 import org.aktin.dwh.Anonymizer;
 import org.aktin.dwh.optinout.*;
-import org.aktin.dwh.optinout.model.PatientEntryImpl;
+import org.aktin.dwh.optinout.model.*;
 import org.aktin.dwh.optinout.repository.PatientRepository;
 import org.aktin.dwh.optinout.util.PatientReferenceService;
 
@@ -64,8 +64,8 @@ public class PatientValidatorImpl implements PatientValidator {
     private ValidationContext preloadValidationData(String studyId, List<PatientEntryData> patients) throws SQLException {
         val existingPatients = patientEntryRepository.getAllPatientsOfStudy(studyId);
         val existingSics = existingPatients.stream()
-                .filter(p -> p.getSIC() != null)
-                .map(PatientEntry::getSIC).collect(Collectors.toList());
+                .map(PatientEntry::getSIC)
+                .filter(Objects::nonNull).collect(Collectors.toList());
 
         val ref = patients.get(0).getReference();
         val extensions = patients.stream().map(PatientEntryData::getExtension).collect(Collectors.toList());
@@ -95,12 +95,12 @@ public class PatientValidatorImpl implements PatientValidator {
     }
 
     private static class ValidationContext {
-        final List<PatientEntryImpl> existingPatients;
+        final List<PatientEntry> existingPatients;
         final List<String> existingSics;
         final List<PatientMasterData> masterData;
         final List<PatientEncounter> encounters;
 
-        ValidationContext(List<PatientEntryImpl> ep, List<String> es, List<PatientMasterData> md, List<PatientEncounter> enc) {
+        ValidationContext(List<PatientEntry> ep, List<String> es, List<PatientMasterData> md, List<PatientEncounter> enc) {
             this.existingPatients = ep;
             this.existingSics = es;
             this.masterData = md;
@@ -161,7 +161,7 @@ public class PatientValidatorImpl implements PatientValidator {
      * otherwise {@code ValidationResult.VALID}
      * @throws IOException if an error occurs while accessing the patient information
      */
-    private ValidationResult validatePatientId(PatientReference ref, String extension, List<PatientEntryImpl> existingPatients) {
+    private ValidationResult validatePatientId(PatientReference ref, String extension, List<PatientEntry> existingPatients) {
         if (existingPatients.stream().anyMatch(p -> p.getReference().equals(ref) && p.getIdExt().equals(extension))) {
             return ValidationResult.ENTRY_FOUND;
         }

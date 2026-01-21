@@ -2,7 +2,7 @@ package org.aktin.dwh.optinout.util;
 
 import lombok.val;
 import org.aktin.Preferences;
-import org.aktin.dwh.optinout.PatientReference;
+import org.aktin.dwh.optinout.model.PatientReference;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;

@@ -1,6 +1,10 @@
 package org.aktin.dwh.optinout.service;
 
-import org.aktin.dwh.optinout.*;
+import org.aktin.dwh.optinout.model.PatientEncounter;
+import org.aktin.dwh.optinout.model.PatientMasterData;
+import org.aktin.dwh.optinout.model.PatientEntry;
+import org.aktin.dwh.optinout.model.PatientEntryData;
+import org.aktin.dwh.optinout.model.PatientReference;
 import org.aktin.dwh.optinout.repository.PatientRepository;
 
 import javax.faces.bean.ApplicationScoped;
@@ -21,7 +25,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public List<PatientEntry> getAllPatientsOfStudy(String studyId) throws IOException {
             try {
-                return (List<PatientEntry>)(List<?>) repository.getAllPatientsOfStudy(studyId);
+                return repository.getAllPatientsOfStudy(studyId);
             } catch( SQLException e ) {
                 throw new IOException(e);
             }

@@ -2,16 +2,13 @@ package org.aktin.dwh.optinout.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.aktin.dwh.optinout.Participation;
-import org.aktin.dwh.optinout.SICGeneration;
-import org.aktin.dwh.optinout.Study;
 
 import java.time.Instant;
 
 @Getter
 @Setter
 public class StudyImpl implements Study {
-    StudyImpl(String id,
+    public StudyImpl(String id,
               String title,
               String description,
               Instant createdTimestamp,

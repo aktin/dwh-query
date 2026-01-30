@@ -159,10 +159,9 @@ public class PatientValidatorImpl implements PatientValidator {
      * @param existingPatients the list of existing patients to be checked
      * @return {@code ValidationResult.ENTRY_FOUND} if a patient matching the given identifiers exists,
      * otherwise {@code ValidationResult.VALID}
-     * @throws IOException if an error occurs while accessing the patient information
      */
     private ValidationResult validatePatientId(PatientReference ref, String extension, List<PatientEntry> existingPatients) {
-        if (existingPatients.stream().anyMatch(p -> p.getReference().equals(ref) && p.getIdExt().equals(extension))) {
+        if (existingPatients.stream().anyMatch(p -> p.getReference().equals(ref) && p.getExtension().equals(extension))) {
             return ValidationResult.ENTRY_FOUND;
         }
         return ValidationResult.VALID;
@@ -177,12 +176,11 @@ public class PatientValidatorImpl implements PatientValidator {
      * @param encounters the list of patient encounters to be checked
      * @return {@code ValidationResult.ENCOUNTERS_NOT_FOUND} if no encounters are found,
      *         {@code ValidationResult.VALID} if encounters are found
-     * @throws IOException if an error occurs while loading patient encounters
      */
     private ValidationResult validateEncounters(PatientReference ref, String extension, List<PatientEncounter> encounters) {
         val root = referenceService.getRoot(ref);
         val pseudonym = anonymizer.calculatePatientPseudonym(root, extension);
-        if (encounters.stream().noneMatch(e -> Objects.equals(e.getPseudonym(), pseudonym))) {
+        if (encounters.stream().noneMatch(e -> Objects.equals(e.getIdEnc(), pseudonym))) {
             return ValidationResult.ENCOUNTERS_NOT_FOUND;
         }
 
@@ -198,12 +196,11 @@ public class PatientValidatorImpl implements PatientValidator {
      * @param masterData the list of patient master data to be checked
      * @return {@code ValidationResult.MASTER_DATA_NOT_FOUND} if no master data is found,
      *         or {@code ValidationResult.VALID} if the master data exists
-     * @throws IOException if an error occurs while accessing the master data
      */
     private ValidationResult validateMasterData(PatientReference ref, String extension, List<PatientMasterData> masterData) {
         val root = referenceService.getRoot(ref);
         val pseudonym = anonymizer.calculatePatientPseudonym(root, extension);
-        if (masterData.stream().noneMatch(m -> Objects.equals(m.getPseudonym(), pseudonym))) {
+        if (masterData.stream().noneMatch(m -> Objects.equals(m.getIdEnc(), pseudonym))) {
             return ValidationResult.MASTER_DATA_NOT_FOUND;
         }
 

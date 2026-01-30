@@ -2,14 +2,10 @@ package org.aktin.dwh.optinout.util;
 
 import lombok.Getter;
 import lombok.val;
-import org.aktin.Preferences;
-import org.aktin.dwh.PreferenceKey;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -19,9 +15,8 @@ import java.util.logging.Logger;
 public class DataSourceProvider {
     private static final Logger log = Logger.getLogger(DataSourceProvider.class.getName());
 
-    @Inject
-    private Preferences prefs;
     @Getter
+    @Resource(lookup="java:jboss/datasources/QueryToolDemoDS")
     protected DataSource dataSource;
 
     /**
@@ -47,23 +42,9 @@ public class DataSourceProvider {
     public void prepareDatabase() {
         log.info("Initializing study manager data source provider");
         try {
-            initDataSource();
             initDatabase();
-        } catch ( IOException | SQLException | NamingException e) {
+        } catch ( IOException | SQLException e) {
             throw new IllegalStateException("Unable to initialize study manager", e);
-        }
-    }
-
-    /**
-     * Datasource JNDI lookup name is not known during compile time (for @Resource) and needs to be retrieved from preferences
-     * @throws NamingException
-     */
-    public void initDataSource() throws NamingException {
-        if( dataSource == null ) {
-            val dsName = prefs.get(PreferenceKey.i2b2DatasourceCRC);
-            log.info("Using i2b2 database via "+dsName);
-            InitialContext ctx = new InitialContext();
-            dataSource = (DataSource)ctx.lookup(dsName);
         }
     }
 }

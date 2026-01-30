@@ -8,7 +8,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Getter
 public class PatientEncounterImpl implements PatientEncounter {
-    private String pseudonym;
+    private String idEnc;
     private Instant startDate;
     private Instant endDate;
 }

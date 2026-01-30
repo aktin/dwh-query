@@ -1,38 +1,20 @@
 package org.aktin.dwh.optinout.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
 
 @Getter
-@Setter
+@AllArgsConstructor
 public class StudyImpl implements Study {
-    public StudyImpl(String id,
-              String title,
-              String description,
-              Instant createdTimestamp,
-              Instant closedTimestamp,
-              Participation participation,
-              String sicGenerator,
-              String sicGeneratorState) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.createdTimestamp = createdTimestamp;
-        this.closedTimestamp = closedTimestamp;
-        this.participation = participation;
-        this.sicGenerator = sicGenerator;
-        this.sicGeneratorState = sicGeneratorState;
-
-        determineSicGenerationStrategy();
-    }
-
     private String id;
     private String title;
     private String description;
     private Instant createdTimestamp;
     private Instant closedTimestamp;
+    @Setter
     private Participation participation;
     private String sicGenerator;
     private String sicGeneratorState;
@@ -42,10 +24,8 @@ public class StudyImpl implements Study {
      * or both, based on the state of the `sicGenerator` configuration during the
      * instantiation of the study. Defaults to {@link SICGeneration#ManualOnly}.
      */
-    private SICGeneration sicGeneration;
-
-    private void determineSicGenerationStrategy() {
-        sicGeneration = sicGenerator != null
+    public SICGeneration getSicGeneration() {
+        return sicGenerator != null
                 && !sicGenerator.equals("MANUAL") ? SICGeneration.AutoAndManual : SICGeneration.ManualOnly;
     }
 }

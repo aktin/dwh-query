@@ -16,7 +16,7 @@ public class QueryResolver {
     public static final String SQL_PATIENT_BY_ID = SQL_ALL_PATIENTS_BY_STUDY_ID + " AND pat_ref=? AND pat_root=? AND pat_ext=?";
     public static final String SQL_INSERT_PATIENT = "INSERT INTO optinout_patients(study_id,pat_ref,pat_root,pat_ext,pat_psn,create_user,create_timestamp,optinout,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?,?)";
     public static final String SQL_INSERT_AUDIT_TRAIL = "INSERT INTO optinout_audittrail(study_id,pat_ref,pat_root,pat_ext,action_user,action_timestamp,action,study_subject_id,comment)VALUES(?,?,?,?,?,?,?,?,?)";
-    public static final String SQL_UPDATE_PATIENT = "UPDATE optinout_patients SET comment = ? WHERE study_id = ? and pat_ref = ? and pat_root = ? and pat_ext = ?";
+    public static final String SQL_UPDATE_MUTABLE_PATIENT_COLUMNS = "UPDATE optinout_patients SET comment = ? WHERE study_id = ? and pat_ref = ? and pat_root = ? and pat_ext = ?";
     public static final String SQL_DELETE_PATIENT = "DELETE FROM optinout_patients WHERE study_id=? AND pat_ref=? AND pat_root=? AND pat_ext=?";
     public static final String SQL_COUNT_STUDIES = "SELECT COUNT(*) FROM optinout_studies";
 

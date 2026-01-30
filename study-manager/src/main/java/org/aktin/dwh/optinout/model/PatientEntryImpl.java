@@ -10,8 +10,8 @@ import java.time.Instant;
 public class PatientEntryImpl implements PatientEntry {
 	private PatientReference reference;
 	private Participation participation;
-	private String idRoot;
-	private String idExt;
+	private String root;
+	private String extension;
 	private String sIC;
 	private String user;
 	private Instant timestamp;

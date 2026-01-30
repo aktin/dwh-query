@@ -359,7 +359,7 @@ public class PatientRepository {
     private void updateEntry(String studyId, PatientReference ref, String extension, PatientEntryData newData) throws SQLException {
         val root = referenceService.getRoot(ref);
         try (val dbc = dsp.getDataSource().getConnection();
-             val ps = dbc.prepareStatement(QueryResolver.SQL_UPDATE_PATIENT)) {
+             val ps = dbc.prepareStatement(QueryResolver.SQL_UPDATE_MUTABLE_PATIENT_COLUMNS)) {
             ps.setString(1, newData.getComment());
             ps.setString(2, studyId);
             ps.setString(3, serializeReferenceType(ref));

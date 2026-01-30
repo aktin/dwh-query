@@ -102,8 +102,8 @@ public class TestStudyManagerImpl {
 		// delete first patient
 		// delete again should throw exception
 		try {
-			patientRepository.deletePatient(studyId, pat.getReference(), pat.getIdExt(), "testuser2");
-			patientRepository.deletePatient(studyId, pat.getReference(), pat.getIdExt(), "testuser2");
+			patientRepository.deletePatient(studyId, pat.getReference(), pat.getExtension(), "testuser2");
+			patientRepository.deletePatient(studyId, pat.getReference(), pat.getExtension(), "testuser2");
 			fail();
 		} catch( IllegalArgumentException e ) {
 		}

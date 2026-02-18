@@ -11,6 +11,7 @@ import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 @ApplicationScoped
@@ -77,9 +78,27 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
+    public List<PatientEncounter> getEncounters(PatientReference ref, List<String> extensions) throws IOException {
+        try {
+            return repository.getEncounters(ref, extensions);
+        } catch (SQLException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
     public PatientMasterData getMasterData(PatientReference ref, String extension) throws IOException {
         try {
             return repository.getMasterData(ref, extension);
+        } catch (SQLException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    public List<PatientMasterData> getMasterData(PatientReference ref, List<String> extensions) throws IOException {
+        try {
+            return repository.getMasterData(ref, extensions);
         } catch (SQLException e) {
             throw new IOException(e);
         }

@@ -77,9 +77,9 @@ public class TestStudyManagerImpl {
 		assertEquals(Participation.OptIn, s.getParticipation());
 		assertNotEquals(Participation.OptOut, s.getParticipation());
 
-		val patientEntryData1 = new PatientEntryData("0", prs.getRoot(PatientReference.Patient), "0", "First patient", false, Participation.OptIn, PatientReference.Patient);
-		val patientEntryData2 = new PatientEntryData("0", prs.getRoot(PatientReference.Billing), null, "Second patient", true, Participation.OptIn, PatientReference.Billing);
-		val patientEntryData3 = new PatientEntryData("0", prs.getRoot(PatientReference.Encounter), null, "Third patient", true, Participation.OptIn, PatientReference.Encounter);
+		val patientEntryData1 = new PatientEntryData("0", prs.getRoot(PatientReference.Patient), "0", "First patient", false, Participation.OptIn, PatientReference.Patient, null);
+		val patientEntryData2 = new PatientEntryData("0", prs.getRoot(PatientReference.Billing), null, "Second patient", true, Participation.OptIn, PatientReference.Billing, null);
+		val patientEntryData3 = new PatientEntryData("0", prs.getRoot(PatientReference.Encounter), null, "Third patient", true, Participation.OptIn, PatientReference.Encounter, null);
 
 		patientRepository.addPatientsToStudy(studyId, Collections.singletonList(patientEntryData1), "testuser");
 

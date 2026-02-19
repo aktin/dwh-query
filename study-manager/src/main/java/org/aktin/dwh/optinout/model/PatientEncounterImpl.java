@@ -1,0 +1,14 @@
+package org.aktin.dwh.optinout.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.time.Instant;
+
+@AllArgsConstructor
+@Getter
+public class PatientEncounterImpl implements PatientEncounter {
+    private String idEnc;
+    private Instant startDate;
+    private Instant endDate;
+}

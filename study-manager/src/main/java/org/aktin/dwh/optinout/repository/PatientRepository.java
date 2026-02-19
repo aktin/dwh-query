@@ -10,6 +10,7 @@ import org.aktin.dwh.optinout.util.QueryResolver;
 import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -108,8 +109,8 @@ public class PatientRepository {
                     entry.setSic(studyRepository.generateSIC(studyId));
                 }
 
-                insertEntry(studyId, entry, user, now);
-                writeAuditTrail(studyId, entry, user, now, DatabaseAction.CREATE);
+                insertEntry(dbc, studyId, entry, user, now);
+                writeAuditTrail(dbc, studyId, entry, user, now, DatabaseAction.CREATE);
             }
             dbc.commit();
         }
@@ -134,8 +135,8 @@ public class PatientRepository {
             //turn auto commit off for transaction
             dbc.setAutoCommit(false);
 
-            updateEntry(studyId, ref, extension, newData);
-            writeAuditTrail(studyId, newData, user, now, DatabaseAction.UPDATE);
+            updateEntry(dbc, studyId, ref, extension, newData);
+            writeAuditTrail(dbc, studyId, newData, user, now, DatabaseAction.UPDATE);
 
             dbc.commit();
         }
@@ -163,12 +164,12 @@ public class PatientRepository {
             throw new IllegalArgumentException("Patient not found");
         }
         // need patient data object for audit trail
-        val data = new PatientEntryData(root, extension, pat.getSIC(), pat.getComment(), false, pat.getParticipation(), pat.getReference());
+        val data = new PatientEntryData(root, extension, pat.getSIC(), pat.getComment(), false, pat.getParticipation(), pat.getReference(), null);
 
         try (val dbc = dsp.getDataSource().getConnection()) {
             dbc.setAutoCommit(false);
-            deleteEntry(studyId, ref, extension);
-            writeAuditTrail(studyId, data, user, now, DatabaseAction.DELETE);
+            deleteEntry(dbc, studyId, ref, extension);
+            writeAuditTrail(dbc, studyId, data, user, now, DatabaseAction.DELETE);
 
             dbc.commit();
         }
@@ -207,7 +208,8 @@ public class PatientRepository {
              val ps = dbc.prepareStatement(QueryResolver.resolveEncounterQueryByReference(ref, extensions.size()))) {
 
             for (int i = 0; i < pseudonyms.size(); i++) {
-                ps.setString(i, pseudonyms.get(i));
+                // ps.setString starts at index 1, pseudonyms.get starts at index 0
+                ps.setString(i + 1, pseudonyms.get(i));
             }
 
             val rs = ps.executeQuery();
@@ -224,7 +226,7 @@ public class PatientRepository {
     }
 
     /**
-     * Retrieves the master data of a patient using the given reference and extensions.
+     * Retrieves the master data of patients using the given reference and extensions.
      *
      * This method resolves patient pseudonyms based on the reference and extensions,
      * then executes a query to fetch the corresponding master data from the database.
@@ -239,9 +241,10 @@ public class PatientRepository {
         val root = referenceService.getRoot(ref);
         val pseudonyms = extensions.stream().map(e ->anonymizer.calculatePatientPseudonym(root, e)).collect(Collectors.toList());
         try (val dbc = dsp.getDataSource().getConnection();
-             val ps = dbc.prepareStatement(QueryResolver.resolveMasterDataQueryByReference(ref))) {
+             val ps = dbc.prepareStatement(QueryResolver.resolveMasterDataQueryByReference(ref, extensions.size()))) {
             for (int i = 0; i < pseudonyms.size(); i++) {
-                ps.setString(i+1, pseudonyms.get(i));
+                // ps.setString starts at index 1, pseudonyms.get starts at index 0
+                ps.setString(i + 1, pseudonyms.get(i));
             }
             val rs = ps.executeQuery();
             val masterData = new ArrayList<PatientMasterData>();
@@ -285,32 +288,38 @@ public class PatientRepository {
      * @throws SQLException if an SQL error occurs while accessing the result set data
      */
     private PatientEntryImpl toPatientEntry(ResultSet rs) throws SQLException {
+        val root = rs.getString(2);
+        val extension = rs.getString(3);
+        val idEnc = anonymizer.calculatePatientPseudonym(root, extension);
         return new PatientEntryImpl(unserializeReferenceType(rs.getString(1)),
                 unserializeParticipationType(rs.getString(4)),
-                rs.getString(2),
-                rs.getString(3),
+                root,
+                extension,
                 rs.getString(7),
                 rs.getString(5),
                 rs.getTimestamp(6).toInstant(),
                 rs.getString(8),
-                rs.getInt(9));
+                rs.getInt(9),
+                idEnc);
     }
 
     /**
      * Inserts a new patient entry into the database.
      *
+     * @param dbc              Database connection that was created from calling function
      * @param studyId          ID of the study to which the patient belongs
      * @param entry            patient entry data
      * @param user             user who performed the action
      * @param createdTimestamp timestamp of the action
      * @throws SQLException
      */
-    private void insertEntry(String studyId, PatientEntryData entry, String user, Timestamp createdTimestamp) throws SQLException {
-        val psn = anonymizer.calculateAbstractPseudonym(entry.getRoot(), entry.getExtension());
-        try (val insertEntry = dsp.getDataSource().getConnection().prepareStatement(QueryResolver.SQL_INSERT_PATIENT)) {
+    private void insertEntry(Connection dbc, String studyId, PatientEntryData entry, String user, Timestamp createdTimestamp) throws SQLException {
+        val root = referenceService.getRoot(entry.getReference());
+        val psn = anonymizer.calculateAbstractPseudonym(root, entry.getExtension());
+        try (val insertEntry = dbc.prepareStatement(QueryResolver.SQL_INSERT_PATIENT)) {
             insertEntry.setString(1, studyId);
             insertEntry.setString(2, serializeReferenceType(entry.getReference()));
-            insertEntry.setString(3, entry.getRoot());
+            insertEntry.setString(3, root);
             insertEntry.setString(4, entry.getExtension());
             insertEntry.setString(5, psn);
             insertEntry.setString(6, user);
@@ -325,18 +334,20 @@ public class PatientRepository {
     /**
      * Writes an audit trail entry for the given patient entry data to the database.
      *
+     * @param dbc              Database connection that was created from calling function
      * @param studyId          ID of the study to which the patient belongs
      * @param entry            patient entry data
      * @param user             user who performed the action
      * @param createdTimestamp timestamp of the action
-     * @param action           C(R)UD action performed
+     * @param action           C(R)UD action performed´3
      * @throws SQLException
      */
-    private void writeAuditTrail(String studyId, PatientEntryData entry, String user, Timestamp createdTimestamp, DatabaseAction action) throws SQLException {
-        try (val insertAudit = dsp.getDataSource().getConnection().prepareStatement(QueryResolver.SQL_INSERT_AUDIT_TRAIL)) {
+    private void writeAuditTrail(Connection dbc, String studyId, PatientEntryData entry, String user, Timestamp createdTimestamp, DatabaseAction action) throws SQLException {
+        val root = referenceService.getRoot(entry.getReference());
+        try (val insertAudit = dbc.prepareStatement(QueryResolver.SQL_INSERT_AUDIT_TRAIL)) {
             insertAudit.setString(1, studyId);
             insertAudit.setString(2, serializeReferenceType(entry.getReference()));
-            insertAudit.setString(3, entry.getRoot());
+            insertAudit.setString(3, root);
             insertAudit.setString(4, entry.getExtension());
             insertAudit.setString(5, user);
             insertAudit.setTimestamp(6, createdTimestamp);
@@ -350,16 +361,16 @@ public class PatientRepository {
     /**
      * Updates an entry in the optinout_patients database table with new patient data.
      *
+     * @param dbc       Database connection that was created from calling function
      * @param studyId   ID of the study to which the patient belongs
      * @param ref       the patient reference containing information about the patient
      * @param extension the extension identifier for the patient
      * @param newData   the new patient data to be updated in the database
      * @throws SQLException if there is an error executing the update query or interacting with the database
      */
-    private void updateEntry(String studyId, PatientReference ref, String extension, PatientEntryData newData) throws SQLException {
+    private void updateEntry(Connection dbc, String studyId, PatientReference ref, String extension, PatientEntryData newData) throws SQLException {
         val root = referenceService.getRoot(ref);
-        try (val dbc = dsp.getDataSource().getConnection();
-             val ps = dbc.prepareStatement(QueryResolver.SQL_UPDATE_MUTABLE_PATIENT_COLUMNS)) {
+        try (val ps = dbc.prepareStatement(QueryResolver.SQL_UPDATE_MUTABLE_PATIENT_COLUMNS)) {
             ps.setString(1, newData.getComment());
             ps.setString(2, studyId);
             ps.setString(3, serializeReferenceType(ref));
@@ -372,15 +383,15 @@ public class PatientRepository {
     /**
      * Deletes an entry from the 'optinout_patients' table based on the specified parameters.
      *
+     * @param dbc       Database connection that was created from calling function
      * @param studyId   ID of the study to which the patient belongs
      * @param ref       The reference to the patient whose entry is to be deleted.
      * @param extension The extension identifier of the patient entry.
      * @throws SQLException If an SQL error occurs while executing the delete operation.
      */
-    private void deleteEntry(String studyId, PatientReference ref, String extension) throws SQLException {
+    private void deleteEntry(Connection dbc, String studyId, PatientReference ref, String extension) throws SQLException {
         val root = referenceService.getRoot(ref);
-        try (val dbc = dsp.getDataSource().getConnection();
-             val ps = dbc.prepareStatement(QueryResolver.SQL_DELETE_PATIENT)) {
+        try (val ps = dbc.prepareStatement(QueryResolver.SQL_DELETE_PATIENT)) {
             ps.setString(1, studyId);
             ps.setString(2, serializeReferenceType(ref));
             ps.setString(3, root);

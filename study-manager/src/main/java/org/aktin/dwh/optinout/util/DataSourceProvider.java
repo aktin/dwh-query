@@ -5,18 +5,18 @@ import lombok.val;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.enterprise.context.Dependent;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
-@Dependent
+@Singleton
 public class DataSourceProvider {
     private static final Logger log = Logger.getLogger(DataSourceProvider.class.getName());
 
     @Getter
-    @Resource(lookup="java:jboss/datasources/QueryToolDemoDS")
+    @Resource(lookup="java:/QueryToolDemoDS")
     protected DataSource dataSource;
 
     /**

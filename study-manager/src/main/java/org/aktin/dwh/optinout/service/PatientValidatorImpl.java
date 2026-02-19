@@ -34,16 +34,28 @@ public class PatientValidatorImpl implements PatientValidator {
     }
 
     @Override
-    public Map<PatientEntryData, List<ValidationResult>> validatePatients(String studyId, List<PatientEntryData> patients) throws IOException {
+    public Map<PatientEntry, List<ValidationResult>> validatePatients(String studyId, List<PatientEntryData> patients) throws IOException {
         validateInputParams(studyId, patients);
 
         try {
             val validationContext = preloadValidationData(studyId, patients);
-            val validatedEntries = new HashMap<PatientEntryData, List<ValidationResult>>();
+            val validatedEntries = new HashMap<PatientEntry, List<ValidationResult>>();
 
             for (val entry : patients) {
                 val results = performSinglePatientValidation(entry, patients, validationContext);
-                validatedEntries.put(entry, results);
+                val root = referenceService.getRoot(entry.getReference());
+                val idEnc = anonymizer.calculatePatientPseudonym(root, entry.getExtension());
+                val patient = new PatientEntryImpl(entry.getReference(),
+                        entry.getParticipation(),
+                        root,
+                        entry.getExtension(),
+                        entry.getSic(),
+                        null,
+                        null,
+                        entry.getComment(),
+                        null,
+                        idEnc);
+                validatedEntries.put(patient, results);
             }
 
             return validatedEntries;

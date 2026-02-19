@@ -11,6 +11,7 @@ import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 @ApplicationScoped
@@ -80,6 +81,15 @@ public class PatientServiceImpl implements PatientService {
     public List<PatientEncounterPeriod> getEncounterPeriods(PatientReference ref, List<String> extensions) throws IOException {
         try {
             return repository.getEncounterPeriods(ref, extensions);
+        } catch (SQLException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    public List<PatientEncounter> getEncounters(PatientReference ref, List<String> extensions) throws IOException {
+        try {
+            return repository.getEncounters(ref, extensions);
         } catch (SQLException e) {
             throw new IOException(e);
         }

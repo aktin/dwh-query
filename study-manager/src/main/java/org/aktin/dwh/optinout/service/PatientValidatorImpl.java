@@ -2,7 +2,6 @@ package org.aktin.dwh.optinout.service;
 
 import lombok.val;
 import org.aktin.dwh.Anonymizer;
-import org.aktin.dwh.optinout.*;
 import org.aktin.dwh.optinout.model.*;
 import org.aktin.dwh.optinout.repository.PatientRepository;
 import org.aktin.dwh.optinout.util.PatientReferenceService;
@@ -86,7 +85,7 @@ public class PatientValidatorImpl implements PatientValidator {
                 existingPatients,
                 existingSics,
                 patientEntryRepository.getMasterData(ref, extensions),
-                patientEntryRepository.getEncounters(ref, extensions)
+                patientEntryRepository.getEncounterPeriods(ref, extensions)
         );
     }
 
@@ -110,9 +109,9 @@ public class PatientValidatorImpl implements PatientValidator {
         final List<PatientEntry> existingPatients;
         final List<String> existingSics;
         final List<PatientMasterData> masterData;
-        final List<PatientEncounter> encounters;
+        final List<PatientEncounterPeriod> encounters;
 
-        ValidationContext(List<PatientEntry> ep, List<String> es, List<PatientMasterData> md, List<PatientEncounter> enc) {
+        ValidationContext(List<PatientEntry> ep, List<String> es, List<PatientMasterData> md, List<PatientEncounterPeriod> enc) {
             this.existingPatients = ep;
             this.existingSics = es;
             this.masterData = md;
@@ -189,10 +188,10 @@ public class PatientValidatorImpl implements PatientValidator {
      * @return {@code ValidationResult.ENCOUNTERS_NOT_FOUND} if no encounters are found,
      *         {@code ValidationResult.VALID} if encounters are found
      */
-    private ValidationResult validateEncounters(PatientReference ref, String extension, List<PatientEncounter> encounters) {
+    private ValidationResult validateEncounters(PatientReference ref, String extension, List<PatientEncounterPeriod> encounters) {
         val root = referenceService.getRoot(ref);
         val pseudonym = anonymizer.calculatePatientPseudonym(root, extension);
-        if (encounters.stream().noneMatch(e -> Objects.equals(e.getIdEnc(), pseudonym))) {
+        if (encounters.stream().noneMatch(e -> Objects.equals(e.getIde(), pseudonym))) {
             return ValidationResult.ENCOUNTERS_NOT_FOUND;
         }
 
@@ -212,7 +211,7 @@ public class PatientValidatorImpl implements PatientValidator {
     private ValidationResult validateMasterData(PatientReference ref, String extension, List<PatientMasterData> masterData) {
         val root = referenceService.getRoot(ref);
         val pseudonym = anonymizer.calculatePatientPseudonym(root, extension);
-        if (masterData.stream().noneMatch(m -> Objects.equals(m.getIdEnc(), pseudonym))) {
+        if (masterData.stream().noneMatch(m -> Objects.equals(m.getIde(), pseudonym))) {
             return ValidationResult.MASTER_DATA_NOT_FOUND;
         }
 

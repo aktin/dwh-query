@@ -184,10 +184,10 @@ public class PatientRepository {
      * @return a list of {@code PatientEncounter} objects matching the given patient reference and extension
      * @throws SQLException if a database access error occurs
      */
-    public List<PatientEncounter> getEncounters(PatientReference ref, String extension) throws SQLException {
+    public List<PatientEncounterPeriod> getEncounterPeriods(PatientReference ref, String extension) throws SQLException {
         Objects.requireNonNull(anonymizer);
 
-        return getEncounters(ref, Collections.singletonList(extension));
+        return getEncounterPeriods(ref, Collections.singletonList(extension));
     }
 
     /**
@@ -200,7 +200,7 @@ public class PatientRepository {
      * @return A list of {@code PatientEncounter} objects representing the encounters for the patient.
      * @throws SQLException If a database access error occurs during the retrieval process.
      */
-    public List<PatientEncounter> getEncounters(PatientReference ref, List<String> extensions) throws SQLException {
+    public List<PatientEncounterPeriod> getEncounterPeriods(PatientReference ref, List<String> extensions) throws SQLException {
         Objects.requireNonNull(anonymizer);
         val root = referenceService.getRoot(ref);
         val pseudonyms = extensions.stream().map(e -> anonymizer.calculatePatientPseudonym(root, e)).collect(Collectors.toList());
@@ -213,9 +213,9 @@ public class PatientRepository {
             }
 
             val rs = ps.executeQuery();
-            val encounters = new ArrayList<PatientEncounter>();
+            val encounters = new ArrayList<PatientEncounterPeriod>();
             while (rs.next()) {
-                val encounter = new PatientEncounterImpl(
+                val encounter = new PatientEncounterPeriodImpl(
                         rs.getString(1),
                         rs.getTimestamp(3).toInstant(),
                         rs.getTimestamp(4).toInstant());

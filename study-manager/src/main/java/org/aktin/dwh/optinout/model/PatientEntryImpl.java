@@ -17,5 +17,5 @@ public class PatientEntryImpl implements PatientEntry {
 	private Instant timestamp;
 	private String comment;
 	private Integer i2b2PatientNum;
-	private String idEnc;
+	private String ide;
 }

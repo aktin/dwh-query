@@ -8,7 +8,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Getter
 public class PatientMasterDataImpl implements PatientMasterData {
-    private String idEnc;
+    private String ide;
     private Instant birthDate;
     private String sex;
     private String zip;

@@ -67,6 +67,7 @@ public class PatientServiceImpl implements PatientService {
         }
     }
 
+    @Override
     public List<PatientEncounterPeriod> getEncounterPeriods(PatientReference ref, String extension) throws IOException {
         try {
             return repository.getEncounterPeriods(ref, extension);
@@ -75,6 +76,7 @@ public class PatientServiceImpl implements PatientService {
         }
     }
 
+    @Override
     public List<PatientEncounterPeriod> getEncounterPeriods(PatientReference ref, List<String> extensions) throws IOException {
         try {
             return repository.getEncounterPeriods(ref, extensions);

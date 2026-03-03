@@ -20,47 +20,53 @@ public class QueryResolver {
     public static final String SQL_DELETE_PATIENT = "DELETE FROM optinout_patients WHERE study_id=? AND pat_ref=? AND pat_root=? AND pat_ext=?";
     public static final String SQL_COUNT_STUDIES = "SELECT COUNT(*) FROM optinout_studies";
 
-    private static final String SQL_ENCOUNTER_BY_PATIENT_REF = "SELECT pm.patient_ide, vd.encounter_num, vd.start_date, vd.end_date " +
+    private static final String SQL_ENCOUNTER_PERIOD_BY_PATIENT_REF = "SELECT pm.patient_ide, vd.encounter_num, vd.start_date, vd.end_date " +
             "FROM i2b2crcdata.visit_dimension vd " +
             "JOIN i2b2crcdata.patient_mapping pm on vd.patient_num = pm.patient_num " +
             "WHERE pm.patient_ide IN ({0}) " +
             "ORDER BY vd.patient_num asc, vd.start_date desc";
-    private static final String SQL_ENCOUNTER_BY_ENCOUNTER_REF = "SELECT em.encounter_ide, vd.encounter_num, vd.start_date, vd.end_date " +
+    private static final String SQL_ENCOUNTER_PERIOD_BY_ENCOUNTER_REF = "SELECT em.encounter_ide, vd.encounter_num, vd.start_date, vd.end_date " +
             "FROM i2b2crcdata.visit_dimension vd " +
             "JOIN i2b2crcdata.encounter_mapping em on vd.encounter_num = em.encounter_num " +
             "WHERE em.encounter_ide IN ({0}) " +
             "ORDER BY vd.patient_num asc, vd.start_date desc";
-    private static final String SQL_ENCOUNTER_BY_BILLING_REF = "SELECT o.tval_char, vd.encounter_num, vd.start_date, vd.end_date " +
+    private static final String SQL_ENCOUNTER_PERIOD_BY_BILLING_REF = "SELECT o.tval_char, vd.encounter_num, vd.start_date, vd.end_date " +
             "FROM i2b2crcdata.visit_dimension vd " +
             "JOIN i2b2crcdata.observation_fact o on vd.patient_num = o.patient_num " +
             "WHERE o.concept_cd LIKE 'AKTIN:Fall%' " +
             "AND o.tval_char IN ({0}) " +
             "ORDER BY vd.patient_num asc, vd.start_date desc";
-    private static final Map<PatientReference, String> ENCOUNTER_QUERIES;
+    private static final Map<PatientReference, String> ENCOUNTER_PERIOD_QUERIES;
 
 
-    private static final String SQL_MASTER_DATA_BY_PATIENT_REF = "SELECT pm.patient_ide, pd.birth_date, pd.zip_cd, pd.sex_cd " +
+    private static final String SQL_MASTER_DATA_BY_PATIENT_REF = "SELECT pm.patient_ide, pd.birth_date, o.tval_char, pd.sex_cd " +
             "FROM i2b2crcdata.patient_dimension pd " +
             "JOIN i2b2crcdata.patient_mapping pm ON pm.patient_num = pd.patient_num " +
-            "WHERE pm.patient_ide IN ({0}) ";
-    private static final String SQL_MASTER_DATA_BY_ENCOUNTER_REF = "SELECT em.encounter_ide, pd.birth_date, pd.zip_cd, pd.sex_cd" +
+            "JOIN i2b2crcdata.observation_fact o on pd.patient_num = o.patient_num " +
+            "WHERE pm.patient_ide IN ({0}) " +
+            "AND o.concept_cd = 'AKTIN:ZIPCODE'";
+    private static final String SQL_MASTER_DATA_BY_ENCOUNTER_REF = "SELECT em.encounter_ide, pd.birth_date, o.tval_char, pd.sex_cd" +
             "FROM i2b2crcdata.patient_dimension pd " +
             "JOIN i2b2crcdata.visit_dimension vm ON vm.patient_num = pd.patient_num " +
             "JOIN i2b2crcdata.encounter_mapping em on vm.encounter_num = em.encounter_num " +
-            "WHERE em.encounter_ide IN ({0})";
-    private static final String SQL_MASTER_DATA_BY_BILLING_REF = "SELECT o.tval_char, pd.birth_date, pd.zip_cd, pd.sex_cd" +
+            "JOIN i2b2crcdata.observation_fact o on pd.patient_num = o.patient_num " +
+            "WHERE em.encounter_ide IN ({0}) " +
+            "AND o.concept_cd = 'AKTIN:ZIPCODE'";
+    private static final String SQL_MASTER_DATA_BY_BILLING_REF = "SELECT o.tval_char, pd.birth_date, o2.tval_char, pd.sex_cd" +
             "FROM i2b2crcdata.patient_dimension pd " +
             "JOIN i2b2crcdata.observation_fact o on pd.patient_num = o.patient_num " +
+            "JOIN i2b2crcdata.observation_fact o2 on pd.patient_num = o2.patient_num " +
             "WHERE o.concept_cd LIKE 'AKTIN:Fall%' " +
+            "AND o2.concept_cd = 'AKTIN:ZIPCODE' " +
             "AND o.tval_char IN ({0})";
     private static final Map<PatientReference, String> MASTER_DATA_QUERIES;
 
     static {
         val encounterMap = new HashMap<PatientReference, String>();
-        encounterMap.put(PatientReference.Encounter, SQL_ENCOUNTER_BY_ENCOUNTER_REF);
-        encounterMap.put(PatientReference.Patient, SQL_ENCOUNTER_BY_PATIENT_REF);
-        encounterMap.put(PatientReference.Billing, SQL_ENCOUNTER_BY_BILLING_REF);
-        ENCOUNTER_QUERIES = Collections.unmodifiableMap(encounterMap);
+        encounterMap.put(PatientReference.Encounter, SQL_ENCOUNTER_PERIOD_BY_ENCOUNTER_REF);
+        encounterMap.put(PatientReference.Patient, SQL_ENCOUNTER_PERIOD_BY_PATIENT_REF);
+        encounterMap.put(PatientReference.Billing, SQL_ENCOUNTER_PERIOD_BY_BILLING_REF);
+        ENCOUNTER_PERIOD_QUERIES = Collections.unmodifiableMap(encounterMap);
 
         val masterDataMap = new HashMap<PatientReference, String>();
         masterDataMap.put(PatientReference.Encounter, SQL_MASTER_DATA_BY_ENCOUNTER_REF);
@@ -74,7 +80,7 @@ public class QueryResolver {
     }
 
     public static String resolveEncounterQueryByReference(PatientReference ref, int elementCount) {
-        val sql = ENCOUNTER_QUERIES.get(ref);
+        val sql = ENCOUNTER_PERIOD_QUERIES.get(ref);
 
         if (sql == null) {
             throw new IllegalArgumentException("Unknown ref: " + ref);

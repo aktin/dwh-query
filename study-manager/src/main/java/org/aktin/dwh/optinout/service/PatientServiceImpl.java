@@ -1,6 +1,6 @@
 package org.aktin.dwh.optinout.service;
 
-import org.aktin.dwh.optinout.model.PatientEncounter;
+import org.aktin.dwh.optinout.model.PatientEncounterPeriod;
 import org.aktin.dwh.optinout.model.PatientMasterData;
 import org.aktin.dwh.optinout.model.PatientEntry;
 import org.aktin.dwh.optinout.model.PatientEntryData;
@@ -11,7 +11,6 @@ import javax.faces.bean.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 @ApplicationScoped
@@ -69,18 +68,18 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<PatientEncounter> getEncounters(PatientReference ref, String extension) throws IOException {
+    public List<PatientEncounterPeriod> getEncounterPeriods(PatientReference ref, String extension) throws IOException {
         try {
-            return repository.getEncounters(ref, extension);
+            return repository.getEncounterPeriods(ref, extension);
         } catch (SQLException e) {
             throw new IOException(e);
         }
     }
 
     @Override
-    public List<PatientEncounter> getEncounters(PatientReference ref, List<String> extensions) throws IOException {
+    public List<PatientEncounterPeriod> getEncounterPeriods(PatientReference ref, List<String> extensions) throws IOException {
         try {
-            return repository.getEncounters(ref, extensions);
+            return repository.getEncounterPeriods(ref, extensions);
         } catch (SQLException e) {
             throw new IOException(e);
         }

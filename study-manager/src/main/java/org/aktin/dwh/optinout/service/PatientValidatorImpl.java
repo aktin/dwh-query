@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,12 +38,13 @@ public class PatientValidatorImpl implements PatientValidator {
 
         try {
             val validationContext = preloadValidationData(studyId, patients);
-            val validatedEntries = new HashMap<PatientEntry, List<ValidationResult>>();
+            // LinkedHashMap to keep insert order
+            val validatedEntries = new LinkedHashMap<PatientEntry, List<ValidationResult>>();
 
             for (val entry : patients) {
                 val results = performSinglePatientValidation(entry, patients, validationContext);
                 val root = referenceService.getRoot(entry.getReference());
-                val idEnc = anonymizer.calculatePatientPseudonym(root, entry.getExtension());
+                val ide = anonymizer.calculatePatientPseudonym(root, entry.getExtension());
                 val patient = new PatientEntryImpl(entry.getReference(),
                         entry.getParticipation(),
                         root,
@@ -53,7 +54,7 @@ public class PatientValidatorImpl implements PatientValidator {
                         null,
                         entry.getComment(),
                         null,
-                        idEnc);
+                        ide);
                 validatedEntries.put(patient, results);
             }
 

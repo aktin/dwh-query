@@ -14,10 +14,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -48,7 +46,7 @@ public class PatientRepository {
      * @return a {@code PatientEntryImpl} object representing the patient entry, or {@code null} if no matching entry is found.
      * @throws SQLException if an SQL error occurs while executing the query or interacting with the database.
      */
-    public PatientEntryImpl getPatientByID(String studyId, PatientReference ref, String extension) throws SQLException {
+    public PatientEntry getPatientByID(String studyId, PatientReference ref, String extension) throws SQLException {
         try (val dbc = dsp.getDataSource().getConnection();
              val ps = dbc.prepareStatement(QueryResolver.SQL_PATIENT_BY_ID)) {
             ps.setString(1, studyId);
@@ -95,10 +93,20 @@ public class PatientRepository {
      * @param user    the username of the person performing the operation; must not be null.
      * @throws IOException  if an I/O error occurs during SIC generation or database operations.
      * @throws SQLException if an SQL error occurs while interacting with the database.
+     * @throws IllegalStateException if any of the entries already exist in the database.
      */
     public void addPatientsToStudy(String studyId, List<PatientEntryData> entries, String user) throws IOException, SQLException {
         Objects.requireNonNull(anonymizer);
         val now = new Timestamp(System.currentTimeMillis());
+
+        val pats = getAllPatientsOfStudy(studyId);
+        val existingPats = pats.stream().filter(p ->
+                entries.stream().anyMatch(e -> Objects.equals(e.getReference(), p.getReference())
+                && Objects.equals(e.getExtension(), p.getExtension()))).collect(Collectors.toList());
+
+        if(!existingPats.isEmpty()) {
+            throw new IllegalStateException(MessageFormat.format("Patients with extensions {0} already exist in database", existingPats.stream().map(PatientEntry::getExtension).collect(Collectors.joining())));
+        }
 
         try (val dbc = dsp.getDataSource().getConnection()) {
             //turn auto commit off for transaction
@@ -127,10 +135,13 @@ public class PatientRepository {
      * @param newData   the updated patient data to be applied; must not be null
      * @param user      the username of the person performing the update; must not be null
      * @throws SQLException if an SQL error occurs while updating the database or writing to the audit trail
+     * @throws NoSuchElementException if the patient is not found in the database
      */
     public void updatePatient(String studyId, PatientReference ref, String extension, PatientEntryData newData, String user) throws SQLException {
         Objects.requireNonNull(anonymizer);
         val now = new Timestamp(System.currentTimeMillis());
+        val pat = getPatientByID(studyId, ref, extension);
+        if (pat == null) {throw new NoSuchElementException("Patient not found");}
         try (val dbc = dsp.getDataSource().getConnection()) {
             //turn auto commit off for transaction
             dbc.setAutoCommit(false);
@@ -284,10 +295,10 @@ public class PatientRepository {
      * into a {@code PatientEntryImpl} object.
      *
      * @param rs the result set from which to load the patient entry; must not be null
-     * @return a {@code PatientEntryImpl} object initialized with data from the result set
+     * @return a {@code PatientEntry} object initialized with data from the result set
      * @throws SQLException if an SQL error occurs while accessing the result set data
      */
-    private PatientEntryImpl toPatientEntry(ResultSet rs) throws SQLException {
+    private PatientEntry toPatientEntry(ResultSet rs) throws SQLException {
         val root = rs.getString(2);
         val extension = rs.getString(3);
         val idEnc = anonymizer.calculatePatientPseudonym(root, extension);
@@ -429,7 +440,7 @@ public class PatientRepository {
      */
     private enum DatabaseAction {
         CREATE("C"),
-        READ("R"), // if not used, here for completeness sake
+        READ("R"), // if not used, here for completeness' sake
         UPDATE("U"),
         DELETE("D");
 

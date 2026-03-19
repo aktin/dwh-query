@@ -77,9 +77,9 @@ public class TestStudyManagerImpl {
 		assertEquals(Participation.OptIn, s.getParticipation());
 		assertNotEquals(Participation.OptOut, s.getParticipation());
 
-		val patientEntryData1 = new PatientEntryData("0", prs.getRoot(PatientReference.Patient), "0", "First patient", false, Participation.OptIn, PatientReference.Patient, null);
-		val patientEntryData2 = new PatientEntryData("0", prs.getRoot(PatientReference.Billing), null, "Second patient", true, Participation.OptIn, PatientReference.Billing, null);
-		val patientEntryData3 = new PatientEntryData("0", prs.getRoot(PatientReference.Encounter), null, "Third patient", true, Participation.OptIn, PatientReference.Encounter, null);
+		val patientEntryData1 = new PatientEntryData(prs.getRoot(PatientReference.Patient), "0", "0", "First patient", false, Participation.OptIn, PatientReference.Patient, null);
+		val patientEntryData2 = new PatientEntryData(prs.getRoot(PatientReference.Billing), "0", null, "Second patient", true, Participation.OptIn, PatientReference.Billing, null);
+		val patientEntryData3 = new PatientEntryData(prs.getRoot(PatientReference.Encounter), "0", null, "Third patient", true, Participation.OptIn, PatientReference.Encounter, null);
 
 		patientRepository.addPatientsToStudy(studyId, Collections.singletonList(patientEntryData1), "testuser");
 
@@ -88,7 +88,7 @@ public class TestStudyManagerImpl {
 			// even if non-id values are different
 			patientRepository.addPatientsToStudy(studyId, Collections.singletonList(patientEntryData1), "testuser");
 			fail();
-		} catch( SQLException e ) {
+		} catch( IllegalStateException e ) {
 			// user already present, duplicate key exception
 		}
 		// add two (different) patients

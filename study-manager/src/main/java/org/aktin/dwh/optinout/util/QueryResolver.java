@@ -45,14 +45,14 @@ public class QueryResolver {
             "JOIN i2b2crcdata.observation_fact o on pd.patient_num = o.patient_num " +
             "WHERE pm.patient_ide IN ({0}) " +
             "AND o.concept_cd = 'AKTIN:ZIPCODE'";
-    private static final String SQL_MASTER_DATA_BY_ENCOUNTER_REF = "SELECT em.encounter_ide, pd.birth_date, o.tval_char, pd.sex_cd" +
+    private static final String SQL_MASTER_DATA_BY_ENCOUNTER_REF = "SELECT em.encounter_ide, pd.birth_date, o.tval_char, pd.sex_cd " +
             "FROM i2b2crcdata.patient_dimension pd " +
             "JOIN i2b2crcdata.visit_dimension vm ON vm.patient_num = pd.patient_num " +
             "JOIN i2b2crcdata.encounter_mapping em on vm.encounter_num = em.encounter_num " +
             "JOIN i2b2crcdata.observation_fact o on pd.patient_num = o.patient_num " +
             "WHERE em.encounter_ide IN ({0}) " +
             "AND o.concept_cd = 'AKTIN:ZIPCODE'";
-    private static final String SQL_MASTER_DATA_BY_BILLING_REF = "SELECT o.tval_char, pd.birth_date, o2.tval_char, pd.sex_cd" +
+    private static final String SQL_MASTER_DATA_BY_BILLING_REF = "SELECT o.tval_char, pd.birth_date, o2.tval_char, pd.sex_cd " +
             "FROM i2b2crcdata.patient_dimension pd " +
             "JOIN i2b2crcdata.observation_fact o on pd.patient_num = o.patient_num " +
             "JOIN i2b2crcdata.observation_fact o2 on pd.patient_num = o2.patient_num " +

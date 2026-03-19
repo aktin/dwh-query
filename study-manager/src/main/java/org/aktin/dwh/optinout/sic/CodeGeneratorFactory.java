@@ -1,7 +1,8 @@
 package org.aktin.dwh.optinout.sic;
 
 public class CodeGeneratorFactory {
-	public static CodeGenerator createInstance(String definition, String state) {
+
+	public CodeGenerator createInstance(String definition, String state) {
 		CodeGenerator gen;
 		int pos = definition.indexOf('(');
 		String name;

@@ -38,7 +38,6 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.ws.rs.core.UriBuilder;
 
 import org.aktin.Preferences;
 import org.aktin.broker.client.BrokerClient;
@@ -500,21 +499,8 @@ public class RequestManagerImpl extends RequestStoreImpl implements RequestManag
 
 			body.append("Bitte loggen Sie sich in Ihrem AKTIN Data Warehouse ein,\n");
 			body.append("um diese Anfrage zu bearbeiten.\n");
-
-      String base = prefs.get(PreferenceKey.serverUrl);
-      if (!base.startsWith("http://") && !base.startsWith("https://")) {
-        base = "http://" + base; // normalize base
-      }
-      String baseUrl = UriBuilder.fromUri(base)
-          .path("aktin")
-          .path("admin")
-          .build()
-          .toString();
-      if (!baseUrl.endsWith("/")) {
-        baseUrl += "/";
-      }
-      String url = baseUrl + "#/request/" + request.getRequestId();
-      body.append("Link: ").append(url).append("\n\n");
+			String url = prefs.get(PreferenceKey.serverUrl)+"aktin/admin/#/request/"+request.getRequestId();
+			body.append("Link: ").append(url).append("\n\n");
 
 			switch( request.getStatus() ){
 			case Retrieved:

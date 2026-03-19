@@ -1,15 +1,18 @@
-package org.aktin.dwh.optinout.model;
+package org.aktin.dwh.optinout;
 
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.Instant;
-
 @AllArgsConstructor
-@Getter
 public class PatientMasterDataImpl implements PatientMasterData {
-    private String ide;
+    @Getter
     private Instant birthDate;
+    @Getter
     private String sex;
+    @Getter
     private String zip;
+    @Getter
+    private int patientId;
+
 }

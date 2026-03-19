@@ -2,14 +2,14 @@ package org.aktin.generic.imports.manager;
 
 import java.util.List;
 
-public class QueryDef {
+public final class QueryDef {
 
-  private final String name;
-  private final String sql;
-  private final List<Object> params;
+  private String name;
+  private String sql;
+  private List<Object> params;
 
   /**
-   * Creates a new query definition.
+   * Creates a new immutable definition of a single SQL query. Each {@code QueryDef} corresponds to exactly one database query executed by {@link StatsQueryExecutor}.
    *
    * @param name   logical name of the query, used for identification in results
    * @param sql    SQL statement with parameter placeholders

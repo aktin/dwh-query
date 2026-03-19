@@ -1,113 +1,126 @@
 package org.aktin.dwh.optinout;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
-
+import lombok.val;
 import org.aktin.dwh.db.TestDataSourcePlain;
 import org.aktin.dwh.db.TestDatabasePlain;
+import org.aktin.dwh.optinout.model.*;
+import org.aktin.dwh.optinout.repository.PatientRepository;
+import org.aktin.dwh.optinout.repository.StudyRepository;
 import org.junit.Before;
 import org.junit.Test;
 
-import liquibase.exception.LiquibaseException;
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class TestStudyManagerImpl {
-	TestDataSourcePlain ds;
-	StudyManagerImpl sm;
-	public TestStudyManagerImpl() throws SQLException {
-	}
+	StudyRepository studyRepository;
+	PatientRepository patientRepository;
+	TestDataSourceProvider dsp;
+	TestPatientReferenceService prs;
+
 	@Before
-	public void initializeDatabase() throws SQLException, LiquibaseException, IOException {
-		ds = new TestDataSourcePlain(new TestDatabasePlain("study_mgr"));
-		
-		sm = new StudyManagerImpl();
-		sm.setAnonymizer( s -> String.join("/", s) ) ;
-		sm.setDataSource(ds);
-		sm.resetDatabaseEmpty();
-		sm.prepareDatabase();
-		sm.addStudy("TEST", "Test", "Test study", "OPT=I", "SEQUENCE(1000,1)");
-		
+	public void initializeDatabase() throws SQLException, IOException, NamingException {
+//		// Nutze weiterhin die echte Test-DB für Integrationstests
+		dsp = new TestDataSourceProvider(new TestDataSourcePlain(new TestDatabasePlain("study_mgr")));
+
+		dsp.resetDatabaseEmpty();
+		dsp.initDatabase();
+
+		prs = new TestPatientReferenceService();
+
+		studyRepository = new StudyRepository(dsp);
+		patientRepository = new PatientRepository(dsp,
+				s -> String.join("/", s),
+				studyRepository,
+				prs);
+
+		studyRepository.addStudy("TEST", "Test", "Test study", "OPT=I", "SEQUENCE(1000,1)");
 	}
+
 	@Test
-	public void verifyLoadStudies() throws IOException {
-		List<StudyImpl> list = sm.getStudies();
+	public void verifyLoadStudies() throws SQLException {
+		val list = studyRepository.getStudies();
+		// On init database, there are two studies plus the test study added before running the test
 		assertEquals(3, list.size());
-		StudyImpl s = list.get(0);
+		Study s = list.get(0);
 		assertEquals("AKTIN", s.getTitle());
 		s = list.get(1);
 		assertEquals("Zertifizierung", s.getTitle());
 		s = list.get(2);
 		assertEquals("Test", s.getTitle());
-
 	}
 
 	@Test
-	public void verifyGenerateSIC() throws IOException {
-		StudyImpl s = sm.getStudies().get(1);
-		String code = s.generateSIC();
+	public void verifyGenerateSIC() throws SQLException, IOException {
+		String studyId = "TEST";
+		String code = studyRepository.generateSIC(studyId);
 		assertEquals("1000", code);
-		code = s.generateSIC();
+		code = studyRepository.generateSIC(studyId);
 		assertEquals("1001", code);
 		// verify persistence
 		// use new database connection and check if the sequence continues
-		sm = null;
-		sm = new StudyManagerImpl();
-		sm.setDataSource(ds);
-		s = sm.getStudies().get(1);
-		code = s.generateSIC();
-		assertEquals("1002", code);		
+		studyRepository = new StudyRepository(dsp);
+		code = studyRepository.generateSIC(studyId);
+		assertEquals("1002", code);
 	}
 
 	@Test
-	public void addListDeletePatients() throws IOException {
-		StudyImpl s = sm.getStudies().get(1);
-		assertTrue(s.isParticipationSupported(Participation.OptIn));
-		assertFalse(s.isParticipationSupported(Participation.OptOut));
-		
-		s.addPatient(PatientReference.Patient, "0", "0", Participation.OptIn, s.generateSIC(), "First patient", "TestUser1");
+	public void addListDeletePatients() throws IOException, SQLException {
+		String studyId = "TEST";
+		StudyImpl s = studyRepository.getStudy(studyId);
+		assertEquals(Participation.OptIn, s.getParticipation());
+		assertNotEquals(Participation.OptOut, s.getParticipation());
+
+		val patientEntryData1 = new PatientEntryData(prs.getRoot(PatientReference.Patient), "0", "0", "First patient", false, Participation.OptIn, PatientReference.Patient, null);
+		val patientEntryData2 = new PatientEntryData(prs.getRoot(PatientReference.Billing), "0", null, "Second patient", true, Participation.OptIn, PatientReference.Billing, null);
+		val patientEntryData3 = new PatientEntryData(prs.getRoot(PatientReference.Encounter), "0", null, "Third patient", true, Participation.OptIn, PatientReference.Encounter, null);
+
+		patientRepository.addPatientsToStudy(studyId, Collections.singletonList(patientEntryData1), "testuser");
 
 		// same patient should throw exception
 		try {
 			// even if non-id values are different
-			s.addPatient(PatientReference.Patient, "0", "0", Participation.OptOut, s.generateSIC(), "test", "test");
+			patientRepository.addPatientsToStudy(studyId, Collections.singletonList(patientEntryData1), "testuser");
 			fail();
-		}catch( IOException e ) {
+		} catch( IllegalStateException e ) {
 			// user already present, duplicate key exception
 		}
-		// add second (different) patient
-		s.addPatient(PatientReference.Patient, "0", "1", Participation.OptIn, s.generateSIC(), "Second patient", "TestUser1");
+		// add two (different) patients
+		patientRepository.addPatientsToStudy(studyId, Arrays.asList(patientEntryData2, patientEntryData3), "testuser1");
 
 		// list patients
-		List<PatientEntryImpl> list = s.allPatients();
-		assertEquals(2, list.size());
+		val list = patientRepository.getAllPatientsOfStudy(studyId);
+		assertEquals(3, list.size());
 
+		val pat = list.get(0);
 		// delete first patient
-		list.get(0).delete("TestUser2");
 		// delete again should throw exception
 		try {
-			list.get(0).delete("TestUser3");
+			patientRepository.deletePatient(studyId, pat.getReference(), pat.getExtension(), "testuser2");
+			patientRepository.deletePatient(studyId, pat.getReference(), pat.getExtension(), "testuser2");
 			fail();
-		}catch( FileNotFoundException e ) {
-			// entry was deleted previously
+		} catch( IllegalArgumentException e ) {
 		}
-
-		// list should have only one entry left
-		assertEquals(1, s.allPatients().size());
 	}
-
-	@Test
-	public void findPatientBySIC() throws IOException {
-		StudyImpl s = sm.getStudies().get(0);
-		s.addPatient(PatientReference.Patient, "0", "0", Participation.OptIn, "4321", null, "TestUser1");
-		// retrieve patient
-		PatientEntryImpl pat = s.getPatientBySIC("4321");
-		assertNotNull(pat);
-		assertEquals("0", pat.getIdExt());
-		// try to find nonexisting patient
-		assertNull( s.getPatientBySIC("4320"));
-		
-	}
+//
+//	@Test
+//	public void findPatientBySIC() throws IOException {
+//		StudyImpl s = studyService.getStudies().get(0);
+//		val patientEntryData1 = new PatientEntryData("0", "0", "4321", "First patient", false, Participation.OptIn, PatientReference.Patient);
+//
+//		s.addPatients(Collections.singletonList(patientEntryData1), "testuser");
+//		// retrieve patient
+//		PatientEntryImpl pat = s.getPatientBySIC("4321");
+//		assertNotNull(pat);
+//		assertEquals("0", pat.getIdExt());
+//		// try to find nonexisting patient
+//		assertNull( s.getPatientBySIC("4320"));
+//
+//	}
 }

@@ -2,10 +2,9 @@ package org.aktin.generic.imports.manager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -18,7 +17,7 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 
 /**
- * Singleton facade to execute {@link StatsSpec} via a {@link StatsQueryExecutor}. Resolves the i2b2 {@link DataSource} from JNDI using {@link Preferences}.
+ * Application-scoped facade that executes a {@link StatsSpec} via {@link StatsQueryExecutor}. Resolves the i2b2 {@link DataSource} from JNDI using {@link Preferences}.
  */
 @ApplicationScoped
 public class StatsQueryService {
@@ -58,23 +57,24 @@ public class StatsQueryService {
   }
 
   /**
-   * Runs all queries of the given spec and returns the combined rows. On error returns an empty list and logs the cause.
+   * Executes all queries of the given spec, converts the raw results to {@link Properties} via {@link StatsSpec#toProperties(java.util.List)}, and triggers upload.
    *
    * @param spec statistics specification
-   * @return combined result rows, or an empty list on failure
+   * @return flattened properties, or empty properties on failure
    */
-  public List<Map<String, Object>> run(StatsSpec spec) {
+  public Properties run(StatsSpec spec) {
     Objects.requireNonNull(spec, "spec");
     try {
-      List<Map<String, Object>> out = new ArrayList<>();
+      List<QueryResult> results = new ArrayList<>();
       for (QueryDef q : spec.queries()) {
-        out.addAll(executor.run(q));
+        results.add(executor.run(q));
       }
-      notifier.tryUpload(spec.id(), out);
-      return out;
+      Properties props = spec.toProperties(results);
+      notifier.tryUpload(spec.id(), props);
+      return props;
     } catch (SQLException e) {
       LOGGER.log(Level.SEVERE, "Stats execution failed for spec: " + spec.id(), e);
-      return Collections.emptyList();
+      return new Properties();
     }
   }
 }

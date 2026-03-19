@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.aktin</groupId>
       <artifactId>r-script</artifactId>
-      <version>1.4</version>
+      <version>1.4.1</version>
     </dependency>
 		<!-- dependency injection is optional
 			and provided by the CDI container.
@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>r-script</artifactId>
-			<version>1.5-SNAPSHOT</version>
+			<version>1.4.1</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

@@ -2,7 +2,6 @@ package org.aktin.generic.imports.manager;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,7 +12,7 @@ import javax.inject.Inject;
 import org.aktin.dwh.BrokerResourceManager;
 
 /**
- * Uploader for statistics results of {@link StatsSpec}. Uploads at most once per 24h per {@link StatsSpec#id()}. Never throws; logs warnings on failure.
+ * Uploads flattened statistics for a {@link StatsSpec}. Enforces at most one upload per spec id within 24 hours. Never throws; logs warnings on failure.
  */
 @ApplicationScoped
 public class StatsSpecNotifier {
@@ -26,45 +25,27 @@ public class StatsSpecNotifier {
   private final Map<String, Instant> lastUpload = new ConcurrentHashMap<>();
 
   /**
-   * Try to upload results for the given spec id. Skips if uploaded within the last 24h.
+   * Attempts to upload the given properties for {@code specId}. Skips if an upload occurred within the last 24 hours.
    *
-   * @param specId  spec identifier
-   * @param results executor results (row maps)
+   * @param specId  specification identifier
+   * @param results flattened results produced by {@link StatsSpec#toProperties(java.util.List)}
    */
-  public void tryUpload(String specId, List<Map<String, Object>> results) {
+  public void tryUpload(String specId, Properties results) {
     if (specId == null || results == null) {
       return;
     }
     final Instant now = Instant.now();
     final Instant cutoff = now.minus(1, ChronoUnit.DAYS);
-
     Instant prev = lastUpload.get(specId);
     if (prev != null && !prev.isBefore(cutoff)) {
       return; // already uploaded within 24h
     }
-    Properties props = flattenResults(results);
-    props.put("timestamp", now.toString());
+    results.put("timestamp", now.toString());
     try {
-      brokerResourceManager.putMyResourceProperties(specId, props);
+      brokerResourceManager.putMyResourceProperties(specId, results);
       lastUpload.put(specId, now);
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, "Stats upload failed for spec: " + specId, e);
     }
-  }
-
-  /**
-   * Builds properties as source.year=count; ignores incomplete rows.
-   */
-  private Properties flattenResults(List<Map<String, Object>> results) {
-    Properties props = new Properties();
-    for (Map<String, Object> row : results) {
-      Object year = row.get("year");
-      Object count = row.get("count");
-      Object source = row.get("source");
-      if (year != null && count != null && source != null) {
-        props.put(source + "." + year, String.valueOf(count));
-      }
-    }
-    return props;
   }
 }
